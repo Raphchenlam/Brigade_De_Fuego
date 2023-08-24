@@ -39,7 +39,7 @@ CREATE TABLE employee (
   role            varchar(255) NOT NULL, 
   color_hexcode   varchar(255) NOT NULL, 
   hourly_rate     float8 NOT NULL, 
-  barcode_number  int4 NOT NULL UNIQUE, 
+  barcode_number  int8 NOT NULL UNIQUE, 
   email           varchar(255) NOT NULL, 
   phone_number    varchar(255) NOT NULL, 
   is_admin        bool NOT NULL, 
