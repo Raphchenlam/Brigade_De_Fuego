@@ -21,7 +21,7 @@ const employeeQueries = require ('./queries/employeeQueries');
 
 const app = express();
 
-app.use(logger('dev'));
+app.use(logger('dev')); 
 app.use(express.json());
 app.use(cookieParser());
 
@@ -33,6 +33,6 @@ class BasicStrategyModified extends BasicStrategy {
     }
   
     _challenge() {
-      return 'xBasic realm="' + this._realm + '"';
+      return 'xBasic realm="' + this._realm + '"' ;
     }
 }
