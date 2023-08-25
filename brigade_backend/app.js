@@ -18,8 +18,6 @@ const schedulePeriodRouter = require ('./routes/schedulePeriodRouter');
 const sectionRouter = require ('./routes/sectionRouter');
 const tableRouter = require ('./routes/tableRouter');
 
-const employeeQueries = require ('./queries/employeeQueries');
-
 const app = express();
 
 app.use(logger('dev')); 
