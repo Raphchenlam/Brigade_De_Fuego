@@ -36,3 +36,6 @@ class BasicStrategyModified extends BasicStrategy {
       return 'xBasic realm="' + this._realm + '"' ;
     }
 }
+
+
+module.exports = app;

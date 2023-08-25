@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <EnteteNavigation />
+        <h1>Hello World!</h1>
         <v-main>
             <router-view></router-view>
         </v-main>
@@ -9,11 +9,9 @@
 
 <script>
 
-import EnteteNavigation from './components/EnteteNaviguation.vue';
 
 export default {
     components: {
-        EnteteNavigation
     }
 }
 
