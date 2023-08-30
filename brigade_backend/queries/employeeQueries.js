@@ -17,3 +17,16 @@ const getAllEmployees = async() => {
     });
 };
 exports.getAllEmployees = getAllEmployees;
+
+const createEmployee = async(firstName, lastName, role, employeeEmail, skillpoint) => {
+    const client = await pool.connect();
+
+    try {
+        const existingEmployee = await getLoginByEmployeeEmail(employeeEmail)
+    } catch (error) {
+        
+    } finally {
+        client.release();
+    }
+    
+}
