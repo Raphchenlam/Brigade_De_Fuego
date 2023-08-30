@@ -159,7 +159,7 @@ CREATE TABLE reservation (
   end_time     time NOT NULL, 
   mention      varchar(255), 
   has_minor    bool NOT NULL, 
-  taken_by     int4,
+  taken_by     varchar(255),
   PRIMARY KEY (id));
 
 CREATE TABLE assignation (
