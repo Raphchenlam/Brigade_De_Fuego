@@ -1,30 +1,30 @@
 <template>
-    Punch
+Plan de salle
+    
 </template>
-    
-    
+
+
 <script>
 import OperationMenu from '../../components/OperationMenu.vue';
 import operationSession from "../../sessions/OperationSession"
 
-
-export default {
-    name: 'PunchView',
-    components: {
-        OperationMenu
-    },
-    data()
-    {
-        return {
-            operationSession: operationSession
+    export default {
+        name: 'TablePlanView',
+        components : {
+            OperationMenu
+        },
+        data()
+  {
+    return {
+      operationSession: operationSession
         }
-    },
-    mounted()
+  },
+        mounted()
     {
         if (!operationSession.isActive)
         {
             this.$router.push('/operation');
         }
     }
-}
+    }
 </script>

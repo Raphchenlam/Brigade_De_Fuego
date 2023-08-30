@@ -1,3 +1,5 @@
 <template>
-Employee view
+<p>Dashboard</p>
+
+
 </template>

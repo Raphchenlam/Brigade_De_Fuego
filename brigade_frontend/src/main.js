@@ -12,6 +12,17 @@ import '@mdi/font/css/materialdesignicons.css';
 
 import App from './App.vue';
 
+import OperationTemplate from "./components/OperationTemplate.vue"
+import EspaceTemplate from "./components/EspaceTemplate.vue"
+import OperationLoginForm from "./pages/OperationLoginForm.vue"
+import ClientView from './pages/ClientPage/ClientView.vue'
+import ReservationView from './pages/ReservationPage/ReservationView.vue'
+import PlanSalleView from './pages/TablePage/TablePlanView.vue'
+import PunchView from './pages/PunchPage/PunchView.vue'
+import EspaceLoginForm from './pages/EspaceLoginForm.vue'
+import EspaceDashboard from './pages/Dashboard.vue'
+import EmployeeView from './pages/EmployeePage/EmployeeView.vue'
+import LeaveView from "./pages/LeavePeage/LeaveView.vue"
 
 const app = createApp(App);
 
@@ -22,12 +33,16 @@ const router = createRouter({
     },
     history: createWebHistory(),
     routes: [
-        // { path: '/', component: FormulaireLogin },
-        // { path: '/recettes/:id', component: PageDetailRecette, props: true },
-        // { path: '/admin/new-recipe', component: NewRecette },
-        // { path: '/admin/update-recipe/:id', component: UpdateRecette, props: true },
-        // { path: '/login', component: FormulaireLogin },
-        // { path: '/login/new', component: FormulaireNouvUser }
+         { path : '/espace', component: EspaceLoginForm },
+         { path : '/espace/dashboard', component: EspaceDashboard },
+         { path : '/espace/leave', component: LeaveView },
+         { path : '/espace/employee', component: EmployeeView },
+         { path : '/operation', component : OperationLoginForm},
+         { path : '/operation/client', component : ClientView},
+         { path : '/operation/punch', component : PunchView},
+         { path : '/operation/reservation', component : ReservationView},
+         { path : '/operation/plansalle', component : PlanSalleView}
+
     ]
 });
 

@@ -1,0 +1,3 @@
+<template>
+    Leave View
+</template>
