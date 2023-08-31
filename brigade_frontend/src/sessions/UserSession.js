@@ -8,7 +8,7 @@ class AuthError extends Error {
 }
 
 const session = reactive({
-    user: { name : "test" },
+    user: null,
     user_email: null,
     password: null,
 

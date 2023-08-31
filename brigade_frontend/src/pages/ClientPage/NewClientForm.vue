@@ -1,5 +1,5 @@
 <template>
-    <div class="ma-2" width="auto">
+    <div class="ma-2" width="50%">
         <v-form class="pa-10" validate-on="submit lazy" ref="createClientForm">
             <v-row>
                 <v-text-field class="ma-2" label="Prenom" clearable>

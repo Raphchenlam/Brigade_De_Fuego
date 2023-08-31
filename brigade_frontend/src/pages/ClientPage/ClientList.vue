@@ -1,28 +1,29 @@
 <template>
     <v-sheet width="50%" height="auto" class="ma-2">
-    <v-data-table-server height="300px" fixed-header v-model="selected" :headers="headers" :items="clients"
-    :items-length="clients.length"
-    select-strategy="single" class="elevation-1" @update:options="loadClients" show-select 
-    >
-        <template v-slot:top>
-                    <v-text-field @input="loadClients" v-model="search" hide-details placeholder="Search name..." class="ma-2"></v-text-field>
-        </template>
-    </v-data-table-server>
-    <v-dialog  v-model="dialogNewClient" width="100%">
-        <template v-slot:activator="{ props }">
-            <div class="ma-2 text-center">
-                <v-btn block color="black" v-bind="props">Creer un nouveau client (TEST)</v-btn>
-            </div>
-        </template>
-        <v-card>
-            <v-card-title>
-                Creer un nouveau client
-            </v-card-title>
-        <NewClientForm></NewClientForm>
-        </v-card>
-    </v-dialog>
-</v-sheet>
+        <v-data-table-server height="300px" fixed-header v-model="selected" :headers="headers" :items="clients"
+            :items-length="clients.length" select-strategy="single" class="elevation-1" @update:options="loadClients"
+            show-select>
+            <template v-slot:top>
+                <v-text-field @input="loadClients" v-model="search" hide-details placeholder="Search name..."
+                    class="ma-2"></v-text-field>
+            </template>
+        </v-data-table-server>
+        <v-dialog v-model="dialogNewClient" width="100%">
+            <template v-slot:activator="{ props }">
+                <div class="ma-2 text-center">
+                    <v-btn block color="black" v-bind="props">Creer un nouveau client (TEST)</v-btn>
+                </div>
+            </template>
+            <v-card>
+                <v-card-title>
+                    Creer un nouveau client
+                </v-card-title>
+                <NewClientForm></NewClientForm>
+            </v-card>
+        </v-dialog>
+    </v-sheet>
 </template>
+
 
 
 <script>
@@ -88,7 +89,7 @@ export default {
                     allergy: "Gluten",
                     isFavorite: true,
                     isBlacklisted: false
-                },  {
+                }, {
                     id: 3,
                     firstName: "Maxime",
                     lastName: "Marchand",
@@ -105,7 +106,7 @@ export default {
                     allergy: "Gluten",
                     isFavorite: true,
                     isBlacklisted: false
-                },  {
+                }, {
                     id: 5,
                     firstName: "Raphael",
                     lastName: "Chenard Lamothe",
@@ -122,7 +123,7 @@ export default {
                     allergy: "Gluten",
                     isFavorite: true,
                     isBlacklisted: false
-                },  {
+                }, {
                     id: 7,
                     firstName: "Maxime",
                     lastName: "Roy",
@@ -141,11 +142,13 @@ export default {
                     isBlacklisted: false
                 },
             ]
-            this.clients= [];
-            allClients.forEach(client => {
-                if (client.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0 
-                || client.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                || client.phoneNumber.indexOf(this.search) >= 0) {
+            this.clients = [];
+            allClients.forEach(client =>
+            {
+                if (client.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                    || client.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                    || client.phoneNumber.indexOf(this.search) >= 0)
+                {
                     console.log(client);
                     this.clients.push(client);
                 }
@@ -158,7 +161,7 @@ export default {
     },
     mounted()
     {
-       
+
     },
 }
 </script>
