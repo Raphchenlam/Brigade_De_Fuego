@@ -129,8 +129,9 @@ CREATE TABLE client (
   allergy        varchar(255), 
   is_favorite    bool NOT NULL, 
   is_blacklisted bool NOT NULL, 
-  PRIMARY KEY (id));
-
+  PRIMARY KEY (id),
+  UNIQUE (first_name, last_name, phone_number));
+  
 CREATE TABLE reservation_status (
   code SERIAL NOT NULL, 
   "name" varchar(255) NOT NULL, 
