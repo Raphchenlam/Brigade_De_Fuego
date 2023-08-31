@@ -12,6 +12,7 @@ import '@mdi/font/css/materialdesignicons.css';
 
 import App from './App.vue';
 
+import Home from './pages/Home.vue'
 import OperationTemplate from "./components/OperationTemplate.vue"
 import EspaceTemplate from "./components/EspaceTemplate.vue"
 import OperationLoginForm from "./pages/OperationLoginForm.vue"
@@ -33,6 +34,7 @@ const router = createRouter({
     },
     history: createWebHistory(),
     routes: [
+        { path : '/', component: Home },
          { path : '/espace', component: EspaceLoginForm },
          { path : '/espace/dashboard', component: EspaceDashboard },
          { path : '/espace/leave', component: LeaveView },

@@ -2,26 +2,13 @@
     <div class="boxed-center">
         <v-sheet class="ma-2" max-width="40rem">
             <v-form @submit.prevent="login" validate-on="submit lazy" ref="loginform">
-<<<<<<< Updated upstream
-                <v-text-field type="number" maxlength="4" label="Numero d'employé"
-=======
-<<<<<<< Updated upstream
-                <v-text-field v-model="userAccountEmail" label="Adresse courriel"
-                    :rules="[rules.required, rules.passwordValid]" density="compact"></v-text-field>
-                <v-text-field v-model="password" label="Mot de passe" type="password"
-                    :rules="[rules.required, rules.passwordValid]" density="compact"></v-text-field>
-                <v-btn type="submit" :disabled="!userAccountEmail || !password">Se connecter</v-btn>
-=======
+
+
                 <v-text-field v-model="employeeNumber" type="number" maxlength="4" label="Numero d'employé"
->>>>>>> Stashed changes
                     density="compact"></v-text-field>
                 <v-text-field label="Mot de passe" type="password"
                    density="compact"></v-text-field>
                 <v-btn type="submit">Se connecter</v-btn>
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
->>>>>>> Stashed changes
             </v-form>
             <div class="text-body ma-3">Mot de passe oublié ?&nbsp;
                 <router-link to="/login/new" replace>cliquez ici!</router-link>

@@ -12,7 +12,7 @@
             <v-text-field label="Allergies" density="compact" ref="passwordInput" clearable>
             </v-text-field>
             <v-checkbox label="Client favori"></v-checkbox>
-            <v-row  class="justify-center">
+            <v-row class="justify-center">
                 <CancelButton @click="closeDialog()"></CancelButton>
                 <CreateButton></CreateButton>
             </v-row>

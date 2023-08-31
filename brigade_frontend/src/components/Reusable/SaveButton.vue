@@ -2,7 +2,7 @@
 <v-btn
 class="ma-5"
 color="#8b0000"
-width = 25%
+width = 40%
 height=" 3rem"
 elevation="4"
 rounded="lg"

@@ -1,19 +1,8 @@
 <template>
-    Client
-
-    <v-dialog v-model="dialogNewClient" width="100%">
-        <template v-slot:activator="{ props }">
-            <div class="text-center">
-                <v-btn color="black" v-bind="props">Creer un nouveau client (TEST)</v-btn>
-            </div>
-        </template>
-        <v-card>
-            <v-card-title>
-                Creer un nouveau client
-            </v-card-title>
-        <NewClientForm></NewClientForm>
-        </v-card>
-    </v-dialog>
+       <v-row class="justify-space-around">
+<ClientList></ClientList>
+<ClientInformation></ClientInformation>
+</v-row>
 </template>
 
 
@@ -22,23 +11,34 @@ import operationSession from "../../sessions/OperationSession"
 
 import OperationMenu from '../../components/OperationMenu.vue';
 import NewClientForm from "../clientpage/NewClientForm.vue"
+import EditClientForm from "./EditClientForm.vue";
+import ClientList from "./ClientList.vue";
+import ClientInformation from './ClientInformation.vue'
 
 export default {
     components: {
-        OperationMenu,
-        NewClientForm
-    },
+    OperationMenu,
+    NewClientForm,
+    EditClientForm,
+    ClientList,
+    ClientInformation
+},
     data()
     {
         return {
             operationSession: operationSession,
-            dialogNewClient: false
+            dialogNewClient: false,
+            dialogEditClient: false
         }
     },
     methods: {
         closeNewClientDialog()
         {
             this.dialogNewClient = false;
+        },
+        closeEditClientDialog()
+        {
+            this.dialogEditClient = false;
         }
     },
     mounted()
@@ -51,7 +51,8 @@ export default {
     provide()
     {
         return {
-            closeNewClientDialog: this.closeNewClientDialog
+            closeNewClientDialog: this.closeNewClientDialog,
+            closeEditClientDialog : this.closeEditClientDialog
         };
     },
 }

@@ -8,7 +8,6 @@
       :username=userSession.user.name
       >
     </EspaceMenu>
-    
     <v-main>
       {{ $route.fullPath.split('/').slice(1)[0] }}
       <router-view></router-view>
