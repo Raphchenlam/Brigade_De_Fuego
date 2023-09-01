@@ -24,6 +24,7 @@ router.get("/:id",
     }
 );  
 
+
 router.post("/", 
     // passport.authenticate("basic", { session: false }),
     (req, res, next) => {
@@ -47,10 +48,10 @@ router.post("/",
             return next(new HttpError(400, "Le champ numéro de téléphone est requis"));
         }
  
-        clientQueries.getClientByInfos(firstName, lastName, phoneNumber)
+        clientQueries.getClientByInformations(firstName, lastName, phoneNumber)
         .then((client) => {
             if (client) {
-              throw new HttpError(400, `Un client avec le prénom ${firstName}, le nom ${lastName} et le numéro de téléphone ${phoneNumber} existe déjà`);
+              throw new HttpError(409, `Un client avec le prénom "${firstName}", le nom "${lastName}" et le numéro de téléphone "${phoneNumber}" existe déjà`);
             }
 
             const clientInfos = {
@@ -65,6 +66,7 @@ router.post("/",
             return clientQueries.insertClient(clientInfos);
           })
         .then((result) => {
+            console.log(result);
             res.json(result);
           })
         .catch((err) => {

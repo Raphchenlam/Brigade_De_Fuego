@@ -37,8 +37,7 @@ export default {
         NewClientForm,
         BlackButton
     },
-    data()
-    {
+    data() {
         return {
             selected: [],
             search: '',
@@ -64,15 +63,13 @@ export default {
             dialogNewClient: false,
         };
     },
-    provide()
-    {
+    provide() {
         return {
             closeNewClientDialog: this.closeNewClientDialog,
         };
     },
     methods: {
-        loadClients()
-        {
+        loadClients() {
             const allClients = [
                 {
                     id: 1,
@@ -145,24 +142,20 @@ export default {
                 },
             ]
             this.clients = [];
-            allClients.forEach(client =>
-            {
+            allClients.forEach(client => {
                 if (client.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
                     || client.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                    || client.phoneNumber.indexOf(this.search) >= 0)
-                {
+                    || client.phoneNumber.indexOf(this.search) >= 0) {
                     console.log(client);
                     this.clients.push(client);
                 }
             });
         },
-        closeNewClientDialog()
-        {
+        closeNewClientDialog() {
             this.dialogNewClient = false;
         },
     },
-    mounted()
-    {
+    mounted() {
 
     },
 }
