@@ -22,7 +22,6 @@
         <v-data-table-server height="300px" fixed-header v-model="selected" :headers="headers" :items="reservations"
             :items-length="reservations.length" select-strategy="single" class="elevation-1"
             @update:options="loadReservations" show-select>
-
         </v-data-table-server>
         <v-dialog v-model="dialogNewReservation" width="100%">
             <template v-slot:activator="{ props }">

@@ -6,8 +6,7 @@
     <EspaceMenu v-if="$route.fullPath.split('/').slice(1)[0] == 'espace' && userSession.user">
     </EspaceMenu>
     <v-main>
-      {{ $route.fullPath.split('/').slice(1)[0] }}
-      <router-view></router-view>
+      <router-view class="my-5"></router-view>
     </v-main>
   </v-app>
 </template>

@@ -4,8 +4,8 @@
       <p>Nombre d'evenements : {{ eventList.length }} {{ selection }}</p>
     </div>
     <v-sheet class="mx-16">
-        <v-select class="mx-16" v-model="eventTypeShowed" label="Type devenement" :items="eventTypes"></v-select>
-      </v-sheet>
+      <v-select class="mx-16" v-model="eventTypeShowed" label="Type devenement" :items="eventTypes"></v-select>
+    </v-sheet>
     <v-card class="mx-auto" max-height="400" max-width="800">
       <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="id"></v-list>
     </v-card>
@@ -55,7 +55,7 @@ export default {
   methods: {
     loadEvents()
     {
-      // liste temporaire de events
+      // liste temporaire de events - Faire un fetch a la BD a la place
       const allEvents = [
         {
           id: 1,
@@ -98,7 +98,9 @@ export default {
           },
         }
       ];
+
       this.eventList = [];
+      
       allEvents.forEach(event =>
       {
         if (this.eventTypeShowed == "Tous")
@@ -106,7 +108,6 @@ export default {
           this.eventList.push(event);
         } else
         {
-
           //faire une fonction qui permet de seulement ajouter les event que son attribut eventType == this.eventTypeShowed au eventList
         }
       });

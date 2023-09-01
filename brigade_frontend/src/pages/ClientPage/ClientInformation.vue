@@ -11,8 +11,8 @@
         <v-dialog v-model="dialogEditClient" width="100%">
             <template v-slot:activator="{ props }">
                 <v-row class="justify-center">
-                    <v-btn class="ma-5" color="black" v-bind="props">Editer un client (TEST)</v-btn>
-                    <v-btn class="ma-5" color="black">Blacklister le client</v-btn>
+                    <BlackButton class="ma-5" v-bind="props" textbutton="Editer un client"></BlackButton>
+                    <BlackButton class="ma-5" textbutton="Blacklister le client"></BlackButton>
                 </v-row>
             </template>
             <v-card>
@@ -22,16 +22,17 @@
                 <EditClientForm :clientId="2"></EditClientForm>
             </v-card>
         </v-dialog>
-
     </v-sheet>
 </template>
 
 <script>
+import BlackButton from '../../components/Reusable/BlackButton.vue';
 import EditClientForm from './EditClientForm.vue'
 
 export default {
     components: {
-        EditClientForm
+        EditClientForm,
+        BlackButton
     },
     data()
     {

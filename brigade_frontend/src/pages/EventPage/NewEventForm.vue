@@ -9,21 +9,19 @@
                 <v-select v-model="event.eventType" label="Type devenement" :items="eventTypes"></v-select>
             </v-row>
             <v-row class="justify-center">
-                <CancelButton @click="closeDialog()"></CancelButton>
-                <CreateButton></CreateButton>
+                <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Creer"></DarkRedButton>
             </v-row>
         </v-form>
     </div>
 </template>
 <script>
-import CreateButton from '../../components/Reusable/CreateButton.vue';
-import CancelButton from '../../components/Reusable/CancelButton.vue'
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
 export default {
     inject: ['closeNewEventDialog'],
     components: {
-        CreateButton,
-        CancelButton
+        DarkRedButton,
     },
     data()
     {

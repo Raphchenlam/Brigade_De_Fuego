@@ -13,21 +13,32 @@
             </v-text-field>
             <v-checkbox label="Client favori"></v-checkbox>
             <v-row class="justify-center">
-                <CancelButton @click="closeDialog()"></CancelButton>
-                <CreateButton></CreateButton>
+                <DarkRedButton textbutton="Annuler" class="mx-5" height="3rem" @click="closeDialog()"></DarkRedButton>
+                <DarkRedButton textbutton="Creer le client" class="mx-5" height="3rem"></DarkRedButton>
             </v-row>
         </v-form>
     </div>
 </template>
 <script>
-import CreateButton from '../../components/Reusable/CreateButton.vue';
-import CancelButton from '../../components/Reusable/CancelButton.vue'
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
 export default {
     inject: ['closeNewClientDialog'],
     components: {
-        CreateButton,
-        CancelButton
+        DarkRedButton,
+    },
+    data()
+    {
+        return {
+            client: {
+                firstName: null,
+                LastName: null,
+                phoneNumber: null,
+                allergy: null,
+                isFavorite: false,
+                isBlacklisted: false
+            }
+        }
     },
     methods: {
         closeDialog()

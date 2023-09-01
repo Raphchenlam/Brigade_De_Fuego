@@ -10,12 +10,11 @@
                         <v-text-field width="10px" type="number" class="shrink ma-2" label="Nombre de personnes">
                         </v-text-field>
                     </v-row>
-
                     <v-textarea height="200px" no-resize rows="8" label="Mentions speciales"></v-textarea>
                     <v-checkbox label="Mineur sur place"></v-checkbox>
                     <v-row class="justify-center">
-                        <CancelButton @click="closeDialog()"></CancelButton>
-                        <CreateButton></CreateButton>
+                        <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
+                        <DarkRedButton class="mx-5" textbutton="Creer la reservation"></DarkRedButton>
                     </v-row>
                 </v-col>
             </v-row>
@@ -23,15 +22,13 @@
     </div>
 </template>
 <script>
-import CreateButton from '../../components/Reusable/CreateButton.vue';
-import CancelButton from '../../components/Reusable/CancelButton.vue'
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import ClientList from '../ClientPage/ClientList.vue';
 
 export default {
     inject: ['closeNewReservationDialog'],
     components: {
-        CreateButton,
-        CancelButton,
+        DarkRedButton,
         ClientList
     },
     data()

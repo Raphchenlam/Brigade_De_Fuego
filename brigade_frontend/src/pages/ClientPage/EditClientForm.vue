@@ -8,7 +8,8 @@
                 <v-text-field v-model="client.lastName" class="ma-2" label="Nom de famille" clearable>
                 </v-text-field>
             </v-row>
-            <v-text-field v-model="client.phoneNumber" label="Numero de telephone(format: xxx-xxx-xxxx)" density="compact" clearable>
+            <v-text-field v-model="client.phoneNumber" label="Numero de telephone(format: xxx-xxx-xxxx)" density="compact"
+                clearable>
             </v-text-field>
             <v-text-field v-model="client.allergy" label="Allergies" density="compact" ref="passwordInput" clearable>
             </v-text-field>
@@ -18,15 +19,14 @@
             </v-row>
 
             <v-row class="justify-center">
-                <CancelButton @click="closeDialog()"></CancelButton>
-                <SaveButton></SaveButton>
+                <DarkRedButton class="mx-5" height="3rem" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
+                <DarkRedButton class="mx-5" height="3rem" textbutton="Sauvegarder"></DarkRedButton>
             </v-row>
         </v-form>
     </div>
 </template>
 <script>
-import SaveButton from '../../components/Reusable/SaveButton.vue';
-import CancelButton from '../../components/Reusable/CancelButton.vue';
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
 export default {
     inject: ['closeEditClientDialog'],
@@ -48,8 +48,7 @@ export default {
         }
     },
     components: {
-        CancelButton,
-        SaveButton
+        DarkRedButton,
     },
     methods: {
         closeDialog()

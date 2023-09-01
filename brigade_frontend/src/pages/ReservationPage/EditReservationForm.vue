@@ -15,17 +15,16 @@
             <v-textarea v-model="reservation.mention" label="Mentions speciales"></v-textarea>
             <v-checkbox v-model="reservation.hasMinor" label="Mineur sur place"></v-checkbox>
             <v-row class="justify-center">
-                <CancelButton @click="closeDialog()"></CancelButton>
-                <SaveButton></SaveButton>
-                <NoShowButton></NoShowButton>
+                <DarkRedButton class="mx-5" height="3rem" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
+                <DarkRedButton class="mx-5" height="3rem" textbutton="Sauvegarder"></DarkRedButton>
+                <SmallBlackButton class="mt-10" textbutton="No Show"></SmallBlackButton>
             </v-row>
         </v-form>
     </div>
 </template>
 <script>
-import SaveButton from '../../components/Reusable/SaveButton.vue';
-import CancelButton from '../../components/Reusable/CancelButton.vue';
-import NoShowButton from '../../components/Reusable/NoShowButton.vue';
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
+import SmallBlackButton from '../../components/Reusable/SmallBlackButton.vue';
 
 export default {
     inject: ['closeEditReservationDialog'],
@@ -53,9 +52,8 @@ export default {
         }
     },
     components: {
-        CancelButton,
-        SaveButton,
-        NoShowButton
+        DarkRedButton,
+        SmallBlackButton
     },
     methods: {
         closeDialog()
@@ -79,4 +77,5 @@ export default {
     text-align: center;
     width: 80%;
     max-width: 80rem;
-}</style>
+}
+</style>

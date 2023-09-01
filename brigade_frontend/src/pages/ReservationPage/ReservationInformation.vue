@@ -15,7 +15,7 @@
         <v-dialog v-model="dialogEditReservation" width="100%">
             <template v-slot:activator="{ props }">
                 <v-row class="justify-center">
-                    <v-btn block class="ma-5" color="black" v-bind="props">Modifier la reservation</v-btn>
+                    <BlackButton class="ma-5" textbutton="Modifier la reservation" v-bind="props"></BlackButton>
                 </v-row>
             </template>
             <v-card>
@@ -30,11 +30,13 @@
 </template>
 
 <script>
+import BlackButton from '../../components/Reusable/BlackButton.vue';
 import EditReservationForm from './EditReservationForm.vue'
 
 export default {
     components: {
-        EditReservationForm
+        EditReservationForm,
+        BlackButton
     },
     data()
     {

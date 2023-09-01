@@ -4,8 +4,6 @@
             tu peux te connecter directment dans username et mot de passe (si tu veut etre admin, fait juste ecrire 1 a
             numero employee)
             <v-form @submit.prevent="login" validate-on="submit lazy" ref="loginform">
-
-
                 <v-text-field v-model="employeeNumber" type="number" maxlength="4" label="Numero d'employé"
                     density="compact"></v-text-field>
                 <v-text-field label="Mot de passe" type="password" density="compact"></v-text-field>

@@ -26,23 +26,21 @@
                 </v-text-field>
             </v-row>
             <v-row>
-            <v-text-field class="mx-2" label="Taux Horaire" density="compact">
-            </v-text-field>
-            <v-text-field v-model="color" class="mx-2" label="Couleur" density="compact">
-            </v-text-field>
-        </v-row>
+                <v-text-field class="mx-2" label="Taux Horaire" density="compact">
+                </v-text-field>
+                <v-text-field v-model="color" class="mx-2" label="Couleur" density="compact">
+                </v-text-field>
+            </v-row>
             <v-row class="mx-2">
-                Couleur de l'employé: 
-            <v-color-picker v-model="color" class="ma-2" hide-canvas hide-inputs show-swatches></v-color-picker>
-
-        </v-row>
-
+                Couleur de l'employé:
+                <v-color-picker v-model="color" class="ma-2" hide-canvas hide-inputs show-swatches></v-color-picker>
+            </v-row>
             <v-text-field class="mx-2 mt-5" label="Mot de passe temporaire" density="compact" clearable>
             </v-text-field>
             <v-checkbox label="Gestionnaire"></v-checkbox>
             <v-row class="justify-center">
-                <CancelButton @click="closeDialog()"></CancelButton>
-                <CreateButton></CreateButton>
+                <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Creer"></DarkRedButton>
             </v-row>
         </v-form>
     </div>
@@ -50,18 +48,17 @@
 
 
 <script>
-import CreateButton from '../../components/Reusable/CreateButton.vue';
-import CancelButton from '../../components/Reusable/CancelButton.vue'
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
 export default {
     inject: ['closeNewEmployeeDialog'],
     components: {
-        CreateButton,
-        CancelButton
+        DarkRedButton
     },
-    data() {
+    data()
+    {
         return {
-            color :""
+            color: ""
         }
     },
     methods: {

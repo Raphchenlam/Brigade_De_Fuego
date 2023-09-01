@@ -8,24 +8,21 @@
                 </v-text-field>
                 <v-select v-model="event.eventType" label="Type devenement" :items="eventTypes"></v-select>
             </v-row>
-
             <v-checkbox v-model="event.isActive" label="Actif"></v-checkbox>
             <v-row class="justify-center">
-                <CancelButton @click="closeDialog()"></CancelButton>
-                <CreateButton></CreateButton>
+                <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Sauvegarder"></DarkRedButton>
             </v-row>
         </v-form>
     </div>
 </template>
 <script>
-import CreateButton from '../../components/Reusable/CreateButton.vue';
-import CancelButton from '../../components/Reusable/CancelButton.vue'
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
 export default {
     inject: ['closeEditEventDialog'],
     components: {
-        CreateButton,
-        CancelButton
+        DarkRedButton,
     },
     data()
     {
@@ -47,7 +44,7 @@ export default {
     },
     mounted()
     {
-        this.eventTypes = ["Sportif", "Ferie"];
+        this.eventTypes = ["Sportif", "Ferie"]; //on va devoir faire un fetch a la BD pour les type devenements
     }
 }
 </script>

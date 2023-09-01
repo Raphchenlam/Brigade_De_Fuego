@@ -1,9 +1,8 @@
 <template>
-
     <v-row class="mx-5 justify-space-between">
-    <EmployeeList></EmployeeList>
-    <EmployeeInformation></EmployeeInformation>
-</v-row>
+        <EmployeeList></EmployeeList>
+        <EmployeeInformation></EmployeeInformation>
+    </v-row>
 </template>
 
 <script>

@@ -11,7 +11,7 @@
         <v-dialog v-model="dialogNewClient" width="100%">
             <template v-slot:activator="{ props }">
                 <div class="ma-2 text-center">
-                    <v-btn block color="black" v-bind="props">Creer un nouveau client (TEST)</v-btn>
+                    <BlackButton block textbutton="Creer un nouveau client " v-bind="props"></BlackButton>
                 </div>
             </template>
             <v-card>
@@ -29,11 +29,13 @@
 <script>
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import NewClientForm from "../clientpage/NewClientForm.vue"
+import BlackButton from '../../components/Reusable/BlackButton.vue';
 
 export default {
     components: {
         VDataTable,
-        NewClientForm
+        NewClientForm,
+        BlackButton
     },
     data()
     {
