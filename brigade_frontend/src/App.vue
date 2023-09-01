@@ -15,7 +15,6 @@
       show-select
     >
     </v-data-table-server>
-    <p>David Beaudry</p>
     <router-view></router-view>
 </v-main>
   </v-app>
