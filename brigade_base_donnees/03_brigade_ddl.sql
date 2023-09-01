@@ -131,7 +131,7 @@ CREATE TABLE client (
   is_blacklisted bool NOT NULL, 
   PRIMARY KEY (id),
   UNIQUE (first_name, last_name, phone_number));
-
+  
 CREATE TABLE reservation_status (
   code SERIAL NOT NULL, 
   "name" varchar(255) NOT NULL, 
