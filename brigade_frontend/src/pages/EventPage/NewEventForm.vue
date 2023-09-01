@@ -1,12 +1,14 @@
 <template>
     <div class="ma-2" width="auto">
-        <v-form class="pa-10" validate-on="submit lazy" ref="createEventForm">
-            <v-text-field label="Nom de levenement" density="compact" clearable>
-            </v-text-field>
+        <v-form @submit.prevent="submitNewEvent" class="pa-10" validate-on="submit lazy" ref="createEventForm">
             <v-row>
-                <v-text-field dense type="number" class="ma-2" label="Impact" clearable>
+                <v-text-field class="ma-2" v-model="event.name" label="Nom de l'événement" clearable>
                 </v-text-field>
-                <v-select v-model="event.eventType" label="Type devenement" :items="eventTypes"></v-select>
+            </v-row>
+            <v-row>
+                <v-select class="ma-2" v-model="event.eventType" label="Type d'événement" :items="eventTypes"></v-select>
+                <v-text-field type="number" class="ma-2" v-model="event.impact" label="Impact sur l'achalandage" clearable>
+                </v-text-field>
             </v-row>
             <v-row class="justify-center">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
@@ -16,15 +18,16 @@
     </div>
 </template>
 <script>
-import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
+import DarkRedButton from '../../components/Reusable/darkredbutton.vue';
+import { createEvent, fetchAllEventType } from '../../services/EventService';
+
 
 export default {
     inject: ['closeNewEventDialog'],
     components: {
         DarkRedButton,
     },
-    data()
-    {
+    data() {
         return {
             event: {
                 name: null,
@@ -35,14 +38,21 @@ export default {
         }
     },
     methods: {
-        closeDialog()
-        {
+        closeDialog() {
             this.closeNewEventDialog();
+        },
+        loadEventType() {
+            fetchAllEventType().then(eventTypes => {
+                this.eventTypes = eventTypes;
+            }).catch(err => {
+                this.eventTypes = "BOOM!!!";
+                console.log(err);
+            })
         }
+
     },
-    mounted()
-    {
-        this.eventTypes = ["Sportif", "Ferie"]; //On va avoir nesoin de fetch les eventTypes dans la BD
+    mounted() {
+        this.loadEventType();
     }
 }
 </script>
