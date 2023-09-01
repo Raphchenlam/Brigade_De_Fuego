@@ -6,8 +6,8 @@
                 </v-text-field>
             </v-row>
             <v-row>
-                <v-select class="ma-2" v-model="event.eventType" label="Type d'événement" :items="eventTypes"></v-select>
-                <v-text-field type="number" class="ma-2" v-model="event.impact" label="Impact sur l'achalandage" clearable>
+                <v-select class="ma-2" v-model="event.eventType" label="Type d'événement" :items="eventTypes.name"></v-select>
+                <v-text-field type="number" step="0.1" class="ma-2" v-model="event.impact" label="Impact sur l'achalandage" clearable>
                 </v-text-field>
             </v-row>
             <v-row class="justify-center">
@@ -34,25 +34,27 @@ export default {
                 impact: null,
                 eventType: null,
             },
-            eventTypes: [],
+            eventTypes: [{
+                name:null
+            }],
         }
     },
     methods: {
         closeDialog() {
             this.closeNewEventDialog();
         },
-        loadEventType() {
-            fetchAllEventType().then(eventTypes => {
-                this.eventTypes = eventTypes;
-            }).catch(err => {
-                this.eventTypes = "BOOM!!!";
-                console.log(err);
-            })
-        }
+        // loadEventType() {
+        //     fetchAllEventType().then(eventTypes => {
+        //         this.eventTypes = eventTypes;
+        //     }).catch(err => {
+        //         this.eventTypes = "BOOM!!!";
+        //         console.log(err);
+        //     })
+        // }
 
     },
     mounted() {
-        this.loadEventType();
+        this.eventTypes = fetchAllEventType();
     }
 }
 </script>

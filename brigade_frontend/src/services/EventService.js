@@ -30,9 +30,11 @@ const convertToEvent = jsonEvent => {
 };
 
 const convertEventType = jsonEventType => {
-  return {
+ 
+  const eventType = {
     name:jsonEventType.name
   }
+  return eventType;
 }
 
 export async function fetchAllEvents() {
@@ -58,7 +60,7 @@ export async function fetchAllEventType() {
 
     if (response.ok) {
       const respJson = await response.json();
-      return convertEventType(respJson);
+      return respJson.map(e => convertEventType(e));
     } else {
       throw await createServiceError(response);
     }
