@@ -8,7 +8,7 @@
                 <v-text-field v-model="client.lastName" class="ma-2" label="Nom de famille" clearable>
                 </v-text-field>
             </v-row>
-            <v-text-field v-model="client.phoneNumber" label="Numero de telephone" density="compact" clearable>
+            <v-text-field v-model="client.phoneNumber" label="Numero de telephone(format: xxx-xxx-xxxx)" density="compact" clearable>
             </v-text-field>
             <v-text-field v-model="client.allergy" label="Allergies" density="compact" ref="passwordInput" clearable>
             </v-text-field>

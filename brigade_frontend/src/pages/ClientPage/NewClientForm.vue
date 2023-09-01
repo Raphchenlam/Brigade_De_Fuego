@@ -1,5 +1,5 @@
 <template>
-    <div class="ma-2" width="50%">
+    <div class="ma-2" width="auto">
         <v-form class="pa-10" validate-on="submit lazy" ref="createClientForm">
             <v-row>
                 <v-text-field class="ma-2" label="Prenom" clearable>
@@ -7,7 +7,7 @@
                 <v-text-field class="ma-2" label="Nom de famille" clearable>
                 </v-text-field>
             </v-row>
-            <v-text-field label="Numero de telephone" density="compact" clearable>
+            <v-text-field label="Numero de telephone(format: xxx-xxx-xxxx)" density="compact" clearable>
             </v-text-field>
             <v-text-field label="Allergies" density="compact" ref="passwordInput" clearable>
             </v-text-field>

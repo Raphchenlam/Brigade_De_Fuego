@@ -3,11 +3,12 @@
     <div class="text-center ma-5">
       <p>Nombre d'evenements : {{ eventList.length }} {{ selection }}</p>
     </div>
-    <v-select class="mx-12" v-model="eventTypeShowed" label="Type devenement" :items="eventTypes"></v-select>
+    <v-sheet class="mx-16">
+        <v-select class="mx-16" v-model="eventTypeShowed" label="Type devenement" :items="eventTypes"></v-select>
+      </v-sheet>
     <v-card class="mx-auto" max-height="400" max-width="800">
       <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="id"></v-list>
     </v-card>
-
     <v-dialog v-model="dialogNewEvent" width="50%">
       <template v-slot:activator="{ props }">
         <div class="ma-2 text-center">
@@ -61,7 +62,7 @@ export default {
           name: "Game du canadien",
           eventType: "Sportif",
           impact: 1.6,
-          asActive: true,
+          iActive: true,
           props: {
             color: 'red',
           },
@@ -71,7 +72,7 @@ export default {
           name: "Fete des meres",
           eventType: "Ferie",
           impact: 2.6,
-          asActive: true,
+          isActive: true,
           props: {
             color: 'red',
           },
@@ -81,7 +82,7 @@ export default {
           name: "Tournois de miniput a RDS",
           eventType: "Sportif",
           impact: 1.1,
-          asActive: true,
+          isActive: true,
           props: {
             color: 'red',
           },
@@ -91,7 +92,7 @@ export default {
           name: "Super Bowl 2023",
           eventType: "Sportif",
           impact: 3,
-          asActive: false,
+          isActive: false,
           props: {
             color: 'red',
           },
@@ -124,7 +125,7 @@ export default {
     selection()
     {
       console.log("Selection changer");
-      this.$router.push("events/" + this.selection);
+      this.$router.push("event/" + this.selection);
     }
   },
   mounted()
@@ -139,7 +140,6 @@ export default {
 <style scoped>
 .v-list {
   height: 400px;
-  /* or any height you want */
   overflow-y: auto
 }
 </style>
