@@ -13,8 +13,6 @@ import '@mdi/font/css/materialdesignicons.css';
 import App from './App.vue';
 
 import Home from './pages/Home.vue'
-import OperationTemplate from "./components/OperationTemplate.vue"
-import EspaceTemplate from "./components/EspaceTemplate.vue"
 
 //Route pour operation
 import OperationLoginForm from "./pages/OperationLoginForm.vue"

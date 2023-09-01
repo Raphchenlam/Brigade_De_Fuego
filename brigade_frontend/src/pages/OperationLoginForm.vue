@@ -5,6 +5,7 @@
 
         <div>
           <p>LESPACE OPERATION NE PEUX ETRE DEBLOQUER QUE PAR UN GESTIONNAIRE</p>
+          <p>(pour le test, pas obliger de rentrer un numero pour debloquer)</p>
         </div>
         <v-text-field v-model="adminNumber" label="Scanner votre carte gestionnaire"></v-text-field>
         <DarkRedButton type="submit" class="ml-5" height="4rem" textbutton="DEBLOQUER LESPACE OPERATION"></DarkRedButton>
