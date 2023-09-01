@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer color="#8b0000" theme="dark" permanent>
+  <v-navigation-drawer width="200" color="#8b0000" theme="dark" permanent>
     <p class="ma-5">Bonjour, {{ userSession.user.firstName }}</p>
 
     <!-- Menu de l'admin -->
