@@ -6,7 +6,7 @@
                 </v-text-field>
             </v-row>
             <v-row>
-                <v-select class="ma-2" v-model="event.eventType" label="Type d'événement" :items="eventTypes.name"></v-select>
+                <v-select class="ma-2" v-model="event.eventType" label="Type d'événement" :items="eventTypes"></v-select>
                 <v-text-field type="number" step="0.1" class="ma-2" v-model="event.impact" label="Impact sur l'achalandage" clearable>
                 </v-text-field>
             </v-row>
@@ -34,9 +34,7 @@ export default {
                 impact: null,
                 eventType: null,
             },
-            eventTypes: [{
-                name:null
-            }],
+            eventTypes: [],
         }
     },
     methods: {
@@ -45,7 +43,7 @@ export default {
         },
         // loadEventType() {
         //     fetchAllEventType().then(eventTypes => {
-        //         this.eventTypes = eventTypes;
+        //         this.eventTypes = Promise.all(eventTypes);
         //     }).catch(err => {
         //         this.eventTypes = "BOOM!!!";
         //         console.log(err);
@@ -53,8 +51,9 @@ export default {
         // }
 
     },
-    mounted() {
-        this.eventTypes = fetchAllEventType();
+    async mounted() {
+        //this.eventTypes = await fetchAllEventType()
+        this.eventTypes = await fetchAllEventType(); 
     }
 }
 </script>

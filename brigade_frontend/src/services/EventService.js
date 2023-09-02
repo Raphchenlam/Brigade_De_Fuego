@@ -30,11 +30,7 @@ const convertToEvent = jsonEvent => {
 };
 
 const convertEventType = jsonEventType => {
- 
-  const eventType = {
-    name:jsonEventType.name
-  }
-  return eventType;
+  return jsonEventType.name;
 }
 
 export async function fetchAllEvents() {
