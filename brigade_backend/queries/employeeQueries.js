@@ -1,7 +1,7 @@
 const pool = require('./DBPool');
 
-const selectAllEmployees = async() => {
-    const result = await pool.query (
+const selectAllEmployees = async () => {
+    const result = await pool.query(
         `SELECT * from employee
         ORDER BY first_name`
     );
@@ -17,14 +17,14 @@ const selectAllEmployees = async() => {
 };
 exports.selectAllEmployees = selectAllEmployees;
 
-const insertEmployee = async(employeeNumber, firstName, lastName, role, colorHexCode, hourlyRate, barcodeNumber, employeeEmail, phoneNumber, isAdmin, skillPoints, passwordSalt, passwordHash, clientParam) => {
+const insertEmployee = async (employeeNumber, firstName, lastName, role, colorHexCode, hourlyRate, barcodeNumber, employeeEmail, phoneNumber, isAdmin, skillPoints, passwordSalt, passwordHash, clientParam) => {
     const client = clientParam || await pool.connect();
 
     await client.query(
         `INSERT INTO employee(
             employee_number, first_name, last_name, role, color_hexcode, hourly_rate, barcode_number, email, phone_number, is_admin, is_super_admin, is_new_employee, is_active, skill_points, password_salt, password_hash)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, false, true, true, $11, $12, $13)`,
-            [employeeNumber, firstName, lastName, role, colorHexCode, hourlyRate, barcodeNumber, employeeEmail, phoneNumber, isAdmin, skillPoints, passwordSalt, passwordHash]
+        [employeeNumber, firstName, lastName, role, colorHexCode, hourlyRate, barcodeNumber, employeeEmail, phoneNumber, isAdmin, skillPoints, passwordSalt, passwordHash]
     );
 };
 
@@ -39,18 +39,67 @@ const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
     );
 
     const row = result.rows[0];
-    if (row){
+    if (row) {
         return {
             employeeNumber: row.employee_number,
             firstName: row.first_name,
             lastName: row.last_name,
-            barcodeNumber: row.barcode_number
-            //mettre tous les infos
+            role: row.role,
+            colorHexCode: row.color_hexcode,
+            hourlyRate: row.hourly_rate,
+            barcodeNumber: row.barcode_number,
+            employeeEmail: row.email,
+            phoneNumber: row.phone_number,
+            isAdmin: row.is_admin,
+            isSuperAdmin: row.is_super_admin,
+            isNewEmployee: row.is_new_employee,
+            isActive: row.is_active,
+            skillPoints: row.skill_points
         };
     }
     return undefined;
 };
 
+exports.selectEmployeeByEmployeeNumber = selectEmployeeByEmployeeNumber;
+
 //const getLoginByEmployeeNumber (se référer à getLoginByUserAccountEmail de recettesRodrigo)
 
-exports.selectEmployeeByEmployeeNumber = selectEmployeeByEmployeeNumber
+//const getEmployeeNumber (verif dans employeeRouter) PAS FAIT
+
+// const getAssignedHexCode = async (colorHexCode) => {
+//     const result = await pool.query(
+//         `SELECT color_hexcode
+//         FROM employee
+//         WHERE color_hexcode = $1`,
+//         [colorHexCode]
+//     );
+//     const row = result.rows[0];
+//     if(row){
+//         return {
+//             colorHexcode: row.color_hexcode
+//         };
+//     }
+//     return undefined;
+// }
+//exports.getAssignedHexcode = getAssignedHexcode;
+
+/////   QUERIES connexes à Employee   /////
+
+// const getRoleInfo = async (roleName) => {
+//     const result = await pool.query(
+//         `SELECT *
+//         FROM role
+//         WHERE name = $1`,
+//         [roleName]
+//     );
+//     const row = result.rows[0];
+//     if (row) {
+//         return {
+//             role: row.name,
+//             team: row.team
+//         };
+//     }
+//     return undefined;
+// }
+//exports.getRoleInfo = getRoleInfo;
+

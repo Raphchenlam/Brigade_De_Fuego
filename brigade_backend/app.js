@@ -9,19 +9,19 @@ const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 const crypto = require('crypto');
 
-const clientRouter = require ('./routes/clientRouter');
-const employeeRouter = require ('./routes/employeeRouter');
-const eventRouter = require ('./routes/eventRouter');
-const leaveRouter = require ('./routes/leaveRouter');
-const punchRouter = require ('./routes/punchRouter');
-const reservationRouter = require ('./routes/reservationRouter');
-const schedulePeriodRouter = require ('./routes/schedulePeriodRouter');
-const sectionRouter = require ('./routes/sectionRouter');
-const tableRouter = require ('./routes/tableRouter');
+const clientRouter = require('./routes/clientRouter');
+const employeeRouter = require('./routes/employeeRouter');
+const eventRouter = require('./routes/eventRouter');
+const leaveRouter = require('./routes/leaveRouter');
+const punchRouter = require('./routes/punchRouter');
+const reservationRouter = require('./routes/reservationRouter');
+const schedulePeriodRouter = require('./routes/schedulePeriodRouter');
+const sectionRouter = require('./routes/sectionRouter');
+const tableRouter = require('./routes/tableRouter');
 
 const app = express();
 
-app.use(logger('dev')); 
+app.use(logger('dev'));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -33,7 +33,7 @@ app.use('/employee', employeeRouter);
 //     constructor(options, verify) {
 //       return super(options, verify);
 //     }
-  
+
 //     _challenge() {
 //       return 'xBasic realm="' + this._realm + '"' ;
 //     }
@@ -89,57 +89,66 @@ app.use('/employee', employeeRouter);
 // );
 
 app.post('/',
-  (req, res, next) => {
-    if (!req.body.employeeNumber || req.body.employeeNumber === '') {
-      return next(new HttpError(400, "Propriété employeeNumber requise"));
+    (req, res, next) => {
+        if (!req.body.employeeNumber || req.body.employeeNumber === '') {
+            return next(new HttpError(400, "Propriété employeeNumber requise"));
+        }
+
+        if (!req.body.password || req.body.password === '') {
+            return next(new HttpError(400, "Propriété password requise"));
+        }
+
+        const saltBuf = crypto.randomBytes(16);
+        const salt = saltBuf.toString("base64");
+
+        crypto.pbkdf2(req.body.password, salt, 100000, 64, "sha512", async (err, derivedKey) => {
+            if (err) {
+                return next(err);
+            }
+
+            const passwordHashBase64 = derivedKey.toString("base64");
+
+            try {
+                const employeeAccountWithPasswordHash = await userAccountQueries.insertEmployee(req.body.employeeNumber, req.body.firstName, req.body.lastName, req.body.role, req.body.colorHexCode, req.body.hourlyRate,
+                    req.body.barcodeNumber, req.body.employeeEmail, req.body.phoneNumber, req.body.isAdmin, req.body.skillPoints, salt, passwordHashBase64);
+
+                const employeeDetails = {
+                    employeeNumber: employeeAccountWithPasswordHash.employeeNumber,
+                    firstName: employeeAccountWithPasswordHash.firstName,
+                    lastName: employeeAccountWithPasswordHash.lastName,
+                    role: employeeAccountWithPasswordHash.role,
+                    colorHexCode: employeeAccountWithPasswordHash.colorHexCode,
+                    hourlyRate: employeeAccountWithPasswordHash.hourlyRate,
+                    barcodeNumber: employeeAccountWithPasswordHash.barcodeNumber,
+                    employeeEmail: employeeAccountWithPasswordHash.employeeEmail,
+                    phoneNumber: employeeAccountWithPasswordHash.phoneNumber,
+                    isAdmin: employeeAccountWithPasswordHash.isAdmin,
+                    isSuperAdmin: employeeAccountWithPasswordHash.isSuperAdmin,
+                    isNewEmployee: employeeAccountWithPasswordHash.isNewEmployee,
+                    isActive: employeeAccountWithPasswordHash.isActive,
+                    skillPoints: employeeAccountWithPasswordHash.skillPoints
+                };
+
+                res.json(employeeDetails);
+            } catch (err) {
+                return next(err);
+            }
+        });
     }
-
-    if (!req.body.password || req.body.password === '') {
-      return next(new HttpError(400, "Propriété password requise"));
-    }
-
-    const saltBuf = crypto.randomBytes(16);
-    const salt = saltBuf.toString("base64");
-
-    crypto.pbkdf2(req.body.password, salt, 100000, 64, "sha512", async (err, derivedKey) => {
-      if (err) {
-        return next(err);
-      }
-
-      const passwordHashBase64 = derivedKey.toString("base64");
-
-      try {
-        const employeeAccountWithPasswordHash = await userAccountQueries.insertEmployee(req.body.employeeNumber, req.body.firstName, req.body.lastName, req.body.lastName, req.body.role, req.body.hourlyRate,
-            req.body.barcodeNumber, req.body.employeeEmail, req.body.phoneNumber, req.body.isAdmin, req.body.skillPoints, salt, passwordHashBase64);
-
-        const employeeDetails = {
-          employeeNumber: employeeAccountWithPasswordHash.employeeNumber,
-          firstName: employeeAccountWithPasswordHash.firstName,
-          lastName: employeeAccountWithPasswordHash.lastName,
-          isAdmin: employeeAccountWithPasswordHash.isAdmin,
-          isActive: employeeAccountWithPasswordHash.isActive
-        };
-
-        res.json(employeeDetails);
-      } catch (err) {
-        return next(err);
-      }
-    });
-  }
 );
 
 app.use((err, req, res, next) => {
     console.log("error handler: ", err);
     if (res.headersSent) {
-      return next(err);
+        return next(err);
     }
     res.status(err.status || 500)
     if (err instanceof HttpError) {
-      res.json(err.getJsonMessage());
+        res.json(err.getJsonMessage());
     } else {
-      res.json(err);
+        res.json(err);
     }
-  });
+});
 
 
 module.exports = app;
