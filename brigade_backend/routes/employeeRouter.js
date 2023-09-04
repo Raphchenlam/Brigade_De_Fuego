@@ -21,20 +21,21 @@ router.get('/',
         });
     });
 
-router.post('/',
-    passport.authenticate('basic', {session:false}), (req,res,next) => {
+//Ne pas utiliser le passport authenticate pour l'instant
+//passport.authenticate('basic', {session:false}),
+router.post('/', (req,res,next) => {
         const employee = req.employee;
 
-        if(!employee || !employee.isAdmin || !employee.isSuperAdmin) {
-            return next(new HttpError(403, "Droit administrateur requis"));
-        }
+        // if(!employee || !employee.isAdmin || !employee.isSuperAdmin) {
+        //     return next(new HttpError(403, "Droit administrateur requis"));
+        // }
 
         const employeeNumber = employee.employeeNumber;
         if(!employeeNumber || employeeNumber == ''){
             return next(new HttpError(400, 'Le champ employeeNumber est requis'));
         }
 
-        //Double verif Input ?
+        //Double verif Input À FAIRE
 
         employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber).then(employee => {
             if(employee){

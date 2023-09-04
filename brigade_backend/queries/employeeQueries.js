@@ -1,5 +1,4 @@
 const pool = require('./DBPool');
-const HttpError = require('../HttpError');
 
 const selectAllEmployees = async() => {
     const result = await pool.query (
@@ -18,28 +17,17 @@ const selectAllEmployees = async() => {
 };
 exports.selectAllEmployees = selectAllEmployees;
 
-const insertEmployee = async(employeeNumber, firstName, lastName, role, hourlyRate, barcodeNumber, employeeEmail, phoneNumber, isAdmin, skillPoints, passwordSalt, passwordHash, clientParam) => {
+const insertEmployee = async(employeeNumber, firstName, lastName, role, colorHexCode, hourlyRate, barcodeNumber, employeeEmail, phoneNumber, isAdmin, skillPoints, passwordSalt, passwordHash, clientParam) => {
     const client = clientParam || await pool.connect();
 
-    try {
-        if(!clientParam){
-            await client.query("BEGIN")
-        }
-        await client.query(
-            `INSERT INTO employee(
-                employee_number, first_name, last_name, role, color_hexcode, hourly_rate, barcode_number, email, phone_number, is_admin, is_super_admin, is_new_employee, is_active, skill_points, password_salt, password_hash)
-                VALUES ($1, $2, $3, $4, #ffffff, $6, $7, $8, $9, $10, false, true, true, $11, $12, $13)`,
-                [employeeNumber, firstName, lastName, role, hourlyRate, barcodeNumber, employeeEmail, phoneNumber, isAdmin, skillPoints, passwordSalt, passwordHash]
-        );
-
-        await client.query("COMMIT");
-    } catch (error) {
-        await client.query("ROLLBACK");
-        throw error;
-    } finally {
-        client.release();
-    }
+    await client.query(
+        `INSERT INTO employee(
+            employee_number, first_name, last_name, role, color_hexcode, hourly_rate, barcode_number, email, phone_number, is_admin, is_super_admin, is_new_employee, is_active, skill_points, password_salt, password_hash)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, false, true, true, $11, $12, $13)`,
+            [employeeNumber, firstName, lastName, role, colorHexCode, hourlyRate, barcodeNumber, employeeEmail, phoneNumber, isAdmin, skillPoints, passwordSalt, passwordHash]
+    );
 };
+
 exports.insertEmployee = insertEmployee;
 
 const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
@@ -57,9 +45,12 @@ const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
             firstName: row.first_name,
             lastName: row.last_name,
             barcodeNumber: row.barcode_number
+            //mettre tous les infos
         };
     }
     return undefined;
 };
+
+//const getLoginByEmployeeNumber (se référer à getLoginByUserAccountEmail de recettesRodrigo)
 
 exports.selectEmployeeByEmployeeNumber = selectEmployeeByEmployeeNumber

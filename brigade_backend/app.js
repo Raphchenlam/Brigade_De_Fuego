@@ -67,28 +67,28 @@ app.use('/employee', employeeRouter);
 //   });
 // }));
 
-app.get('/login',
-  passport.authenticate('basic', { session: false }),
-  (req, res, next) => {
+// app.get('/login',
+//   passport.authenticate('basic', { session: false }),
+//   (req, res, next) => {
 
-    if (req.employee) {
+//     if (req.employee) {
 
-      const employeeDetails = {
-        employeeNumber: req.employee.employeeNumber,
-        firstName: req.employee.firstName,
-        lastName: req.employee.lastName,
-        isAdmin: req.employee.isAdmin,
-        isActive: req.employee.isActive
-      };
+//       const employeeDetails = {
+//         employeeNumber: req.employee.employeeNumber,
+//         firstName: req.employee.firstName,
+//         lastName: req.employee.lastName,
+//         isAdmin: req.employee.isAdmin,
+//         isActive: req.employee.isActive
+//       };
 
-      res.json(employeeDetails);
-    } else {
-      return next({ status: 500, message: "Propriété employee absente" });
-    }
-  }
-);
+//       res.json(employeeDetails);
+//     } else {
+//       return next({ status: 500, message: "Propriété employee absente" });
+//     }
+//   }
+// );
 
-app.post('/login',
+app.post('/',
   (req, res, next) => {
     if (!req.body.employeeNumber || req.body.employeeNumber === '') {
       return next(new HttpError(400, "Propriété employeeNumber requise"));
@@ -110,7 +110,7 @@ app.post('/login',
 
       try {
         const employeeAccountWithPasswordHash = await userAccountQueries.insertEmployee(req.body.employeeNumber, req.body.firstName, req.body.lastName, req.body.lastName, req.body.role, req.body.hourlyRate,
-            req.body.barcodeNumber, req.body.employeeEmail, req.body.phoneNumber, req.body.isAdmin, req.body.skillPoints, passwordHashBase64, salt);
+            req.body.barcodeNumber, req.body.employeeEmail, req.body.phoneNumber, req.body.isAdmin, req.body.skillPoints, salt, passwordHashBase64);
 
         const employeeDetails = {
           employeeNumber: employeeAccountWithPasswordHash.employeeNumber,
