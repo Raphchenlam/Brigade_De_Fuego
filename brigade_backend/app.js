@@ -126,7 +126,9 @@ app.post('/',
                     isSuperAdmin: employeeAccountWithPasswordHash.isSuperAdmin,
                     isNewEmployee: employeeAccountWithPasswordHash.isNewEmployee,
                     isActive: employeeAccountWithPasswordHash.isActive,
-                    skillPoints: employeeAccountWithPasswordHash.skillPoints
+                    skillPoints: employeeAccountWithPasswordHash.skillPoints,
+                    passwordSalt: employeeAccountWithPasswordHash.salt,
+                    passwordHash: employeeAccountWithPasswordHash.passwordHashBase64
                 };
 
                 res.json(employeeDetails);

@@ -17,14 +17,18 @@ const selectAllEmployees = async () => {
 };
 exports.selectAllEmployees = selectAllEmployees;
 
-const insertEmployee = async (employeeNumber, firstName, lastName, role, colorHexCode, hourlyRate, barcodeNumber, employeeEmail, phoneNumber, isAdmin, skillPoints, passwordSalt, passwordHash, clientParam) => {
+const insertEmployee = async (newEmployee, clientParam) => {
     const client = clientParam || await pool.connect();
+
+    const isSuperAdmin = false;
+    const isNewEmployee = true;
+    const isActive = true;
 
     await client.query(
         `INSERT INTO employee(
             employee_number, first_name, last_name, role, color_hexcode, hourly_rate, barcode_number, email, phone_number, is_admin, is_super_admin, is_new_employee, is_active, skill_points, password_salt, password_hash)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, false, true, true, $11, $12, $13)`,
-        [employeeNumber, firstName, lastName, role, colorHexCode, hourlyRate, barcodeNumber, employeeEmail, phoneNumber, isAdmin, skillPoints, passwordSalt, passwordHash]
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+        [newEmployee.employeeNumber, newEmployee.firstName, newEmployee.lastName, newEmployee.role, newEmployee.colorHexCode, newEmployee.hourlyRate, newEmployee.barcodeNumber, newEmployee.employeeEmail, newEmployee.phoneNumber, newEmployee.isAdmin, isSuperAdmin, isNewEmployee, isActive, newEmployee.skillPoints, newEmployee.passwordSalt, newEmployee.passwordHash]
     );
 };
 
@@ -88,7 +92,7 @@ exports.selectAssignedColorHexcode = selectAssignedColorHexcode;
 const selectRoleByName = async (roleName) => {
     const result = await pool.query(
         `SELECT name, team
-        'FROM role
+        FROM role
         WHERE name = $1`,
         [roleName]
     );
