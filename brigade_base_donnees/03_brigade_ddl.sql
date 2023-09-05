@@ -99,9 +99,10 @@ CREATE TABLE employee (
 CREATE TABLE punch (
   id              SERIAL NOT NULL, 
   employee_number int4 NOT NULL REFERENCES employee("employee_number") , 
-  "date"          date NOT NULL, 
+  "date_in"          date NOT NULL, 
   punch_in        time NOT NULL, 
-  punch_out       time NOT NULL, 
+  "date_out"         date, 
+  punch_out       time, 
   PRIMARY KEY (id));
 
 CREATE TABLE leave (
