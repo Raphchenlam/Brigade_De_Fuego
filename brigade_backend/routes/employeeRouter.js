@@ -24,7 +24,7 @@ router.get('/',
     });
 
 //Ne pas utiliser le passport authenticate pour l'instant
-//passport.authenticate('basic', {session:false}),
+//passport.authenticate('basic', {session:false}), (req,res,next)...
 router.post('/', (req, res, next) => {
     // const employee = req.employee;
 
@@ -36,7 +36,7 @@ router.post('/', (req, res, next) => {
     if (!employeeNumber || employeeNumber == '') {
         return next(new HttpError(400, 'Le champ employeeNumber est requis'));
     }
-    if(!regex.validEmployeeNumber.test(employeeNumber)){
+    if (!regex.validEmployeeNumber.test(employeeNumber)) {
         return next(new HttpError(400, 'Le champ employeeNumber ne respecte pas les critères d\'acceptation de la REGEX associé à ce champ'));
     }
     employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber).then(employee => {
@@ -70,11 +70,11 @@ router.post('/', (req, res, next) => {
     if (!role || role == '') {
         return next(new HttpError(400, 'Le champ role est requis'));
     }
-    //employeeQueries.getRoleInfo(role).then(existingRole => {
-    //      if(!existingRole){
-    //         throw new HttpError(400, `Le role ${role} n'existe pas`);    
-    //      }    
-    //});
+    employeeQueries.selectRoleByName(role).then(existingRole => {
+         if(!existingRole){
+            throw new HttpError(400, `Le role ${role} n'existe pas`);    
+         }    
+    });
 
 
     const colorHexcode = req.body.colorHexcode;
@@ -84,11 +84,11 @@ router.post('/', (req, res, next) => {
     if (!regex.validcolorHexcode.test(colorHexcode)) {
         return next(new HttpError(400, 'Le champ colorHexcode ne respecte pas les critères d\'acceptation de la REGEX associé à ce champ'));
     }
-    // employeeQueries.getAssignedColorHexcode(colorHexcode).then(assignedColorHexcode => {
-    //     if(assignedColorHexcode){
-    //        throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à cette couleur`);
-    //     }
-    // });
+    employeeQueries.selectAssignedColorHexcode(colorHexcode).then(assignedColorHexcode => {
+        if(assignedColorHexcode){
+           throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à cette couleur`);
+        }
+    });
 
 
     const hourlyRate = req.body.hourlyRate;
@@ -156,8 +156,6 @@ router.post('/', (req, res, next) => {
     };
 
     return employeeQueries.insertEmployee(newEmployee);
-
-    //faire employeeQueries.selectEmployeeByEmployeeNumber lors de la validation de l'input 
 
 }
 );

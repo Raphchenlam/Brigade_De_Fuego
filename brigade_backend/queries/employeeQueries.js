@@ -59,47 +59,64 @@ const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
     }
     return undefined;
 };
-
 exports.selectEmployeeByEmployeeNumber = selectEmployeeByEmployeeNumber;
 
 //const getLoginByEmployeeNumber (se référer à getLoginByUserAccountEmail de recettesRodrigo)
 
 //const getEmployeeNumber (verif dans employeeRouter) PAS FAIT
 
-// const getAssignedHexCode = async (colorHexCode) => {
-//     const result = await pool.query(
-//         `SELECT color_hexcode
-//         FROM employee
-//         WHERE color_hexcode = $1`,
-//         [colorHexCode]
-//     );
-//     const row = result.rows[0];
-//     if(row){
-//         return {
-//             colorHexcode: row.color_hexcode
-//         };
-//     }
-//     return undefined;
-// }
-//exports.getAssignedHexcode = getAssignedHexcode;
+const selectAssignedHexcode = async (colorHexCode) => {
+    const result = await pool.query(
+        `SELECT color_hexcode
+        FROM employee
+        WHERE color_hexcode = $1`,
+        [colorHexCode]
+    );
+
+    const row = result.rows[0];
+    if(row){
+        return {
+            colorHexcode: row.color_hexcode
+        };
+    }
+    return undefined;
+};
+exports.selectAssignedHexcode = selectAssignedHexcode;
 
 /////   QUERIES connexes à Employee   /////
 
-// const getRoleInfo = async (roleName) => {
+const selectRoleByName = async (roleName) => {
+    const result = await pool.query(
+        `SELECT name, team
+        'FROM role
+        WHERE name = $1`,
+        [roleName]
+    );
+
+    const row = result.rows[0];
+    if(row){
+        const roleInfo = {
+            roleName: row.name,
+            team: row.team
+        };
+        return roleInfo;
+    }
+    return undefined;
+}
+exports.selectRoleByName = selectRoleByName;
+
+// const selectAllRoles = async () => {
 //     const result = await pool.query(
 //         `SELECT *
-//         FROM role
-//         WHERE name = $1`,
+//         FROM role`,
 //         [roleName]
 //     );
-//     const row = result.rows[0];
-//     if (row) {
-//         return {
+//     return result.rows.map(row => {
+//         const roleInfo = {
 //             role: row.name,
 //             team: row.team
 //         };
-//     }
-//     return undefined;
+//     });
 // }
-//exports.getRoleInfo = getRoleInfo;
+// exports.selectAllRoles = selectAllRoles;
 
