@@ -2,13 +2,15 @@
     <div class="ma-2" width="auto">
         <v-form @submit.prevent="submitNewEvent" class="pa-10" validate-on="submit lazy" ref="createEventForm">
             <v-row>
-                <v-text-field class="ma-2" v-model="event.name" label="Nom de l'événement" :rules="[requiredName]" clearable>
+                <v-text-field class="ma-2" v-model="event.name" label="Nom de l'événement" :rules="[requiredName]"
+                    clearable>
                 </v-text-field>
             </v-row>
             <v-row>
-                <v-select class="ma-2" v-model="event.eventType" label="Type d'événement" :rules="[requiredEventType]" :items="eventTypes"></v-select>
-                <v-text-field type="number" step="0.1" class="ma-2" v-model="event.impact" label="Impact sur l'achalandage" :rules="[requiredImpact, impactValid]"
-                    clearable>
+                <v-select class="ma-2" v-model="event.eventType" label="Type d'événement" :rules="[requiredEventType]"
+                    :items="eventTypes"></v-select>
+                <v-text-field type="number" step="0.1" class="ma-2" v-model="event.impact" label="Impact sur l'achalandage"
+                    :rules="[requiredImpact, impactValid]" clearable>
                 </v-text-field>
             </v-row>
             <v-row class="justify-center">
@@ -60,7 +62,7 @@ export default {
         closeDialog() {
             this.closeNewEventDialog();
         },
-        async submitNewEvent(){
+        async submitNewEvent() {
             const formValid = await this.$refs.createEventForm.validate();
             if (!formValid.valid) {
                 return;
@@ -73,11 +75,16 @@ export default {
                 isActive: true
             };
             try {
-                await fetchEventByName(event.name)
-                // await createEvent(event);
-                // this.$router.push('/event/' + this.name);
-            }  catch (err) {
-                
+                //await fetchEventByName(event.name)
+                await createEvent(event);
+                this.$router.push('/event/' + this.name);
+            } catch (err) {
+                console.error(err);
+                alert(err.message);
+                if (err.status === 409) {
+                    this.productIdUnique = false;
+                }
+                await this.$refs.productform.validate();
             }
         }
 

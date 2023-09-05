@@ -48,14 +48,13 @@ export async function fetchAllEvents() {
 export async function fetchEventByName(eventName) {
   const response = await fetch(`/api/event/${eventName}`);
 
-  if(response.ok){
-    if(response.status == 206){
-      return 
+  if (response.ok) {
+    if (response.status == 206) {
+      return undefined
     } else {
       return convertToEvent(await response.json());
-      
     }
-  } else{
+  } else {
     throw await createServiceError(response);
   }
 }
@@ -85,19 +84,44 @@ export async function fetchAllEventType() {
 
 export async function createEvent(event) {
 
-  const response = await fetch(`/api/event`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      //...session.getAuthHeaders()
-    },
-    body: JSON.stringify(event)
-  });
+  const existingEvent = fetchEventByName(event.name);
 
-  if (response.ok) {
-    return convertToEvent(await response.json());
+  if (existingEvent) {
+    return existingEvent;
   } else {
-    throw await createServiceError(response);
+    const response = await fetch(`/api/event`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        //...session.getAuthHeaders()
+      },
+      body: JSON.stringify(event)
+    });
+
+    if (response.ok) {
+      return convertToEvent(await response.json());
+    } else {
+      throw await createServiceError(response);
+    }
   }
 
 }
+
+// export async function createEvent(event) {
+
+//   const response = fetch(`/api/event`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       //...session.getAuthHeaders()
+//     },
+//     body: JSON.stringify(event)
+//   });
+
+//   if (response.ok) {
+//     return convertToEvent(await response.json());
+//   } else {
+//     throw await createServiceError(response);
+//   }
+
+// }

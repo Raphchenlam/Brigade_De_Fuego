@@ -29,7 +29,6 @@ router.get('/:name', (req, res, next) => {
       res.json(event);
     }
     else{
-      //return next(new HttpError(404, `L'événement portant le nom ${name} est introuvable`));
       res.status(206).json(`Aucun événement ne porte le nom suivant: ${name}`);
     }
   })
