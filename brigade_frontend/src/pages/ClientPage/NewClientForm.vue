@@ -2,18 +2,18 @@
     <div class="ma-2" width="auto">
         <v-form class="pa-10" @submit.prevent="submitNewClient" validate-on="submit lazy" ref="createClientForm">
             <v-row>
-                <v-text-field class="ma-2 pa-4" label="Prenom" density="compact" v-model.trim="client.firstName"
-                    :rules="[rules.required, rules.clientIdUnique, rules.prenomValidation]" clearable>
+                <v-text-field class="ma-2 pa-4" label="Prénom" density="compact" v-model.trim="client.firstName"
+                    :rules="[rules.required, rules.clientIdUnique, rules.firstNameValidation]" clearable>
                 </v-text-field>
                 <v-text-field class="ma-2 pa-4" label="Nom de famille" density="compact" v-model.trim="client.lastName"
-                    :rules="[rules.required, rules.clientIdUnique]" clearable>
+                    :rules="[rules.required, rules.clientIdUnique, rules.lastNameValidation]" clearable>
                 </v-text-field>
             </v-row>
-            <v-text-field class="pa-4" label="Numero de telephone(format: xxx-xxx-xxxx)" density="compact"
-                v-model.trim="client.phoneNumber" :rules="[rules.required, rules.clientIdUnique]" clearable>
+            <v-text-field class="pa-4" label="Numéro de téléphone(format: xxx-xxx-xxxx)" density="compact"
+                v-model.trim="client.phoneNumber"
+                :rules="[rules.required, rules.clientIdUnique, rules.phoneNumberValidation]" clearable>
             </v-text-field>
-            <v-text-field class="pa-4" label="Allergies" density="compact" ref="passwordInput" v-model.trim="client.allergy"
-                clearable>
+            <v-text-field class="pa-4" label="Allergies" density="compact" v-model.trim="client.allergy" clearable>
             </v-text-field>
             <v-checkbox label="Client favori" density="compact" v-model="client.isFavorite"></v-checkbox>
             <v-row class="justify-center">
@@ -28,6 +28,7 @@
 <script>
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { createClient } from '../../services/ClientService';
+import { validName, validPhoneNumber } from '../../../../REGEX/REGEX';
 
 export default {
     inject: ['closeNewClientDialog'],
@@ -47,13 +48,9 @@ export default {
             rules: {
                 required: value => !!value || "Le champ est requis",
                 clientIdUnique: () => this.clientIdUnique || "Cette combinaison d'identifiants est déjà utilisé, veuillez modifié le(s) champs ou consulter le client associé",
-                prenomValidation: value => {
-                    const regEx = /^/;
-                    if(value && regEx.test(value)){
-                        return true;
-                    }
-                    return "Veuillez entré un prénom valide";
-                }
+                firstNameValidation: value => !!validName.test(value) || 'Le champ prénom ne respecte pas les critères d\'acceptation.',
+                lastNameValidation: value => !!validName.test(value) || 'Le champ nom de famille ne respecte pas les critères d\'acceptation.',
+                phoneNumberValidation: value => !!validPhoneNumber.test(value) || 'Le champ numéro de téléphone ne respecte pas les critères d\'acceptation.',
             },
             clientIdUnique: true,
             newClientAdded: false
