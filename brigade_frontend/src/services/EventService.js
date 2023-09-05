@@ -24,8 +24,9 @@ const convertToEvent = jsonEvent => {
   return {
     id: + jsonEvent.id,
     name: "" + jsonEvent.name,
-    eventType: "" + jsonEvent.desc,
-    impact: jsonEvent.prepTime,
+    eventType: "" + jsonEvent.eventType,
+    impact: jsonEvent.impact,
+    isActive: jsonEvent.isActive
   };
 };
 
@@ -43,6 +44,22 @@ export async function fetchAllEvents() {
     throw await createServiceError(response);
   }
 };
+
+export async function fetchEventByName(eventName) {
+  const response = await fetch(`/api/event/${eventName}`);
+
+  if(response.ok){
+    if(response.status == 206){
+      return 
+    } else {
+      return convertToEvent(await response.json());
+      
+    }
+  } else{
+    throw await createServiceError(response);
+  }
+}
+
 
 export async function fetchAllEventType() {
 
@@ -64,18 +81,6 @@ export async function fetchAllEventType() {
     console.log(err)
   }
 
-
-  // const response = await fetch("/api/event/eventType");
-
-  // if (response.ok) {
-  //   const responseJson = await response.json();
-  //   console.log(response);
-  //   console.log(responseJson);
-  //   return convertEventType(responseJson);
-  //   //return responseJson.map(eventType => convertEventType(eventType));
-  // } else {
-  //   throw await createServiceError(response);
-  // }
 };
 
 export async function createEvent(event) {

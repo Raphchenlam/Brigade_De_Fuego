@@ -36,14 +36,36 @@ const getAllEvents = async () => {
 };
 exports.getAllEvents = getAllEvents;
 
-const getAllEventType = async () => {
-    const result = await pool.query(
-        `SELECT name FROM event_type`
-    );
+const getEventByName = async (eventName) => {
+  const result = await pool.query(
+    `SELECT * FROM event WHERE name = $1`, [eventName]
+  );
 
-    const eventTypeList = result.rows
-    
-    return eventTypeList;
+const row = result.rows[0];
+if (row) {
+  const event = {
+    id: row.id,
+    name: row.name,
+    eventType: row.event_type,
+    impact: row.impact,
+    isActive: row.is_active
+  };
+  return event;
+}
+return undefined;
+};
+
+
+exports.getEventByName = getEventByName;
+
+const getAllEventType = async () => {
+  const result = await pool.query(
+    `SELECT name FROM event_type`
+  );
+
+  const eventTypeList = result.rows
+
+  return eventTypeList;
 }
 
 exports.getAllEventType = getAllEventType;

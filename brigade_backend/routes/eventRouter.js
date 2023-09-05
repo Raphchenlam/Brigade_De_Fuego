@@ -19,6 +19,22 @@ router.get("/", (req, res, next) => {
     });
 });
 
+// GET un evenement individuel par nom
+// Doit etre Admin
+
+router.get('/:name', (req, res, next) => {
+  const name = req.params.name;
+  eventQueries.getEventByName(name).then(event => {
+    if(event){
+      res.json(event);
+    }
+    else{
+      //return next(new HttpError(404, `L'événement portant le nom ${name} est introuvable`));
+      res.status(206).json(`Aucun événement ne porte le nom suivant: ${name}`);
+    }
+  })
+});
+
 // GET pour la liste des types d evenement
 // Doit etre Admin
 router.get(
