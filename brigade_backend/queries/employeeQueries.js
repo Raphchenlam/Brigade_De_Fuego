@@ -65,7 +65,7 @@ exports.selectEmployeeByEmployeeNumber = selectEmployeeByEmployeeNumber;
 
 //const getEmployeeNumber (verif dans employeeRouter) PAS FAIT
 
-const selectAssignedHexcode = async (colorHexCode) => {
+const selectAssignedColorHexcode = async (colorHexCode) => {
     const result = await pool.query(
         `SELECT color_hexcode
         FROM employee
@@ -81,7 +81,7 @@ const selectAssignedHexcode = async (colorHexCode) => {
     }
     return undefined;
 };
-exports.selectAssignedHexcode = selectAssignedHexcode;
+exports.selectAssignedColorHexcode = selectAssignedColorHexcode;
 
 /////   QUERIES connexes à Employee   /////
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport'); //PLUS TARD POUR CREATION EMPLOYEE
-const regex = require('../REGEX');
+const regex = require('../../REGEX/REGEX');
 
 const HttpError = require("../HttpError");
 
@@ -81,7 +81,7 @@ router.post('/', (req, res, next) => {
     if (!colorHexcode || colorHexcode == '') {
         return next(new HttpError(400, 'Le champ colorHexcode est requis'));
     }
-    if (!regex.validcolorHexcode.test(colorHexcode)) {
+    if (!regex.validColorHexcode.test(colorHexcode)) {
         return next(new HttpError(400, 'Le champ colorHexcode ne respecte pas les critères d\'acceptation de la REGEX associé à ce champ'));
     }
     employeeQueries.selectAssignedColorHexcode(colorHexcode).then(assignedColorHexcode => {
