@@ -1,13 +1,9 @@
 <template>
     <v-sheet width="50%" height="auto" class="ma-2">
-        <v-data-table-server height="300px" fixed-header v-model="selected" :headers="headers" :items="clients"
-            :items-length="clients.length" select-strategy="single" class="elevation-1" @update:options="loadClients"
-            show-select>
-            <template v-slot:top>
-                <v-text-field @input="loadClients" v-model="search" hide-details placeholder="Search name..."
-                    class="ma-2"></v-text-field>
-            </template>
-        </v-data-table-server>
+        <v-card class="mx-auto" max-height="400" max-width="800">
+            <v-list v-model:selected='selected' :items="clients" item-title="listInformation" item-value="id">
+            </v-list>
+        </v-card>
         <v-dialog v-model="dialogNewClient" width="100%">
             <template v-slot:activator="{ props }">
                 <div class="ma-2 text-center">
@@ -43,24 +39,6 @@ export default {
             selected: [],
             search: '',
             clients: [],
-            headers: [
-                {
-                    align: 'start',
-                    key: 'phoneNumber',
-                    sortable: false,
-                    title: 'Numero de telephone',
-                },
-                {
-                    key: 'firstName',
-                    sortable: true,
-                    title: 'Prenom',
-                },
-                {
-                    key: 'lastName',
-                    sortable: true,
-                    title: 'Nom de famille',
-                },
-            ],
             dialogNewClient: false,
         };
     },
@@ -75,73 +53,107 @@ export default {
         {
             const allClients = [
                 {
+                    listInformation: "Alice Dupays (111-111-1111)",
                     id: 1,
                     firstName: "Alice",
                     lastName: "dupays",
                     phoneNumber: "111-111-1111",
                     allergy: null,
                     isFavorite: false,
-                    isBlacklisted: false
+                    isBlacklisted: false,
+                    props: {
+                        color: 'red',
+                    },
                 },
                 {
+                    listInformation: "Bob Gratton (555-555-5555)",
                     id: 2,
                     firstName: "Bob",
                     lastName: "Gratton",
-                    phoneNumber: "555-555-555",
+                    phoneNumber: "555-555-5555",
                     allergy: "Gluten",
                     isFavorite: true,
-                    isBlacklisted: false
-                }, {
+                    isBlacklisted: false,
+                    props: {
+                        color: 'red',
+                    },
+                },
+                {
+                    listInformation: "Maxime Marchand (888-111-1111)",
                     id: 3,
                     firstName: "Maxime",
                     lastName: "Marchand",
                     phoneNumber: "888-111-1111",
                     allergy: null,
                     isFavorite: false,
-                    isBlacklisted: false
+                    isBlacklisted: false,
+                    props: {
+                        color: 'red',
+                    },
                 },
                 {
+                    listInformation: "Francis Maynard (999-555-5555)",
                     id: 4,
                     firstName: "Francis",
                     lastName: "Maynard",
                     phoneNumber: "999-555-5555",
                     allergy: "Gluten",
                     isFavorite: true,
-                    isBlacklisted: false
-                }, {
+                    isBlacklisted: false,
+                    props: {
+                        color: 'red',
+                    },
+                }, 
+                {
+                    listInformation: "Raphael Chenard Lamothe (888-888-8888)",
                     id: 5,
                     firstName: "Raphael",
                     lastName: "Chenard Lamothe",
                     phoneNumber: "888-888-8888",
                     allergy: null,
                     isFavorite: false,
-                    isBlacklisted: false
+                    isBlacklisted: false,
+                    props: {
+                        color: 'red',
+                    },
                 },
                 {
+                    listInformation: "Alice Dupays (555-555-5555)",
                     id: 6,
                     firstName: "David",
                     lastName: "Beaudry",
                     phoneNumber: "000-111-5555",
                     allergy: "Gluten",
                     isFavorite: true,
-                    isBlacklisted: false
+                    isBlacklisted: false,
+                    props: {
+                        color: 'red',
+                    },
                 }, {
+                    listInformation: "Maxime Roy (555-444-1111)",
                     id: 7,
                     firstName: "Maxime",
                     lastName: "Roy",
                     phoneNumber: "555-444-1111",
                     allergy: null,
                     isFavorite: false,
-                    isBlacklisted: false
+                    isBlacklisted: false,
+                    props: {
+                        color: 'red',
+                    },
                 },
                 {
+                    listInformation: "Gab D'amours (666-666-6666)",
                     id: 8,
                     firstName: "Gab",
                     lastName: "D'amours",
                     phoneNumber: "666-666-6666",
                     allergy: "Gluten",
                     isFavorite: true,
-                    isBlacklisted: false
+                    isBlacklisted: false,
+                    props: {
+                        color: 'red',
+                    },
                 },
             ]
             this.clients = [];
@@ -163,7 +175,7 @@ export default {
     },
     mounted()
     {
-
+        this.loadClients();
     },
 }
 </script>

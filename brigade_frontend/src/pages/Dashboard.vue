@@ -1,5 +1,6 @@
 <template>
-<p>Dashboard</p>
+<AdminDashboard v-if="userSession.user && userSession.user.isAdmin"></AdminDashboard>
+<EmployeeDashboard v-else></EmployeeDashboard>
 
 
 </template>
@@ -8,14 +9,24 @@
 
 <script>
 import userSession from "../sessions/UserSession"
+import EmployeeDashboard from "./EmployeeDashboard.vue"
+import AdminDashboard from "./AdminDashboard.vue"
+
 
 export default {
     components: {
-        userSession,
+        EmployeeDashboard,
+        AdminDashboard
     },
+    data()
+  {
+    return {
+      userSession: userSession
+    }
+  },
 mounted()
     {
-        if (!userSession.user)
+        if (!userSession || !userSession.user)
         {
             this.$router.push('/espace');
         }
