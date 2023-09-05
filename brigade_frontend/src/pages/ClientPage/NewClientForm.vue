@@ -3,7 +3,7 @@
         <v-form class="pa-10" @submit.prevent="submitNewClient" validate-on="submit lazy" ref="createClientForm">
             <v-row>
                 <v-text-field class="ma-2 pa-4" label="Prenom" density="compact" v-model.trim="client.firstName"
-                    :rules="[rules.required, rules.clientIdUnique]" clearable>
+                    :rules="[rules.required, rules.clientIdUnique, rules.prenomValidation]" clearable>
                 </v-text-field>
                 <v-text-field class="ma-2 pa-4" label="Nom de famille" density="compact" v-model.trim="client.lastName"
                     :rules="[rules.required, rules.clientIdUnique]" clearable>
@@ -18,9 +18,8 @@
             <v-checkbox label="Client favori" density="compact" v-model="client.isFavorite"></v-checkbox>
             <v-row class="justify-center">
                 <DarkRedButton textbutton="Annuler" class="mx-5" height="3rem" @click="closeDialog()"></DarkRedButton>
-                <!-- <DarkRedButton type="submit" textbutton="Creer le client" class="mx-5" height="3rem">
-                </DarkRedButton> -->
-                <v-btn type="submit">Ajouter</v-btn>
+                <DarkRedButton type="submit" textbutton="Creer le client" class="mx-5" height="3rem">
+                </DarkRedButton>
             </v-row>
         </v-form>
     </div>
@@ -47,7 +46,14 @@ export default {
             },
             rules: {
                 required: value => !!value || "Le champ est requis",
-                clientIdUnique: () => this.clientIdUnique || "Cette combinaison d'identifiants est déjà utilisé, veuillez modifié le(s) champs ou consulter le client associé"
+                clientIdUnique: () => this.clientIdUnique || "Cette combinaison d'identifiants est déjà utilisé, veuillez modifié le(s) champs ou consulter le client associé",
+                prenomValidation: value => {
+                    const regEx = /^/;
+                    if(value && regEx.test(value)){
+                        return true;
+                    }
+                    return "Veuillez entré un prénom valide";
+                }
             },
             clientIdUnique: true,
             newClientAdded: false
