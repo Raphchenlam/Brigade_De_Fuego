@@ -2,11 +2,11 @@
     <div class="ma-2" width="auto">
         <v-form class="pa-10" @submit.prevent="submitNewClient" validate-on="submit lazy" ref="createClientForm">
             <v-row>
-                <v-text-field class="ma-2 pa-4" label="Prénom" density="compact" v-model.trim="client.firstName"
-                    :rules="[rules.required, rules.clientIdUnique, rules.firstNameValidation]" clearable>
+                <v-text-field class="ma-2 pa-4" label="Prénom" density="compact" v-model.trim="client.firstName" 
+                    @blur="capitalizeFirstName()" :rules="[rules.required, rules.clientIdUnique, rules.firstNameValidation]" clearable>
                 </v-text-field>
                 <v-text-field class="ma-2 pa-4" label="Nom de famille" density="compact" v-model.trim="client.lastName"
-                    :rules="[rules.required, rules.clientIdUnique, rules.lastNameValidation]" clearable>
+                @blur="capitalizeLastName()" :rules="[rules.required, rules.clientIdUnique, rules.lastNameValidation]" clearable>
                 </v-text-field>
             </v-row>
             <v-text-field class="pa-4" label="Numéro de téléphone(format: xxx-xxx-xxxx)" density="compact"
@@ -29,6 +29,7 @@
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { createClient } from '../../services/ClientService';
 import { validName, validPhoneNumber } from '../../../../REGEX/REGEX';
+import { capitalize } from 'vue';
 
 export default {
     inject: ['closeNewClientDialog'],
@@ -81,8 +82,20 @@ export default {
                 }
                 await this.$refs.createClientForm.validate();
             }
+        },
+        capitalizeFirstName() {
+            this.client.firstName = this.capitalize(this.client.firstName);
+        },
+        capitalizeLastName() {
+            this.client.lastName = this.capitalize(this.client.lastName);
+        },
+        capitalize(value) {
+            var toLowerCaseString = value.toLowerCase();
+            const [firstLetter, ...rest] = toLowerCaseString.split('');
+            return firstLetter.toUpperCase() + rest.join('');
         }
     }
+
 }
 </script>
 

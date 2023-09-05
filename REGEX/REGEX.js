@@ -6,3 +6,4 @@ export const validBarcodeNumber = /^\d{16}$/;
 export const validEmail = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.(com|ca|fr)$/;
 export const validPhoneNumber = /^\d{3}-\d{3}-\d{4}$/;
 export const validSkillPoints = /^(?:[1-9]|10)$/;
+
