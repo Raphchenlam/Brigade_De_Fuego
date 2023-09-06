@@ -46,7 +46,7 @@
       <router-link to="/espace/dashboard" style="text-decoration: none; color: inherit;"><v-list-item
           prepend-icon="mdi-view-dashboard" title="Dashboard" value="Dashboard"></v-list-item></router-link>
 
-      <router-link to="/espace/leave" style="text-decoration: none; color: inherit;"><v-list-item prepend-icon="mdi-gavel"
+      <router-link :to="employeeDetailUrlLeave" style="text-decoration: none; color: inherit;"><v-list-item prepend-icon="mdi-gavel"
           title="Mes congés" value="Mes conges"></v-list-item></router-link>
     </v-list>
 
@@ -68,7 +68,7 @@ import userSession from "../sessions/UserSession"
 
 export default {
   props: {
-    username: String
+    username: String,
   },
   data()
   {
@@ -87,9 +87,12 @@ export default {
   computed: {
     employeeDetailUrl()
     {
-      return "/espace";
+      return "/espace/employee/" + userSession.user.employeeNumber;
+    },
+    employeeDetailUrlLeave()
+    {
+      return "/espace/leave/" + userSession.user.employeeNumber;
     },
   }
 };
-
 </script>

@@ -33,15 +33,17 @@ export default {
             if (this.employeeNumber == "1")
             {
                 userSession.user = {
-                    employeeNumer: 1,
-                    firstName: "super admin",
+                    employeeNumber: 1111,
+                    firstName: "Genevieve",
+                    lastName: "Dermers",
                     isAdmin: true
                 };
             } else
             {
                 userSession.user = {
-                    employeeNumer: 2,
-                    firstName: "Maxime",
+                    employeeNumber: 2222,
+                    firstName: "John",
+                    lastName: "Doe",
                     isAdmin: false
                 }
             }

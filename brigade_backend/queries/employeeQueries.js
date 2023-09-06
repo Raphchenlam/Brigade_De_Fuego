@@ -18,6 +18,26 @@ const selectAllEmployees = async () => {
 };
 exports.selectAllEmployees = selectAllEmployees;
 
+const selectAllEmployeesByRole = async (role) => {
+    const result = await pool.query(
+        `SELECT * from employee
+        WHERE role = $1
+        ORDER BY first_name`,
+        [role]
+    );
+
+    return result.rows.map(row => {
+        const employee = {
+            employeeNumber: row.employee_number,
+            firstName: row.first_name,
+            lastName: row.last_name,
+            role: row.role
+        };
+        return employee;
+    });
+};
+exports.selectAllEmployeesByRole = selectAllEmployees;
+
 const insertEmployee = async (newEmployee, clientParam) => {
     const client = clientParam || await pool.connect();
 

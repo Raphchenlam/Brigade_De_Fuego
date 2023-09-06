@@ -22,7 +22,28 @@ async function createServiceError(response) {
 
 
 export async function getAllEmployees() {
-    const response = await fetch('/api/employee');
+    const response = await fetch(`/api/employee`);
+
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw await createServiceError(response);
+    }
+}
+
+export async function getAllEmployeesByRole(role) {
+    const response = await fetch(`/api/employee/role/${role}`);
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw await createServiceError(response);
+    }
+}
+
+export async function getEmployeeByEmployeeNumber(employeeNumber) {
+    const response = await fetch(`/api/employee/${employeeNumber}`);
 
     if (response.ok) {
         const respJson = await response.json();

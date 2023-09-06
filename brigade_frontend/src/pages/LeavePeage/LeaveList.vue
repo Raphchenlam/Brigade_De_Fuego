@@ -1,69 +1,71 @@
 <template>
-    <v-row class="ma-5 justify-space-around">
-        <v-col cols="6">
-            <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }}</h3>
-        </v-col>
-        <v-col cols="1">
-            <v-icon size="x-large" class="me-2n" @click="filterDialog = true">
-                mdi-filter-outline
-            </v-icon>
-            <template>
-                <v-dialog v-model="filterDialog" max-width="500px">
-                    <v-card>
-                        <v-card-title>
-                            <span class="text-h5">Filtre Conge</span>
-                        </v-card-title>
+    <v-sheet v-if="userSession.user.isAdmin && $route.fullPath == '/espace/leave'">
+        <v-row class="ma-5 justify-space-around">
+            <v-col cols="6">
+                <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }}</h3>
+            </v-col>
+            <v-col cols="1">
+                <v-icon size="x-large" class="me-2n" @click="filterDialog = true">
+                    mdi-filter-outline
+                </v-icon>
+                <template>
+                    <v-dialog v-model="filterDialog" max-width="500px">
+                        <v-card>
+                            <v-card-title>
+                                <span class="text-h5">Filtre Conge</span>
+                            </v-card-title>
 
-                        <v-card-text>
-                            <v-container>
-                                <v-row>
-                                    <v-col cols="12">
-                                        <v-checkbox @click="checkAllBoxes()" v-model="checkedBoxes.all"
-                                            label="Tout selectionner"></v-checkbox>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="6">
-                                        <v-checkbox v-model="checkedBoxes.pending" label="En Attente"></v-checkbox>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="6">
-                                        <v-checkbox v-model="checkedBoxes.pendingModified"
-                                            label="Modifié, en attente"></v-checkbox>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="6">
-                                        <v-checkbox v-model="checkedBoxes.accepted" label="Accepté"></v-checkbox>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="6">
-                                        <v-checkbox v-model="checkedBoxes.refused" label="Refusé"></v-checkbox>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="6">
-                                        <v-checkbox v-model="checkedBoxes.coming" label="À venir"></v-checkbox>
-                                    </v-col>
-                                    <v-col cols="12" sm="6" md="6">
-                                        <v-checkbox v-model="checkedBoxes.passed" label="Passé"></v-checkbox>
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                        </v-card-text>
+                            <v-card-text>
+                                <v-container>
+                                    <v-row>
+                                        <v-col cols="12">
+                                            <v-checkbox @click="checkAllBoxes()" v-model="checkedBoxes.all"
+                                                label="Tout selectionner"></v-checkbox>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="6">
+                                            <v-checkbox v-model="checkedBoxes.pending" label="En Attente"></v-checkbox>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="6">
+                                            <v-checkbox v-model="checkedBoxes.pendingModified"
+                                                label="Modifié, en attente"></v-checkbox>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="6">
+                                            <v-checkbox v-model="checkedBoxes.accepted" label="Accepté"></v-checkbox>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="6">
+                                            <v-checkbox v-model="checkedBoxes.refused" label="Refusé"></v-checkbox>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="6">
+                                            <v-checkbox v-model="checkedBoxes.coming" label="À venir"></v-checkbox>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="6">
+                                            <v-checkbox v-model="checkedBoxes.passed" label="Passé"></v-checkbox>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </v-card-text>
 
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn variant="text" @click="filterDialog = false">
-                                Annuler
-                            </v-btn>
-                            <v-btn variant="text" @click="applyFilter">
-                                Appliquer
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-            </template>
-        </v-col>
-    </v-row>
-    <v-row>
-        <v-text-field @input="loadLeaves" v-model="search" hide-details placeholder="Rechercher un employe"
-            class="mx-10"></v-text-field>
-    </v-row>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn variant="text" @click="filterDialog = false">
+                                    Annuler
+                                </v-btn>
+                                <v-btn variant="text" @click="applyFilter">
+                                    Appliquer
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </template>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-text-field @input="loadLeaves" v-model="search" hide-details placeholder="Rechercher un employe"
+                class="mx-10"></v-text-field>
+        </v-row>
+    </v-sheet>
     <v-sheet class="ma-5">
-        <v-data-table-server v-model:expanded="expanded" height="300px" fixed-header :headers="headers" :items="leaveList"
+        <v-data-table-server v-model:expanded="expanded" height="auto" fixed-header :headers="headers" :items="leaveList"
             :items-length="leaveList.length" class="elevation-1" @update:options="loadLeaves" show-expand>
             <template v-slot:top>
                 <v-toolbar flat>
@@ -127,18 +129,24 @@
 </template>
 
 <script>
+import userSession from '../../sessions/UserSession';
+
 import EditLeaveForm from './EditLeaveForm.vue'
+
+import { getAllLeaves, getleavesByEmployeeNumber } from '../../services/LeaveService';
 
 export default {
     components: {
         EditLeaveForm
     },
     props: {
-        height: String
+        height: String,
+        employeeNumber: Number
     },
     data()
     {
         return {
+            userSession: userSession,
             search: "",
             filterDialog: false,
             roleShowed: "Tous",
@@ -212,77 +220,45 @@ export default {
     methods: {
         loadLeaves()
         {
-            console.log("Rentrer dans loadLeaves");
-            const allLeaves = [
-                {
-                    id: 332,
-                    employeeNumber: 1111,
-                    employeeName: "Maxime Marchand",
-                    showName: "25 Decembre 2023 (Accepte)",
-                    startDate: "2023-12-25",
-                    endDate: "2023-12-25",
-                    status: "Accepté",
-                    category: "Personnel",
-                    reason: "Noel en famille"
-                },
-                {
-                    id: 111,
-                    employeeNumber: 1111,
-                    employeeName: "Maxime Marchand",
-                    showName: "1 Janvier 2024 - 7 Janvier 2024 (En attente)",
-                    startDate: "2024-01-01",
-                    endDate: "2024-01-07",
-                    status: "En attente",
-                    category: "Vacance",
-                    reason: null
-                },
-                {
-                    id: 443,
-                    employeeNumber: 2222,
-                    employeeName: "David Beaudry",
-                    showName: "14 fevrier 2024 (Refuser)",
-                    startDate: "2024-02-14",
-                    endDate: "2024-02-14",
-                    status: "Refusé",
-                    category: "Personnel",
-                    reason: "St-Valentin"
-                },
-                {
-                    id: 443,
-                    employeeNumber: 3333,
-                    employeeName: "Francis Maynard",
-                    showName: "14 fevrier 2024 (Refuser)",
-                    startDate: "2024-02-14",
-                    endDate: "2024-02-14",
-                    status: "Refusé",
-                    category: "Personnel",
-                    reason: "St-Valentin"
-                },
-                {
-                    id: 443,
-                    employeeNumber: 1111,
-                    employeeName: "Maxime Marchand",
-                    showName: "14 fevrier 2024 (Refuser)",
-                    startDate: "2024-02-14",
-                    endDate: "2024-02-14",
-                    status: "Refusé",
-                    category: "Personnel",
-                    reason: "St-Valentin"
-                }
-            ];
             this.leaveList = [];
-            allLeaves.forEach(leave =>
+            console.log("EMPLOYEENUMBER", this.employeeNumber)
+            if (this.employeeNumber)
             {
-                if (leave.employeeName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
+                getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves =>
                 {
-                    console.log("YES");
-                    if (this.roleShowed == "Tous")
+                    allLeaves.forEach(leave =>
                     {
-                        this.leaveList.push(leave);
-                    } else { }
-                    //faire une fonction qui permet de seulement ajouter les employee que son attribut role == this.roleShowsed au emplouyeeList
-                }
-            });
+                        leave.startDate = leave.startDate.split('T').slice(0)[0]
+                        leave.endDate = leave.endDate.split('T').slice(0)[0]
+
+                    });
+                    this.leaveList = allLeaves;
+                });
+            } else
+            {
+                getAllLeaves().then(allLeaves =>
+                {
+                    allLeaves.forEach(leave =>
+                    {
+
+                        leave.startDate = leave.startDate.split('T').slice(0)[0]
+                        leave.endDate = leave.endDate.split('T').slice(0)[0]
+                        if (this.roleShowed == "Tous")
+                        {
+                            this.leaveList.push(leave);
+                        } else { }
+                        //faire une fonction qui permet de seulement ajouter les employee que son attribut role == this.roleShowsed au emplouyeeList
+
+                    });
+                }).catch(err =>
+                {
+                    console.error(err);
+                })
+            }
+
+
+
+
         },
         editItem(item)
         {
@@ -363,10 +339,20 @@ export default {
                 this.checkedBoxes.all = true;
             },
             deep: true
+        },
+        employeeNumber()
+        {
+            this.loadLeaves()
         }
     },
     mounted()
     {
+        if (this.employeeName)
+        {
+            console.log("search = employeename", this.employeeName)
+            this.search = this.employeeName;
+        }
+        //this.loadLeaves();
         this.date = "2023-09-05"; //aller chercher la date de aujourdhui
     }
 }

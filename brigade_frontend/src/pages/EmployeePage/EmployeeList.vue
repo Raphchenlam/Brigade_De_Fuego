@@ -1,5 +1,5 @@
 <template>
-    <v-sheet width="30%" height="auto" class="ma-2">
+    <v-sheet width="100%" max-width="30%" height="auto" class="ma-2">
         <v-text-field @input="loadEmployees" v-model="search" hide-details placeholder="Search name..."
             class="ma-2"></v-text-field>
         <v-select class="mx-16" v-model="roleShowed" label="Poste" :items="roleList"></v-select>
@@ -31,9 +31,12 @@
   
 <script>
 import NewEmployeeForm from "../EmployeePage/NewEmployeeForm.vue"
-import { getAllEmployees } from "../../services/EmployeeService";
+import { getAllEmployees, getAllEmployeesByRole } from "../../services/EmployeeService";
 
 export default {
+    inject: [
+        'loadEmployeeNumber'
+    ],
     components: {
         NewEmployeeForm
     },
@@ -57,52 +60,6 @@ export default {
     methods: {
         loadEmployees()
         {
-            // liste temporaire demployee
-            /* const allEmployees = [
-// peut -etre faire un fetch different par type de role selon le filtre
-            const allEmployees = [
-
-                {
-                    listInformation: "1111 - Maxime Marchand",
-                    employeeNumber: 1111,
-                    firstName: "Maxime",
-                    lastName: "Marchand",
-                    role: "Serveur",
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "2222 - Francis Maynard",
-                    employeeNumber: 2222,
-                    firstName: "Francis",
-                    lastName: "Maynard",
-                    role: "Bussboy",
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "3333 - David Beaudry",
-                    employeeNumber: 3333,
-                    firstName: "David",
-                    lastName: "Beaudry",
-                    role: "Serveur",
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "4444 - Raphael Chenard Lamothe",
-                    employeeNumber: 4444,
-                    firstName: "Raphael",
-                    lastName: "Chenard Lamothe",
-                    role: "Hotesse",
-                    props: {
-                        color: 'red',
-                    },
-                },
-            ]; */
             this.employeeList = [];
             getAllEmployees().then(allEmployees =>
             {
@@ -128,8 +85,44 @@ export default {
                         }
                     }
                 });
+            }).catch(err =>
+            {
+                console.error(err);
             });
         },
+        loadEmployeesByRole()
+        {
+            this.employeeList = [];
+            getAllEmployeesByRole(this.roleShowed).then(allEmployees =>
+            {
+                console.log("AllEMPLOYEE BY ROLE ", allEmployees);
+                allEmployees.forEach(employee =>
+                {
+                    if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                        || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
+                    {
+                        if (employee.role == this.roleShowed)
+                        { //condition temporaire pour faire fonctionner le fetch
+                            const newEmployee = {
+                                "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName,
+                                "employeeNumber": employee.employeeNumber,
+                                "firstName": employee.firstName,
+                                "lastName": employee.lastName,
+                                "role": employee.role,
+                                props: {
+                                    color: 'red',
+                                },
+                            };
+                            this.employeeList.push(newEmployee);
+                        }
+                    }
+                });
+            }).catch(err =>
+            {
+                console.error(err);
+            });
+        },
+
         closeNewEmployeeDialog()
         {
             this.dialogNewEmployee = false;
@@ -138,12 +131,23 @@ export default {
     watch: {
         roleShowed()
         {
-            this.loadEmployees();
-            this.selected = "";
+            if (this.roleShowed != "Tous")
+            {
+                console.log("WATCH-1")
+                this.loadEmployeesByRole();
+            }
+            else
+            {
+                console.log("WATCH-2")
+                this.loadEmployees();
+            }
+            this.selected = [];
+
         },
-        selection()
+        selected()
         {
-            console.log("Selection changer");
+            console.log("Selection changer", this.selected[0]);
+            this.loadEmployeeNumber(this.selected[0]);
         }
     },
     mounted()
@@ -160,5 +164,4 @@ export default {
     height: 400px;
     /* or any height you want */
     overflow-y: auto
-}
-</style>
+}</style>
