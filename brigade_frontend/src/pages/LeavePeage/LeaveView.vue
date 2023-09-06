@@ -1,17 +1,15 @@
 <template>
-
   <LeaveList></LeaveList>
-  
 </template>
 
 <script>
 
-import LeaveList from './LeaveList.vue';
+import LeaveList from './LeaveList.vue';S
 
 export default {
-components : {
+  components: {
     LeaveList
-}
+  }
 
 }
 
