@@ -5,7 +5,7 @@
         <v-select class="mx-16" v-model="roleShowed" label="Poste" :items="roleList"></v-select>
 
         <v-card class="mx-auto" max-height="400" max-width="800">
-            <v-list v-model:selected='selection' :items="employeeList" item-title="listInformation"
+            <v-list v-model:selected='selected' :items="employeeList" item-title="listInformation"
                 item-value="employeeNumber">
             </v-list>
         </v-card>
@@ -40,7 +40,7 @@ export default {
     {
         return {
             search: "",
-            selection: [],
+            selected: [],
             employeeList: [],
             roleList: [],
             roleShowed: "Tous",
@@ -57,6 +57,7 @@ export default {
         loadEmployees()
         {
             // liste temporaire demployee
+            // peut -etre faire un fetch different par type de role selon le filtre
             const allEmployees = [
                 {
                     listInformation: "1111 - Maxime Marchand",
@@ -109,7 +110,7 @@ export default {
                     {
                         this.employeeList.push(employee);
                     } else { }
-                    //faire une fonction qui permet de seulement ajouter les event que son attribut eventType == this.eventTypeShowed au eventList
+                    //faire une fonction qui permet de seulement ajouter les employee que son attribut role == this.roleShowsed au emplouyeeList
                 }
             });
         },
@@ -122,7 +123,7 @@ export default {
         roleShowed()
         {
             this.loadEmployees();
-            this.selection = "";
+            this.selected = "";
         },
         selection()
         {
