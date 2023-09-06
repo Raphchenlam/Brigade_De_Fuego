@@ -5,7 +5,7 @@
         <v-select class="mx-16" v-model="roleShowed" label="Poste" :items="roleList"></v-select>
 
         <v-card class="mx-auto" max-height="400" max-width="800">
-            <v-list v-model:selected='selection' :items="employeeList" item-title="listInformation"
+            <v-list v-model:selected='selected' :items="employeeList" item-title="listInformation"
                 item-value="employeeNumber">
             </v-list>
         </v-card>
@@ -41,7 +41,7 @@ export default {
     {
         return {
             search: "",
-            selection: [],
+            selected: [],
             employeeList: [],
             roleList: [],
             roleShowed: "Tous",
@@ -59,6 +59,9 @@ export default {
         {
             // liste temporaire demployee
             /* const allEmployees = [
+// peut -etre faire un fetch different par type de role selon le filtre
+            const allEmployees = [
+
                 {
                     listInformation: "1111 - Maxime Marchand",
                     employeeNumber: 1111,
@@ -108,27 +111,24 @@ export default {
                     if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
                         || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
                     {
+
                         if (this.roleShowed == "Tous")
                         {
                             const newEmployee = {
-                                "listInformation": employee.employeeNumber + " - " + employee.firstName+ " " + employee.lastName,
+                                "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName,
                                 "employeeNumber": employee.employeeNumber,
                                 "firstName": employee.firstName,
                                 "lastName": employee.lastName,
                                 "role": employee.role,
-
                                 props: {
                                     color: 'red',
                                 },
                             };
                             this.employeeList.push(newEmployee);
-                        } else { }
-                        //faire une fonction qui permet de seulement ajouter les event que son attribut eventType == this.eventTypeShowed au eventList
+                        }
                     }
                 });
             });
-            this.employeeList = [];
-
         },
         closeNewEmployeeDialog()
         {
@@ -139,7 +139,7 @@ export default {
         roleShowed()
         {
             this.loadEmployees();
-            this.selection = "";
+            this.selected = "";
         },
         selection()
         {
