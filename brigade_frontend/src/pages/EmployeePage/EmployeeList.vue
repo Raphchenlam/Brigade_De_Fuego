@@ -31,6 +31,7 @@
   
 <script>
 import NewEmployeeForm from "../EmployeePage/NewEmployeeForm.vue"
+import { getAllEmployees } from "../../services/EmployeeService";
 
 export default {
     components: {
@@ -57,7 +58,7 @@ export default {
         loadEmployees()
         {
             // liste temporaire demployee
-            const allEmployees = [
+            /* const allEmployees = [
                 {
                     listInformation: "1111 - Maxime Marchand",
                     employeeNumber: 1111,
@@ -98,20 +99,36 @@ export default {
                         color: 'red',
                     },
                 },
-            ];
+            ]; */
             this.employeeList = [];
-            allEmployees.forEach(employee =>
+            getAllEmployees().then(allEmployees =>
             {
-                if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                    || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
+                allEmployees.forEach(employee =>
                 {
-                    if (this.roleShowed == "Tous")
+                    if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                        || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
                     {
-                        this.employeeList.push(employee);
-                    } else { }
-                    //faire une fonction qui permet de seulement ajouter les event que son attribut eventType == this.eventTypeShowed au eventList
-                }
+                        if (this.roleShowed == "Tous")
+                        {
+                            const newEmployee = {
+                                "listInformation": employee.employeeNumber + " - " + employee.firstName+ " " + employee.lastName,
+                                "employeeNumber": employee.employeeNumber,
+                                "firstName": employee.firstName,
+                                "lastName": employee.lastName,
+                                "role": employee.role,
+
+                                props: {
+                                    color: 'red',
+                                },
+                            };
+                            this.employeeList.push(newEmployee);
+                        } else { }
+                        //faire une fonction qui permet de seulement ajouter les event que son attribut eventType == this.eventTypeShowed au eventList
+                    }
+                });
             });
+            this.employeeList = [];
+
         },
         closeNewEmployeeDialog()
         {

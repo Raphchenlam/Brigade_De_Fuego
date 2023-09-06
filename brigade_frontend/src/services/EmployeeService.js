@@ -21,7 +21,7 @@ async function createServiceError(response) {
 }
 
 
-export async function fetchEmployee() {
+export async function getAllEmployees() {
     const response = await fetch('/api/employee');
 
     if (response.ok) {
