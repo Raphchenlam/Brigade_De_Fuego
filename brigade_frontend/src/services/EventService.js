@@ -63,7 +63,7 @@ export async function fetchEventByName(eventName) {
 export async function fetchAllEventType() {
 
   try {
-    const response = await fetch(`/api/event/eventType`, {
+    const response = await fetch(`/api/eventType`, {
       method: "GET",
       headers: {
         // ...session.getAuthHeaders()
@@ -84,7 +84,7 @@ export async function fetchAllEventType() {
 
 export async function createEvent(event) {
 
-  const existingEvent = fetchEventByName(event.name);
+  const existingEvent = await fetchEventByName(event.name);
 
   if (existingEvent) {
     return existingEvent;

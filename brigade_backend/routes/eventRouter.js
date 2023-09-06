@@ -34,29 +34,29 @@ router.get('/:name', (req, res, next) => {
   })
 });
 
-// GET pour la liste des types d evenement
-// Doit etre Admin
-router.get(
-  "/eventType/",
+// // GET pour la liste des types d evenement
+// // Doit etre Admin
+// router.get(
+//   "/eventType/",
 
-  //passport.authenticate("basic", { session: false }),
-  (req, res, next) => {
-    const user = req.user;
+//   //passport.authenticate("basic", { session: false }),
+//   (req, res, next) => {
+//     const user = req.user;
 
-    // if (!user || !user.isAdmin) {
-    //   return next(new HttpError(403, "Droit administrateur requis"));
-    // }
+//     // if (!user || !user.isAdmin) {
+//     //   return next(new HttpError(403, "Droit administrateur requis"));
+//     // }
 
-    eventQueries
-      .getAllEventType()
-      .then((eventTypeList) => {
-        res.json(eventTypeList);
-      })
-      .catch((err) => {
-        return next(err);
-      });
-  }
-);
+//     eventQueries
+//       .getAllEventType()
+//       .then((eventTypeList) => {
+//         res.json(eventTypeList);
+//       })
+//       .catch((err) => {
+//         return next(err);
+//       });
+//   }
+// );
 
 // POST un nouvel evenement
 // Doit etre Admin

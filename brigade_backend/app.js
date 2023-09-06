@@ -12,6 +12,7 @@ const crypto = require('crypto');
 const clientRouter = require ('./routes/clientRouter');
 const employeeRouter = require ('./routes/employeeRouter');
 const eventRouter = require ('./routes/eventRouter');
+const eventTypeRouter = require ('./routes/eventTypeRouter');
 const leaveRouter = require ('./routes/leaveRouter');
 const punchRouter = require ('./routes/punchRouter');
 const reservationRouter = require ('./routes/reservationRouter');
@@ -29,6 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/employee', employeeRouter);
 app.use('/event', eventRouter);
+app.use('/eventType', eventTypeRouter);
 
 // class BasicStrategyModified extends BasicStrategy {
 //     constructor(options, verify) {

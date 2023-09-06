@@ -44,7 +44,7 @@ const router = createRouter({
         { path: '/espace/dashboard', component: EspaceDashboard },
         { path: '/espace/leave', component: LeaveView },
         { path: '/espace/event', component: EventView },
-        { path: '/espace/event/:id', component: EventInformation, props: true },
+        { path: '/espace/event/:name', component: EventInformation, props: true },
         { path: '/espace/employee', component: EmployeeView },
         { path: '/operation', component: OperationLoginForm },
         { path: '/operation/client', component: ClientView },

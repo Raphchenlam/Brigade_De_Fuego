@@ -30,14 +30,14 @@
 
 
 <script>
-import NewEventForm from "../EventPage/NewEventForm.vue"
+import NewEventForm from "../EventPage/NewEventForm.vue";
+import { fetchAllEvents, fetchAllEventType } from '../../services/EventService';
 
 export default {
   components: {
     NewEventForm
   },
-  data()
-  {
+  data() {
     return {
       selection: [],
       eventList: [],
@@ -46,94 +46,86 @@ export default {
       dialogNewEvent: false,
     };
   },
-  provide()
-  {
+  provide() {
     return {
       closeNewEventDialog: this.closeNewEventDialog,
     };
   },
   methods: {
-    loadEvents()
-    {
+    loadEvents() {
       // liste temporaire de events - Faire un fetch a la BD a la place
-      const allEvents = [
-        {
-          id: 1,
-          name: "Game du canadien",
-          eventType: "Sportif",
-          impact: 1.6,
-          iActive: true,
-          props: {
-            color: 'red',
-          },
-        },
-        {
-          id: 2,
-          name: "Fete des meres",
-          eventType: "Ferie",
-          impact: 2.6,
-          isActive: true,
-          props: {
-            color: 'red',
-          },
-        },
-        {
-          id: 3,
-          name: "Tournois de miniput a RDS",
-          eventType: "Sportif",
-          impact: 1.1,
-          isActive: true,
-          props: {
-            color: 'red',
-          },
-        },
-        {
-          id: 4,
-          name: "Super Bowl 2023",
-          eventType: "Sportif",
-          impact: 3,
-          isActive: false,
-          props: {
-            color: 'red',
-          },
-        }
-      ];
+      // const allEvents = [
+      //   {
+      //     id: 1,
+      //     name: "Game du canadien",
+      //     eventType: "Sportif",
+      //     impact: 1.6,
+      //     iActive: true,
+      //     props: {
+      //       color: 'red',
+      //     },
+      //   },
+      //   {
+      //     id: 2,
+      //     name: "Fete des meres",
+      //     eventType: "Ferie",
+      //     impact: 2.6,
+      //     isActive: true,
+      //     props: {
+      //       color: 'red',
+      //     },
+      //   },
+      //   {
+      //     id: 3,
+      //     name: "Tournois de miniput a RDS",
+      //     eventType: "Sportif",
+      //     impact: 1.1,
+      //     isActive: true,
+      //     props: {
+      //       color: 'red',
+      //     },
+      //   },
+      //   {
+      //     id: 4,
+      //     name: "Super Bowl 2023",
+      //     eventType: "Sportif",
+      //     impact: 3,
+      //     isActive: false,
+      //     props: {
+      //       color: 'red',
+      //     },
+      //   }
+      // ];
 
       this.eventList = [];
-      
-      allEvents.forEach(event =>
-      {
-        if (this.eventTypeShowed == "Tous")
-        {
+
+      allEvents.forEach(event => {
+        if (this.eventTypeShowed == "Tous") {
           this.eventList.push(event);
-        } else
-        {
+        } else {
           //faire une fonction qui permet de seulement ajouter les event que son attribut eventType == this.eventTypeShowed au eventList
         }
       });
     },
-    closeNewEventDialog()
-    {
+    closeNewEventDialog() {
       this.dialogNewEvent = false;
     },
   },
   watch: {
-    eventTypeShowed()
-    {
+    eventTypeShowed() {
       this.loadEvents();
       this.selection = "";
     },
-    selection()
-    {
+    selection() {
       console.log("Selection changer");
       this.$router.push("event/" + this.selection);
     }
   },
-  mounted()
-  {
-    this.eventTypes = ["Tous", "Sportif", "Ferie"];
-    this.loadEvents();
-  },
+
+  async mounted() {
+    this.eventTypes = await fetchAllEventType();
+    this.eventList = await fetchAllEvents();
+  }
 }
 </script>
 
