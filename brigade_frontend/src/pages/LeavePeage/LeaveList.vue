@@ -65,8 +65,9 @@
         </v-row>
     </v-sheet>
     <v-sheet class="ma-5">
-        <v-data-table-server v-model:expanded="expanded" height="auto" fixed-header :headers="headers" :items="leaveList"
+        <v-data-table-server no-data-text="Aucune demande de congés à venir" v-model:expanded="expanded" height="auto" fixed-header :headers="headers" :items="leaveList"
             :items-length="leaveList.length" class="elevation-1" @update:options="loadLeaves" show-expand>
+            
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title>Listes des conges</v-toolbar-title>
@@ -114,6 +115,7 @@
                     mdi-pencil
                 </v-icon>
             </template>
+            
             <template v-slot:expanded-row="{ columns, item }">
                 <tr>
                     <td :colspan="columns.length">

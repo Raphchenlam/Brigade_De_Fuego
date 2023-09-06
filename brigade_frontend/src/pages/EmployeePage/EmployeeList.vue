@@ -31,7 +31,7 @@
   
 <script>
 import NewEmployeeForm from "../EmployeePage/NewEmployeeForm.vue"
-import { getAllEmployees, getAllEmployeesByRole } from "../../services/EmployeeService";
+import { getAllEmployees, getAllEmployeesByRole, getAllRoles } from "../../services/EmployeeService";
 
 export default {
     inject: [
@@ -68,7 +68,6 @@ export default {
                     if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
                         || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
                     {
-
                         if (this.roleShowed == "Tous")
                         {
                             const newEmployee = {
@@ -149,8 +148,16 @@ export default {
     },
     mounted()
     {
-        this.roleList = ["Tous", "Serveur", "Bussboy", "Hotesse"];
+        this.roleList.push("Tous");
         this.loadEmployees();
+        getAllRoles().then(allRoles => {
+            console.log("ALLROLES", allRoles)
+            allRoles.forEach(role => {
+                this.roleList.push(role.name);
+            });
+        }).catch(err => {
+            console.error(err);
+        });
     },
 }
 </script>

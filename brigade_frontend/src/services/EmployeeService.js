@@ -52,3 +52,14 @@ export async function getEmployeeByEmployeeNumber(employeeNumber) {
         throw await createServiceError(response);
     }
 }
+
+export async function getAllRoles() {
+    const response = await fetch(`/api/employee/role`);
+
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw await createServiceError(response);
+    }
+}

@@ -1,12 +1,14 @@
 const pool = require('./DBPool');
 
-const selectAllEmployees = async () => {
+const selectAllEmployees = async () =>
+{
     const result = await pool.query(
         `SELECT * from employee
         ORDER BY first_name`
     );
 
-    return result.rows.map(row => {
+    return result.rows.map(row =>
+    {
         const employee = {
             employeeNumber: row.employee_number,
             firstName: row.first_name,
@@ -18,7 +20,8 @@ const selectAllEmployees = async () => {
 };
 exports.selectAllEmployees = selectAllEmployees;
 
-const selectAllEmployeesByRole = async (role) => {
+const selectAllEmployeesByRole = async (role) =>
+{
     const result = await pool.query(
         `SELECT * from employee
         WHERE role = $1
@@ -26,7 +29,8 @@ const selectAllEmployeesByRole = async (role) => {
         [role]
     );
 
-    return result.rows.map(row => {
+    return result.rows.map(row =>
+    {
         const employee = {
             employeeNumber: row.employee_number,
             firstName: row.first_name,
@@ -38,7 +42,8 @@ const selectAllEmployeesByRole = async (role) => {
 };
 exports.selectAllEmployeesByRole = selectAllEmployeesByRole;
 
-const insertEmployee = async (newEmployee, clientParam) => {
+const insertEmployee = async (newEmployee, clientParam) =>
+{
     const client = clientParam || await pool.connect();
 
     const isSuperAdmin = false;
@@ -55,7 +60,8 @@ const insertEmployee = async (newEmployee, clientParam) => {
 
 exports.insertEmployee = insertEmployee;
 
-const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
+const selectEmployeeByEmployeeNumber = async (employeeNumber) =>
+{
     const result = await pool.query(
         `SELECT *
         FROM employee
@@ -64,7 +70,8 @@ const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
     );
 
     const row = result.rows[0];
-    if (row) {
+    if (row)
+    {
         return {
             employeeNumber: row.employee_number,
             firstName: row.first_name,
@@ -90,7 +97,8 @@ exports.selectEmployeeByEmployeeNumber = selectEmployeeByEmployeeNumber;
 
 //const getEmployeeNumber (verif dans employeeRouter) PAS FAIT
 
-const selectAssignedColorHexcode = async (colorHexCode) => {
+const selectAssignedColorHexcode = async (colorHexCode) =>
+{
     const result = await pool.query(
         `SELECT color_hexcode
         FROM employee
@@ -99,7 +107,8 @@ const selectAssignedColorHexcode = async (colorHexCode) => {
     );
 
     const row = result.rows[0];
-    if(row){
+    if (row)
+    {
         return {
             colorHexcode: row.color_hexcode
         };
@@ -110,7 +119,9 @@ exports.selectAssignedColorHexcode = selectAssignedColorHexcode;
 
 /////   QUERIES connexes à Employee   /////
 
-const selectRoleByName = async (roleName) => {
+// Cette querie sert a quoi exactement ?
+const selectRoleByName = async (roleName) =>
+{
     const result = await pool.query(
         `SELECT name, team
         FROM role
@@ -119,7 +130,8 @@ const selectRoleByName = async (roleName) => {
     );
 
     const row = result.rows[0];
-    if(row){
+    if (row)
+    {
         const roleInfo = {
             roleName: row.name,
             team: row.team
@@ -130,18 +142,20 @@ const selectRoleByName = async (roleName) => {
 }
 exports.selectRoleByName = selectRoleByName;
 
-// const selectAllRoles = async () => {
-//     const result = await pool.query(
-//         `SELECT *
-//         FROM role`,
-//         [roleName]
-//     );
-//     return result.rows.map(row => {
-//         const roleInfo = {
-//             role: row.name,
-//             team: row.team
-//         };
-//     });
-// }
-// exports.selectAllRoles = selectAllRoles;
+const selectAllRoles = async () =>
+{
+    const result = await pool.query(
+        `SELECT *
+         FROM role`,
+    );
+    return result.rows.map(row =>
+    {
+        const roleInfo = {
+            name: row.name,
+            team: row.team
+        };
+        return roleInfo;
+    });
+}
+exports.selectAllRoles = selectAllRoles;
 
