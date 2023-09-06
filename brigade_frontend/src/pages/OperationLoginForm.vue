@@ -19,23 +19,27 @@ import DarkRedButton from "../components/Reusable/DarkRedButton.vue";
 import operationSession from "../sessions/OperationSession"
 
 export default {
-    data() {
-        return {
-            adminNumber: ''
-        };
-    },
-    methods: {
-        unlockOperationSession() {
-            operationSession.adminNumber = this.adminNumber;
-            operationSession.isActive = true;
-            this.$router.push('/operation/punch');
-        }
-    },
-    mounted() {
-        if (operationSession.isActive) {
-            this.$router.push('/operation/punch');
-        }
-    },
-    components: { DarkRedButton }
+  data()
+  {
+    return {
+      adminNumber: ''
+    };
+  },
+  methods: {
+    unlockOperationSession()
+    {
+      operationSession.adminNumber = this.adminNumber;
+      operationSession.isActive = true;
+      this.$router.push('/operation/punch');
+    }
+  },
+  mounted()
+  {
+    if (operationSession.isActive)
+    {
+      this.$router.push('/operation/punch');
+    }
+  },
+  components: { DarkRedButton }
 };
 </script>

@@ -100,7 +100,7 @@ export default {
       ];
 
       this.eventList = [];
-      
+
       allEvents.forEach(event =>
       {
         if (this.eventTypeShowed == "Tous")

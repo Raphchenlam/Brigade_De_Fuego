@@ -7,7 +7,7 @@ class AuthError extends Error {
     }
 }
 
-const session = reactive({
+const userSession = reactive({
     user: null,
     user_email: null,
     password: null,
@@ -105,6 +105,6 @@ const session = reactive({
     },
 });
 
-export default session;
+export default userSession;
 
-session.initialize();
+userSession.initialize();
