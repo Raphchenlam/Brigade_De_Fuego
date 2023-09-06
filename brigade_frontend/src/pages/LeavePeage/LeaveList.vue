@@ -1,13 +1,63 @@
 <template>
-            <v-row class="ma-5 justify-space-around">
-                <v-col cols="6">
-                    <v-text-field v-model="date" type="date" label="Date">
-                    </v-text-field>
-                </v-col>
-                <v-col cols="6">
-                    <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }}</h3>
-                </v-col>
-            </v-row>
+    <v-row class="ma-5 justify-space-around">
+        <v-col cols="6">
+            <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }}</h3>
+        </v-col>
+        <v-col cols="1">
+            <v-icon size="x-large" class="me-2n" @click="filterDialog = true">
+                mdi-filter-outline
+            </v-icon>
+            <template>
+                <v-dialog v-model="filterDialog" max-width="500px">
+                    <v-card>
+                        <v-card-title>
+                            <span class="text-h5">Filtre Conge</span>
+                        </v-card-title>
+
+                        <v-card-text>
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="12">
+                                        <v-checkbox @click="checkAllBoxes()" v-model="checkedBoxes.all"
+                                            label="Tout selectionner"></v-checkbox>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
+                                        <v-checkbox v-model="checkedBoxes.pending" label="En Attente"></v-checkbox>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
+                                        <v-checkbox v-model="checkedBoxes.pendingModified"
+                                            label="Modifié, en attente"></v-checkbox>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
+                                        <v-checkbox v-model="checkedBoxes.accepted" label="Accepté"></v-checkbox>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
+                                        <v-checkbox v-model="checkedBoxes.refused" label="Refusé"></v-checkbox>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
+                                        <v-checkbox v-model="checkedBoxes.coming" label="À venir"></v-checkbox>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
+                                        <v-checkbox v-model="checkedBoxes.passed" label="Passé"></v-checkbox>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-card-text>
+
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn variant="text" @click="filterDialog = false">
+                                Annuler
+                            </v-btn>
+                            <v-btn variant="text" @click="applyFilter">
+                                Appliquer
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+            </template>
+        </v-col>
+    </v-row>
     <v-row>
         <v-text-field @input="loadLeaves" v-model="search" hide-details placeholder="Rechercher un employe"
             class="mx-10"></v-text-field>
@@ -20,36 +70,37 @@
                     <v-toolbar-title>Listes des conges</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="500px">
-                        <v-card>
-                            <v-card-title>
-                                <span class="text-h5">Modifier Conge</span>
-                            </v-card-title>
 
-                            <v-card-text>
-                                <EditLeaveForm :editedItem="editedItem"></EditLeaveForm>
-                            </v-card-text>
-
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn v-if="editedItem.status != 'Accepté'" color="green" variant="text" @click="close">
-                                    Accepter
-                                </v-btn>
-                                <v-btn v-if="editedItem.status != 'Refusé'" color="red" variant="text" @click="close">
-                                    Refuser
-                                </v-btn>
-                                <v-btn variant="text" @click="close">
-                                    Annuler
-                                </v-btn>
-                                <v-btn variant="text" @click="save">
-                                    Sauvegarder
-                                </v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-dialog>
                 </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
+                <v-dialog v-model="dialog" max-width="500px">
+                    <v-card>
+                        <v-card-title>
+                            <span class="text-h5">Modifier Conge</span>
+                        </v-card-title>
+
+                        <v-card-text>
+                            <EditLeaveForm :editedItem="editedItem"></EditLeaveForm>
+                        </v-card-text>
+
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn v-if="editedItem.status != 'Accepté'" color="green" variant="text" @click="close">
+                                Accepter
+                            </v-btn>
+                            <v-btn v-if="editedItem.status != 'Refusé'" color="red" variant="text" @click="close">
+                                Refuser
+                            </v-btn>
+                            <v-btn variant="text" @click="close">
+                                Annuler
+                            </v-btn>
+                            <v-btn variant="text" @click="save">
+                                Sauvegarder
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
                 <v-icon v-if="item.raw.status != 'Accepté'" size="small" class="me-2 approved-icon"
                     @click="accept(item.raw)">
                     mdi-check
@@ -89,6 +140,7 @@ export default {
     {
         return {
             search: "",
+            filterDialog: false,
             roleShowed: "Tous",
             dialog: false,
             expanded: [],
@@ -145,6 +197,16 @@ export default {
                 category: "",
                 reason: ""
             },
+            checkedBoxes: {
+                all: true,
+                pending: true,
+                pendingModified: true,
+                refused: true,
+                accepted: true,
+                passed: true,
+                coming: true
+            },
+            checkedBoxAccepted: true
         }
     },
     methods: {
@@ -248,16 +310,64 @@ export default {
         save()
         {
 
+        },
+        applyFilter()
+        {
+            this.filterDialog = false;
+        },
+        checkAllBoxes()
+        {
+            if (this.checkedBoxes.all == false)
+            {
+                this.checkedBoxes.all = true;
+                this.checkedBoxes.pending = true;
+                this.checkedBoxes.pendingModified = true;
+                this.checkedBoxes.accepted = true;
+                this.checkedBoxes.refused = true;
+                this.checkedBoxes.passed = true;
+                this.checkedBoxes.coming = true;
+            }
+            else
+            {
+                this.checkedBoxes.all = false;
+                this.checkedBoxes.pending = false;
+                this.checkedBoxes.pendingModified = false;
+                this.checkedBoxes.accepted = false;
+                this.checkedBoxes.refused = false;
+                this.checkedBoxes.passed = false;
+                this.checkedBoxes.coming = false;
+            }
         }
     },
-    computed : {
-        calculatePendingLeaves() {
+    computed: {
+        calculatePendingLeaves()
+        {
             return 3
+            // ici faire une requete BD pour voir le nombre de demande qui ont "en attente" comme status
+        }
+    },
+    watch: {
+        'checkedBoxes': {
+            handler: function (checkboxList)
+            {
+                for (var checkbox in checkboxList)
+                {
+                    console.log("watch", checkbox, checkboxList[checkbox])
+
+                    if (checkboxList[checkbox] == false && checkbox != "all")
+                    {
+                        this.checkedBoxes.all = false;
+                        return;
+                    }
+                }
+                this.checkedBoxes.all = true;
+            },
+            deep: true
         }
     },
     mounted()
     {
-        this.date = "2023-09-05";
+        this.date = "2023-09-05"; //aller chercher la date de aujourdhui
     }
 }
 
