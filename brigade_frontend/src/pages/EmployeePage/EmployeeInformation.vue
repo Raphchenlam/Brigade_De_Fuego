@@ -1,6 +1,6 @@
 <template>
         <v-row class="justify-center">
-                <v-sheet width="45rem" height="auto" class="ma-2">
+                <v-sheet v-if="employee.employeeNumber" width="45rem" height="auto" class="ma-2">
                         <v-card class="pa-5" height="auto">
                                 <v-row class="mb-5 justify-center">
                                         <h1>{{ employee.firstName + " " + employee.lastName }}</h1>

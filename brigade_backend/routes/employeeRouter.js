@@ -41,6 +41,7 @@ router.get('/role/:role',
 
         employeeQueries.selectAllEmployeesByRole(role).then(employees =>
         {
+            console.log(employees)
             res.json(employees);
         }).catch(err =>
         {

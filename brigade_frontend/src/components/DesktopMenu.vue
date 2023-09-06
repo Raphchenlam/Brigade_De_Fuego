@@ -3,8 +3,6 @@
     <v-app-bar-nav-icon class="hidden-sm-and-up" @click="displayDrawer = !displayDrawer"> </v-app-bar-nav-icon>
     <v-app-bar-title><h6>Del Fuego - Espace Employee</h6></v-app-bar-title>
       <template v-slot:append>
-        <v-btn icon="mdi-account-circle"></v-btn>
-
         <v-btn @click="disconnect()" icon="mdi-power"></v-btn>
       </template>
   </v-app-bar>
@@ -96,3 +94,10 @@ export default {
   }
 };
 </script>
+
+<style>
+.routerlink {
+  display: block;
+  color: rgb(240, 20, 20)
+}
+  </style>

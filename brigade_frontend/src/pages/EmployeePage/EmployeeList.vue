@@ -101,8 +101,6 @@ export default {
                     if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
                         || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
                     {
-                        if (employee.role == this.roleShowed)
-                        { //condition temporaire pour faire fonctionner le fetch
                             const newEmployee = {
                                 "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName,
                                 "employeeNumber": employee.employeeNumber,
@@ -114,7 +112,6 @@ export default {
                                 },
                             };
                             this.employeeList.push(newEmployee);
-                        }
                     }
                 });
             }).catch(err =>

@@ -36,7 +36,7 @@ const selectAllEmployeesByRole = async (role) => {
         return employee;
     });
 };
-exports.selectAllEmployeesByRole = selectAllEmployees;
+exports.selectAllEmployeesByRole = selectAllEmployeesByRole;
 
 const insertEmployee = async (newEmployee, clientParam) => {
     const client = clientParam || await pool.connect();

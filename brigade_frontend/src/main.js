@@ -31,6 +31,8 @@ import EventView from "./pages/EventPage/EventView.vue"
 import EventInformation from "./pages/EventPage/EventInformation.vue"
 import PunchManagerView from "./pages/PunchPage/PunchManagerView.vue"
 
+import NotFoundView from './pages/NotFound.vue'
+
 const app = createApp(App);
 
 const router = createRouter({
@@ -56,7 +58,9 @@ const router = createRouter({
         { path: '/operation/client', component: ClientView },
         { path: '/operation/punch', component: PunchView },
         { path: '/operation/reservation', component: ReservationView },
-        { path: '/operation/plansalle', component: PlanSalleView }
+        { path: '/operation/plansalle', component: PlanSalleView },
+
+        { path: '/:pathMatch(.*)*', component: NotFoundView}
 
     ]
 });
