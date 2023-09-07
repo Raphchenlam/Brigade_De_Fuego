@@ -24,6 +24,22 @@ router.get('/',
         });
     });
 
+router.get('/role', (req, res, next) => {
+    // const employeeConnected = req.employee;
+    // if (!employeeConnected) {
+    //     return next(new HttpError(401, "Vous devez etre connecté"));
+    // };
+    // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
+    //     return next(new HttpError(403, "Droit administrateur requis"));
+    // };
+
+    employeeQueries.selectAllRoles().then(roleList => {
+        res.json(roleList);
+    }).catch(err => {
+        return next(err);
+    });
+});
+
 router.get('/:employeeNumber', (req, res, next) => {
     // const employeeConnected = req.employee;
     const employeeNumberToGet = req.params.employeeNumber;
@@ -37,7 +53,6 @@ router.get('/:employeeNumber', (req, res, next) => {
     // if (employeeConnected.employeeNumber != employeeNumberToGet) {
     //     return next(new HttpError(403, "Vous ne pouvez pas acceder aux informations d'un autre employé"));
     // };
-
     employeeQueries.selectEmployeeByEmployeeNumber(employeeNumberToGet).then(employee => {
         if (employee) {
             res.json(employee);
@@ -50,43 +65,23 @@ router.get('/:employeeNumber', (req, res, next) => {
 });
 
 
-router.get('/role/:role',
-    (req, res, next) => {
-        // const employeeConnected = req.employee;
-        const role = req.params.role;
-        // if (!employeeConnected) {
-        //     return next(new HttpError(401, "Vous devez etre connecté"));
-        // };
-        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
-        //     return next(new HttpError(403, "Droit administrateur requis"));
-        // };
+router.get('/role/:role', (req, res, next) => {
+    // const employeeConnected = req.employee;
+    const role = req.params.role;
+    // if (!employeeConnected) {
+    //     return next(new HttpError(401, "Vous devez etre connecté"));
+    // };
+    // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
+    //     return next(new HttpError(403, "Droit administrateur requis"));
+    // };
 
-        employeeQueries.selectAllEmployeesByRole(role).then(employeeList => {
-            res.json(employeeList);
-        }).catch(err => {
-            return next(err);
-        });
+    employeeQueries.selectAllEmployeesByRole(role).then(employeeList => {
+        res.json(employeeList);
+    }).catch(err => {
+        return next(err);
     });
+});
 
-router.get('/role',
-    (req, res, next) => {
-        // const employeeConnected = req.employee;
-        // if (!employeeConnected) {
-        //     return next(new HttpError(401, "Vous devez etre connecté"));
-        // };
-        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
-        //     return next(new HttpError(403, "Droit administrateur requis"));
-        // };
-
-        employeeQueries.selectAllRoles().then(roleList => {
-            console.log("roleList:", roleList);
-            res.json(roleList);
-        }).catch(err => {
-            return next(err);
-        });
-    });
-
-    
 router.post('/',
     //passport.authenticate('basic', {session:false}),
     (req, res, next) => {
@@ -228,7 +223,6 @@ router.post('/',
             isAdmin: isAdmin,
             skillPoints: parseInt(skillPoints),
         };
-        console.log("EMPLOYEE INFO", newEmployee);
 
         const password = req.body.password;
         if (!password || password == '') {
@@ -253,4 +247,5 @@ router.post('/',
             }
         });
     });
+
 module.exports = router;

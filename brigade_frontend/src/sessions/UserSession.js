@@ -7,9 +7,8 @@ class AuthError extends Error {
     }
 }
 
-const userSession = reactive({
+const session = reactive({
     user: null,
-    employeeNumber: null,
     user_email: null,
     password: null,
 
@@ -21,7 +20,7 @@ const userSession = reactive({
             this.password = sessionStorage.password;
         }
         if (this.user == null && this.user_email != null) {
-            //this.fetchUser().catch(err => console.error("L'authentification initiale a échouée: ", err));
+            this.fetchUser().catch(err => console.error("L'authentification initiale a échouée: ", err));
         }
     },
     login(user_email, password) {
@@ -52,60 +51,60 @@ const userSession = reactive({
             }
         });
 
-//         if (response.ok) {
-//             const user = await response.json();
-//             this.user = user;
-//             return user;
-//         } else {
-//             this.user = null;
-//             if (response.status === 401) {
-//                 throw new AuthError(response.status, "Adresse courriel ou mot de passe incorrect");
-//             } else {
-//                 throw new AuthError(response.status, "Erreur lors de l'authentification: " + response.status);
-//             }
-//         }
-//     },
-//     getAuthHeaders() {
-//         if (this.user_email) {
-//             return {
-//                 "Authorization": "Basic " + btoa(this.user_email + ":" + this.password),
-//                 "X-Requested-With": "XMLHttpRequest"
-//             };
-//         } else {
-//             return {};
-//         }
-//     },
-//     async createUserAccount(userAccountEmail, userFullName, password) {
-//         const response = await fetch("/api/login", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json"
-//             },
-//             body: JSON.stringify({
-//                 courrielUtilisateur: userAccountEmail,
-//                 nomComplet: userFullName,
-//                 password: password
-//             })
-//         });
+        if (response.ok) {
+            const user = await response.json();
+            this.user = user;
+            return user;
+        } else {
+            this.user = null;
+            if (response.status === 401) {
+                throw new AuthError(response.status, "Adresse courriel ou mot de passe incorrect");
+            } else {
+                throw new AuthError(response.status, "Erreur lors de l'authentification: " + response.status);
+            }
+        }
+    },
+    getAuthHeaders() {
+        if (this.user_email) {
+            return {
+                "Authorization": "Basic " + btoa(this.user_email + ":" + this.password),
+                "X-Requested-With": "XMLHttpRequest"
+            };
+        } else {
+            return {};
+        }
+    },
+    async createUserAccount(userAccountEmail, userFullName, password) {
+        const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                courrielUtilisateur: userAccountEmail,
+                nomComplet: userFullName,
+                password: password
+            })
+        });
 
-//         if (response.ok) {
-//             const user = await response.json();
-//             return user;
-//         } else {
-//             this.user = null;
-//             if (response.status === 409) {
-//                 const respBody = await response.json();
-//                 if (respBody && respBody.message) {
-//                     throw new AuthError(response.status, respBody.message);
-//                 }
-//                 throw new AuthError(response.status, "Erreur lors de la création du compte");
-//             } else {
-//                 throw new AuthError(response.status, "Erreur lors de la création du compte: " + response.status);
-//             }
-//         }
-//     },
-// });
+        if (response.ok) {
+            const user = await response.json();
+            return user;
+        } else {
+            this.user = null;
+            if (response.status === 409) {
+                const respBody = await response.json();
+                if (respBody && respBody.message) {
+                    throw new AuthError(response.status, respBody.message);
+                }
+                throw new AuthError(response.status, "Erreur lors de la création du compte");
+            } else {
+                throw new AuthError(response.status, "Erreur lors de la création du compte: " + response.status);
+            }
+        }
+    },
+});
 
-export default userSession;
+export default session;
 
-userSession.initialize();
+session.initialize();
