@@ -23,8 +23,8 @@ async function createServiceError(response) {
 const convertToClient = jsonClient => {
     return {
         id: jsonClient.id,
-        firstname: jsonClient.firstname,
-        lastname: jsonClient.lastname,
+        firstName: jsonClient.firstName,
+        lastName: jsonClient.lastName,
         phoneNumber: "" + jsonClient.phoneNumber,
         allergy: jsonClient.allergy,
         isFavorite: jsonClient.isFavorite,

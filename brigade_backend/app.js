@@ -30,6 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/client', clientRouter);
 app.use('/employee', employeeRouter);
 app.use('/leave', leaveRouter);
+app.use('/reservation', reservationRouter);
 
 class BasicStrategyModified extends BasicStrategy {
     constructor(options, verify) {
