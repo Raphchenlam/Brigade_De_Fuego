@@ -7,7 +7,7 @@
       <v-select class="mx-16" v-model="eventTypeShowed" label="Type d'événement" :items="eventTypeList"></v-select>
     </v-sheet>
     <v-card class="mx-auto" max-height="400" max-width="800">
-      <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="id"></v-list>
+      <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="name"></v-list>
     </v-card>
     <v-dialog v-model="dialogNewEvent" width="70%">
       <template v-slot:activator="{ props }">
@@ -57,10 +57,7 @@ export default {
     };
   },
   methods: {
-    // async loadEvents() {
-    //   this.eventTypeList = await fetchAllEventType();
-    //   this.allEventList = await fetchAllEvents();
-    // },
+    
     updateEventList() {
       fetchAllEventType().then(allEventType => {
         this.eventTypeList = allEventType
@@ -72,19 +69,10 @@ export default {
           }
         })
       )
-      console.log("eventList" , this.eventList);
-
-      // allEvents.forEach(event => {
-      //   if (this.eventTypeShowed == "Tous") {
-      //     this.eventList.push(event);
-      //   } else {
-      //     //faire une fonction qui permet de seulement ajouter les event que son attribut eventType == this.eventTypeShowed au eventList
-      //   }
-      // });
     },
     updateEventTypeShowed(newEventType) {
       this.eventTypeShowed = newEventType;
-      this.loadEvents();
+      this.updateEventList();
     },
     closeNewEventDialog() {
       this.dialogNewEvent = false;
@@ -92,7 +80,7 @@ export default {
   },
   watch: {
     eventTypeShowed() {
-      this.loadEvents();
+      this.updateEventList();
       this.selection = "";
     },
     selection() {
