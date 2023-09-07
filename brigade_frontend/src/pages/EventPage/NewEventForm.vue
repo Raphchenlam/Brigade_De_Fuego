@@ -1,34 +1,47 @@
 <template>
     <div class="ma-2" width="auto">
-        <v-form @submit.prevent="submitNewEvent" class="pa-10" validate-on="submit lazy" ref="createEventForm">
+        <v-form @submit.prevent="validateNewEvent(event.name)" class="pa-10" validate-on="submit lazy" ref="createEventForm">
             <v-row>
-                <v-text-field class="ma-2" v-model.trim="event.name" label="Nom de l'événement" :rules="[requiredName]"
-                    clearable>
+                <v-text-field class="ma-2" v-model.trim="event.name" label="Nom de l'événement"
+                    :rules="[rules.requiredName]" clearable>
                 </v-text-field>
             </v-row>
             <v-row>
-                <v-select class="ma-2" v-model="event.eventType" label="Type d'événement" :rules="[requiredEventType]"
+                <v-select class="ma-2" v-model="event.eventType" label="Type d'événement" :rules="[rules.requiredEventType]"
                     :items="eventTypes"></v-select>
-                <v-text-field type="number" step="0.1" class="ma-2" v-model.trim="event.impact" label="Impact sur l'achalandage"
-                    :rules="[requiredImpact, impactValid]" clearable>
+                <v-text-field type="number" step="0.1" class="ma-2" v-model.trim="event.impact"
+                    label="Impact sur l'achalandage" :rules="[rules.requiredImpact, rules.impactValid]" clearable>
                 </v-text-field>
             </v-row>
             <v-row class="justify-center">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton class="mx-5" textbutton="Creer" type="submit"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Creer" type="submit" @click="toggleEventConfirmationDialog()">
+                </DarkRedButton>
             </v-row>
         </v-form>
     </div>
+    <v-dialog v-model="dialogConfirmEvent" width="50%">
+        <v-card>
+            <NewEventConfirmationForm :name="event.name" :impact="event.impact" :eventType="event.eventType"></NewEventConfirmationForm>
+        </v-card>
+    </v-dialog>
 </template>
 <script>
 import DarkRedButton from '../../components/Reusable/darkredbutton.vue';
-import { createEvent, fetchAllEventType, fetchEventByName, fetchAllEvents } from '../../services/EventService';
+import { createEvent, fetchAllEventType, verifyExistingEvent } from '../../services/EventService';
+import NewEventConfirmationForm from './NewEventConfirmationForm.vue';
 
 
 export default {
     inject: ['closeNewEventDialog'],
     components: {
         DarkRedButton,
+        NewEventConfirmationForm
+    },
+    provide() {
+        return {
+            toggleEventConfirmationDialog: this.toggleEventConfirmationDialog,
+        }
     },
     data() {
         return {
@@ -38,12 +51,14 @@ export default {
                 eventType: null,
             },
             eventTypes: [],
+            dialogConfirmEvent: false,
+            uniqueEvent: true,
             rules: {
                 requiredName: value => !!value || "L'événement doit avoir un nom",
                 requiredEventType: value => !!value || "Un type d'événement doit être sélectionné",
                 requiredImpact: value => !!value || "L'impact sur l'événement doit être saisie",
                 impactValid: value => {
-                    const regex = /^\d{1,3}(,\d{1,2})?$/;
+                    const regex = /^\d{1,3}(.\d{1,2})?$/;
                     if (value && regex.test(value)) {
                         if (value >= 0 && value <= 300) {
                             return true;
@@ -52,7 +67,7 @@ export default {
                             return "Veuillez entrer un impact entre 0.00 % et 300.00 %";
                         }
                     } else {
-                        return "Respecter le format de nombre accepté: 00.00";
+                        return "Respecter le format de nombre accepté: XXX.XX";
                     }
                 },
             }
@@ -62,12 +77,27 @@ export default {
         closeDialog() {
             this.closeNewEventDialog();
         },
-        async submitNewEvent() {
+
+        toggleEventConfirmationDialog() {
+            this.dialogConfirmEvent = !this.dialogConfirmEvent;
+        },
+
+        async validateNewEvent(name) {
             const formValid = await this.$refs.createEventForm.validate();
             if (!formValid.valid) {
                 return;
             }
+            this.verifyUniqueEvent(name);
+        },
 
+        async verifyUniqueEvent(name) {
+            const eventFound = await verifyExistingEvent(name);
+            if (eventFound) {
+                this.uniqueEvent = false;
+            }
+        },
+
+        async submitNewEvent() {
             const event = {
                 name: this.event.name,
                 impact: this.event.impact,
