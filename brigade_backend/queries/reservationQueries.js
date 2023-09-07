@@ -40,49 +40,49 @@ const getReservationById = async (id) => {
 exports.getReservationById = getReservationById;
 
 
-const getReservationByInformations = async (clientId, date, startTime) => {
-    const remadeDate = remakeDate(date);
-    // const remadeTime = remakeDate(startTime);
-    console.log(remadeDate);
+// const getReservationByInformations = async (clientId, date, startTime) => {
+//     const remadeDate = remakeDate(date);
+//     // const remadeTime = remakeDate(startTime);
+//     console.log(remadeDate);
 
-    const result = await pool.query(
-        // `SELECT * FROM reservation
-        //     WHERE client_id = $1 AND date = DATE '$2' AND start_time = TIME '$3'`,
-        // [clientId, date, startTime]);
-        `SELECT * FROM reservation
-            WHERE client_id = $1
-            ORDER BY date DESC `,
-        [clientId]);
+//     const result = await pool.query(
+//         // `SELECT * FROM reservation
+//         //     WHERE client_id = $1 AND date = DATE '$2' AND start_time = TIME '$3'`,
+//         // [clientId, date, startTime]);
+//         `SELECT * FROM reservation
+//             WHERE client_id = $1
+//             ORDER BY date DESC `,
+//         [clientId]);
 
-    const rows = result.rows.map(row => {
-        const reservation = {
-            id: row.id,
-            tableNumber: row.table_number,
-            clientId: row.client_id,
-            statusCode: row.status_code,
-            peopleCount: row.people_count,
-            date: truncateDate(row.date),
-            startTime: row.start_time,
-            endTime: row.end_time,
-            mention: row.mention,
-            hasMinor: row.has_minor,
-            takenBy: row.taken_by
-        };
+//     const rows = result.rows.map(row => {
+//         const reservation = {
+//             id: row.id,
+//             tableNumber: row.table_number,
+//             clientId: row.client_id,
+//             statusCode: row.status_code,
+//             peopleCount: row.people_count,
+//             date: truncateDate(row.date),
+//             startTime: row.start_time,
+//             endTime: row.end_time,
+//             mention: row.mention,
+//             hasMinor: row.has_minor,
+//             takenBy: row.taken_by
+//         };
 
-        if(reservation.date ){
+//         if(reservation.date ){
+//             break;
+//         }
 
-        }
+//         return reservation;
+//     });
 
-        return reservation;
-    });
+//     if (rows) {
+//         return reservation;
+//     }
 
-    if (rows) {
-        return reservation;
-    }
-
-    return undefined;
-};
-exports.getReservationByInformations = getReservationByInformations;
+//     return undefined;
+// };
+// exports.getReservationByInformations = getReservationByInformations;
 
 
 const insertReservation = async (reservationInfos) => {
