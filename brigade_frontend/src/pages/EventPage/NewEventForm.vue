@@ -1,6 +1,6 @@
 <template>
     <div class="ma-2" width="auto">
-        <v-form @submit.prevent="validateNewEvent(event.name)" class="pa-10" validate-on="submit lazy" ref="createEventForm">
+        <v-form class="pa-10" validate-on="blur lazy" ref="createEventForm">
             <v-row>
                 <v-text-field class="ma-2" v-model.trim="event.name" label="Nom de l'événement"
                     :rules="[rules.requiredName]" clearable>
@@ -15,8 +15,7 @@
             </v-row>
             <v-row class="justify-center">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton class="mx-5" textbutton="Creer" type="submit" @click="toggleEventConfirmationDialog()">
-                </DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Creer" @click="toggleEventConfirmationDialog()"></DarkRedButton>
             </v-row>
         </v-form>
     </div>
@@ -28,7 +27,7 @@
 </template>
 <script>
 import DarkRedButton from '../../components/Reusable/darkredbutton.vue';
-import { createEvent, fetchAllEventType, verifyExistingEvent } from '../../services/EventService';
+import { fetchAllEventType } from '../../services/EventService';
 import NewEventConfirmationForm from './NewEventConfirmationForm.vue';
 
 
@@ -52,7 +51,6 @@ export default {
             },
             eventTypes: [],
             dialogConfirmEvent: false,
-            uniqueEvent: true,
             rules: {
                 requiredName: value => !!value || "L'événement doit avoir un nom",
                 requiredEventType: value => !!value || "Un type d'événement doit être sélectionné",
@@ -78,44 +76,18 @@ export default {
             this.closeNewEventDialog();
         },
 
-        toggleEventConfirmationDialog() {
-            this.dialogConfirmEvent = !this.dialogConfirmEvent;
-        },
-
-        async validateNewEvent(name) {
+        async toggleEventConfirmationDialog() {
             const formValid = await this.$refs.createEventForm.validate();
             if (!formValid.valid) {
                 return;
             }
-            this.verifyUniqueEvent(name);
+            // await this.verifyUniqueEvent(this.event.name);
+
+            this.dialogConfirmEvent = !this.dialogConfirmEvent;
         },
 
-        async verifyUniqueEvent(name) {
-            const eventFound = await verifyExistingEvent(name);
-            if (eventFound) {
-                this.uniqueEvent = false;
-            }
-        },
 
-        async submitNewEvent() {
-            const event = {
-                name: this.event.name,
-                impact: this.event.impact,
-                eventType: this.event.eventType,
-                isActive: true
-            };
-            try {
-                //await fetchEventByName(event.name)
-                await createEvent(event);
-                this.$router.push('/event');
-            } catch (err) {
-                alert(err.message);
-                if (err.status === 409) {
-                }
-                await this.$refs.createEventForm.validate();
-            }
-        }
-
+        
     },
 
     async mounted() {

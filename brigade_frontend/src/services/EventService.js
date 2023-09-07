@@ -82,13 +82,13 @@ export async function fetchAllEventType() {
 
 };
 
-export async function verifyExistingEvent(name) {
-  const existingEvent = await fetchEventByName(name);
+// export async function verifyExistingEvent(name) {
+//   const existingEvent = await fetchEventByName(name);
 
-  if (existingEvent) {
-    return existingEvent;
-  } else { return undefined }
-}
+//   if (existingEvent) {
+//     return existingEvent;
+//   } else { return undefined }
+// }
 
 export async function createEvent(event) {
 

@@ -4,7 +4,7 @@
       <p>Nombre d'evenements : {{ eventList.length }} {{ selection }}</p>
     </div>
     <v-sheet class="mx-16">
-      <v-select class="mx-16" v-model="eventTypeShowed" label="Type d'événement" :items="eventTypes"></v-select>
+      <v-select class="mx-16" v-model="eventTypeShowed" label="Type d'événement" :items="eventTypeList"></v-select>
     </v-sheet>
     <v-card class="mx-auto" max-height="400" max-width="800">
       <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="id"></v-list>
@@ -42,32 +42,37 @@ export default {
       selection: [],
       eventList: [],
       allEventList: [],
-      eventTypes: [],
+      eventTypeList: [],
       eventTypeShowed: "all",
       dialogNewEvent: false,
     };
   },
-  
+
 
   provide() {
     return {
       closeNewEventDialog: this.closeNewEventDialog,
       updateEventTypeShowed: this.updateEventTypeShowed,
+      updateEventList: this.updateEventList
     };
   },
   methods: {
-    async loadEvents() {
-      this.eventTypes = await fetchAllEventType();
-      this.allEventList = await fetchAllEvents();
-    },
+    // async loadEvents() {
+    //   this.eventTypeList = await fetchAllEventType();
+    //   this.allEventList = await fetchAllEvents();
+    // },
     updateEventList() {
-        this.loadEvents;
-
-        this.allEventList.forEach((event) => {
-        if (this.eventTypeShowed == "all" || this.eventTypeShowed == event.eventType) {
-          this.eventList.push(event);
-        }
+      fetchAllEventType().then(allEventType => {
+        this.eventTypeList = allEventType
       });
+      fetchAllEvents().then(allEventList => 
+        allEventList.forEach((event) => {
+          if (this.eventTypeShowed == "all" || this.eventTypeShowed == event.eventType) {
+            this.eventList.push(event);
+          }
+        })
+      )
+      console.log("eventList" , this.eventList);
 
       // allEvents.forEach(event => {
       //   if (this.eventTypeShowed == "Tous") {
@@ -77,7 +82,7 @@ export default {
       //   }
       // });
     },
-    updateEventTypeShowed(newEventType){
+    updateEventTypeShowed(newEventType) {
       this.eventTypeShowed = newEventType;
       this.loadEvents();
     },
