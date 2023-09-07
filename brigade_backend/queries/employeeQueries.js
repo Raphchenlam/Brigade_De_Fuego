@@ -6,19 +6,44 @@ const selectAllEmployees = async () => {
         ORDER BY first_name`
     );
 
-    return result.rows.map(row => {
+    return result.rows.map(row =>
+    {
         const employee = {
             employeeNumber: row.employee_number,
             firstName: row.first_name,
-            lastName: row.last_name
+            lastName: row.last_name,
+            role: row.role
         };
         return employee;
     });
 };
 exports.selectAllEmployees = selectAllEmployees;
 
-const insertEmployee = async (newEmployee, passwordSalt, passwordHash) => {
-    const client = await pool.connect();
+const selectAllEmployeesByRole = async (role) =>
+{
+    const result = await pool.query(
+        `SELECT * from employee
+        WHERE role = $1
+        ORDER BY first_name`,
+        [role]
+    );
+
+    return result.rows.map(row =>
+    {
+        const employee = {
+            employeeNumber: row.employee_number,
+            firstName: row.first_name,
+            lastName: row.last_name,
+            role: row.role
+        };
+        return employee;
+    });
+};
+exports.selectAllEmployeesByRole = selectAllEmployeesByRole;
+
+const insertEmployee = async (newEmployee, clientParam) =>
+{
+    const client = clientParam || await pool.connect();
 
     const isSuperAdmin = false;
     const isNewEmployee = true;
@@ -28,15 +53,16 @@ const insertEmployee = async (newEmployee, passwordSalt, passwordHash) => {
         `INSERT INTO employee(
             employee_number, first_name, last_name, role, color_hexcode, hourly_rate, barcode_number, email, phone_number, is_admin, is_super_admin, is_new_employee, is_active, skill_points, password_salt, password_hash)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
-        [newEmployee.employeeNumber, newEmployee.firstName, newEmployee.lastName, newEmployee.role, newEmployee.colorHexCode, newEmployee.hourlyRate, newEmployee.barcodeNumber, newEmployee.employeeEmail, newEmployee.phoneNumber, newEmployee.isAdmin, isSuperAdmin, isNewEmployee, isActive, newEmployee.skillPoints, passwordSalt, passwordHash]
+        [newEmployee.employeeNumber, newEmployee.firstName, newEmployee.lastName, newEmployee.role, newEmployee.colorHexCode, newEmployee.hourlyRate, newEmployee.barcodeNumber, newEmployee.email, newEmployee.phoneNumber, newEmployee.isAdmin, isSuperAdmin, isNewEmployee, isActive, newEmployee.skillPoints, passwordSalt, passwordHash]
     );
 };
 
 exports.insertEmployee = insertEmployee;
 
-const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
+const selectEmployeeByEmployeeNumber = async (employeeNumber) =>
+{
     const result = await pool.query(
-        `SELECT employee_number, first_name, last_name, barcode_number
+        `SELECT *
         FROM employee
         WHERE employee_number = $1`,
         [employeeNumber]
@@ -52,7 +78,7 @@ const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
             colorHexCode: row.color_hexcode,
             hourlyRate: row.hourly_rate,
             barcodeNumber: row.barcode_number,
-            employeeEmail: row.email,
+            email: row.email,
             phoneNumber: row.phone_number,
             isAdmin: row.is_admin,
             isSuperAdmin: row.is_super_admin,
@@ -109,18 +135,18 @@ const selectUsedPhoneNumber = async (phoneNumber) => {
 
 exports.selectUsedPhoneNumber = selectUsedPhoneNumber;
 
-const selectUsedEmail = async (employeeEmail) => {
+const selectUsedEmail = async (email) => {
     const result = await pool.query(
         `SELECT first_name, last_name, email
         FROM employee
         WHERE email = $1`,
-        [employeeEmail]
+        [email]
     );
 
     const row = result.rows[0];
     if(row){
         return {
-            employeeEmail: row.email
+            email: row.email
         }
     }
     return undefined;
@@ -150,18 +176,20 @@ const selectRoleByName = async (roleName) => {
 }
 exports.selectRoleByName = selectRoleByName;
 
-// const selectAllRoles = async () => {
-//     const result = await pool.query(
-//         `SELECT *
-//         FROM role`,
-//         [roleName]
-//     );
-//     return result.rows.map(row => {
-//         const roleInfo = {
-//             role: row.name,
-//             team: row.team
-//         };
-//     });
-// }
-// exports.selectAllRoles = selectAllRoles;
+const selectAllRoles = async () =>
+{
+    const result = await pool.query(
+        `SELECT *
+         FROM role`,
+    );
+    return result.rows.map(row =>
+    {
+        const roleInfo = {
+            name: row.name,
+            team: row.team
+        };
+        return roleInfo;
+    });
+}
+exports.selectAllRoles = selectAllRoles;
 

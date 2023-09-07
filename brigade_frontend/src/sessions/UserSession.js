@@ -7,49 +7,50 @@ class AuthError extends Error {
     }
 }
 
-// const session = reactive({
-//     user: null,
-//     user_email: null,
-//     password: null,
+const userSession = reactive({
+    user: null,
+    employeeNumber: null,
+    user_email: null,
+    password: null,
 
-//     initialize() {
-//         if (sessionStorage.user_email) {
-//             this.user_email = sessionStorage.user_email;
-//         }
-//         if (sessionStorage.password) {
-//             this.password = sessionStorage.password;
-//         }
-//         if (this.user == null && this.user_email != null) {
-//             this.fetchUser().catch(err => console.error("L'authentification initiale a échouée: ", err));
-//         }
-//     },
-//     login(user_email, password) {
-//         this.setCredentials(user_email, password);
-//         return this.fetchUser();
-//     },
-//     setCredentials(user_email, password) {
-//         this.user_email = user_email;
-//         sessionStorage.user_email = user_email;
-//         this.password = password;
-//         sessionStorage.password = password;
-//     },
-//     clearCredentials() {
-//         this.user_email = null;
-//         sessionStorage.removeItem('user_email');
-//         this.password = null;
-//         sessionStorage.removeItem('password');
-//     },
-//     disconnect() {
-//         this.user = null;
-//         this.clearCredentials();
-//     },
-//     async fetchUser() {
-//         const response = await fetch("/api/login", {
-//             method: "GET",
-//             headers: {
-//                 ... this.getAuthHeaders()
-//             }
-//         });
+    initialize() {
+        if (sessionStorage.user_email) {
+            this.user_email = sessionStorage.user_email;
+        }
+        if (sessionStorage.password) {
+            this.password = sessionStorage.password;
+        }
+        if (this.user == null && this.user_email != null) {
+            //this.fetchUser().catch(err => console.error("L'authentification initiale a échouée: ", err));
+        }
+    },
+    login(user_email, password) {
+        this.setCredentials(user_email, password);
+        return this.fetchUser();
+    },
+    setCredentials(user_email, password) {
+        this.user_email = user_email;
+        sessionStorage.user_email = user_email;
+        this.password = password;
+        sessionStorage.password = password;
+    },
+    clearCredentials() {
+        this.user_email = null;
+        sessionStorage.removeItem('user_email');
+        this.password = null;
+        sessionStorage.removeItem('password');
+    },
+    disconnect() {
+        this.user = null;
+        this.clearCredentials();
+    },
+    async fetchUser() {
+        const response = await fetch("/api/login", {
+            method: "GET",
+            headers: {
+                ... this.getAuthHeaders()
+            }
+        });
 
 //         if (response.ok) {
 //             const user = await response.json();
@@ -105,6 +106,6 @@ class AuthError extends Error {
 //     },
 // });
 
-// export default session;
+export default userSession;
 
-session.initialize();
+userSession.initialize();

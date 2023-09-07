@@ -24,7 +24,69 @@ router.get('/',
         });
     });
 
+router.get('/:employeeNumber', (req, res, next) => {
+    // const employeeConnected = req.employee;
+    const employeeNumberToGet = req.params.employeeNumber;
 
+    // if (!employeeConnected) {
+    //     return next(new HttpError(401, "Vous devez etre connecté"));
+    // };
+    // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
+    //     return next(new HttpError(403, "Droit administrateur requis"));
+    // };
+    // if (employeeConnected.employeeNumber != employeeNumberToGet) {
+    //     return next(new HttpError(403, "Vous ne pouvez pas acceder aux informations d'un autre employé"));
+    // };
+
+    employeeQueries.selectEmployeeByEmployeeNumber(employeeNumberToGet).then(employee => {
+        if (employee) {
+            res.json(employee);
+        } else {
+            return next(new HttpError(404, `Employé avec le numéro ${employeeNumberToGet} inexistant ou introuvable`));
+        }
+    }).catch(err => {
+        return next(err);
+    });
+});
+
+
+router.get('/role/:role',
+    (req, res, next) => {
+        // const employeeConnected = req.employee;
+        const role = req.params.role;
+        // if (!employeeConnected) {
+        //     return next(new HttpError(401, "Vous devez etre connecté"));
+        // };
+        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
+        //     return next(new HttpError(403, "Droit administrateur requis"));
+        // };
+
+        employeeQueries.selectAllEmployeesByRole(role).then(employeeList => {
+            res.json(employeeList);
+        }).catch(err => {
+            return next(err);
+        });
+    });
+
+router.get('/role',
+    (req, res, next) => {
+        // const employeeConnected = req.employee;
+        // if (!employeeConnected) {
+        //     return next(new HttpError(401, "Vous devez etre connecté"));
+        // };
+        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
+        //     return next(new HttpError(403, "Droit administrateur requis"));
+        // };
+
+        employeeQueries.selectAllRoles().then(roleList => {
+            console.log("roleList:", roleList);
+            res.json(roleList);
+        }).catch(err => {
+            return next(err);
+        });
+    });
+
+    
 router.post('/',
     //passport.authenticate('basic', {session:false}),
     (req, res, next) => {
@@ -115,14 +177,14 @@ router.post('/',
         }
 
 
-        const employeeEmail = req.body.employeeEmail;
-        if (!employeeEmail || employeeEmail == '') {
-            return next(new HttpError(400, 'Le champ employeeEmail est requis'));
+        const email = req.body.email;
+        if (!email || email == '') {
+            return next(new HttpError(400, 'Le champ email est requis'));
         }
-        if (!regex.validEmail.test(employeeEmail)) {
-            return next(new HttpError(400, 'Le champ employeeEmail ne respecte pas les critères d\'acceptation'));
+        if (!regex.validEmail.test(email)) {
+            return next(new HttpError(400, 'Le champ email ne respecte pas les critères d\'acceptation'));
         }
-        employeeQueries.selectUsedEmail(employeeEmail).then(usedEmail => {
+        employeeQueries.selectUsedEmail(email).then(usedEmail => {
             if (usedEmail) {
                 return next(new HttpError(400, `Cette adresse courriel est déjà utilisée`));
             }
@@ -161,7 +223,7 @@ router.post('/',
             colorHexCode: "" + colorHexCode,
             hourlyRate: parseFloat(hourlyRate),
             barcodeNumber: "" + barcodeNumber,
-            employeeEmail: "" + employeeEmail,
+            email: "" + email,
             phoneNumber: "" + phoneNumber,
             isAdmin: isAdmin,
             skillPoints: parseInt(skillPoints),
@@ -191,5 +253,4 @@ router.post('/',
             }
         });
     });
-
 module.exports = router;
