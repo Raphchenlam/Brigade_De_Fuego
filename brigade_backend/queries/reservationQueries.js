@@ -43,15 +43,73 @@ exports.getReservationById = getReservationById;
 const getReservationByInformations = async (clientId, date, startTime) => {
     const remadeDate = remakeDate(date);
     // const remadeTime = remakeDate(startTime);
-    
-    
+    console.log(remadeDate);
+
     const result = await pool.query(
         // `SELECT * FROM reservation
         //     WHERE client_id = $1 AND date = DATE '$2' AND start_time = TIME '$3'`,
         // [clientId, date, startTime]);
         `SELECT * FROM reservation
-            WHERE client_id = $1 AND date = DATE '$2'`,
-        [clientId, remadeDate]);
+            WHERE client_id = $1
+            ORDER BY date DESC `,
+        [clientId]);
+
+    const rows = result.rows.map(row => {
+        const reservation = {
+            id: row.id,
+            tableNumber: row.table_number,
+            clientId: row.client_id,
+            statusCode: row.status_code,
+            peopleCount: row.people_count,
+            date: truncateDate(row.date),
+            startTime: row.start_time,
+            endTime: row.end_time,
+            mention: row.mention,
+            hasMinor: row.has_minor,
+            takenBy: row.taken_by
+        };
+
+        if(reservation.date ){
+
+        }
+
+        return reservation;
+    });
+
+    if (rows) {
+        return reservation;
+    }
+
+    return undefined;
+};
+exports.getReservationByInformations = getReservationByInformations;
+
+
+const insertReservation = async (reservationInfos) => {
+    const result = await pool.query(
+        `INSERT INTO reservation
+        (table_number, 
+            client_id, 
+            status_code, 
+            people_count, 
+            date, 
+            start_time, 
+            end_time, 
+            mention, 
+            has_minor, 
+            taken_by)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        RETURNING *`,
+        [reservationInfos.tableNumber,
+            reservationInfos.clientId,
+            reservationInfos.statusCode,
+            reservationInfos.peopleCount,
+            reservationInfos.date,
+            reservationInfos.startTime,
+            reservationInfos.endTime,
+            reservationInfos.mention,
+            reservationInfos.hasMinor,
+            reservationInfos.takenBy]);
 
     const row = result.rows[0];
 
@@ -74,34 +132,6 @@ const getReservationByInformations = async (clientId, date, startTime) => {
         return reservation;
     }
 
-    return undefined;
+    throw new Error("L'insertion a échoué pour une raison inconnue");
 };
-exports.getReservationByInformations = getReservationByInformations;
-
-
-// const insertReservation = async (reservationInfos) => {
-//     const result = await pool.query(
-//         `INSERT INTO reservation(first_name, last_name, phone_number, allergy, is_favorite, is_blacklisted)
-//         VALUES ($1, $2, $3, $4, $5, $6)
-//         RETURNING *;`,
-//         [reservationInfos.firstName, reservationInfos.lastName, reservationInfos.phoneNumber, reservationInfos.allergy, reservationInfos.isFavorite, reservationInfos.isBlacklisted]);
-
-//     const row = result.rows[0];
-
-//     // if (row) {
-//     //     const client = {
-//     //         id: row.id,
-//     //         firstName: row.first_name,
-//     //         lastName: row.last_name,
-//     //         phoneNumber: row.phone_number,
-//     //         allergy: row.allergy,
-//     //         isFavorite: row.is_favorite,
-//     //         isBlacklisted: row.is_blacklisted
-//     //     };
-
-//     //     return client;
-//     // }
-
-//     // throw new Error("L'insertion a échoué pour une raison inconnue");
-// };
-// exports.insertReservation = insertReservation;
+exports.insertReservation = insertReservation;
