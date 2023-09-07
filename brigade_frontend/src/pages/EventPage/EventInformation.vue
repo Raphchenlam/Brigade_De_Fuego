@@ -61,17 +61,17 @@ export default {
             }
         }
     },
-    provide()
-    {
-        return {
-            closeEditEventDialog: this.closeEditEventDialog,
-        };
-    },
     methods: {
         closeEditEventDialog()
         {
             this.dialogEditEvent = false;
         },
+    },
+    provide()
+    {
+        return {
+            closeEditEventDialog: this.closeEditEventDialog,
+        };
     },
     mounted()
     {

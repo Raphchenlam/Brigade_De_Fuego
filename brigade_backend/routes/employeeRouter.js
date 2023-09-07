@@ -68,8 +68,6 @@ router.get('/role',
         });
     });
 
-
-
 //Ne pas utiliser le passport authenticate pour l'instant
 //passport.authenticate('basic', {session:false}), (req,res,next)...
 router.post('/', (req, res, next) =>
@@ -267,11 +265,13 @@ router.get('/:employeeNumber', (req, res, next) =>
         {
             return next(err);
         });
-    } else if (employeeNumberToGet.length == 16) {
-        
-    
+    } else if (employeeNumberToGet.length == 16)
+    {
 
-        employeeQueries.selectEmployeeByBarcodeNumber(employeeNumberToGet).then(employee => {
+
+
+        employeeQueries.selectEmployeeByBarcodeNumber(employeeNumberToGet).then(employee =>
+        {
             if (employee)
             {
                 res.json(employee);
@@ -283,7 +283,8 @@ router.get('/:employeeNumber', (req, res, next) =>
         {
             return next(err);
         });
-    } else {
+    } else
+    {
         return next(new HttpError(404, `Numero non conforme`));
     }
 })
