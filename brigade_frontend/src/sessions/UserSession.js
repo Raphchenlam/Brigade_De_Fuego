@@ -9,6 +9,7 @@ class AuthError extends Error {
 
 const userSession = reactive({
     user: null,
+    employeeNumber: null,
     user_email: null,
     password: null,
 
