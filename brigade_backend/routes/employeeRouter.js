@@ -240,7 +240,6 @@ router.get('/:employeeNumber', (req, res, next) =>
 {
     // const employeeConnected = req.employee;
     const employeeNumberToGet = req.params.employeeNumber;
-
     // if (!employeeConnected) {
     //     return next(new HttpError(401, "Vous devez etre connecté"));
     // };
@@ -251,18 +250,41 @@ router.get('/:employeeNumber', (req, res, next) =>
     //     return next(new HttpError(403, "Vous ne pouvez pas acceder aux informations d'un autre employé"));
     // };
 
-    employeeQueries.selectEmployeeByEmployeeNumber(employeeNumberToGet).then(employee =>
+    if (isNaN(employeeNumberToGet)) { return next(new HttpError(404, `Le Barcode doit contenir seulement des chiffres`)); }
+
+    if (employeeNumberToGet.length == 4)
     {
-        if (employee)
+        employeeQueries.selectEmployeeByEmployeeNumber(employeeNumberToGet).then(employee =>
         {
-            res.json(employee);
-        } else
+            if (employee)
+            {
+                res.json(employee);
+            } else
+            {
+                return next(new HttpError(404, `Employé avec le numéro ${employeeNumberToGet} inexistant ou introuvable`));
+            }
+        }).catch(err =>
         {
-            return next(new HttpError(404, `Employé avec le numéro ${employeeNumberToGet} inexistant ou introuvable`));
-        }
-    }).catch(err =>
-    {
-        return next(err);
-    });
+            return next(err);
+        });
+    } else if (employeeNumberToGet.length == 16) {
+        
+    
+
+        employeeQueries.selectEmployeeByBarcodeNumber(employeeNumberToGet).then(employee => {
+            if (employee)
+            {
+                res.json(employee);
+            } else
+            {
+                return next(new HttpError(404, `Barcode ${employeeNumberToGet} inexistant ou introuvable`));
+            }
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    } else {
+        return next(new HttpError(404, `Numero non conforme`));
+    }
 })
 module.exports = router;

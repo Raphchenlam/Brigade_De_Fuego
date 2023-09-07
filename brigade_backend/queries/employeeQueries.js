@@ -93,6 +93,32 @@ const selectEmployeeByEmployeeNumber = async (employeeNumber) =>
 };
 exports.selectEmployeeByEmployeeNumber = selectEmployeeByEmployeeNumber;
 
+const selectEmployeeByBarcodeNumber = async (barcodeNumber) =>
+{
+    const result = await pool.query(
+        `SELECT *
+        FROM employee
+        WHERE barcode_number = $1`,
+        [barcodeNumber]
+    );
+
+    const row = result.rows[0];
+    if (row)
+    {
+        return {
+            employeeNumber: row.employee_number,
+            firstName: row.first_name,
+            lastName: row.last_name,
+            role: row.role,
+            barcodeNumber: row.barcode_number,
+            isAdmin: row.is_admin,
+            isSuperAdmin: row.is_super_admin,
+        };
+    }
+    return undefined;
+};
+exports.selectEmployeeByBarcodeNumber = selectEmployeeByBarcodeNumber;
+
 //const getLoginByEmployeeNumber (se référer à getLoginByUserAccountEmail de recettesRodrigo)
 
 //const getEmployeeNumber (verif dans employeeRouter) PAS FAIT

@@ -44,12 +44,22 @@ export async function getAllEmployeesByRole(role) {
 
 export async function getEmployeeByEmployeeNumber(employeeNumber) {
     const response = await fetch(`/api/employee/${employeeNumber}`);
+console.log("response:",response)
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw Error(response);
+    }
+}
+export async function getEmployeeByBarcodeNumber(barcodeNumber) {
+    const response = await fetch(`/api/employee/${barcodeNumber}`);
 
     if (response.ok) {
         const respJson = await response.json();
         return respJson;
     } else {
-        throw await createServiceError(response);
+        throw Error(response);
     }
 }
 
