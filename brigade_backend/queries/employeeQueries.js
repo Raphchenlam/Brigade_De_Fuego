@@ -89,7 +89,7 @@ exports.selectAssignedColorHexcode = selectAssignedColorHexcode;
 
 const selectUsedPhoneNumber = async (phoneNumber) => {
     const result = await pool.query(
-        `SELECT firstName, lastName, phone_number
+        `SELECT phone_number
         FROM employee
         WHERE phone_number = $1`,
         [phoneNumber]
@@ -114,7 +114,7 @@ const selectUsedEmail = async (employeeEmail) => {
         `SELECT first_name, last_name, email
         FROM employee
         WHERE email = $1`,
-        [email]
+        [employeeEmail]
     );
 
     const row = result.rows[0];
