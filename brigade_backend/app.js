@@ -31,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/employee', employeeRouter);
 app.use('/event', eventRouter);
 app.use('/eventType', eventTypeRouter);
+app.use('/leave', leaveRouter);
 
 // class BasicStrategyModified extends BasicStrategy {
 //     constructor(options, verify) {

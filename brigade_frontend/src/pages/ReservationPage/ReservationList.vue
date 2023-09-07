@@ -1,28 +1,22 @@
 <template>
     <v-sheet width="50%" class="ma-2">
         <v-row>
-            <v-dialog ref="dialog" v-model="modal" :return-value.sync="date" width="290px">
-                <template v-slot:activator="{ props }">
-                    <v-text-field v-model="date" label="Date des reservations" prepend-icon="mdi-calendar" readonly
-                        v-bind="props"></v-text-field>
-                </template>
-                <v-date-picker range v-model="date" scrollable>
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="console.log('OK')">
-                        Cancel
-                    </v-btn>
-                    <v-btn text color="primary" @click="$refs.dialog.save(date)">
-                        OK
-                    </v-btn>
-                </v-date-picker>
-            </v-dialog>
-            <v-text-field type="date" class="ma-2" label="Date de la reservation" clearable>
+            <v-text-field type="date" class="ma-2" label="Date Debut" clearable>
+            </v-text-field>
+            <v-text-field type="date" class="ma-2" label="Date Fin" clearable>
             </v-text-field>
         </v-row>
-        <v-data-table-server height="300px" fixed-header v-model="selected" :headers="headers" :items="reservations"
-            :items-length="reservations.length" select-strategy="single" class="elevation-1"
-            @update:options="loadReservations" show-select>
-        </v-data-table-server>
+<v-radio-group v-model="shiftShow">
+    <v-row width="80%">
+    <v-radio label="Midi" value="lunch"></v-radio>
+    <v-radio label="Soir" value="dinner"></v-radio>
+    <v-radio label="Journee complete" value="all"></v-radio>
+</v-row>
+</v-radio-group>
+        <v-card class="mx-auto" max-height="400" max-width="800">
+            <v-list v-model:selected='selected' :items="reservations" item-title="listInformation" item-value="id">
+            </v-list>
+        </v-card>
         <v-dialog v-model="dialogNewReservation" width="100%">
             <template v-slot:activator="{ props }">
                 <div class="ma-2 text-center">
@@ -52,33 +46,11 @@ export default {
     data()
     {
         return {
+            shiftShow : "all",
             date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
             modal: false,
             selected: [],
             reservations: [],
-            headers: [
-                {
-                    align: 'start',
-                    key: 'clientName',
-                    sortable: false,
-                    title: 'Non du client',
-                },
-                {
-                    key: 'date',
-                    sortable: false,
-                    title: 'Date',
-                },
-                {
-                    key: 'startTime',
-                    sortable: false,
-                    title: 'Heure',
-                },
-                {
-                    key: 'peopleCount',
-                    sortable: false,
-                    title: 'Nb personnes',
-                },
-            ],
             dialogNewReservation: false,
         };
     },
@@ -93,6 +65,7 @@ export default {
         {
             const allReservations = [
                 {
+                    listInformation: "Alice Dupays (555-555-5555) - 4 personnes - 15/10/2023 - 10h00",
                     id: 1,
                     tableNumber: null,
                     clientId: "1",
@@ -104,9 +77,13 @@ export default {
                     endTime: "12:00:00",
                     mention: null,
                     hasMinor: false,
-                    takenBy: "3883344939293432"
+                    takenBy: "3883344939293432",
+                    props: {
+                        color: 'red',
+                    },
                 },
                 {
+                    listInformation: "Alice Dupays (555-555-5555) - 12 personnes - 15/10/2023 - 18h00",
                     id: 2,
                     tableNumber: null,
                     clientId: "1",
@@ -118,9 +95,13 @@ export default {
                     endTime: "20:00:00",
                     mention: "Fete a Annie",
                     hasMinor: false,
-                    takenBy: "3883344939293432"
+                    takenBy: "3883344939293432",
+                    props: {
+                        color: 'red',
+                    },
                 },
                 {
+                    listInformation: "Bob Gratton (111-111-1111) - 4 personnes - 15/10/2023 - 19h00",
                     id: 3,
                     tableNumber: null,
                     clientId: "2",
@@ -132,23 +113,31 @@ export default {
                     endTime: "21:00:00",
                     mention: null,
                     hasMinor: true,
-                    takenBy: "3883344939293432"
+                    takenBy: "3883344939293432",
+                    props: {
+                        color: 'red',
+                    },
                 },
                 {
+                    listInformation: "Alice Dupays (555-555-5555) - 6 personnes - 17/10/2023 - 10h00",
                     id: 4,
                     tableNumber: null,
                     clientId: "1",
                     clientName: "Alice Dupays (555-555-5555)",
                     statusCode: "1",
-                    peopleCount: 4,
+                    peopleCount: 6,
                     date: "2023-10-17",
                     startTime: "10:00:00",
                     endTime: "12:00:00",
                     mention: null,
                     hasMinor: false,
-                    takenBy: "3883344939293432"
+                    takenBy: "3883344939293432",
+                    props: {
+                        color: 'red',
+                    },
                 },
                 {
+                    listInformation: "Alice Dupays (555-555-5555) - 4 personnes - 18/10/2023 - 10h00",
                     id: 5,
                     tableNumber: null,
                     clientId: "1",
@@ -160,7 +149,10 @@ export default {
                     endTime: "12:00:00",
                     mention: null,
                     hasMinor: false,
-                    takenBy: "3883344939293432"
+                    takenBy: "3883344939293432",
+                    props: {
+                        color: 'red',
+                    },
                 },
             ];
             this.reservations = allReservations;
@@ -172,7 +164,7 @@ export default {
     },
     mounted()
     {
-
+        this.loadReservations();
     },
 }
 </script>

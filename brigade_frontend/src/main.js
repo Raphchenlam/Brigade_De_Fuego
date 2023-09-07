@@ -25,9 +25,13 @@ import PunchView from './pages/PunchPage/PunchView.vue'
 import EspaceLoginForm from './pages/EspaceLoginForm.vue'
 import EspaceDashboard from './pages/Dashboard.vue'
 import EmployeeView from './pages/EmployeePage/EmployeeView.vue'
+import EmployeeInformationView from './pages/EmployeePage/EmployeeInformation.vue';
 import LeaveView from "./pages/LeavePeage/LeaveView.vue"
 import EventView from "./pages/EventPage/EventView.vue"
 import EventInformation from "./pages/EventPage/EventInformation.vue"
+import PunchManagerView from "./pages/PunchPage/PunchManagerView.vue"
+
+import NotFoundView from './pages/NotFound.vue'
 
 const app = createApp(App);
 
@@ -43,14 +47,20 @@ const router = createRouter({
         { path: '/espace', component: EspaceLoginForm },
         { path: '/espace/dashboard', component: EspaceDashboard },
         { path: '/espace/leave', component: LeaveView },
+        { path: '/espace/leave/:employeeNumber', component: LeaveView, props: true },
         { path: '/espace/event', component: EventView },
         { path: '/espace/event/:name', component: EventInformation, props: true },
         { path: '/espace/employee', component: EmployeeView },
+        { path: '/espace/employee/:employeeNumber', component: EmployeeInformationView, props: true },
+        { path: '/espace/punch', component : PunchManagerView },
+
         { path: '/operation', component: OperationLoginForm },
         { path: '/operation/client', component: ClientView },
         { path: '/operation/punch', component: PunchView },
         { path: '/operation/reservation', component: ReservationView },
-        { path: '/operation/plansalle', component: PlanSalleView }
+        { path: '/operation/plansalle', component: PlanSalleView },
+
+        { path: '/:pathMatch(.*)*', component: NotFoundView}
 
     ]
 });

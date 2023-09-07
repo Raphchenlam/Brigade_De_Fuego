@@ -1,11 +1,11 @@
 <template>
-    <v-sheet width="30%" height="auto" class="ma-2">
+    <v-sheet width="100%" max-width="30%" height="auto" class="ma-2">
         <v-text-field @input="loadEmployees" v-model="search" hide-details placeholder="Search name..."
             class="ma-2"></v-text-field>
         <v-select class="mx-16" v-model="roleShowed" label="Poste" :items="roleList"></v-select>
 
         <v-card class="mx-auto" max-height="400" max-width="800">
-            <v-list v-model:selected='selection' :items="employeeList" item-title="listInformation"
+            <v-list v-model:selected='selected' :items="employeeList" item-title="listInformation"
                 item-value="employeeNumber">
             </v-list>
         </v-card>
@@ -31,8 +31,12 @@
   
 <script>
 import NewEmployeeForm from "../EmployeePage/NewEmployeeForm.vue"
+import { getAllEmployees, getAllEmployeesByRole, getAllRoles } from "../../services/EmployeeService";
 
 export default {
+    inject: [
+        'loadEmployeeNumber'
+    ],
     components: {
         NewEmployeeForm
     },
@@ -40,7 +44,7 @@ export default {
     {
         return {
             search: "",
-            selection: [],
+            selected: [],
             employeeList: [],
             roleList: [],
             roleShowed: "Tous",
@@ -56,63 +60,65 @@ export default {
     methods: {
         loadEmployees()
         {
-            // liste temporaire demployee
-            const allEmployees = [
-                {
-                    listInformation: "1111 - Maxime Marchand",
-                    employeeNumber: 1111,
-                    firstName: "Maxime",
-                    lastName: "Marchand",
-                    role: "Serveur",
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "2222 - Francis Maynard",
-                    employeeNumber: 2222,
-                    firstName: "Francis",
-                    lastName: "Maynard",
-                    role: "Bussboy",
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "3333 - David Beaudry",
-                    employeeNumber: 3333,
-                    firstName: "David",
-                    lastName: "Beaudry",
-                    role: "Serveur",
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "4444 - Raphael Chenard Lamothe",
-                    employeeNumber: 4444,
-                    firstName: "Raphael",
-                    lastName: "Chenard Lamothe",
-                    role: "Hotesse",
-                    props: {
-                        color: 'red',
-                    },
-                },
-            ];
             this.employeeList = [];
-            allEmployees.forEach(employee =>
+            getAllEmployees().then(allEmployees =>
             {
-                if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                    || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
+                allEmployees.forEach(employee =>
                 {
-                    if (this.roleShowed == "Tous")
+                    if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                        || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
                     {
-                        this.employeeList.push(employee);
-                    } else { }
-                    //faire une fonction qui permet de seulement ajouter les event que son attribut eventType == this.eventTypeShowed au eventList
-                }
+                        if (this.roleShowed == "Tous")
+                        {
+                            const newEmployee = {
+                                "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName,
+                                "employeeNumber": employee.employeeNumber,
+                                "firstName": employee.firstName,
+                                "lastName": employee.lastName,
+                                "role": employee.role,
+                                props: {
+                                    color: 'red',
+                                },
+                            };
+                            this.employeeList.push(newEmployee);
+                        }
+                    }
+                });
+            }).catch(err =>
+            {
+                console.error(err);
             });
         },
+        loadEmployeesByRole()
+        {
+            this.employeeList = [];
+            getAllEmployeesByRole(this.roleShowed).then(allEmployees =>
+            {
+                console.log("AllEMPLOYEE BY ROLE ", allEmployees);
+                allEmployees.forEach(employee =>
+                {
+                    if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                        || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
+                    {
+                            const newEmployee = {
+                                "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName,
+                                "employeeNumber": employee.employeeNumber,
+                                "firstName": employee.firstName,
+                                "lastName": employee.lastName,
+                                "role": employee.role,
+                                props: {
+                                    color: 'red',
+                                },
+                            };
+                            this.employeeList.push(newEmployee);
+                    }
+                });
+            }).catch(err =>
+            {
+                console.error(err);
+            });
+        },
+
         closeNewEmployeeDialog()
         {
             this.dialogNewEmployee = false;
@@ -121,18 +127,37 @@ export default {
     watch: {
         roleShowed()
         {
-            this.loadEmployees();
-            this.selection = "";
+            if (this.roleShowed != "Tous")
+            {
+                console.log("WATCH-1")
+                this.loadEmployeesByRole();
+            }
+            else
+            {
+                console.log("WATCH-2")
+                this.loadEmployees();
+            }
+            this.selected = [];
+
         },
-        selection()
+        selected()
         {
-            console.log("Selection changer");
+            console.log("Selection changer", this.selected[0]);
+            this.loadEmployeeNumber(this.selected[0]);
         }
     },
     mounted()
     {
-        this.roleList = ["Tous", "Serveur", "Bussboy", "Hotesse"];
+        this.roleList.push("Tous");
         this.loadEmployees();
+        getAllRoles().then(allRoles => {
+            console.log("ALLROLES", allRoles)
+            allRoles.forEach(role => {
+                this.roleList.push(role.name);
+            });
+        }).catch(err => {
+            console.error(err);
+        });
     },
 }
 </script>
@@ -143,5 +168,4 @@ export default {
     height: 400px;
     /* or any height you want */
     overflow-y: auto
-}
-</style>
+}</style>
