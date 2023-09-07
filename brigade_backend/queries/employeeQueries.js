@@ -17,8 +17,8 @@ const selectAllEmployees = async () => {
 };
 exports.selectAllEmployees = selectAllEmployees;
 
-const insertEmployee = async (newEmployee, clientParam) => {
-    const client = clientParam || await pool.connect();
+const insertEmployee = async (newEmployee, passwordSalt, passwordHash) => {
+    const client = await pool.connect();
 
     const isSuperAdmin = false;
     const isNewEmployee = true;
@@ -28,7 +28,7 @@ const insertEmployee = async (newEmployee, clientParam) => {
         `INSERT INTO employee(
             employee_number, first_name, last_name, role, color_hexcode, hourly_rate, barcode_number, email, phone_number, is_admin, is_super_admin, is_new_employee, is_active, skill_points, password_salt, password_hash)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
-        [newEmployee.employeeNumber, newEmployee.firstName, newEmployee.lastName, newEmployee.role, newEmployee.colorHexCode, newEmployee.hourlyRate, newEmployee.barcodeNumber, newEmployee.employeeEmail, newEmployee.phoneNumber, newEmployee.isAdmin, isSuperAdmin, isNewEmployee, isActive, newEmployee.skillPoints, newEmployee.passwordSalt, newEmployee.passwordHash]
+        [newEmployee.employeeNumber, newEmployee.firstName, newEmployee.lastName, newEmployee.role, newEmployee.colorHexCode, newEmployee.hourlyRate, newEmployee.barcodeNumber, newEmployee.employeeEmail, newEmployee.phoneNumber, newEmployee.isAdmin, isSuperAdmin, isNewEmployee, isActive, newEmployee.skillPoints, passwordSalt, passwordHash]
     );
 };
 
@@ -86,6 +86,47 @@ const selectAssignedColorHexcode = async (colorHexCode) => {
     return undefined;
 };
 exports.selectAssignedColorHexcode = selectAssignedColorHexcode;
+
+const selectUsedPhoneNumber = async (phoneNumber) => {
+    const result = await pool.query(
+        `SELECT firstName, lastName, phone_number
+        FROM employee
+        WHERE phone_number = $1`,
+        [phoneNumber]
+    );
+
+    const row = result.rows[0];
+    if(row){
+        return {
+            firstName: row.first_name,
+            lastName: row.last_name,
+            phoneNumber: row.phone_number
+        }
+        
+    }
+    return undefined;
+};
+
+exports.selectUsedPhoneNumber = selectUsedPhoneNumber;
+
+const selectUsedEmail = async (employeeEmail) => {
+    const result = await pool.query(
+        `SELECT first_name, last_name, email
+        FROM employee
+        WHERE email = $1`,
+        [email]
+    );
+
+    const row = result.rows[0];
+    if(row){
+        return {
+            employeeEmail: row.email
+        }
+    }
+    return undefined;
+};
+
+exports.selectUsedEmail = selectUsedEmail;
 
 /////   QUERIES connexes à Employee   /////
 

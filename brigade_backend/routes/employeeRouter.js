@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport'); //PLUS TARD POUR CREATION EMPLOYEE
-const regex = require ('../../REGEX/REGEX');
+const crypto = require('crypto');
+const regex = require('../../REGEX/REGEX');
 
 const HttpError = require("../HttpError");
 
@@ -74,9 +75,9 @@ router.post('/', (req, res, next) => {
         return next(new HttpError(400, 'Le rôle ne respecte pas les critères d\'acceptation'));
     }
     employeeQueries.selectRoleByName(role).then(existingRole => {
-         if(!existingRole){
-            throw new HttpError(400, `Le role ${role} n'existe pas`);    
-         }    
+        if (!existingRole) {
+            throw new HttpError(400, `Le role ${role} n'existe pas`);
+        }
     });
 
 
@@ -88,14 +89,13 @@ router.post('/', (req, res, next) => {
         return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
     }
     employeeQueries.selectAssignedColorHexcode(colorHexCode).then(assignedColorHexcode => {
-        if(assignedColorHexcode){
-           throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à cette couleur`);
+        if (assignedColorHexcode) {
+            throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à cette couleur`);
         }
     });
 
 
     const hourlyRate = req.body.hourlyRate;
-    console.log('HOURLY RATE', hourlyRate);
     if (!hourlyRate || hourlyRate == '') {
         return next(new HttpError(400, 'Le champ hourlyRate est requis'));
     }
@@ -105,7 +105,7 @@ router.post('/', (req, res, next) => {
 
 
     const barcodeNumber = req.body.barcodeNumber;
-    
+
     if (!barcodeNumber || barcodeNumber == '') {
         return next(new HttpError(400, 'Le champ barcodeNumber est requis'));
     }
@@ -121,6 +121,11 @@ router.post('/', (req, res, next) => {
     if (!regex.validEmail.test(employeeEmail)) {
         return next(new HttpError(400, 'Le champ employeeEmail ne respecte pas les critères d\'acceptation'));
     }
+    employeeQueries.selectUsedEmail(employeeEmail).then(usedEmail => {
+        if(usedEmail){
+            return next(new HttpError(400, `Cette adresse courriel est déjà utilisée`));
+        }
+    });
 
 
     const phoneNumber = req.body.phoneNumber;
@@ -130,6 +135,11 @@ router.post('/', (req, res, next) => {
     if (!regex.validPhoneNumber.test(phoneNumber)) {
         return next(new HttpError(400, 'Le champ phoneNumber ne respecte pas les critères d\'acceptation'));
     }
+    employeeQueries.selectUsedPhoneNumber(phoneNumber).then(usedPhoneNumber =>{
+        if(usedPhoneNumber){
+            return next(new HttpError(400, 'Ce numéro de téléphone est déjà utilisé'));
+        }
+    });
 
 
     const isAdmin = req.body.isAdmin;
@@ -148,17 +158,37 @@ router.post('/', (req, res, next) => {
         lastName: "" + lastName,
         role: "" + role,
         colorHexCode: "" + colorHexCode,
-        hourlyRate:  parseFloat(hourlyRate),
+        hourlyRate: parseFloat(hourlyRate),
         barcodeNumber: "" + barcodeNumber,
         employeeEmail: "" + employeeEmail,
         phoneNumber: "" + phoneNumber,
         isAdmin: isAdmin,
-        skillPoints: parseInt(skillPoints)
+        skillPoints: parseInt(skillPoints),
     };
     console.log("EMPLOYEE INFO", newEmployee);
 
-    return employeeQueries.insertEmployee(newEmployee);
-}
-);
+    const password = req.body.password;
+    if (!password || password == '') {
+        return next(new HttpError(400, 'Le champ password est requis'));
+    }
+
+    const saltBuf = crypto.randomBytes(16);
+    const passwordSalt = saltBuf.toString("base64");
+
+    crypto.pbkdf2(password, passwordSalt, 100000, 64, "sha512", async (err, derivedKey) => {
+        if (err) {
+            return next(err);
+        }
+
+        const passwordHashBase64 = derivedKey.toString("base64");
+
+        try {
+            const employeeAccountWithPasswordHash = await employeeQueries.insertEmployee(newEmployee, passwordSalt, passwordHashBase64);
+            res.json(employeeAccountWithPasswordHash);
+        } catch (err) {
+            return next(err);
+        }
+    });
+});
 
 module.exports = router;
