@@ -19,11 +19,11 @@
             </v-col>
             <v-col cols="12" sm="12" md="12">
                 <span>
-                    Etat : 
+                    Etat :
                 </span>
-                    <span v-if="editedItem.status == 'En Attente'" style="color:red">{{ editedItem.status }}</span>
-                    <span v-if="editedItem.status == 'Accepté'" style="color:green">{{ editedItem.status }}</span>
-                    <span v-if="editedItem.status == 'Refusé'" style="color:red">{{ editedItem.status }}</span>
+                <span v-if="editedItem.status == 'En Attente'" style="color:red">{{ editedItem.status }}</span>
+                <span v-if="editedItem.status == 'Accepté'" style="color:green">{{ editedItem.status }}</span>
+                <span v-if="editedItem.status == 'Refusé'" style="color:red">{{ editedItem.status }}</span>
             </v-col>
         </v-row>
     </v-container>
@@ -37,7 +37,8 @@ export default {
     props: {
         editedItem: Object
     },
-    mounted() {
+    mounted()
+    {
         this.leaveCategoryList = ['Personnel', 'Vacances', 'Maladie']
     }
 
