@@ -20,7 +20,7 @@
             </template>
             <v-card>
                 <v-card-title>
-                    Creer un nouvel employe
+                    Créer un nouvel employé
                 </v-card-title>
                 <NewEmployeeForm></NewEmployeeForm>
             </v-card>

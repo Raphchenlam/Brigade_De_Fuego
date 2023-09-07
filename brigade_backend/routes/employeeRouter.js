@@ -181,7 +181,7 @@ router.post('/',
         }
         employeeQueries.selectUsedEmail(email).then(usedEmail => {
             if (usedEmail) {
-                return next(new HttpError(400, `Cette adresse courriel est déjà utilisée`));
+                throw new HttpError(400, `Cette adresse courriel est déjà utilisée`);
             }
         });
 
@@ -195,7 +195,7 @@ router.post('/',
         }
         employeeQueries.selectUsedPhoneNumber(phoneNumber).then(usedPhoneNumber => {
             if (usedPhoneNumber) {
-                return next(new HttpError(400, 'Ce numéro de téléphone est déjà utilisé'));
+                throw new HttpError(400, 'Ce numéro de téléphone est déjà utilisé');
             }
         });
 
