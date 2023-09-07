@@ -100,7 +100,7 @@ export default {
                     props: {
                         color: 'red',
                     },
-                }, 
+                },
                 {
                     listInformation: "Raphael Chenard Lamothe (888-888-8888)",
                     id: 5,
@@ -167,8 +167,7 @@ export default {
             this.dialogNewClient = false;
         },
     },
-    mounted()
-    {
+    mounted() {
         this.loadClients();
     },
 }

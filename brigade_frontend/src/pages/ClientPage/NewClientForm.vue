@@ -2,15 +2,17 @@
     <div class="ma-2" width="auto">
         <v-form class="pa-10" @submit.prevent="submitNewClient" validate-on="submit lazy" ref="createClientForm">
             <v-row>
-                <v-text-field class="ma-2 pa-4" label="Prénom" density="compact" v-model.trim="client.firstName" 
-                    @blur="capitalizeFirstName()" :rules="[rules.required, rules.clientIdUnique, rules.firstNameValidation]" clearable>
+                <v-text-field class="ma-2 pa-4" label="Prénom" density="compact" v-model.trim="client.firstName"
+                    @blur="capitalizeFirstName()" :rules="[rules.required, rules.clientIdUnique, rules.firstNameValidation]"
+                    clearable>
                 </v-text-field>
                 <v-text-field class="ma-2 pa-4" label="Nom de famille" density="compact" v-model.trim="client.lastName"
-                @blur="capitalizeLastName()" :rules="[rules.required, rules.clientIdUnique, rules.lastNameValidation]" clearable>
+                    @blur="capitalizeLastName()" :rules="[rules.required, rules.clientIdUnique, rules.lastNameValidation]"
+                    clearable>
                 </v-text-field>
             </v-row>
             <v-text-field class="pa-4" label="Numéro de téléphone(format: xxx-xxx-xxxx)" density="compact"
-                v-model.trim="client.phoneNumber"
+                v-model.trim="client.phoneNumber" @blur="patternedPhoneNumber()"
                 :rules="[rules.required, rules.clientIdUnique, rules.phoneNumberValidation]" clearable>
             </v-text-field>
             <v-text-field class="pa-4" label="Allergies" density="compact" v-model.trim="client.allergy" clearable>
@@ -28,11 +30,10 @@
 <script>
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { createClient } from '../../services/ClientService';
-import { validName, validPhoneNumber } from '../../../../REGEX/REGEX';
-import { capitalize } from 'vue';
+import { validName, validPhoneNumber } from '../../../../REGEX/REGEX_frontend.js';
 
 export default {
-    inject: ['closeNewClientDialog'],
+    inject: ['closeNewClientDialog', 'capitalizeWords', 'formatPhoneNumber'],
     components: {
         DarkRedButton,
     },
@@ -49,9 +50,9 @@ export default {
             rules: {
                 required: value => !!value || "Le champ est requis",
                 clientIdUnique: () => this.clientIdUnique || "Cette combinaison d'identifiants est déjà utilisé, veuillez modifié le(s) champs ou consulter le client associé",
-                firstNameValidation: value => !!validName.test(value) || 'Le champ prénom ne respecte pas les critères d\'acceptation.',
-                lastNameValidation: value => !!validName.test(value) || 'Le champ nom de famille ne respecte pas les critères d\'acceptation.',
-                phoneNumberValidation: value => !!validPhoneNumber.test(value) || 'Le champ numéro de téléphone ne respecte pas les critères d\'acceptation.',
+                firstNameValidation: value => validName.test(value) || 'Le champ prénom ne respecte pas les critères d\'acceptation.',
+                lastNameValidation: value => validName.test(value) || 'Le champ nom de famille ne respecte pas les critères d\'acceptation.',
+                phoneNumberValidation: value => validPhoneNumber.test(value) || 'Le champ numéro de téléphone ne respecte pas les critères d\'acceptation.',
             },
             clientIdUnique: true,
             newClientAdded: false
@@ -84,19 +85,18 @@ export default {
             }
         },
         capitalizeFirstName() {
-            this.client.firstName = this.capitalize(this.client.firstName);
+            this.client.firstName = this.capitalizeWords(this.client.firstName);
         },
         capitalizeLastName() {
-            this.client.lastName = this.capitalize(this.client.lastName);
+            this.client.lastName = this.capitalizeWords(this.client.lastName);
         },
-        capitalize(value) {
-            var toLowerCaseString = value.toLowerCase();
-            const [firstLetter, ...rest] = toLowerCaseString.split('');
-            return firstLetter.toUpperCase() + rest.join('');
+        patternedPhoneNumber() {
+            this.client.phoneNumber = this.formatPhoneNumber(this.client.phoneNumber);
         }
-    }
 
+    }
 }
+
 </script>
 
 <style scoped>

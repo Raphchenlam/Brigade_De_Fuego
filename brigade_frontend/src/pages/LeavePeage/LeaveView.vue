@@ -4,7 +4,7 @@
 
 <script>
 
-import LeaveList from './LeaveList.vue';S
+import LeaveList from './LeaveList.vue';
 
 export default {
   components: {
