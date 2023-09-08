@@ -65,10 +65,10 @@
 //import session from '../../sessions/UserSession';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { validEmployeeNumber, validName, validPhoneNumber, validEmail, validRole, validColorHexCode, validHourlyRate, validBarcodeNumber, validSkillPoints } from '../../../../REGEX/REGEX_frontend';
-import { createEmployee, getAllRoles } from '../../services/EmployeeService';
+import { createEmployee, getAllEmployees, getAllEmployeesByRole, getAllRoles } from '../../services/EmployeeService';
 
 export default {
-    inject: ['closeNewEmployeeDialog'],
+    inject: ['closeNewEmployeeDialog', 'loadEmployees'],
     components: {
         DarkRedButton
     },
@@ -120,7 +120,7 @@ export default {
                 }
             },
             roleList: [],
-            skillPointsRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            skillPointsRange: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         }
     },
     methods: {
@@ -134,7 +134,8 @@ export default {
                 createEmployee(this.employee).then(() => {
                     console.log("THERE BITCH")
                     alert(`${this.employee.firstName} ${this.employee.lastName} / ${this.employee.employeeNumber} créé(e) avec succès`);
-                    this.$router.replace('/espace/employee');
+                    this.loadEmployees();
+                    this.closeDialog();
                 }).catch(error => {
                     console.log(error)
                 });
@@ -149,10 +150,12 @@ export default {
         },
         closeDialog() {
             this.closeNewEmployeeDialog();
+        },
+        updateEmployeeList(){
+            this.loadEmployees();
         }
     },
     mounted() {
-        this.roleList.push("Tous");
         getAllRoles().then(allRoles => {
             console.log("ALLROLES", allRoles)
             allRoles.forEach(role => {

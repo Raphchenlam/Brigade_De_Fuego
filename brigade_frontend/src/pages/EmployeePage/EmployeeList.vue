@@ -55,6 +55,7 @@ export default {
     {
         return {
             closeNewEmployeeDialog: this.closeNewEmployeeDialog,
+            loadEmployees: this.loadEmployees,
         };
     },
     methods: {
