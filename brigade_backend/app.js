@@ -20,9 +20,10 @@ const schedulePeriodRouter = require ('./routes/schedulePeriodRouter');
 const sectionRouter = require ('./routes/sectionRouter');
 const tableRouter = require ('./routes/tableRouter');
 
+
 const app = express();
 
-app.use(logger('dev')); 
+app.use(logger('dev'));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -128,15 +129,15 @@ app.post('/login',
 app.use((err, req, res, next) => {
     console.log("error handler: ", err);
     if (res.headersSent) {
-      return next(err);
+        return next(err);
     }
     res.status(err.status || 500)
     if (err instanceof HttpError) {
-      res.json(err.getJsonMessage());
+        res.json(err.getJsonMessage());
     } else {
-      res.json(err);
+        res.json(err);
     }
-}
-);
+});
+
 
 module.exports = app;
