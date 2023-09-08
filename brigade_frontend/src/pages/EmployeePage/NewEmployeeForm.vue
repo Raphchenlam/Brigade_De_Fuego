@@ -135,12 +135,16 @@ export default {
                     console.log("THERE BITCH")
                     alert(`${this.employee.firstName} ${this.employee.lastName} / ${this.employee.employeeNumber} créé(e) avec succès`);
                     this.$router.replace('/espace/employee');
-                }).catch(authError => {
-                    alert(authError.message);
-                    if (authError.status === 409) {
-                        this.$refs.newEmployeeForm.validate();
-                    }
+                }).catch(error => {
+                    console.log(error)
                 });
+                //utiliser authError lorsqu'on utilisera session
+                // .catch(authError => {
+                //     alert(authError.message);
+                //     if (authError.status === 409) {
+                //         this.$refs.newEmployeeForm.validate();
+                //     }
+                // });
             }
         },
         closeDialog() {

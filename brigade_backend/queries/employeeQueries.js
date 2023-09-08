@@ -49,12 +49,37 @@ const insertEmployee = async (newEmployee, passwordSalt, passwordHash, clientPar
     const isNewEmployee = true;
     const isActive = true;
 
-    await client.query(
+    const result = await client.query(
         `INSERT INTO employee(
             employee_number, first_name, last_name, role, color_hexcode, hourly_rate, barcode_number, email, phone_number, is_admin, is_super_admin, is_new_employee, is_active, skill_points, password_salt, password_hash)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+            RETURNING *;`,
         [newEmployee.employeeNumber, newEmployee.firstName, newEmployee.lastName, newEmployee.role, newEmployee.colorHexCode, newEmployee.hourlyRate, newEmployee.barcodeNumber, newEmployee.email, newEmployee.phoneNumber, newEmployee.isAdmin, isSuperAdmin, isNewEmployee, isActive, newEmployee.skillPoints, passwordSalt, passwordHash]
-    );
+    
+        );
+
+        const row = result.rows[0];
+        if(row) {
+            const newEmployee = {
+                employeeNumber: row.employeeNumber,
+                firstName: row.firstName,
+                lastName: row.lastName,
+                role: row.role,
+                colorHexCode: row.colorHexCode,
+                hourlyRate: row.hourly_rate,
+                barcodeNumber: row.barcodeNumber,
+                email: row.email,
+                phoneNumber: row.phoneNumber,
+                isAdmin: row.is_admin,
+                isSuperAdmin: row.is_super_admin,
+                isNewEmployee: row.is_new_employee,
+                isActive: row.is_active,
+                skillPoints: row.skill_points
+            };
+            return newEmployee;
+        }
+
+        throw new Error("L'insertion a échoué pour une raison inconnue");
 };
 
 exports.insertEmployee = insertEmployee;
