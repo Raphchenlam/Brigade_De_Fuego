@@ -1,49 +1,220 @@
 <template>
     <div class="ma-2" width="auto">
-        <v-form class="pa-10" validate-on="submit lazy" ref="createReservationForm">
+        <v-form @submit.prevent="verifyReservation" class="pa-10" validate-on="submit lazy" ref="createReservationForm">
             <v-row>
-                <ClientList></ClientList>
-                <v-col>
+                <v-col cols="6">
                     <v-row class="justify-center">
-                        <v-text-field type="datetime-local" class="ma-2" label="Date de la reservation">
+                        <p v-if="!clientIdValid" class="error-message">Un client doit etre selectionner
+                        </p>
+                    </v-row>
+                    <ClientList></ClientList>
+                </v-col>
+                <v-col cols="6">
+                    <v-text-field v-if="false" v-model="reservation.clientId" class="ma-2" :rules="[rules.required]">
+                    </v-text-field>
+                    <v-row class="justify-center">
+                        <v-text-field type="datetime-local" v-model="reservationFullDate" class="ma-2"
+                            label="Date de la reservation" :rules="[rules.required]">
                         </v-text-field>
-                        <v-text-field width="10px" type="number" class="shrink ma-2" label="Nombre de personnes">
+                        <v-text-field v-model="reservation.peopleCount" width="10px" type="number" class="shrink ma-2"
+                            label="Nombre de personnes" :rules="[rules.required]">
                         </v-text-field>
                     </v-row>
-                    <v-textarea height="200px" no-resize rows="8" label="Mentions speciales"></v-textarea>
-                    <v-checkbox label="Mineur sur place"></v-checkbox>
-                    <v-row class="justify-center">
-                        <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                        <DarkRedButton class="mx-5" textbutton="Creer la reservation"></DarkRedButton>
-                    </v-row>
+                    <v-textarea v-model="reservation.mention" height="200px" no-resize rows="8"
+                        label="Mentions speciales"></v-textarea>
+                    <v-checkbox v-model="reservation.hasMinor" label="Mineur sur place"></v-checkbox>
+                    <v-dialog v-model="dialogConfirmReservation" width="100%">
+                        <template v-slot:activator="{ props }">
+                            <div class="ma-2 text-center">
+                                <v-row class="justify-center">
+                                    <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
+                                    <DarkRedButton class="mx-5" type="submit" v-bind="props"
+                                        textbutton="Creer la reservation"></DarkRedButton>
+                                </v-row>
+                            </div>
+                        </template>
+                        <v-card>
+                            <v-card-title>
+                                Confirmer la reservation
+                            </v-card-title>
+                            <v-card-text>
+                                <p>Veuillez scanner votre carte employe</p>
+                                <v-form @submit.prevent="submitNewReservation" class="pa-10" validate-on="submit lazy"
+                                    ref="confirmReservationForm">
+                                    <v-row class="justify-center">
+                                        <p v-if="!takenByNumberValid" class="error-message">Le numero doit comporter 16
+                                            chiffres
+                                        </p>
+                                    </v-row>
+                                    <v-row class="justify-center">
+                                        <v-text-field autofocus type="number" v-model="reservation.takenBy"
+                                            label="Numero de la carte employe" :rules="[rules.required]"></v-text-field>
+                                    </v-row>
+                                    <v-dialog v-model="dialogOKReservation" width="50%">
+                                        <template v-slot:activator="{ props }">
+                                            <v-sheet class="ma-2 text-center">
+                                                <v-row class="justify-center">
+                                                    <v-row class="justify-center">
+                                                        <BlackButton type="submit" textbutton="Confirmer" v-bind="props">
+                                                        </BlackButton>
+                                                    </v-row>
+                                                </v-row>
+                                            </v-sheet>
+                                        </template>
+                                        <v-card height="200px">
+                                            <v-card-title>
+                                                Confirmation
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-row class="justify-center">
+                                                    <p>La reservation a bien ete enregistrer.</p>
+                                                </v-row>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-dialog>
+                                </v-form>
+                            </v-card-text>
+                        </v-card>
+                    </v-dialog>
                 </v-col>
             </v-row>
         </v-form>
     </div>
 </template>
 <script>
+import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import ClientList from '../ClientPage/ClientList.vue';
+
+import { createReservation } from '../../services/ReservationService'
 
 export default {
     inject: ['closeNewReservationDialog'],
     components: {
         DarkRedButton,
-        ClientList
+        ClientList,
+        BlackButton
     },
     data()
     {
         return {
-            date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-            modal: false,
-            chiffresNombrePersonnes: []
+            dateValid: true,
+            clientIdValid: true,
+            takenByNumberValid: true,
+            dialogConfirmReservation: false,
+            dialogOKReservation: false,
+            reservationFullDate: null,
+            selectedClientId: null,
+            reservation: {
+                tableNumber: null,
+                clientId: null,
+                statusCode: 1,
+                peopleCount: null,
+                date: null,
+                startTime: null,
+                endTime: null,
+                mention: null,
+                hasMinor: false,
+                takenBy: ""
+            },
+            rules: {
+                required: value => !!value || "Le champ est requis",
+                //dateValid: value => !!dateValid || "Le champ est requis",
+            },
+            formValid: true
         }
     },
     methods: {
+        closeAllDialog()
+        {
+            this.dialogOKReservation = false;
+            this.dialogConfirmReservation = false;
+            this.closeDialog();
+        },
         closeDialog()
         {
             this.closeNewReservationDialog();
+        },
+        async verifyReservation()
+        {
+            this.clientIdValid = true;
+            if (!this.reservation.clientId)
+            {
+                this.clientIdValid = false;
+            }
+            const formValid = await this.$refs.createReservationForm.validate();
+
+            if (!formValid.valid || !this.clientIdValid)
+            {
+                this.dialogConfirmReservation = false;
+            }
+        },
+        loadClientId(clientId)
+        {
+            this.selectedClientId = clientId;
+        },
+        submitNewReservation()
+        {
+            this.dialogOKReservation = false;
+            if (this.reservation.takenBy.length != 16)
+            {
+                this.dialogOKReservation = false;
+                this.takenByNumberValid = false;
+                return;
+            }
+            createReservation(this.reservation).then(result =>
+            {
+                this.dialogOKReservation = true;
+                setTimeout(this.closeAllDialog, 2000);
+            }).catch(err =>
+            {
+                console.error(err);
+            });
         }
+    },
+    watch: {
+        reservationFullDate()
+        {
+            this.dateValid = true;
+            this.reservation.date = this.reservationFullDate.split('T').slice(0)[0];
+            this.reservation.startTime = this.reservationFullDate.split('T').slice(0)[1];
+
+            let endHour = parseInt(this.reservation.startTime.split(':').slice(0)[0]);
+            let endMinute = parseInt(this.reservation.startTime.split(':').slice(0)[1]);
+            endHour += 3;
+            console.log("endHour", endHour);
+            console.log("endMinute", endMinute); //verifier pour 00 a 09 car pourrait etre problematique ( affiche 5:2 au lieu de 5:02)
+            if (endHour > 23)
+            {
+                endHour = 23;
+                endMinute = 59;
+            }
+            this.reservation.endTime = endHour.toString() + ":" + endMinute.toString();
+
+            let reservationYear = this.reservation.date.split('-').slice(0)[0];
+            var today = new Date();
+            console.log("ReservYear", reservationYear)
+            console.log("Today", today.getFullYear());
+            if (reservationYear < today.getFullYear())
+            {
+                this.dateValid = false;
+            }
+
+            //today.setHours(today 4); 
+            //let dateToAdd3Hours = this.reservation.startTime;
+            //let date3HoursAdded = dateToAdd3Hours.setHours(dateToAdd3Hours.getHours() + 3);
+            //console.log("Ca marche tu:",date3HoursAdded);
+        },
+        selectedClientId()
+        {
+            this.reservation.clientId = this.selectedClientId
+        }
+    },
+    provide()
+    {
+        return {
+            loadClientId: this.loadClientId
+        };
     },
 }
 </script>
@@ -57,5 +228,9 @@ export default {
     text-align: center;
     width: 80%;
     max-width: 80rem;
+}
+
+.error-message {
+    color: red
 }
 </style>

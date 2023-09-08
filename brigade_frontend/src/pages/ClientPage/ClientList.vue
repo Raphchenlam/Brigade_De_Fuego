@@ -1,5 +1,5 @@
 <template>
-    <v-sheet width="50%" height="auto" class="ma-2">
+    <v-sheet width="auto" height="auto" class="ma-2">
         <v-card class="mx-auto" max-height="400" max-width="800">
             <v-list v-model:selected='selected' :items="clients" item-title="listInformation" item-value="id">
             </v-list>
@@ -28,6 +28,7 @@ import NewClientForm from "../clientpage/NewClientForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
 
 export default {
+    inject: ['loadClientId'],
     components: {
         VDataTable,
         NewClientForm,
@@ -158,7 +159,6 @@ export default {
                 if (client.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
                     || client.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
                     || client.phoneNumber.indexOf(this.search) >= 0) {
-                    console.log(client);
                     this.clients.push(client);
                 }
             });
@@ -166,6 +166,12 @@ export default {
         closeNewClientDialog() {
             this.dialogNewClient = false;
         },
+    },
+    watch: {
+        selected()
+        {
+            this.loadClientId(this.selected[0]);
+        }
     },
     mounted() {
         this.loadClients();

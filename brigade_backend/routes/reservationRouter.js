@@ -36,9 +36,19 @@ router.post("/",
         }
 
         const clientExists = clientQueries.getClientById(clientId);
-        if(clientExists){
-            return next(new HttpError(404, `Le client ${clientId} n'existe pas dans la base de données`));
-        }
+
+        clientQueries.getClientById().then(clientExists =>
+        {
+            if(clientExists){
+                return next(new HttpError(404, `Le client ${clientId} n'existe pas dans la base de données`));
+            }
+        })
+    //    if(clientExists){
+    //        return next(new HttpError(404, `Le client ${clientId} n'existe pas dans la base de données`));
+    //    }
+     //   if(clientExists){
+    //        return next(new HttpError(404, `Le client ${clientId} n'existe pas dans la base de données`));
+    //    }
 
         const date = req.body.date;
         if (!date || date == "") {
@@ -49,7 +59,7 @@ router.post("/",
         if (!startTime || startTime == "") {
             return next(new HttpError(400, "Le champ heure de début est requis"));
         }
-
+        console.log("BODY RESERVATION:", req.body);
         const reservation = {
             tableNumber: req.body.tableNumber,
             clientId: req.body.clientId,
