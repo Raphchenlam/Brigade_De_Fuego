@@ -17,7 +17,7 @@
             <v-list v-model:selected='selected' :items="reservations" item-title="listInformation" item-value="id">
             </v-list>
         </v-card>
-        <v-dialog v-model="dialogNewReservation" width="100%">
+        <v-dialog v-model="dialogNewReservation" persistent width="100%">
             <template v-slot:activator="{ props }">
                 <div class="ma-2 text-center">
                     <v-btn block color="black" v-bind="props">Ajouter une nouvelle reservation</v-btn>

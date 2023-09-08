@@ -8,7 +8,7 @@
             <p>Client favoris ? Oui</p>
             <p>Blacklist ? Non</p>
         </v-card>
-        <v-dialog v-model="dialogEditClient" width="100%">
+        <v-dialog v-model="dialogEditClient" persistent width="100%">
             <template v-slot:activator="{ props }">
                 <v-row class="justify-center">
                     <BlackButton class="ma-5" v-bind="props" textbutton="Editer un client"></BlackButton>

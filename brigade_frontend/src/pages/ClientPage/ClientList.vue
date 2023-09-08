@@ -4,7 +4,7 @@
             <v-list v-model:selected='selected' :items="clients" item-title="listInformation" item-value="id">
             </v-list>
         </v-card>
-        <v-dialog v-model="dialogNewClient" width="100%">
+        <v-dialog v-model="dialogNewClient" persistent width="100%">
             <template v-slot:activator="{ props }">
                 <div class="ma-2 text-center">
                     <BlackButton block textbutton="Creer un nouveau client " v-bind="props"></BlackButton>

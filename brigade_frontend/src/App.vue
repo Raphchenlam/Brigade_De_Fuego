@@ -38,36 +38,42 @@ export default {
   },
   methods: {
     capitalizeWords(inputString) {
-      const words = inputString
-        .replace(/-+/g, '-')
-        .replace(/[^a-zA-Z\s-]/g, '')
-        .replace(/\s+/g, ' ')
-        .split(' ')
-        .map(word => {
-          const parts = word.split('-');
-          const capitalizedParts = parts.map(part => {
-            return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
-          });
-          return capitalizedParts.join('-');
-        });
+      if (!!inputString) {
 
-      return words
-        .join(' ')
-        .replace(/-\s+/g, '-')
-        .replace(/\s+-/g, '-')
-        .trim()
-        .replace(/^-+|-+$/g, '')
-        .replace(/[^a-zA-Z]-[^a-zA-Z]/g, '');
+        const words = inputString
+          .replace(/-+/g, '-')
+          .replace(/[^a-zA-Z\s-]/g, '')
+          .replace(/\s+/g, ' ')
+          .split(' ')
+          .map(word => {
+            const parts = word.split('-');
+            const capitalizedParts = parts.map(part => {
+              return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+            });
+            return capitalizedParts.join('-');
+          });
+
+        return words
+          .join(' ')
+          .replace(/-\s+/g, '-')
+          .replace(/\s+-/g, '-')
+          .trim()
+          .replace(/^-+|-+$/g, '')
+          .replace(/[^a-zA-Z]-[^a-zA-Z]/g, '');
+      };
 
     },
     formatPhoneNumber(phoneNumber) {
-      const cleanedNumber = phoneNumber.replace(/\D/g, '');
+      if (!!phoneNumber) {
 
-      if (cleanedNumber.length === 10) {
-        return cleanedNumber.slice(0, 3) + '-' + cleanedNumber.slice(3, 6) + '-' + cleanedNumber.slice(6);
-      } else {
-        return phoneNumber;
-      }
+        const cleanedNumber = phoneNumber.replace(/\D/g, '');
+
+        if (cleanedNumber.length === 10) {
+          return cleanedNumber.slice(0, 3) + '-' + cleanedNumber.slice(3, 6) + '-' + cleanedNumber.slice(6);
+        } else {
+          return phoneNumber;
+        }
+      };
     }
   }
 };

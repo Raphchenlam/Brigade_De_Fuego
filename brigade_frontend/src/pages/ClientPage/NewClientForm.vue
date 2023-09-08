@@ -1,6 +1,6 @@
 <template>
     <div class="ma-2" width="auto">
-        <v-form class="pa-10" @submit.prevent="submitNewClient" validate-on="submit lazy" ref="createClientForm">
+        <v-form class="pa-10" @submit.prevent="submitNewClient" validate-on="blur" ref="createClientForm">
             <v-row>
                 <v-text-field class="ma-2 pa-4" label="Prénom" density="compact" v-model.trim="client.firstName"
                     @blur="capitalizeFirstName()" :rules="[rules.required, rules.clientIdUnique, rules.firstNameValidation]"
@@ -12,7 +12,7 @@
                 </v-text-field>
             </v-row>
             <v-text-field class="pa-4" label="Numéro de téléphone(format: xxx-xxx-xxxx)" density="compact"
-                v-model.trim="client.phoneNumber" @blur="patternedPhoneNumber()"
+                v-model.trim="client.phoneNumber" @input="patternedPhoneNumber()"
                 :rules="[rules.required, rules.clientIdUnique, rules.phoneNumberValidation]" clearable>
             </v-text-field>
             <v-text-field class="pa-4" label="Allergies" density="compact" v-model.trim="client.allergy" clearable>
@@ -20,7 +20,7 @@
             <v-checkbox label="Client favori" density="compact" v-model="client.isFavorite"></v-checkbox>
             <v-row class="justify-center">
                 <DarkRedButton textbutton="Annuler" class="mx-5" height="3rem" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton type="submit" textbutton="Creer le client" class="mx-5" height="3rem">
+                <DarkRedButton type="submit" textbutton="Creer le client" class="mx-5" height="3rem" :disabled="createButtonDisabled">
                 </DarkRedButton>
             </v-row>
         </v-form>
@@ -94,6 +94,14 @@ export default {
             this.client.phoneNumber = this.formatPhoneNumber(this.client.phoneNumber);
         }
 
+    },
+    computed: {
+        createButtonDisabled() {
+            return !this.client.firstName
+                || !this.client.lastName
+                || !this.client.phoneNumber;
+
+        }
     }
 }
 

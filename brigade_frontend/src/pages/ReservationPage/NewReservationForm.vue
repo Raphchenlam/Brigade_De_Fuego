@@ -1,6 +1,6 @@
 <template>
     <div class="ma-2" width="auto">
-        <v-form @submit.prevent="verifyReservation" class="pa-10" validate-on="submit lazy" ref="createReservationForm">
+        <v-form @submit.prevent="verifyReservation" class="pa-10" validate-on="blur" ref="createReservationForm">
             <v-row>
                 <v-col cols="6">
                     <v-row class="justify-center">
@@ -29,7 +29,7 @@
                                 <v-row class="justify-center">
                                     <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
                                     <DarkRedButton class="mx-5" type="submit" v-bind="props"
-                                        textbutton="Creer la reservation"></DarkRedButton>
+                                        textbutton="Creer la reservation" :disabled="createButtonDisabled"></DarkRedButton>
                                 </v-row>
                             </div>
                         </template>
@@ -95,12 +95,11 @@ export default {
         ClientList,
         BlackButton
     },
-    data()
-    {
+    data() {
         return {
-            dateValid: true,
-            clientIdValid: true,
-            takenByNumberValid: true,
+            dateValid: false,
+            clientIdValid: false,
+            takenByNumberValid: false,
             dialogConfirmReservation: false,
             dialogOKReservation: false,
             reservationFullDate: null,
@@ -125,56 +124,47 @@ export default {
         }
     },
     methods: {
-        closeAllDialog()
-        {
+        closeAllDialog() {
             this.dialogOKReservation = false;
             this.dialogConfirmReservation = false;
             this.closeDialog();
         },
-        closeDialog()
-        {
+        closeDialog() {
             this.closeNewReservationDialog();
         },
-        async verifyReservation()
-        {
+        async verifyReservation() {
             this.clientIdValid = true;
-            if (!this.reservation.clientId)
-            {
+            if (!this.reservation.clientId) {
                 this.clientIdValid = false;
             }
-            const formValid = await this.$refs.createReservationForm.validate();
-
-            if (!formValid.valid || !this.clientIdValid)
-            {
-                this.dialogConfirmReservation = false;
-            }
+            await this.$refs.createReservationForm
+                .validate().then(formValid => {
+                    if (!formValid.valid || !this.clientIdValid) {
+                        this.dialogConfirmReservation = false;
+                    }
+                }
+            );
         },
-        loadClientId(clientId)
-        {
+        loadClientId(clientId) {
             this.selectedClientId = clientId;
         },
-        submitNewReservation()
-        {
+        submitNewReservation() {
             this.dialogOKReservation = false;
-            if (this.reservation.takenBy.length != 16)
-            {
+            if (this.reservation.takenBy.length != 16) {
                 this.dialogOKReservation = false;
                 this.takenByNumberValid = false;
                 return;
             }
-            createReservation(this.reservation).then(result =>
-            {
+            createReservation(this.reservation).then(result => {
                 this.dialogOKReservation = true;
                 setTimeout(this.closeAllDialog, 2000);
-            }).catch(err =>
-            {
+            }).catch(err => {
                 console.error(err);
             });
         }
     },
     watch: {
-        reservationFullDate()
-        {
+        reservationFullDate() {
             this.dateValid = true;
             this.reservation.date = this.reservationFullDate.split('T').slice(0)[0];
             this.reservation.startTime = this.reservationFullDate.split('T').slice(0)[1];
@@ -184,8 +174,7 @@ export default {
             endHour += 3;
             console.log("endHour", endHour);
             console.log("endMinute", endMinute); //verifier pour 00 a 09 car pourrait etre problematique ( affiche 5:2 au lieu de 5:02)
-            if (endHour > 23)
-            {
+            if (endHour > 23) {
                 endHour = 23;
                 endMinute = 59;
             }
@@ -195,8 +184,7 @@ export default {
             var today = new Date();
             console.log("ReservYear", reservationYear)
             console.log("Today", today.getFullYear());
-            if (reservationYear < today.getFullYear())
-            {
+            if (reservationYear < today.getFullYear()) {
                 this.dateValid = false;
             }
 
@@ -205,17 +193,45 @@ export default {
             //let date3HoursAdded = dateToAdd3Hours.setHours(dateToAdd3Hours.getHours() + 3);
             //console.log("Ca marche tu:",date3HoursAdded);
         },
-        selectedClientId()
-        {
+        selectedClientId() {
             this.reservation.clientId = this.selectedClientId
         }
     },
-    provide()
-    {
+    provide() {
         return {
             loadClientId: this.loadClientId
         };
     },
+    computed: {
+        createButtonDisabled() {
+            console.log("this.dateValid : " + this.dateValid);
+            console.log("this.clientIdValid : " + this.clientIdValid);
+            console.log("!!this.reservationFullDate : " + !!this.reservationFullDate);
+            console.log("!!this.reservation.clientId : " + !!this.reservation.clientId);
+            console.log("!!this.reservation.peopleCount : " + !!this.reservation.peopleCount);
+            console.log("!!this.reservation.date : " + !!this.reservation.date);
+            console.log("!!this.reservation.startTime : " + !!this.reservation.startTime);
+            console.log("!!this.reservation.endTime : " + !!this.reservation.endTime);
+            console.log("return : " + 
+                !(this.dateValid
+                || this.clientIdValid
+                || !!this.reservationFullDate
+                || !!this.reservation.clientId
+                || !!this.reservation.peopleCount
+                || !!this.reservation.date
+                || !!this.reservation.startTime
+                || !!this.reservation.endTime));
+
+            return !(this.dateValid
+                || this.clientIdValid
+                || !!this.reservationFullDate
+                || !!this.reservation.clientId
+                || !!this.reservation.peopleCount
+                || !!this.reservation.date
+                || !!this.reservation.startTime
+                || !!this.reservation.endTime);
+        }
+    }
 }
 </script>
 

@@ -91,33 +91,15 @@ export default {
             },
             rules: {
                 required: value => !!value || "Le champ est requis",
-                validateEmployeeNumber: value => {
-                    return validEmployeeNumber.test(value) || "Numéro d'employé invalide : doit contenir que 4 chiffres"
-                },
-                validateName: value => {
-                    return validName.test(value) || "Prénom ou nom invalide : la première lettre par mot doit être une majuscule et aucun accent accepté"
-                },
-                validatePhoneNumber: value => {
-                    return validPhoneNumber.test(value) || "Veuillez entrer un numéro de téléphone dans ce format : xxx-xxx-xxxx"
-                },
-                validateEmail: value => {
-                    return validEmail.test(value) || "Adresse courriel invalide"
-                },
-                validateRole: value => {
-                    return validRole.test(value) || "Rôle invalide"
-                },
-                validateHexCode: value => {
-                    return validColorHexCode.test(value) || "Couleur invalide"
-                },
-                validateHourlyRate: value => {
-                    return validHourlyRate.test(value) || "Taux horaire invalide, doit respecter ses un des formats suivant : xx.xx ou xxx.xx. Le premier chiffre ne peut pas être 0"
-                },
-                validateBarcodeNumber: value => {
-                    return validBarcodeNumber.test(value) || "Code barre invalide : doit contenir que 16 chiffres"
-                },
-                validateSkillPoints: value => {
-                    return validSkillPoints.test(value) || "Skill points invalide : doit être entre 0 et 10"
-                }
+                validateEmployeeNumber: value => validEmployeeNumber.test(value) || "Numéro d'employé invalide : doit contenir que 4 chiffres",
+                validateName: value => validName.test(value) || "Prénom ou nom invalide : la première lettre par mot doit être une majuscule et aucun accent accepté",
+                validatePhoneNumber: value => validPhoneNumber.test(value) || "Veuillez entrer un numéro de téléphone dans ce format : xxx-xxx-xxxx",
+                validateEmail: value => validEmail.test(value) || "Adresse courriel invalide",
+                validateRole: value => validRole.test(value) || "Rôle invalide",
+                validateHexCode: value => validColorHexCode.test(value) || "Couleur invalide",
+                validateHourlyRate: value => validHourlyRate.test(value) || "Taux horaire invalide, doit respecter ses un des formats suivant : xx.xx ou xxx.xx. Le premier chiffre ne peut pas être 0",
+                validateBarcodeNumber: value => validBarcodeNumber.test(value) || "Code barre invalide : doit contenir que 16 chiffres",
+                validateSkillPoints: value => validSkillPoints.test(value) || "Skill points invalide : doit être entre 0 et 10",
             },
             roleList: [],
             skillPointsRange: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
