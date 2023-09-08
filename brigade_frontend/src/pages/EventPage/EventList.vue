@@ -1,15 +1,15 @@
 <template>
   <v-sheet>
     <div class="text-center ma-5">
-      <p>Nombre d'evenements : {{ eventList.length }} {{ selection }}</p>
+      <p>Nombre d'evenements : {{ eventList.length }} <p v-if="selection">{{ selection }}</p> </p>
     </div>
     <v-sheet class="mx-16">
-      <v-select class="mx-16" v-model="eventTypeShowed" label="Type devenement" :items="eventTypes"></v-select>
+      <v-select class="mx-16" v-model="eventTypeShowed" label="Type d'événement" :items="eventTypeList"></v-select>
     </v-sheet>
     <v-card class="mx-auto" max-height="400" max-width="800">
-      <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="id"></v-list>
+      <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="name"></v-list>
     </v-card>
-    <v-dialog v-model="dialogNewEvent" width="50%">
+    <v-dialog v-model="dialogNewEvent" width="70%">
       <template v-slot:activator="{ props }">
         <div class="ma-2 text-center">
           <v-btn width="70%" color="black" v-bind="props">
@@ -30,110 +30,70 @@
 
 
 <script>
-import NewEventForm from "../EventPage/NewEventForm.vue"
+import NewEventForm from "../EventPage/NewEventForm.vue";
+import { fetchAllEvents, fetchAllEventType } from '../../services/EventService';
 
 export default {
   components: {
     NewEventForm
   },
-  data()
-  {
+  data() {
     return {
       selection: [],
       eventList: [],
-      eventTypes: [],
-      eventTypeShowed: "Tous",
+      allEventList: [],
+      eventTypeList: [],
+      eventTypeShowed: "all",
       dialogNewEvent: false,
     };
   },
-  provide()
-  {
+
+
+  provide() {
     return {
       closeNewEventDialog: this.closeNewEventDialog,
+      updateEventTypeShowed: this.updateEventTypeShowed,
+      updateEventList: this.updateEventList
     };
   },
   methods: {
-    loadEvents()
-    {
-      // liste temporaire de events - Faire un fetch a la BD a la place
-      const allEvents = [
-        {
-          id: 1,
-          name: "Game du canadien",
-          eventType: "Sportif",
-          impact: 1.6,
-          iActive: true,
-          props: {
-            color: 'red',
-          },
-        },
-        {
-          id: 2,
-          name: "Fete des meres",
-          eventType: "Ferie",
-          impact: 2.6,
-          isActive: true,
-          props: {
-            color: 'red',
-          },
-        },
-        {
-          id: 3,
-          name: "Tournois de miniput a RDS",
-          eventType: "Sportif",
-          impact: 1.1,
-          isActive: true,
-          props: {
-            color: 'red',
-          },
-        },
-        {
-          id: 4,
-          name: "Super Bowl 2023",
-          eventType: "Sportif",
-          impact: 3,
-          isActive: false,
-          props: {
-            color: 'red',
-          },
-        }
-      ];
-
+    
+    updateEventList() {
       this.eventList = [];
-
-      allEvents.forEach(event =>
-      {
-        if (this.eventTypeShowed == "Tous")
-        {
-          this.eventList.push(event);
-        } else
-        {
-          //faire une fonction qui permet de seulement ajouter les event que son attribut eventType == this.eventTypeShowed au eventList
-        }
+      fetchAllEventType().then(allEventType => {
+        this.eventTypeList = allEventType
       });
+      fetchAllEvents().then(allEventList => 
+        allEventList.forEach((event) => {
+          if (this.eventTypeShowed == "all" || this.eventTypeShowed == event.eventType) {
+            this.eventList.push(event);
+          }
+        })
+      )
     },
-    closeNewEventDialog()
-    {
+    updateEventTypeShowed(newEventType) {
+      this.eventTypeShowed = newEventType;
+      this.updateEventList();
+    },
+    closeNewEventDialog() {
       this.dialogNewEvent = false;
     },
   },
   watch: {
-    eventTypeShowed()
-    {
-      this.loadEvents();
+    eventTypeShowed() {
+      this.updateEventList();
       this.selection = "";
     },
-    selection()
-    {
+    selection() {
       console.log("Selection changer");
       this.$router.push("event/" + this.selection);
     }
   },
-  mounted()
-  {
-    this.eventTypes = ["Tous", "Sportif", "Ferie"];
-    this.loadEvents();
-  },
+
+  mounted() {
+    this.eventTypeShowed = "all"
+    this.updateEventList();
+  }
 }
 </script>
 
