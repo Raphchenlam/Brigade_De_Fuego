@@ -100,7 +100,7 @@ router.post('/',
         }
         employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber).then(employee => {
             if (employee) {
-                throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à ce numéro d'employé`);
+                throw new HttpError(400, `${employee.firstName} ${employee.lastName} est associé(e) à ce numéro d'employé`);
             }
         }).catch(err => {
             next(err);

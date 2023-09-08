@@ -22,7 +22,7 @@ exports.validEmail = validEmail;
 const validPhoneNumber = /^\d{3}-\d{3}-\d{4}$/;
 exports.validPhoneNumber = validPhoneNumber;
 
-const validSkillPoints = /^(?:[0-9]|10)$/;
+const validSkillPoints = /^(?:[1-9]|10)$/;
 exports.validSkillPoints = validSkillPoints;
 
 

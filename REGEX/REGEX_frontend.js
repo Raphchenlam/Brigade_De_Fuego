@@ -6,4 +6,4 @@ export const validRole = /^[A-Z][a-zA-Z]*$/;
 export const validColorHexCode = /^#([A-F0-9]{6}|[A-F0-9]{3})$/;
 export const validHourlyRate = /^[1-9]\d{1,2}(\.\d{1,2})?$/;
 export const validBarcodeNumber = /^\d{16}$/;
-export const validSkillPoints = /^(?:[0-9]|10)$/;
+export const validSkillPoints = /^(?:[1-9]|10)$/;
