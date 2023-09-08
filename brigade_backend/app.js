@@ -9,15 +9,17 @@ const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 const crypto = require('crypto');
 
-const clientRouter = require('./routes/clientRouter');
-const employeeRouter = require('./routes/employeeRouter');
-const eventRouter = require('./routes/eventRouter');
-const leaveRouter = require('./routes/leaveRouter');
-const punchRouter = require('./routes/punchRouter');
-const reservationRouter = require('./routes/reservationRouter');
-const schedulePeriodRouter = require('./routes/schedulePeriodRouter');
-const sectionRouter = require('./routes/sectionRouter');
-const tableRouter = require('./routes/tableRouter');
+const clientRouter = require ('./routes/clientRouter');
+const employeeRouter = require ('./routes/employeeRouter');
+const eventRouter = require ('./routes/eventRouter');
+const eventTypeRouter = require ('./routes/eventTypeRouter');
+const leaveRouter = require ('./routes/leaveRouter');
+const punchRouter = require ('./routes/punchRouter');
+const reservationRouter = require ('./routes/reservationRouter');
+const schedulePeriodRouter = require ('./routes/schedulePeriodRouter');
+const sectionRouter = require ('./routes/sectionRouter');
+const tableRouter = require ('./routes/tableRouter');
+
 
 const app = express();
 
@@ -29,6 +31,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/client', clientRouter);
 app.use('/employee', employeeRouter);
+app.use('/event', eventRouter);
+app.use('/eventType', eventTypeRouter);
 app.use('/leave', leaveRouter);
 app.use('/reservation', reservationRouter);
 
