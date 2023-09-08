@@ -92,14 +92,14 @@ export default {
             rules: {
                 required: value => !!value || "Le champ est requis",
                 validateEmployeeNumber: value => validEmployeeNumber.test(value) || "Numéro d'employé invalide : doit contenir que 4 chiffres",
-                validateName: value => validName.test(value) || "Prénom ou nom invalide : la première lettre par mot doit être une majuscule et aucun accent accepté",
-                validatePhoneNumber: value => validPhoneNumber.test(value) || "Veuillez entrer un numéro de téléphone dans ce format : xxx-xxx-xxxx",
+                validateName: value => validName.test(value) || "Prénom/Nom invalide : Minimum 2 lettres/mot \n 1ère lettre par mot doit être une majuscule \n Aucun accent accepté",
+                validatePhoneNumber: value => validPhoneNumber.test(value) || "# de téléphone invalide -> Respecter ce format : xxx-xxx-xxxx",
                 validateEmail: value => validEmail.test(value) || "Adresse courriel invalide",
                 validateRole: value => validRole.test(value) || "Rôle invalide",
                 validateHexCode: value => validColorHexCode.test(value) || "Couleur invalide",
-                validateHourlyRate: value => validHourlyRate.test(value) || "Taux horaire invalide, doit respecter ses un des formats suivant : xx.xx ou xxx.xx. Le premier chiffre ne peut pas être 0",
+                validateHourlyRate: value => validHourlyRate.test(value) || "Taux horaire invalide -> Respecter un des formats suivant : xx.xx ou xxx.xx \n 1er chiffre ne peut pas être 0",
                 validateBarcodeNumber: value => validBarcodeNumber.test(value) || "Code barre invalide : doit contenir que 16 chiffres",
-                validateSkillPoints: value => validSkillPoints.test(value) || "Skill points invalide : doit être entre 0 et 10"
+                validateSkillPoints: value => validSkillPoints.test(value) || "Skill points invalide : doit être entre 1 et 10"
             },
             roleList: [],
             skillPointsRange: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
