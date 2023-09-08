@@ -46,7 +46,7 @@
                                 </v-card>
                                 <!-- -->
                                 <LeaveList :employeeNumber="employeeNumber" height="175px"></LeaveList>
-                                <v-dialog v-model="dialogEditEmployee" width="50%">
+                                <v-dialog v-model="dialogEditEmployee" width="50%" persistent>
                                         <template v-slot:activator="{ props }">
                                                 <v-row class="justify-space-around">
                                                         <BlackButton class="my-5" v-bind="props" textbutton="Modifier">

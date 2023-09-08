@@ -10,7 +10,7 @@
             </v-list>
         </v-card>
 
-        <v-dialog v-model="dialogNewEmployee" width="50%">
+        <v-dialog v-model="dialogNewEmployee" width="50%" persistent>
             <template v-slot:activator="{ props }">
                 <div class="ma-2 text-center">
                     <v-btn color="black" v-bind="props">
