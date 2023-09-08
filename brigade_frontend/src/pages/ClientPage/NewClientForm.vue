@@ -1,52 +1,102 @@
 <template>
     <div class="ma-2" width="auto">
-        <v-form class="pa-10" validate-on="submit lazy" ref="createClientForm">
+        <v-form class="pa-10" @submit.prevent="submitNewClient" validate-on="submit lazy" ref="createClientForm">
             <v-row>
-                <v-text-field class="ma-2" label="Prenom" clearable>
+                <v-text-field class="ma-2 pa-4" label="Prénom" density="compact" v-model.trim="client.firstName"
+                    @blur="capitalizeFirstName()" :rules="[rules.required, rules.clientIdUnique, rules.firstNameValidation]"
+                    clearable>
                 </v-text-field>
-                <v-text-field class="ma-2" label="Nom de famille" clearable>
+                <v-text-field class="ma-2 pa-4" label="Nom de famille" density="compact" v-model.trim="client.lastName"
+                    @blur="capitalizeLastName()" :rules="[rules.required, rules.clientIdUnique, rules.lastNameValidation]"
+                    clearable>
                 </v-text-field>
             </v-row>
-            <v-text-field label="Numero de telephone(format: xxx-xxx-xxxx)" density="compact" clearable>
+            <v-text-field class="pa-4" label="Numéro de téléphone(format: xxx-xxx-xxxx)" density="compact"
+                v-model.trim="client.phoneNumber" @blur="patternedPhoneNumber()"
+                :rules="[rules.required, rules.clientIdUnique, rules.phoneNumberValidation]" clearable>
             </v-text-field>
-            <v-text-field label="Allergies" density="compact" ref="passwordInput" clearable>
+            <v-text-field class="pa-4" label="Allergies" density="compact" v-model.trim="client.allergy" clearable>
             </v-text-field>
-            <v-checkbox label="Client favori"></v-checkbox>
+            <v-checkbox label="Client favori" density="compact" v-model="client.isFavorite"></v-checkbox>
             <v-row class="justify-center">
                 <DarkRedButton textbutton="Annuler" class="mx-5" height="3rem" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton textbutton="Creer le client" class="mx-5" height="3rem"></DarkRedButton>
+                <DarkRedButton type="submit" textbutton="Creer le client" class="mx-5" height="3rem">
+                </DarkRedButton>
             </v-row>
         </v-form>
     </div>
 </template>
+
 <script>
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
+import { createClient } from '../../services/ClientService';
+import { validName, validPhoneNumber } from '../../../../REGEX/REGEX_frontend.js';
 
 export default {
-    inject: ['closeNewClientDialog'],
+    inject: ['closeNewClientDialog', 'capitalizeWords', 'formatPhoneNumber'],
     components: {
         DarkRedButton,
     },
-    data()
-    {
+    data() {
         return {
             client: {
                 firstName: null,
-                LastName: null,
+                lastName: null,
                 phoneNumber: null,
                 allergy: null,
                 isFavorite: false,
                 isBlacklisted: false
-            }
+            },
+            rules: {
+                required: value => !!value || "Le champ est requis",
+                clientIdUnique: () => this.clientIdUnique || "Cette combinaison d'identifiants est déjà utilisé, veuillez modifié le(s) champs ou consulter le client associé",
+                firstNameValidation: value => validName.test(value) || 'Le champ prénom ne respecte pas les critères d\'acceptation.',
+                lastNameValidation: value => validName.test(value) || 'Le champ nom de famille ne respecte pas les critères d\'acceptation.',
+                phoneNumberValidation: value => validPhoneNumber.test(value) || 'Le champ numéro de téléphone ne respecte pas les critères d\'acceptation.',
+            },
+            clientIdUnique: true,
+            newClientAdded: false
         }
     },
     methods: {
-        closeDialog()
-        {
+        closeDialog() {
             this.closeNewClientDialog();
+        },
+        async submitNewClient() {
+            this.clientIdUnique = true;
+            const formValid = await this.$refs.createClientForm.validate();
+            if (!formValid.valid) {
+                return;
+            }
+
+            try {
+                await createClient(this.client);
+                this.clientIdUnique = true;
+                this.newClientAdded = true;
+                this.closeDialog();
+            } catch (err) {
+                console.error(err);
+                alert(err.message);
+                if (err.status === 409) {
+                    this.clientIdUnique = false;
+                    this.newClientAdded = false;
+                }
+                await this.$refs.createClientForm.validate();
+            }
+        },
+        capitalizeFirstName() {
+            this.client.firstName = this.capitalizeWords(this.client.firstName);
+        },
+        capitalizeLastName() {
+            this.client.lastName = this.capitalizeWords(this.client.lastName);
+        },
+        patternedPhoneNumber() {
+            this.client.phoneNumber = this.formatPhoneNumber(this.client.phoneNumber);
         }
+
     }
 }
+
 </script>
 
 <style scoped>
