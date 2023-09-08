@@ -1,5 +1,5 @@
 <template>
-    <v-row class="justify-space-around">
+    <v-row class="justify-center">
         <ClientList></ClientList>
         <ClientInformation></ClientInformation>
     </v-row>
