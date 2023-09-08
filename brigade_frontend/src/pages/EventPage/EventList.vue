@@ -9,7 +9,7 @@
     <v-card class="mx-auto" max-height="400" max-width="800">
       <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="name"></v-list>
     </v-card>
-    <v-dialog v-model="dialogNewEvent" width="70%">
+    <v-dialog persistent v-model="dialogNewEvent" width="70%">
       <template v-slot:activator="{ props }">
         <div class="ma-2 text-center">
           <v-btn width="70%" color="black" v-bind="props">

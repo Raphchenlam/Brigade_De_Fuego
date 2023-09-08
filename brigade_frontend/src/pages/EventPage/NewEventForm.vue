@@ -3,7 +3,7 @@
         <v-form class="pa-10" validate-on="blur lazy" ref="createEventForm">
             <v-row>
                 <v-text-field class="ma-2" v-model.trim="event.name" label="Nom de l'événement"
-                    :rules="[rules.requiredName]" clearable>
+                   @blur="capitalizeName" :rules="[rules.requiredName]" clearable>
                 </v-text-field>
             </v-row>
             <v-row>
@@ -22,7 +22,7 @@
             </v-row>
         </v-form>
     </div>
-    <v-dialog v-model="dialogConfirmEvent" width="50%">
+    <v-dialog persistent v-model="dialogConfirmEvent" width="50%">
         <v-card>
             <NewEventConfirmationForm :name="event.name" :impact="event.impact.toFixed(2)" :eventType="event.eventType">
             </NewEventConfirmationForm>
@@ -37,7 +37,7 @@ import NewEventConfirmationForm from './NewEventConfirmationForm.vue';
 
 
 export default {
-    inject: ['closeNewEventDialog'],
+    inject: ['closeNewEventDialog','capitalizeWords'],
     components: {
         DarkRedButton,
         NewEventConfirmationForm,
@@ -57,7 +57,6 @@ export default {
                 eventType: null,
             },
             eventTypes: [],
-
             dialogConfirmEvent: false,
             rules: {
                 requiredName: value => !!value || "L'événement doit avoir un nom",
@@ -97,6 +96,9 @@ export default {
         },
         resetImpact(){
             this.event.impact = 100;
+        },
+        capitalizeName(){
+            this.event.name = this.capitalizeWords(this.event.name);
         },
         async toggleEventConfirmationDialog() {
             const formValid = await this.$refs.createEventForm.validate();
