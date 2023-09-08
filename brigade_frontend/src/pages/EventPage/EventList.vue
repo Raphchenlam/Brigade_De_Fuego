@@ -1,7 +1,7 @@
 <template>
   <v-sheet>
     <div class="text-center ma-5">
-      <p>Nombre d'evenements : {{ eventList.length }} {{ selection }}</p>
+      <p>Nombre d'evenements : {{ eventList.length }} <p v-if="selection">{{ selection }}</p> </p>
     </div>
     <v-sheet class="mx-16">
       <v-select class="mx-16" v-model="eventTypeShowed" label="Type d'événement" :items="eventTypeList"></v-select>

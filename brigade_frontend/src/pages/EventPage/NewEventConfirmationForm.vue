@@ -102,12 +102,11 @@ export default {
         async submitNewEvent() {
             const event = {
                 name: this.name,
-                impact: this.impact,
+                impact: this.impact.toFixed(2),
                 eventType: this.eventType,
                 isActive: true
             };
             try {
-                //await fetchEventByName(event.name)
                 await createEvent(event);
                 this.closeNewEventDialog();
                 this.closeEventConfirmationDialog();
