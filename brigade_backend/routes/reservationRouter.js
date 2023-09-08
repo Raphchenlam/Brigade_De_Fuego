@@ -43,12 +43,6 @@ router.post("/",
                 return next(new HttpError(404, `Le client ${clientId} n'existe pas dans la base de données`));
             }
         })
-    //    if(clientExists){
-    //        return next(new HttpError(404, `Le client ${clientId} n'existe pas dans la base de données`));
-    //    }
-     //   if(clientExists){
-    //        return next(new HttpError(404, `Le client ${clientId} n'existe pas dans la base de données`));
-    //    }
 
         const date = req.body.date;
         if (!date || date == "") {

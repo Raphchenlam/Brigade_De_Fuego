@@ -38,20 +38,26 @@ export default {
   },
   methods: {
     capitalizeWords(inputString) {
-      const words = inputString.replace(/\s+/g, ' ').split(' ');
-
-      const capitalizedWords = words.map(word => {
-        const parts = word.split('-');
-        const capitalizedParts = parts.map(part => {
-          return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+      const words = inputString
+        .replace(/-+/g, '-')
+        .replace(/[^a-zA-Z\s-]/g, '')
+        .replace(/\s+/g, ' ')
+        .split(' ')
+        .map(word => {
+          const parts = word.split('-');
+          const capitalizedParts = parts.map(part => {
+            return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+          });
+          return capitalizedParts.join('-');
         });
-        return capitalizedParts.join('-');
-      });
 
-      const rejoinedCapitalizedWords = capitalizedWords.join(' ');
-      const keepTheHyphen = rejoinedCapitalizedWords.replace(/-\s+/g, '-');
-      const keepTheHyphen2 = keepTheHyphen.replace(/\s+-/g, '-');
-      return keepTheHyphen2;
+      return words
+        .join(' ')
+        .replace(/-\s+/g, '-')
+        .replace(/\s+-/g, '-')
+        .trim()
+        .replace(/^-+|-+$/g, '')
+        .replace(/[^a-zA-Z]-[^a-zA-Z]/g, '');
 
     },
     formatPhoneNumber(phoneNumber) {
