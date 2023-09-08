@@ -124,14 +124,15 @@ export default {
         }
     },
     methods: {
-        async createEmployee() {
+         async createEmployee() {
             const validForm = await this.$refs.newEmployeeForm.validate();
             if (!validForm.valid) {
                 return;
             }
             //session.createEmployee...
             if (validForm.valid) {
-                await createEmployee(this.employee).then(() => {
+                createEmployee(this.employee).then(() => {
+                    console.log("THERE BITCH")
                     alert(`${this.employee.firstName} ${this.employee.lastName} / ${this.employee.employeeNumber} créé(e) avec succès`);
                     this.$router.replace('/espace/employee');
                 }).catch(authError => {

@@ -150,7 +150,10 @@ router.post('/',
             if (assignedColorHexcode) {
                 throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à cette couleur`);
             }
+        }).catch(err => {
+            next(err);
         });
+
 
 
         const hourlyRate = req.body.hourlyRate;
@@ -183,7 +186,10 @@ router.post('/',
             if (usedEmail) {
                 throw new HttpError(400, `Cette adresse courriel est déjà utilisée`);
             }
+        }).catch(err => {
+            next(err);
         });
+
 
 
         const phoneNumber = req.body.phoneNumber;
@@ -197,7 +203,10 @@ router.post('/',
             if (usedPhoneNumber) {
                 throw new HttpError(400, 'Ce numéro de téléphone est déjà utilisé');
             }
+        }).catch(err => {
+            next(err);
         });
+
 
 
         const isAdmin = req.body.isAdmin;
