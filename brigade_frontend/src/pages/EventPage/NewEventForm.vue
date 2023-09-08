@@ -9,19 +9,24 @@
             <v-row>
                 <v-select class="ma-2" v-model="event.eventType" label="Type d'événement" :rules="[rules.requiredEventType]"
                     :items="eventTypes"></v-select>
-                <v-text-field type="number" step="0.1" class="ma-2" v-model.trim="event.impact"
+            </v-row>
+            <v-row>
+                <v-slider class="ma-2 pa-2" thumb-color="#8b0000" label="Achalandage prevu" :messages="sliderMessage" v-model="event.impact" thumb-label="always"
+                    :max="300"></v-slider>
+                <!-- <v-text-field type="number" step="0.1" class="ma-2" v-model.trim="event.impact"
                     label="Impact sur l'achalandage" :rules="[rules.requiredImpact, rules.impactValid]" clearable>
-                </v-text-field>
+                </v-text-field> -->
             </v-row>
             <v-row class="justify-center">
-                <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton class="mx-5" textbutton="Creer" @click="toggleEventConfirmationDialog()"></DarkRedButton>
+                <DarkRedButton class="mx-5 ma-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
+                <DarkRedButton class="mx-5 ma-5" textbutton="Creer" @click="toggleEventConfirmationDialog()"></DarkRedButton>
             </v-row>
         </v-form>
     </div>
     <v-dialog v-model="dialogConfirmEvent" width="50%">
         <v-card>
-            <NewEventConfirmationForm :name="event.name" :impact="event.impact" :eventType="event.eventType"></NewEventConfirmationForm>
+            <NewEventConfirmationForm :name="event.name" :impact="event.impact" :eventType="event.eventType">
+            </NewEventConfirmationForm>
         </v-card>
     </v-dialog>
 </template>
@@ -42,14 +47,16 @@ export default {
             toggleEventConfirmationDialog: this.toggleEventConfirmationDialog,
         }
     },
+  
     data() {
         return {
             event: {
                 name: null,
-                impact: null,
+                impact: 100,
                 eventType: null,
             },
             eventTypes: [],
+           
             dialogConfirmEvent: false,
             rules: {
                 requiredName: value => !!value || "L'événement doit avoir un nom",
@@ -71,6 +78,28 @@ export default {
             }
         }
     },
+    computed: {
+        sliderMessage(){
+            if (this.event.impact >= 250) {
+                return "C'est la folie!"
+            }else if(this.event.impact >= 200 && this.event.impact<250) {
+                return "Super super occupé"
+            }else if(this.event.impact >= 150 && this.event.impact<200) {
+                return "Trés occupé"
+            }else if(this.event.impact > 100 && this.event.impact<150) {
+                return "Un peu plus que d'habitude"
+            }else if(this.event.impact == 100) {
+                return "La normal, quoi?"
+            }else if(this.event.impact >= 50 && this.event.impact<100) {
+                return "Trés tranquille"
+            }else if(this.event.impact > 0 && this.event.impact<50) {
+                return "Super super tranquille"
+            }else if(this.event.impact == 0) {
+                return "Fermé"
+            }
+
+        }
+    },
     methods: {
         closeDialog() {
             this.closeNewEventDialog();
@@ -87,7 +116,7 @@ export default {
         },
 
 
-        
+
     },
 
     async mounted() {
