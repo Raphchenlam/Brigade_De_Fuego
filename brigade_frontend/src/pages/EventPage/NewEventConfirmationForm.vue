@@ -29,6 +29,22 @@
                 </DarkRedButton>
             </v-row>
         </v-sheet>
+        <div>
+            <v-dialog v-model="messageCreateEventOK" width="50%">
+                <v-card height="100px">
+                    <v-card-title>
+                        <v-row class="justify-center ma-2">
+                            <h2>Confirmation</h2>
+                        </v-row>
+                    </v-card-title>
+                    <v-card-text>
+                        <v-row class="justify-center">
+                            <p>L'événement a bien été enregistré.</p>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+        </div>
     </v-sheet>
     <v-sheet v-else>
         <v-sheet class="ma-3 pa-5">
@@ -38,7 +54,8 @@
                         <strong>Événement existant: </strong>
                     </v-card-title>
                 </v-row>
-                <v-row><v-col class="text-red-lighten-1">Un événement portant le même nom se trouve dans la base de données</v-col></v-row>
+                <v-row><v-col class="text-red-lighten-1">Un événement portant le même nom se trouve dans la base de
+                        données</v-col></v-row>
                 <v-row>
                     <v-col></v-col>
                     <v-col><strong>Événement actuel</strong></v-col>
@@ -63,13 +80,13 @@
         </v-sheet>
         <v-sheet class="ma-3 pa-5">
             <v-row class="justify-center">
-                <DarkRedButton class="mx-5" textbutton="Modifier l'événement ACTUEL" @click="closeEventConfirmationDialog()">
+                <DarkRedButton class="mx-5" textbutton="Modifier l'événement ACTUEL"
+                    @click="closeEventConfirmationDialog()">
                 </DarkRedButton>
                 <DarkRedButton class="mx-5" textbutton="Modifier l'événement TROUVÉ" @click="handleRoute()">
                 </DarkRedButton>
             </v-row>
         </v-sheet>
-
     </v-sheet>
 </template>
 
@@ -90,7 +107,8 @@ export default {
     data() {
         return {
             uniqueEvent: true,
-            eventFoundInDB: {}
+            eventFoundInDB: {},
+            messageCreateEventOK:false
         }
     },
 
@@ -99,18 +117,27 @@ export default {
         closeEventConfirmationDialog() {
             this.toggleEventConfirmationDialog();
         },
+        closeMessageCreateEventOK(){
+            this.messageCreateEventOK = !this.messageCreateEventOK
+        },
         async submitNewEvent() {
             const event = {
                 name: this.name,
-                impact: this.impact.toFixed(2),
+                impact: this.impact,
                 eventType: this.eventType,
                 isActive: true
             };
             try {
                 await createEvent(event);
+                // this.closeMessageCreateEventOK();
+                // setTimeout(this.closeMessageCreateEventOK(),2000);
+                // setTimeout(this.closeNewEventDialog(), 2000);
+                // setTimeout(this.closeEventConfirmationDialog(), 2000);
+                // setTimeout(this.updateEventList(), 2000);
                 this.closeNewEventDialog();
                 this.closeEventConfirmationDialog();
                 this.updateEventList();
+
             } catch (err) {
                 alert(err.message);
             }
@@ -120,12 +147,12 @@ export default {
                 console.log('eventFound:', eventFound);
                 if (eventFound) {
                     this.uniqueEvent = false;
-                    this.eventFoundInDB = eventFound; 
+                    this.eventFoundInDB = eventFound;
                 }
             })
         },
-        handleRoute(){
-            this.$router.push('/event/'+ this.name)
+        handleRoute() {
+            this.$router.push('/event/' + this.name)
         }
 
     },

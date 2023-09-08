@@ -59,6 +59,7 @@ export default {
   methods: {
     
     updateEventList() {
+      this.eventList = [];
       fetchAllEventType().then(allEventType => {
         this.eventTypeList = allEventType
       });
