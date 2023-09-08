@@ -112,15 +112,21 @@ export default {
     },
 
     methods: {
-
         closeEventConfirmationDialog() {
             this.toggleEventConfirmationDialog();
         },
-        closeDialog(){
+        closeDialog() {
             this.closeNewEventDialog();
         },
-               
+
         async submitNewEvent() {
+
+            const eventFound = await this.verifyUniqueEvent();
+            if (eventFound) {
+                this.uniqueEvent = false;
+                this.closeEventConfirmationDialog();
+            }
+
             const event = {
                 name: this.name,
                 impact: this.impact,
@@ -129,11 +135,9 @@ export default {
             };
             try {
                 await createEvent(event);
-                
                 this.closeNewEventDialog();
                 this.closeEventConfirmationDialog();
                 this.updateEventList();
-
             } catch (err) {
                 alert(err.message);
             }
