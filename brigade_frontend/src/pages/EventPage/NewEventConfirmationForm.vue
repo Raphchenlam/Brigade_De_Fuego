@@ -29,7 +29,7 @@
                 </DarkRedButton>
             </v-row>
         </v-sheet>
-        <div>
+        <!-- <div>
             <v-dialog v-model="messageCreateEventOK" width="50%">
                 <v-card height="100px">
                     <v-card-title>
@@ -44,7 +44,7 @@
                     </v-card-text>
                 </v-card>
             </v-dialog>
-        </div>
+        </div> -->
     </v-sheet>
     <v-sheet v-else>
         <v-sheet class="ma-3 pa-5">
@@ -108,7 +108,6 @@ export default {
         return {
             uniqueEvent: true,
             eventFoundInDB: {},
-            messageCreateEventOK:false
         }
     },
 
@@ -117,9 +116,10 @@ export default {
         closeEventConfirmationDialog() {
             this.toggleEventConfirmationDialog();
         },
-        closeMessageCreateEventOK(){
-            this.messageCreateEventOK = !this.messageCreateEventOK
+        closeDialog(){
+            this.closeNewEventDialog();
         },
+               
         async submitNewEvent() {
             const event = {
                 name: this.name,
@@ -129,11 +129,7 @@ export default {
             };
             try {
                 await createEvent(event);
-                // this.closeMessageCreateEventOK();
-                // setTimeout(this.closeMessageCreateEventOK(),2000);
-                // setTimeout(this.closeNewEventDialog(), 2000);
-                // setTimeout(this.closeEventConfirmationDialog(), 2000);
-                // setTimeout(this.updateEventList(), 2000);
+                
                 this.closeNewEventDialog();
                 this.closeEventConfirmationDialog();
                 this.updateEventList();
