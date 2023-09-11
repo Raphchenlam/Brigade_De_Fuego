@@ -1,7 +1,7 @@
 <template>
   <v-row class="justify-space-around">
-    <ReservationList></ReservationList>
-    <ReservationInformation></ReservationInformation>
+    <ReservationList class="h-screen w-50"></ReservationList>
+    <ReservationInformation class="h-screen w-50"></ReservationInformation>
   </v-row>
 </template>
     
