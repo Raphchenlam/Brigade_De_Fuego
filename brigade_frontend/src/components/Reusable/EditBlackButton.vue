@@ -1,5 +1,7 @@
 <template>
-    <svg-icon size="75" type="mdi" :path="path"></svg-icon>
+    <v-btn color="black" rounded="lg" height="60" width="60">
+        <svg-icon size="40" type="mdi" :path="path"></svg-icon>
+    </v-btn>
 </template>
 
 

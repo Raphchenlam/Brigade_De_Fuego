@@ -109,8 +109,8 @@ export default {
                 console.error(err);
             });
         },
-
-        closeNewEmployeeDialog() {
+        closeNewEmployeeDialog()
+        {
             this.dialogNewEmployee = false;
         },
     },
@@ -134,9 +134,10 @@ export default {
     },
     mounted() {
         this.roleList.push("Tous");
+
         this.loadEmployees();
-        getAllRoles().then(allRoles =>
-        {
+
+        getAllRoles().then(allRoles => {
             console.log("ALLROLES", allRoles)
             allRoles.forEach(role =>
             {
