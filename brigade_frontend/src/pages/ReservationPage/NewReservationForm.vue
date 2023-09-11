@@ -21,7 +21,7 @@
                         </v-text-field>
                     </v-row>
                     <v-textarea class="my-5" v-model="reservation.mention" height="200px" no-resize rows="8"
-                        label="Mentions speciales"></v-textarea>
+                        label="Mentions speciales" :rules="[rules.fieldLength255]"></v-textarea>
                     <v-checkbox v-model="reservation.hasMinor" label="Mineur sur place"></v-checkbox>
                     <v-dialog v-model="dialogConfirmReservation" width="100%">
                         <template v-slot:activator="{ props }">
@@ -120,6 +120,7 @@ export default {
             rules: {
                 required: value => !!value || "Le champ est requis",
                 dateIsValid: () => this.dateValid || "Date non valide(Ne doit pas etre avant presentement, ni avant 11h ou apres 23h)",
+                fieldLength255: value => !(value.length > 254) || "255 caractères maximum."
             },
             formValid: true
         }
@@ -144,7 +145,7 @@ export default {
                         this.dialogConfirmReservation = false;
                     }
                 }
-            );
+                );
         },
         loadClientId(clientId) {
             this.selectedClientId = clientId;
@@ -163,33 +164,25 @@ export default {
                 console.error(err);
             });
         },
-        isBeforeToday(fullDate)
-        {
+        isBeforeToday(fullDate) {
             const date = this.spliceDate(fullDate)
             var today = new Date();
 
-            if (date.year < today.getFullYear())
-            {
+            if (date.year < today.getFullYear()) {
                 return true;
             }
-            else if (date.year == today.getFullYear() && date.month < today.getMonth() + 1)
-            {
+            else if (date.year == today.getFullYear() && date.month < today.getMonth() + 1) {
                 return true;
             }
-            else if (date.year == today.getFullYear() && date.month == today.getMonth() + 1)
-            {
-                if (date.day < today.getDate())
-                {
+            else if (date.year == today.getFullYear() && date.month == today.getMonth() + 1) {
+                if (date.day < today.getDate()) {
                     return true;
                 }
-                else if (date.day == today.getDate())
-                {
-                    if (date.hour < today.getHours())
-                    {
+                else if (date.day == today.getDate()) {
+                    if (date.hour < today.getHours()) {
                         return true;
                     }
-                    else if (date.hour == today.getHours() && date.minute <= today.getMinutes())
-                    {
+                    else if (date.hour == today.getHours() && date.minute <= today.getMinutes()) {
                         return true;
                     }
                 }
@@ -207,16 +200,14 @@ export default {
             let endHour = reservationDate.hour + 3;
             let endMinute = reservationDate.minute;
             console.log("endMinute", endMinute); //verifier pour 00 a 09 car pourrait etre problematique ( affiche 5:2 au lieu de 5:02)
-            if (endHour >= 24)
-            {
+            if (endHour >= 24) {
                 endHour = 23;
                 endMinute = 59;
             }
             this.reservation.endTime = endHour.toString() + ":" + endMinute.toString();
 
             this.dateValid = !this.isBeforeToday(this.reservationFullDate);
-            if (reservationDate.hour < 11 || reservationDate.hour >= 23)
-            {
+            if (reservationDate.hour < 11 || reservationDate.hour >= 23) {
                 this.dateValid = false;
             }
 
@@ -233,24 +224,6 @@ export default {
     },
     computed: {
         createButtonDisabled() {
-            console.log("this.dateValid : " + this.dateValid);
-            console.log("this.clientIdValid : " + this.clientIdValid);
-            console.log("!!this.reservationFullDate : " + !!this.reservationFullDate);
-            console.log("!!this.reservation.clientId : " + !!this.reservation.clientId);
-            console.log("!!this.reservation.peopleCount : " + !!this.reservation.peopleCount);
-            console.log("!!this.reservation.date : " + !!this.reservation.date);
-            console.log("!!this.reservation.startTime : " + !!this.reservation.startTime);
-            console.log("!!this.reservation.endTime : " + !!this.reservation.endTime);
-            console.log("return : " + 
-                !(this.dateValid
-                || this.clientIdValid
-                || !!this.reservationFullDate
-                || !!this.reservation.clientId
-                || !!this.reservation.peopleCount
-                || !!this.reservation.date
-                || !!this.reservation.startTime
-                || !!this.reservation.endTime));
-
             return !(this.dateValid
                 || this.clientIdValid
                 || !!this.reservationFullDate

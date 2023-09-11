@@ -6,9 +6,8 @@ const truncateDate = dateTime => {
 
 const explodingTime = time => {
     return {
-        hour: time,
-        minute: time,
-        seconds: time
+        hour: parseInt(time.split(':').slice(0)[0]),
+        minute: parseInt(time.split(':').slice(0)[1])
     }
 }
 
@@ -51,19 +50,18 @@ exports.getReservationById = getReservationById;
 const getReservationByInformations = async (clientId, date, startTime) => {
     const explodedStartTime = explodingTime(startTime);
 
+    let result;
     if(explodedStartTime.hour >= 16){
-        const result = await pool.query(
+        result = await pool.query(
             `SELECT * FROM reservation
-                WHERE client_id = $1 AND date = $2 AND start_time = $3`,
-            [clientId, date, startTime]);
+                WHERE client_id = $1 AND date = $2 AND start_time >= '16:00:00'`,
+            [clientId, date]);
     }else{
-        const result = await pool.query(
+        result = await pool.query(
             `SELECT * FROM reservation
-                WHERE client_id = $1 AND date = $2 AND start_time = $3`,
-            [clientId, date, startTime]);
+                WHERE client_id = $1 AND date = $2 AND start_time <= '16:00:00'`,
+            [clientId, date]);
     }
-
-
 
     const reservation = result.rows[0];
 
