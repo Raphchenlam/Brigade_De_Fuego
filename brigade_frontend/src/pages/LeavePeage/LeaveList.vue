@@ -116,7 +116,7 @@
                     mdi-pencil
                 </v-icon>
             </template>
-            
+
             <template v-slot:expanded-row="{ columns, item }">
                 <tr>
                     <td :colspan="columns.length">
@@ -147,8 +147,7 @@ export default {
         height: String,
         employeeNumber: Number
     },
-    data()
-    {
+    data() {
         return {
             userSession: userSession,
             search: "",
@@ -222,83 +221,61 @@ export default {
         }
     },
     methods: {
-        loadLeaves()
-        {
+        loadLeaves() {
             this.leaveList = [];
             console.log("EMPLOYEENUMBER", this.employeeNumber)
-            if (this.employeeNumber)
-            {
-                getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves =>
-                {
-                    allLeaves.forEach(leave =>
-                    {
+            if (this.employeeNumber) {
+                getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves => {
+                    allLeaves.forEach(leave => {
                         leave.startDate = leave.startDate.split('T').slice(0)[0]
                         leave.endDate = leave.endDate.split('T').slice(0)[0]
 
                     });
                     this.leaveList = allLeaves;
                 });
-            } else
-            {
-                getAllLeaves().then(allLeaves =>
-                {
-                    allLeaves.forEach(leave =>
-                    {
+            } else {
+                getAllLeaves().then(allLeaves => {
+                    allLeaves.forEach(leave => {
 
                         leave.startDate = leave.startDate.split('T').slice(0)[0]
                         leave.endDate = leave.endDate.split('T').slice(0)[0]
-                        if (this.roleShowed == "Tous")
-                        {
+                        if (this.roleShowed == "Tous") {
                             this.leaveList.push(leave);
                         } else { }
                         //faire une fonction qui permet de seulement ajouter les employee que son attribut role == this.roleShowsed au emplouyeeList
 
                     });
-                }).catch(err =>
-                {
+                }).catch(err => {
                     console.error(err);
                 })
             }
-
-
-
-
         },
-        editItem(item)
-        {
+        editItem(item) {
             this.editedIndex = this.leaveList.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
         },
-        accept(item)
-        {
+        accept(item) {
             console.log("Accept", item)
         },
-        refuse(item)
-        {
+        refuse(item) {
             console.log("Refuse", item)
         },
-        close()
-        {
+        close() {
             this.dialog = false
-            this.$nextTick(() =>
-            {
+            this.$nextTick(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
                 this.editedIndex = -1
             })
         },
-        save()
-        {
+        save() {
 
         },
-        applyFilter()
-        {
+        applyFilter() {
             this.filterDialog = false;
         },
-        checkAllBoxes()
-        {
-            if (this.checkedBoxes.all == false)
-            {
+        checkAllBoxes() {
+            if (this.checkedBoxes.all == false) {
                 this.checkedBoxes.all = true;
                 this.checkedBoxes.pending = true;
                 this.checkedBoxes.pendingModified = true;
@@ -307,8 +284,7 @@ export default {
                 this.checkedBoxes.passed = true;
                 this.checkedBoxes.coming = true;
             }
-            else
-            {
+            else {
                 this.checkedBoxes.all = false;
                 this.checkedBoxes.pending = false;
                 this.checkedBoxes.pendingModified = false;
@@ -320,22 +296,18 @@ export default {
         }
     },
     computed: {
-        calculatePendingLeaves()
-        {
+        calculatePendingLeaves() {
             return 3
             // ici faire une requete BD pour voir le nombre de demande qui ont "en attente" comme status
         }
     },
     watch: {
         'checkedBoxes': {
-            handler: function (checkboxList)
-            {
-                for (var checkbox in checkboxList)
-                {
+            handler: function (checkboxList) {
+                for (var checkbox in checkboxList) {
                     console.log("watch", checkbox, checkboxList[checkbox])
 
-                    if (checkboxList[checkbox] == false && checkbox != "all")
-                    {
+                    if (checkboxList[checkbox] == false && checkbox != "all") {
                         this.checkedBoxes.all = false;
                         return;
                     }
@@ -344,15 +316,12 @@ export default {
             },
             deep: true
         },
-        employeeNumber()
-        {
+        employeeNumber() {
             this.loadLeaves()
         }
     },
-    mounted()
-    {
-        if (this.employeeName)
-        {
+    mounted() {
+        if (this.employeeName) {
             console.log("search = employeename", this.employeeName)
             this.search = this.employeeName;
         }

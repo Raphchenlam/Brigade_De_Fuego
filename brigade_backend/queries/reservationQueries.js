@@ -4,9 +4,16 @@ const truncateDate = dateTime => {
     return new Date(dateTime).toLocaleDateString();
 };
 
-const remakeDate = date => {
-    return new Date(date);
-};
+const explodingTime = time => {
+    return {
+        hour: parseInt(time.split(':').slice(0)[0]),
+        minute: parseInt(time.split(':').slice(0)[1])
+    }
+}
+
+// const remakeDate = date => {
+//     return new Date(date);
+// };
 
 const getReservationById = async (id) => {
     const result = await pool.query(
@@ -40,49 +47,32 @@ const getReservationById = async (id) => {
 exports.getReservationById = getReservationById;
 
 
-// const getReservationByInformations = async (clientId, date, startTime) => {
-//     const remadeDate = remakeDate(date);
-//     // const remadeTime = remakeDate(startTime);
-//     console.log(remadeDate);
+const getReservationByInformations = async (clientId, date, startTime) => {
+    const explodedStartTime = explodingTime(startTime);
 
-//     const result = await pool.query(
-//         // `SELECT * FROM reservation
-//         //     WHERE client_id = $1 AND date = DATE '$2' AND start_time = TIME '$3'`,
-//         // [clientId, date, startTime]);
-//         `SELECT * FROM reservation
-//             WHERE client_id = $1
-//             ORDER BY date DESC `,
-//         [clientId]);
+    let result;
+    if(explodedStartTime.hour >= 16){
+        result = await pool.query(
+            `SELECT * FROM reservation
+                WHERE client_id = $1 AND date = $2 AND start_time >= '16:00:00'`,
+            [clientId, date]);
+    }else{
+        result = await pool.query(
+            `SELECT * FROM reservation
+                WHERE client_id = $1 AND date = $2 AND start_time <= '16:00:00'`,
+            [clientId, date]);
+    }
 
-//     const rows = result.rows.map(row => {
-//         const reservation = {
-//             id: row.id,
-//             tableNumber: row.table_number,
-//             clientId: row.client_id,
-//             statusCode: row.status_code,
-//             peopleCount: row.people_count,
-//             date: truncateDate(row.date),
-//             startTime: row.start_time,
-//             endTime: row.end_time,
-//             mention: row.mention,
-//             hasMinor: row.has_minor,
-//             takenBy: row.taken_by
-//         };
+    const reservation = result.rows[0];
 
-//         if(reservation.date ){
-//             break;
-//         }
+    if (reservation) {
+        reservation.date = truncateDate(reservation.date);
+        return reservation;
+    }
 
-//         return reservation;
-//     });
-
-//     if (rows) {
-//         return reservation;
-//     }
-
-//     return undefined;
-// };
-// exports.getReservationByInformations = getReservationByInformations;
+    return undefined;
+};
+exports.getReservationByInformations = getReservationByInformations;
 
 
 const insertReservation = async (reservationInfos) => {
