@@ -1,30 +1,29 @@
 <template>
-    <v-sheet width="100%" max-width="30%" height="auto" class="ma-2">
-        <v-text-field @input="loadEmployees" v-model="search" hide-details placeholder="Search name..."
-            class="ma-2"></v-text-field>
-        <v-select class="mx-16" v-model="roleShowed" label="Poste" :items="roleList"></v-select>
+    <v-sheet class="pl-10 py-5">
+        <v-card class="h-screen">
+            <v-row class="mb-0">
+                <v-text-field @input="loadEmployees" v-model="search" hide-details placeholder="Nom a rechercher..."
+                    class="ma-2"></v-text-field>
+                <v-dialog v-model="dialogNewEmployee" width="50%">
+                    <template v-slot:activator="{ props }">
+                        <div class="ma-2 text-center">
+                            <BlackButton class="h-100 w-100" v-bind="props" textbutton="+"> </BlackButton>
+                        </div>
+                    </template>
+                    <v-card>
+                        <v-card-title>
+                            Creer un nouvel employe
+                        </v-card-title>
+                        <NewEmployeeForm></NewEmployeeForm>
+                    </v-card>
+                </v-dialog>
+            </v-row>
 
-        <v-card class="mx-auto" max-height="400" max-width="800">
+            <v-select class="w-50" v-model="roleShowed" label="Poste" :items="roleList"></v-select>
             <v-list v-model:selected='selected' :items="employeeList" item-title="listInformation"
                 item-value="employeeNumber">
             </v-list>
         </v-card>
-
-        <v-dialog v-model="dialogNewEmployee" width="50%">
-            <template v-slot:activator="{ props }">
-                <div class="ma-2 text-center">
-                    <v-btn color="black" v-bind="props">
-                        Ajouter un nouvel employe
-                    </v-btn>
-                </div>
-            </template>
-            <v-card>
-                <v-card-title>
-                    Créer un nouvel employé
-                </v-card-title>
-                <NewEmployeeForm></NewEmployeeForm>
-            </v-card>
-        </v-dialog>
     </v-sheet>
 </template>
 
@@ -32,13 +31,17 @@
 <script>
 import NewEmployeeForm from "../EmployeePage/NewEmployeeForm.vue"
 import { getAllEmployees, getAllEmployeesByRole, getAllRoles } from "../../services/EmployeeService";
+import EditBlackButton from "../../components/Reusable/EditBlackButton.vue";
+import BlackButton from "../../components/Reusable/BlackButton.vue";
 
 export default {
     inject: [
         'loadEmployeeNumber'
     ],
     components: {
-        NewEmployeeForm
+        NewEmployeeForm,
+        EditBlackButton,
+        BlackButton
     },
     data()
     {
@@ -72,7 +75,7 @@ export default {
                         if (this.roleShowed == "Tous")
                         {
                             const newEmployee = {
-                                "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName,
+                                "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName + " (" + employee.role + ")",
                                 "employeeNumber": employee.employeeNumber,
                                 "firstName": employee.firstName,
                                 "lastName": employee.lastName,
@@ -101,17 +104,17 @@ export default {
                     if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
                         || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
                     {
-                            const newEmployee = {
-                                "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName,
-                                "employeeNumber": employee.employeeNumber,
-                                "firstName": employee.firstName,
-                                "lastName": employee.lastName,
-                                "role": employee.role,
-                                props: {
-                                    color: 'red',
-                                },
-                            };
-                            this.employeeList.push(newEmployee);
+                        const newEmployee = {
+                            "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName,
+                            "employeeNumber": employee.employeeNumber,
+                            "firstName": employee.firstName,
+                            "lastName": employee.lastName,
+                            "role": employee.role,
+                            props: {
+                                color: 'red',
+                            },
+                        };
+                        this.employeeList.push(newEmployee);
                     }
                 });
             }).catch(err =>
@@ -151,12 +154,15 @@ export default {
     {
         this.roleList.push("Tous");
         this.loadEmployees();
-        getAllRoles().then(allRoles => {
+        getAllRoles().then(allRoles =>
+        {
             console.log("ALLROLES", allRoles)
-            allRoles.forEach(role => {
+            allRoles.forEach(role =>
+            {
                 this.roleList.push(role.name);
             });
-        }).catch(err => {
+        }).catch(err =>
+        {
             console.error(err);
         });
     },

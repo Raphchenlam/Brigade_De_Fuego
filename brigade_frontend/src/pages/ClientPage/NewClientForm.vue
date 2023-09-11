@@ -13,12 +13,12 @@
             </v-row>
             <v-text-field class="pa-4" label="Numéro de téléphone(format: xxx-xxx-xxxx)" density="compact"
                 v-model.trim="client.phoneNumber" @blur="patternedPhoneNumber()"
-                :rules="[rules.required, rules.clientIdUnique, rules.phoneNumberValidation]" clearable>
+                :rules="[rules.required, rules.clientIdUnique, rules.phoneNumberValidation]" clearable return-masked-value>
             </v-text-field>
             <v-text-field class="pa-4" label="Allergies" density="compact" v-model.trim="client.allergy" clearable>
             </v-text-field>
             <v-checkbox label="Client favori" density="compact" v-model="client.isFavorite"></v-checkbox>
-            <v-row class="justify-center">
+            <v-row class="justify-end">
                 <DarkRedButton textbutton="Annuler" class="mx-5" height="3rem" @click="closeDialog()"></DarkRedButton>
                 <DarkRedButton type="submit" textbutton="Creer le client" class="mx-5" height="3rem">
                 </DarkRedButton>
@@ -37,7 +37,8 @@ export default {
     components: {
         DarkRedButton,
     },
-    data() {
+    data()
+    {
         return {
             client: {
                 firstName: null,
@@ -59,38 +60,47 @@ export default {
         }
     },
     methods: {
-        closeDialog() {
+        closeDialog()
+        {
             this.closeNewClientDialog();
         },
-        async submitNewClient() {
+        async submitNewClient()
+        {
             this.clientIdUnique = true;
             const formValid = await this.$refs.createClientForm.validate();
-            if (!formValid.valid) {
+            if (!formValid.valid)
+            {
                 return;
             }
 
-            try {
+            try
+            {
                 await createClient(this.client);
                 this.clientIdUnique = true;
                 this.newClientAdded = true;
                 this.closeDialog();
-            } catch (err) {
+            } catch (err)
+            {
                 console.error(err);
                 alert(err.message);
-                if (err.status === 409) {
+                if (err.status === 409)
+                {
                     this.clientIdUnique = false;
                     this.newClientAdded = false;
                 }
                 await this.$refs.createClientForm.validate();
             }
         },
-        capitalizeFirstName() {
+        capitalizeFirstName()
+        {
             this.client.firstName = this.capitalizeWords(this.client.firstName);
         },
-        capitalizeLastName() {
+        capitalizeLastName()
+        {
             this.client.lastName = this.capitalizeWords(this.client.lastName);
         },
-        patternedPhoneNumber() {
+        patternedPhoneNumber()
+        {
             this.client.phoneNumber = this.formatPhoneNumber(this.client.phoneNumber);
         }
 
@@ -99,8 +109,7 @@ export default {
 
 </script>
 
-<style scoped>
-.boxed-center {
+<style scoped>.boxed-center {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     margin: 1rem auto;
     border-radius: 10px;
@@ -108,5 +117,4 @@ export default {
     text-align: center;
     width: 80%;
     max-width: 80rem;
-}
-</style>
+}</style>

@@ -18,7 +18,7 @@
                 <v-checkbox class="ml-10" v-model="client.isBlacklisted" label="BLACKLIST"></v-checkbox>
             </v-row>
 
-            <v-row class="justify-center">
+            <v-row class="justify-end">
                 <DarkRedButton class="mx-5" height="3rem" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
                 <DarkRedButton class="mx-5" height="3rem" textbutton="Sauvegarder"></DarkRedButton>
             </v-row>

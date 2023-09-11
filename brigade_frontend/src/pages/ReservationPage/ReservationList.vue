@@ -1,35 +1,43 @@
 <template>
-    <v-sheet width="50%" class="ma-2">
-        <v-row>
-            <v-text-field type="date" class="ma-2" label="Date Debut" clearable>
-            </v-text-field>
-            <v-text-field type="date" class="ma-2" label="Date Fin" clearable>
-            </v-text-field>
-        </v-row>
-<v-radio-group v-model="shiftShow">
-    <v-row width="80%">
-    <v-radio label="Midi" value="lunch"></v-radio>
-    <v-radio label="Soir" value="dinner"></v-radio>
-    <v-radio label="Journee complete" value="all"></v-radio>
-</v-row>
-</v-radio-group>
-        <v-card class="mx-auto" max-height="400" max-width="800">
-            <v-list v-model:selected='selected' :items="reservations" item-title="listInformation" item-value="id">
-            </v-list>
+    <v-sheet class="px-10 h-75">
+        <v-card class="h-75">
+
+
+
+                <v-row class="mb-0">
+                    <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
+                        class="ma-2"></v-text-field>
+                    <v-dialog v-model="dialogNewReservation" width="100%">
+                        <template v-slot:activator="{ props }">
+                            <div class="ma-2 text-center">
+                                <BlackButton class="h-100 w-100" v-bind="props" textbutton="+">
+                                </BlackButton>
+                            </div>
+                        </template>
+                        <v-card>
+                            <v-card-title>
+                                Creer une nouvelle reservation
+                            </v-card-title>
+                            <NewReservationForm></NewReservationForm>
+                        </v-card>
+                    </v-dialog>
+                </v-row>
+                <v-row>
+                <v-text-field type="date" class="ma-2" label="Date Debut" clearable>
+                </v-text-field>
+                <v-text-field type="date" class="ma-2" label="Date Fin" clearable>
+                </v-text-field>
+            </v-row>
+            <v-radio-group v-model="shiftShow">
+                <v-row class="pl-5">
+                    <v-radio label="Midi" value="lunch"></v-radio>
+                    <v-radio label="Soir" value="dinner"></v-radio>
+                    <v-radio label="Journee complete" value="all"></v-radio>
+                </v-row>
+            </v-radio-group>
+                <v-list v-model:selected='selected' :items="reservations" item-title="listInformation" item-value="id">
+                </v-list>
         </v-card>
-        <v-dialog v-model="dialogNewReservation" width="100%">
-            <template v-slot:activator="{ props }">
-                <div class="ma-2 text-center">
-                    <v-btn block color="black" v-bind="props">Ajouter une nouvelle reservation</v-btn>
-                </div>
-            </template>
-            <v-card>
-                <v-card-title>
-                    Creer une nouvelle reservation
-                </v-card-title>
-                <NewReservationForm></NewReservationForm>
-            </v-card>
-        </v-dialog>
     </v-sheet>
 </template>
 
@@ -37,16 +45,21 @@
 <script>
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import NewReservationForm from "../reservationpage/NewReservationForm.vue"
+import BlackButton from '../../components/Reusable/BlackButton.vue';
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
 export default {
     components: {
         VDataTable,
-        NewReservationForm
+        NewReservationForm,
+        BlackButton,
+        DarkRedButton
     },
     data()
     {
         return {
-            shiftShow : "all",
+            search: "",
+            shiftShow: "all",
             date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
             modal: false,
             selected: [],
@@ -168,3 +181,10 @@ export default {
     },
 }
 </script>
+
+
+<style scoped>
+.v-btn {
+    font-size: xx-large;
+}
+</style>

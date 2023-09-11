@@ -1,4 +1,5 @@
 <template>
+    <v-sheet class="h-auto">
     <v-sheet v-if="userSession.user.isAdmin && $route.fullPath == '/espace/leave'">
         <v-row class="ma-5 justify-space-around">
             <v-col cols="6">
@@ -65,7 +66,7 @@
         </v-row>
     </v-sheet>
     <v-sheet class="ma-5">
-        <v-data-table-server no-data-text="Aucune demande de congés à venir" v-model:expanded="expanded" height="auto" fixed-header :headers="headers" :items="leaveList"
+        <v-data-table-server no-data-text="Aucune demande de congés à venir" v-model:expanded="expanded" height="250" fixed-header :headers="headers" :items="leaveList"
             :items-length="leaveList.length" class="elevation-1" @update:options="loadLeaves" show-expand>
             
             <template v-slot:top>
@@ -128,6 +129,7 @@
 
         </v-data-table-server>
     </v-sheet>
+</v-sheet>
 </template>
 
 <script>

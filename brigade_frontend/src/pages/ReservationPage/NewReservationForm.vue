@@ -1,32 +1,32 @@
 <template>
     <div class="ma-2" width="auto">
-        <v-form @submit.prevent="verifyReservation" class="pa-10" validate-on="submit lazy" ref="createReservationForm">
+        <v-form @submit.prevent="verifyReservation" class="pa-10" validate-on="blur" ref="createReservationForm">
             <v-row>
                 <v-col cols="6">
                     <v-row class="justify-center">
                         <p v-if="!clientIdValid" class="error-message">Un client doit etre selectionner
                         </p>
                     </v-row>
-                    <ClientList></ClientList>
+                    <ClientList class="mt-5"></ClientList>
                 </v-col>
                 <v-col cols="6">
                     <v-text-field v-if="false" v-model="reservation.clientId" class="ma-2" :rules="[rules.required]">
                     </v-text-field>
                     <v-row class="justify-center">
                         <v-text-field type="datetime-local" v-model="reservationFullDate" class="ma-2"
-                            label="Date de la reservation" :rules="[rules.required]">
+                            label="Date de la reservation" :rules="[rules.required, rules.dateIsValid]">
                         </v-text-field>
                         <v-text-field v-model="reservation.peopleCount" width="10px" type="number" class="shrink ma-2"
                             label="Nombre de personnes" :rules="[rules.required]">
                         </v-text-field>
                     </v-row>
-                    <v-textarea v-model="reservation.mention" height="200px" no-resize rows="8"
+                    <v-textarea class="my-5" v-model="reservation.mention" height="200px" no-resize rows="8"
                         label="Mentions speciales"></v-textarea>
                     <v-checkbox v-model="reservation.hasMinor" label="Mineur sur place"></v-checkbox>
                     <v-dialog v-model="dialogConfirmReservation" width="100%">
                         <template v-slot:activator="{ props }">
                             <div class="ma-2 text-center">
-                                <v-row class="justify-center">
+                                <v-row class="justify-end">
                                     <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
                                     <DarkRedButton class="mx-5" type="submit" v-bind="props"
                                         textbutton="Creer la reservation"></DarkRedButton>
@@ -47,15 +47,16 @@
                                         </p>
                                     </v-row>
                                     <v-row class="justify-center">
-                                        <v-text-field autofocus type="number" v-model="reservation.takenBy"
+                                        <v-text-field :counter="16" autofocus type="number" v-model="reservation.takenBy"
                                             label="Numero de la carte employe" :rules="[rules.required]"></v-text-field>
                                     </v-row>
-                                    <v-dialog v-model="dialogOKReservation" width="50%">
+                                    <v-dialog v-model="dialogOKReservation" width="50%" persistent>
                                         <template v-slot:activator="{ props }">
                                             <v-sheet class="ma-2 text-center">
                                                 <v-row class="justify-center">
                                                     <v-row class="justify-center">
-                                                        <BlackButton type="submit" textbutton="Confirmer" v-bind="props">
+                                                        <BlackButton :disabled="reservation.takenBy.length != 16"
+                                                            type="submit" textbutton="Confirmer" v-bind="props">
                                                         </BlackButton>
                                                     </v-row>
                                                 </v-row>
@@ -119,7 +120,7 @@ export default {
             },
             rules: {
                 required: value => !!value || "Le champ est requis",
-                //dateValid: value => !!dateValid || "Le champ est requis",
+                dateIsValid: () => this.dateValid || "Date non valide(Ne doit pas etre avant presentement, ni avant 11h ou apres 23h)",
             },
             formValid: true
         }
@@ -135,19 +136,20 @@ export default {
         {
             this.closeNewReservationDialog();
         },
-        async verifyReservation()
+        verifyReservation()
         {
             this.clientIdValid = true;
             if (!this.reservation.clientId)
             {
                 this.clientIdValid = false;
             }
-            const formValid = await this.$refs.createReservationForm.validate();
-
-            if (!formValid.valid || !this.clientIdValid)
+            this.$refs.createReservationForm.validate().then(formValid =>
+            {
+                if (!formValid.valid || !this.clientIdValid || !this.dateValid)
             {
                 this.dialogConfirmReservation = false;
-            }
+            } 
+            });
         },
         loadClientId(clientId)
         {
@@ -162,6 +164,7 @@ export default {
                 this.takenByNumberValid = false;
                 return;
             }
+
             createReservation(this.reservation).then(result =>
             {
                 this.dialogOKReservation = true;
@@ -170,6 +173,47 @@ export default {
             {
                 console.error(err);
             });
+        },
+        isBeforeToday(fullDate)
+        {
+            let date = fullDate.split('T').slice(0)[0];
+            let fulltime = fullDate.split('T').slice(0)[1];
+
+            let year = parseInt(date.split('-').slice(0)[0]);
+            let month = parseInt(date.split('-').slice(0)[1]);
+            let day = parseInt(date.split('-').slice(0)[2]);
+            let hour = parseInt(fulltime.split(':').slice(0)[0]);
+            let minute = parseInt(fulltime.split(':').slice(0)[1]);
+
+            var today = new Date();
+
+            if (year < today.getFullYear())
+            {
+                return true;
+            }
+            else if (year == today.getFullYear() && month < today.getMonth() + 1)
+            {
+                return true;
+            }
+            else if (year == today.getFullYear() && month == today.getMonth() + 1)
+            {
+                if (day < today.getDate())
+                {
+                    return true;
+                }
+                else if (day == today.getDate())
+                {
+                    if (hour < today.getHours())
+                    {
+                        return true;
+                    }
+                    else if (hour == today.getHours() && minute <= today.getMinutes())
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     },
     watch: {
@@ -179,35 +223,31 @@ export default {
             this.reservation.date = this.reservationFullDate.split('T').slice(0)[0];
             this.reservation.startTime = this.reservationFullDate.split('T').slice(0)[1];
 
-            let endHour = parseInt(this.reservation.startTime.split(':').slice(0)[0]);
+            let startHour = parseInt(this.reservation.startTime.split(':').slice(0)[0])
+            let endHour = startHour + 3;
             let endMinute = parseInt(this.reservation.startTime.split(':').slice(0)[1]);
-            endHour += 3;
-            console.log("endHour", endHour);
+            console.log("startHour", startHour)
+
+            console.log("endHour", endHour)
             console.log("endMinute", endMinute); //verifier pour 00 a 09 car pourrait etre problematique ( affiche 5:2 au lieu de 5:02)
-            if (endHour > 23)
+            if (endHour >= 24)
             {
                 endHour = 23;
                 endMinute = 59;
             }
             this.reservation.endTime = endHour.toString() + ":" + endMinute.toString();
 
-            let reservationYear = this.reservation.date.split('-').slice(0)[0];
-            var today = new Date();
-            console.log("ReservYear", reservationYear)
-            console.log("Today", today.getFullYear());
-            if (reservationYear < today.getFullYear())
+            this.dateValid = !this.isBeforeToday(this.reservationFullDate);
+            if (startHour < 11 || startHour >= 23)
             {
                 this.dateValid = false;
             }
 
-            //today.setHours(today 4); 
-            //let dateToAdd3Hours = this.reservation.startTime;
-            //let date3HoursAdded = dateToAdd3Hours.setHours(dateToAdd3Hours.getHours() + 3);
-            //console.log("Ca marche tu:",date3HoursAdded);
         },
         selectedClientId()
         {
             this.reservation.clientId = this.selectedClientId
+            this.clientIdValid = true;
         }
     },
     provide()

@@ -5,9 +5,9 @@
                 <v-text-field autofocus v-model="employeeBarcodeNumber" height="20px" class="mb-16"
                     label="Scanner votre carte employe">
                 </v-text-field>
-                <v-row class="justify-space-between">
-                    <DarkRedButton textbutton="EFFACER" class="ml-5" height="8rem"></DarkRedButton>
-                    <DarkRedButton type="submit" textbutton="PUNCHER" class="ml-5" height="8rem"></DarkRedButton>
+                <v-row class="justify-space-around">
+                    <DarkRedButton textbutton="EFFACER" class="ml-5 h- w-25" height="8rem"></DarkRedButton>
+                    <DarkRedButton type="submit" textbutton="PUNCHER" class="ml-5 w-25" height="8rem"></DarkRedButton>
                 </v-row>
             </v-form>
         </v-sheet>
