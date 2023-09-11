@@ -1,12 +1,12 @@
 <template>
     <v-sheet>
-        <v-card class="px-5 mr-10 ml-5 h-75">
+        <v-card class="mr-10 ml-5 h-75">
             <v-dialog v-model="dialogEditReservation" width="100%">
                 <template v-slot:activator="{ props }">
                     <v-row class="justify-end">
                         <EditBlackButton class="ma-2" v-bind="props"></EditBlackButton>
                     </v-row>
-                    <v-divider></v-divider>
+                    <v-divider class="my-5"></v-divider>
                 </template>
                 <v-card>
                     <v-card-title>
@@ -20,6 +20,7 @@
         <p>Date: 2023-09-15</p>
         <p>Heure : 19:00</p>
         <p>Nombre de personne: 6</p>
+        <p>Table : Aucune</p>
         <p>Mention: "Fete de isabelle"</p>
         <p>Allergy: "Gluten"</p>
         <p>Mineur sur place ? Oui</p>

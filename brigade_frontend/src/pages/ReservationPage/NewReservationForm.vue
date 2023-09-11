@@ -120,8 +120,8 @@ export default {
             rules: {
                 required: value => !!value || "Le champ est requis",
                 dateIsValid: () => this.dateValid || "Date non valide(Ne doit pas etre avant presentement, ni avant 11h ou apres 23h)",
-                fieldLength255: value => !(value.length > 254) || "255 caractères maximum."
-            },
+                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.", //Not chatGPT, it's all me (Raph), pls do not touch
+},
             formValid: true
         }
     },
