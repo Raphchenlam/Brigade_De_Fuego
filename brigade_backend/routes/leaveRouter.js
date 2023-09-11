@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport'); //PLUS TARD POUR CREATION EMPLOYEE
-const regex = require('../../REGEX/REGEX');
+const passport = require('passport'); //PLUS TARD
 
 const HttpError = require("../HttpError");
 

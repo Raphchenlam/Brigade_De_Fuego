@@ -49,7 +49,7 @@ const router = createRouter({
         { path: '/espace/leave', component: LeaveView },
         { path: '/espace/leave/:employeeNumber', component: LeaveView, props: true },
         { path: '/espace/event', component: EventView },
-        { path: '/espace/event/:id', component: EventInformation, props: true },
+        { path: '/espace/event/:name', component: EventInformation, props: true },
         { path: '/espace/employee', component: EmployeeView },
         { path: '/espace/employee/:employeeNumber', component: EmployeeInformationView, props: true },
         { path: '/espace/punch', component : PunchManagerView },

@@ -1,13 +1,13 @@
 <template>
-    <v-sheet width="50%" height="auto" class="ma-2">
-        <v-card class="mx-auto" max-height="400" max-width="800">
-            <v-list v-model:selected='selected' :items="clients" item-title="listInformation" item-value="id">
-            </v-list>
-        </v-card>
-        <v-dialog v-model="dialogNewClient" width="100%">
+    <v-sheet>
+        <v-card class="mx-10 h-75">
+            <v-row class="mb-0">
+            <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
+            class="ma-2"></v-text-field>
+            <v-dialog v-model="dialogNewClient" width="100%">
             <template v-slot:activator="{ props }">
                 <div class="ma-2 text-center">
-                    <BlackButton block textbutton="Creer un nouveau client " v-bind="props"></BlackButton>
+                    <BlackButton class="h-100 w-100" textbutton="+" v-bind="props"></BlackButton>
                 </div>
             </template>
             <v-card>
@@ -17,6 +17,11 @@
                 <NewClientForm></NewClientForm>
             </v-card>
         </v-dialog>
+        </v-row>
+            <v-list v-model:selected='selected' :items="clients" item-title="listInformation" item-value="id">
+            </v-list>
+        </v-card>
+        
     </v-sheet>
 </template>
 
@@ -26,15 +31,17 @@
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import NewClientForm from "../clientpage/NewClientForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
 export default {
+    inject: ['loadClientId'],
     components: {
-        VDataTable,
-        NewClientForm,
-        BlackButton
-    },
-    data()
-    {
+    VDataTable,
+    NewClientForm,
+    BlackButton,
+    DarkRedButton
+},
+    data() {
         return {
             selected: [],
             search: '',
@@ -42,15 +49,13 @@ export default {
             dialogNewClient: false,
         };
     },
-    provide()
-    {
+    provide() {
         return {
             closeNewClientDialog: this.closeNewClientDialog,
         };
     },
     methods: {
-        loadClients()
-        {
+        loadClients() {
             const allClients = [
                 {
                     listInformation: "Alice Dupays (111-111-1111)",
@@ -103,7 +108,7 @@ export default {
                     props: {
                         color: 'red',
                     },
-                }, 
+                },
                 {
                     listInformation: "Raphael Chenard Lamothe (888-888-8888)",
                     id: 5,
@@ -157,25 +162,33 @@ export default {
                 },
             ]
             this.clients = [];
-            allClients.forEach(client =>
-            {
+            allClients.forEach(client => {
                 if (client.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
                     || client.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                    || client.phoneNumber.indexOf(this.search) >= 0)
-                {
-                    console.log(client);
+                    || client.phoneNumber.indexOf(this.search) >= 0) {
                     this.clients.push(client);
                 }
             });
         },
-        closeNewClientDialog()
-        {
+        closeNewClientDialog() {
             this.dialogNewClient = false;
         },
     },
-    mounted()
-    {
+    watch: {
+        selected()
+        {
+            this.loadClientId(this.selected[0]);
+        }
+    },
+    mounted() {
         this.loadClients();
     },
 }
 </script>
+
+<style scoped>
+.v-btn {
+    font-size:xx-large;
+}
+
+</style>

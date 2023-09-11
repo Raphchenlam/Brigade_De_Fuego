@@ -1,4 +1,4 @@
-const validEmployeeNumber = /^\d{4}$/;
+const validEmployeeNumber = /^[1-9]\d{3}$/;
 exports.validEmployeeNumber = validEmployeeNumber;
 
 const validName = /^([A-Z][a-z]{1,}(?:[- ][A-Z][a-z]{1,})?)$/;
@@ -24,3 +24,5 @@ exports.validPhoneNumber = validPhoneNumber;
 
 const validSkillPoints = /^(?:[1-9]|10)$/;
 exports.validSkillPoints = validSkillPoints;
+
+

@@ -1,7 +1,7 @@
 <template>
-    <v-row class="justify-space-around">
-        <ClientList></ClientList>
-        <ClientInformation></ClientInformation>
+    <v-row class="justify-center">
+        <ClientList class="h-screen w-50"></ClientList>
+        <ClientInformation class="h-screen w-50"></ClientInformation>
     </v-row>
 </template>
 
