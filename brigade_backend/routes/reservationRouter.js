@@ -54,7 +54,7 @@ router.post("/",
             return next(new HttpError(400, "Le champ heure de début est requis"));
         }
         console.log("BODY RESERVATION:", req.body);
-        const reservation = {
+        const newReservation = {
             tableNumber: req.body.tableNumber,
             clientId: req.body.clientId,
             statusCode: req.body.statusCode,
@@ -68,18 +68,30 @@ router.post("/",
         };
 
         reservationQueries
-        // .getReservationByInformations(clientId, date, startTime)
-        .insertReservation(reservation)
+        .getReservationByInformations(clientId, date, startTime)
         .then((reservation) => {
-            if(reservation){
-                res.json(reservation);
+
+            if(!reservation){
+                reservationQueries.insertReservation(newReservation)
+                .then((latestReservation) => {
+                    if(latestReservation){
+                        res.json(latestReservation);
+                    }else{
+                        return next(new HttpError(404, `La réservation ${id} n'a pas été sauvegarder`));
+                    }
+                })
+                .catch((err) => {
+                    return next(err);
+                });
             }else{
-                return next(new HttpError(404, `La réservation ${id} est introuvable`));
+                return next(new HttpError(409, `Une réservation de ${reservation.client_id}, le ${reservation.date} a ${reservation.start_time} existe déjà`))
             }
         })
         .catch((err) => {
             return next(err);
         });
+
+        
     }
 );  
 
