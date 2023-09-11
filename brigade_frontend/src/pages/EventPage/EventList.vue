@@ -1,14 +1,18 @@
 <template>
   <v-sheet>
-    <div class="text-center ma-5">
-      <p>Nombre d'evenements : {{ eventList.length }} <p v-if="selection">{{ selection }}</p> </p>
-    </div>
+
     <v-sheet class="mx-16">
-      <v-select class="mx-16" v-model="eventTypeShowed" label="Type d'événement" :items="eventTypeList"></v-select>
+      <v-text-field class="ma-2" @input="searchEvent" v-model="search" hide-details placeholder="Rechercher un événement..."></v-text-field>
+      <v-select class="ma-2" v-model="eventTypeShowed" label="Type d'événement" :items="eventTypeList"></v-select>
+      <div class="text-center ma-5">
+        <p>Nombre d'evenements : {{ eventList.length }}</p>
+      </div>
     </v-sheet>
-    <v-card class="mx-auto" max-height="400" max-width="800">
-      <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="name"></v-list>
-    </v-card>
+    <v-sheet class="mx-16">
+      <v-card class="ma-2">
+        <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="name"></v-list>
+      </v-card>
+    </v-sheet>
     <v-dialog persistent v-model="dialogNewEvent" width="70%">
       <template v-slot:activator="{ props }">
         <div class="ma-2 text-center">
@@ -39,11 +43,12 @@ export default {
   },
   data() {
     return {
+      search: "",
       selection: [],
       eventList: [],
       allEventList: [],
       eventTypeList: [],
-      eventTypeShowed: "all",
+      eventTypeShowed: "Tous",
       dialogNewEvent: false,
     };
   },
@@ -56,21 +61,49 @@ export default {
       updateEventList: this.updateEventList
     };
   },
+  // computed: {
+  //   searchEvent() {
+  //     this.eventList.forEach((event) => {
+  //       // if (this.search == "") {
+  //       //   this.updateEventList();
+  //       // }
+  //       if (event.name.toUpperCase().indexOf(this.search.toUpperCase() && this.search != "") >= 0) {
+  //         // this.updateEventList();
+  //         this.eventList = [];
+  //         this.eventList.push(event);
+  //       }
+  //     })
+  //   },
+  // },
   methods: {
-    
+    updateEventTypeList() {
+      this.eventTypeList = [];
+      fetchAllEventType().then(allEventType => {
+        this.eventTypeList.push("Tous");
+        allEventType.forEach((eventType) => {
+          this.eventTypeList.push(eventType);
+        })
+      })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+
     updateEventList() {
       this.eventList = [];
-      fetchAllEventType().then(allEventType => {
-        this.eventTypeList = allEventType
-      });
-      fetchAllEvents().then(allEventList => 
+      fetchAllEvents().then(allEventList => {
         allEventList.forEach((event) => {
-          if (this.eventTypeShowed == "all" || this.eventTypeShowed == event.eventType) {
+          if (this.eventTypeShowed == "Tous" || this.eventTypeShowed == event.eventType) {
             this.eventList.push(event);
           }
+
         })
-      )
+      })
+        .catch(err => {
+          console.error(err);
+        })
     },
+    
     updateEventTypeShowed(newEventType) {
       this.eventTypeShowed = newEventType;
       this.updateEventList();
@@ -91,7 +124,8 @@ export default {
   },
 
   mounted() {
-    this.eventTypeShowed = "all"
+    this.eventTypeShowed = "Tous"
+    this.updateEventTypeList();
     this.updateEventList();
   }
 }
