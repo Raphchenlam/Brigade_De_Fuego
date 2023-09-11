@@ -18,7 +18,6 @@
                     </v-card>
                 </v-dialog>
             </v-row>
-
             <v-select class="w-50" v-model="roleShowed" label="Poste" :items="roleList"></v-select>
             <v-list v-model:selected='selected' :items="employeeList" item-title="listInformation"
                 item-value="employeeNumber">
