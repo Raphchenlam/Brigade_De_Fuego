@@ -1,8 +1,8 @@
 <template>
     <v-sheet v-if="userSession.user">
-        <v-row class="mx-5 justify-space-between">
-            <EmployeeList v-if="userSession.user.isAdmin"></EmployeeList>
-            <EmployeeInformation v-if="selectedEmployeeNumber" :employeeNumber="selectedEmployeeNumber">
+        <v-row class="justify-space-between">
+            <EmployeeList v-if="userSession.user.isAdmin" class="h-screen" width="35%"></EmployeeList>
+            <EmployeeInformation v-if="selectedEmployeeNumber" :employeeNumber="selectedEmployeeNumber" class="h-screen" width="65%">
             </EmployeeInformation>
         </v-row>
     </v-sheet>

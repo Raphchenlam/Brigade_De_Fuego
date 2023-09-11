@@ -14,10 +14,14 @@
             </v-row>
             <v-textarea v-model="reservation.mention" label="Mentions speciales"></v-textarea>
             <v-checkbox v-model="reservation.hasMinor" label="Mineur sur place"></v-checkbox>
-            <v-row class="justify-center">
-                <DarkRedButton class="mx-5" height="3rem" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton class="mx-5" height="3rem" textbutton="Sauvegarder"></DarkRedButton>
-                <SmallBlackButton class="mt-10" textbutton="No Show"></SmallBlackButton>
+            <v-row class="justify-space-between">
+                <cols>
+                <SmallBlackButton class="mx-5" width="auto" textbutton="No Show"></SmallBlackButton>
+            </cols>
+                <cols>
+                <DarkRedButton class="mx-5"  textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Sauvegarder"></DarkRedButton>
+            </cols>
             </v-row>
         </v-form>
     </div>
