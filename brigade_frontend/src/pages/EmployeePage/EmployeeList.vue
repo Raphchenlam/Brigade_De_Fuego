@@ -24,7 +24,6 @@
                 item-value="employeeNumber">
             </v-list>
         </v-card>
-
     </v-sheet>
 </template>
 
@@ -59,6 +58,7 @@ export default {
     {
         return {
             closeNewEmployeeDialog: this.closeNewEmployeeDialog,
+            loadEmployees: this.loadEmployees,
         };
     },
     methods: {

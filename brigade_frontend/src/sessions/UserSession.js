@@ -7,9 +7,8 @@ class AuthError extends Error {
     }
 }
 
-const userSession = reactive({
+const session = reactive({
     user: null,
-    employeeNumber: null,
     user_email: null,
     password: null,
 
@@ -21,7 +20,7 @@ const userSession = reactive({
             this.password = sessionStorage.password;
         }
         if (this.user == null && this.user_email != null) {
-            //this.fetchUser().catch(err => console.error("L'authentification initiale a échouée: ", err));
+            this.fetchUser().catch(err => console.error("L'authentification initiale a échouée: ", err));
         }
     },
     login(user_email, password) {
@@ -106,6 +105,6 @@ const userSession = reactive({
     },
 });
 
-export default userSession;
+export default session;
 
-userSession.initialize();
+session.initialize();
