@@ -25,7 +25,7 @@ const convertToEvent = jsonEvent => {
     id: + jsonEvent.id,
     name: "" + jsonEvent.name,
     eventType: "" + jsonEvent.eventType,
-    impact: jsonEvent.impact,
+    impact: Number(jsonEvent.impact),
     isActive: jsonEvent.isActive
   };
 };

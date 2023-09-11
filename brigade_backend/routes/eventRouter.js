@@ -9,6 +9,7 @@ const eventQueries = require("../queries/eventQueries");
 // GET pour la liste des evenements
 // Aucune authorisation necessaire
 router.get("/", (req, res, next) => {
+
   eventQueries
     .getAllEvents()
     .then((eventList) => {
@@ -92,7 +93,7 @@ router.post(
     };
 
     eventQueries
-      .createEvent(newEvent)
+      .insertEvent(newEvent)
       .then((result) => {
         res.json(result);
       })

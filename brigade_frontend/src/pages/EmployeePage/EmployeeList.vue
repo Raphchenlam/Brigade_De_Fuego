@@ -43,8 +43,7 @@ export default {
         EditBlackButton,
         BlackButton
     },
-    data()
-    {
+    data() {
         return {
             search: "",
             selected: [],
@@ -54,26 +53,20 @@ export default {
             dialogNewEmployee: false,
         };
     },
-    provide()
-    {
+    provide() {
         return {
             closeNewEmployeeDialog: this.closeNewEmployeeDialog,
             loadEmployees: this.loadEmployees,
         };
     },
     methods: {
-        loadEmployees()
-        {
+        loadEmployees() {
             this.employeeList = [];
-            getAllEmployees().then(allEmployees =>
-            {
-                allEmployees.forEach(employee =>
-                {
+            getAllEmployees().then(allEmployees => {
+                allEmployees.forEach(employee => {
                     if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                        || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
-                    {
-                        if (this.roleShowed == "Tous")
-                        {
+                        || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0) {
+                        if (this.roleShowed == "Tous") {
                             const newEmployee = {
                                 "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName + " (" + employee.role + ")",
                                 "employeeNumber": employee.employeeNumber,
@@ -88,19 +81,15 @@ export default {
                         }
                     }
                 });
-            }).catch(err =>
-            {
+            }).catch(err => {
                 console.error(err);
             });
         },
-        loadEmployeesByRole()
-        {
+        loadEmployeesByRole() {
             this.employeeList = [];
-            getAllEmployeesByRole(this.roleShowed).then(allEmployees =>
-            {
+            getAllEmployeesByRole(this.roleShowed).then(allEmployees => {
                 console.log("AllEMPLOYEE BY ROLE ", allEmployees);
-                allEmployees.forEach(employee =>
-                {
+                allEmployees.forEach(employee => {
                     if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
                         || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
                     {
@@ -117,41 +106,34 @@ export default {
                         this.employeeList.push(newEmployee);
                     }
                 });
-            }).catch(err =>
-            {
+            }).catch(err => {
                 console.error(err);
             });
         },
 
-        closeNewEmployeeDialog()
-        {
+        closeNewEmployeeDialog() {
             this.dialogNewEmployee = false;
         },
     },
     watch: {
-        roleShowed()
-        {
-            if (this.roleShowed != "Tous")
-            {
+        roleShowed() {
+            if (this.roleShowed != "Tous") {
                 console.log("WATCH-1")
                 this.loadEmployeesByRole();
             }
-            else
-            {
+            else {
                 console.log("WATCH-2")
                 this.loadEmployees();
             }
             this.selected = [];
 
         },
-        selected()
-        {
+        selected() {
             console.log("Selection changer", this.selected[0]);
             this.loadEmployeeNumber(this.selected[0]);
         }
     },
-    mounted()
-    {
+    mounted() {
         this.roleList.push("Tous");
         this.loadEmployees();
         getAllRoles().then(allRoles =>
@@ -175,4 +157,5 @@ export default {
     height: 400px;
     /* or any height you want */
     overflow-y: auto
-}</style>
+}
+</style>
