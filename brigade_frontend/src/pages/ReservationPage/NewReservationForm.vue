@@ -90,7 +90,7 @@ import ClientList from '../ClientPage/ClientList.vue';
 import { createReservation } from '../../services/ReservationService'
 
 export default {
-    inject: ['closeNewReservationDialog'],
+    inject: ['closeNewReservationDialog', 'spliceDate'],
     components: {
         DarkRedButton,
         ClientList,
@@ -146,9 +146,9 @@ export default {
             this.$refs.createReservationForm.validate().then(formValid =>
             {
                 if (!formValid.valid || !this.clientIdValid || !this.dateValid)
-            {
-                this.dialogConfirmReservation = false;
-            } 
+                {
+                    this.dialogConfirmReservation = false;
+                }
             });
         },
         loadClientId(clientId)
@@ -176,38 +176,30 @@ export default {
         },
         isBeforeToday(fullDate)
         {
-            let date = fullDate.split('T').slice(0)[0];
-            let fulltime = fullDate.split('T').slice(0)[1];
-
-            let year = parseInt(date.split('-').slice(0)[0]);
-            let month = parseInt(date.split('-').slice(0)[1]);
-            let day = parseInt(date.split('-').slice(0)[2]);
-            let hour = parseInt(fulltime.split(':').slice(0)[0]);
-            let minute = parseInt(fulltime.split(':').slice(0)[1]);
-
+            const date = this.spliceDate(fullDate)
             var today = new Date();
 
-            if (year < today.getFullYear())
+            if (date.year < today.getFullYear())
             {
                 return true;
             }
-            else if (year == today.getFullYear() && month < today.getMonth() + 1)
+            else if (date.year == today.getFullYear() && date.month < today.getMonth() + 1)
             {
                 return true;
             }
-            else if (year == today.getFullYear() && month == today.getMonth() + 1)
+            else if (date.year == today.getFullYear() && date.month == today.getMonth() + 1)
             {
-                if (day < today.getDate())
+                if (date.day < today.getDate())
                 {
                     return true;
                 }
-                else if (day == today.getDate())
+                else if (date.day == today.getDate())
                 {
-                    if (hour < today.getHours())
+                    if (date.hour < today.getHours())
                     {
                         return true;
                     }
-                    else if (hour == today.getHours() && minute <= today.getMinutes())
+                    else if (date.hour == today.getHours() && date.minute <= today.getMinutes())
                     {
                         return true;
                     }
@@ -220,15 +212,12 @@ export default {
         reservationFullDate()
         {
             this.dateValid = true;
-            this.reservation.date = this.reservationFullDate.split('T').slice(0)[0];
-            this.reservation.startTime = this.reservationFullDate.split('T').slice(0)[1];
 
-            let startHour = parseInt(this.reservation.startTime.split(':').slice(0)[0])
-            let endHour = startHour + 3;
-            let endMinute = parseInt(this.reservation.startTime.split(':').slice(0)[1]);
-            console.log("startHour", startHour)
-
-            console.log("endHour", endHour)
+            const reservationDate = this.spliceDate(this.reservationFullDate);
+            this.reservation.date = reservationDate.year + "-" + reservationDate.month + "-" + reservationDate.day;
+            this.reservation.startTime = reservationDate.hour + ":" + reservationDate.minute;
+            let endHour = reservationDate.hour + 3;
+            let endMinute = reservationDate.minute;
             console.log("endMinute", endMinute); //verifier pour 00 a 09 car pourrait etre problematique ( affiche 5:2 au lieu de 5:02)
             if (endHour >= 24)
             {
@@ -238,7 +227,7 @@ export default {
             this.reservation.endTime = endHour.toString() + ":" + endMinute.toString();
 
             this.dateValid = !this.isBeforeToday(this.reservationFullDate);
-            if (startHour < 11 || startHour >= 23)
+            if (reservationDate.hour < 11 || reservationDate.hour >= 23)
             {
                 this.dateValid = false;
             }
