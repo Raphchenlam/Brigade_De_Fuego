@@ -39,6 +39,7 @@ export default {
     NewEventForm,
     BlackButton
   },
+  inject:['loadEvent'], 
   data()
   {
     return {
@@ -131,8 +132,8 @@ export default {
     },
     selection()
     {
-      console.log("Selection changer");
-      this.$router.push("event/" + this.selection);
+      console.log("Selection changer", this.selection[0] );
+      this.loadEvent(this.selection[0]);
     }
   },
 

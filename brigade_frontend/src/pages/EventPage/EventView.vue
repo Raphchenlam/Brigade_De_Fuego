@@ -1,7 +1,7 @@
 <template>
     <v-row class="justify-space-between">
         <EventList class="h-screen" width="35%"></EventList>
-        <EventInformation class="h-screen" width="65%"></EventInformation>
+        <EventInformation v-if="selectedEvent" :name="selectedEvent" class="h-screen" width="65%" ></EventInformation>
     </v-row>
 </template>
 
