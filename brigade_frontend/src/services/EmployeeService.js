@@ -21,8 +21,8 @@ async function createServiceError(response) {
 }
 
 
-export async function fetchEmployee() {
-    const response = await fetch('/api/employee');
+export async function getAllEmployees() {
+    const response = await fetch(`/api/employee`);
 
     if (response.ok) {
         const respJson = await response.json();
@@ -31,3 +31,74 @@ export async function fetchEmployee() {
         throw await createServiceError(response);
     }
 }
+
+export async function getAllEmployeesByRole(role) {
+    const response = await fetch(`/api/employee/role/${role}`);
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw await createServiceError(response);
+    }
+}
+
+export async function getEmployeeByEmployeeNumber(employeeNumber) {
+    const response = await fetch(`/api/employee/${employeeNumber}`);
+
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw await createServiceError(response);
+    }
+}
+
+export async function getAllRoles() {
+    const response = await fetch(`/api/employee/role`);
+
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw await createServiceError(response);
+    }
+}
+
+export async function createEmployee(employee) {
+    const response = await fetch(`/api/employee`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            // ...session.getAuthHeaders()
+        },
+        body: JSON.stringify(employee)
+    });
+
+    console.log('FETCH RESPONSE', response);
+
+    if (response.ok) {
+        return convertToEmployee(await response.json());
+    } else {
+        console.log(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
+
+const convertToEmployee = jsonEmployee => {
+    return {
+        employeeNumber: "" + jsonEmployee.employeeNumber,
+        firstName: "" + jsonEmployee.firstName,
+        lastName: "" + jsonEmployee.lastName,
+        role: "" + jsonEmployee.role,
+        colorHexCode: "" + jsonEmployee.colorHexCode,
+        hourlyRate: "" + jsonEmployee.hourlyRate,
+        barcodeNumber: "" + jsonEmployee.barcodeNumber,
+        email: "" + jsonEmployee.email,
+        phoneNumber: "" + jsonEmployee.phoneNumber,
+        isAdmin: "" + jsonEmployee.isAdmin,
+        isSuperAdmin: "" + jsonEmployee.isSuperAdmin,
+        isNewEmployee: "" + jsonEmployee.isNewEmployee,
+        isActive: "" + jsonEmployee.isActive,
+        skillPoints: "" + jsonEmployee.skillPoints
+    };
+};
