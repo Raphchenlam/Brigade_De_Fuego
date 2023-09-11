@@ -1,6 +1,6 @@
 <template>
     <v-sheet>
-        <v-card class="mr-10 ml-5 h-75">
+        <v-card class="px-5 mr-10 ml-5 h-75">
             <v-dialog v-model="dialogEditClient" width="100%">
                 <template v-slot:activator="{ props }">
                     <v-row class="justify-space-between">
