@@ -38,15 +38,18 @@ export default {
     }
   },
   methods: {
-    capitalizeWords(inputString) {
+    capitalizeWords(inputString)
+    {
       const words = inputString
         .replace(/-+/g, '-')
         .replace(/[^a-zA-Z\s-]/g, '')
         .replace(/\s+/g, ' ')
         .split(' ')
-        .map(word => {
+        .map(word =>
+        {
           const parts = word.split('-');
-          const capitalizedParts = parts.map(part => {
+          const capitalizedParts = parts.map(part =>
+          {
             return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
           });
           return capitalizedParts.join('-');
@@ -60,29 +63,31 @@ export default {
         .replace(/^-+|-+$/g, '')
         .replace(/[^a-zA-Z]-[^a-zA-Z]/g, '');
     },
+    formatPhoneNumber(phoneNumber)
+    {
+      const cleanedNumber = phoneNumber.replace(/\D/g, '');
 
-  },
-  formatPhoneNumber(phoneNumber) {
-    const cleanedNumber = phoneNumber.replace(/\D/g, '');
-
-    if (cleanedNumber.length === 10) {
-      return cleanedNumber.slice(0, 3) + '-' + cleanedNumber.slice(3, 6) + '-' + cleanedNumber.slice(6);
-    } else {
-      return phoneNumber;
-    }
-  },
-  spliceDate(fullDate) {
-    const date = fullDate.split('T').slice(0)[0];
-    const fulltime = fullDate.split('T').slice(0)[1];
-    return {
-      year: parseInt(date.split('-').slice(0)[0]),
-      month: parseInt(date.split('-').slice(0)[1]),
-      day: parseInt(date.split('-').slice(0)[2]),
-      hour: parseInt(fulltime.split(':').slice(0)[0]),
-      minute: parseInt(fulltime.split(':').slice(0)[1])
+      if (cleanedNumber.length === 10)
+      {
+        return cleanedNumber.slice(0, 3) + '-' + cleanedNumber.slice(3, 6) + '-' + cleanedNumber.slice(6);
+      } else
+      {
+        return phoneNumber;
+      }
+    },
+    spliceDate(fullDate)
+    {
+      const date = fullDate.split('T').slice(0)[0];
+      const fulltime = fullDate.split('T').slice(0)[1];
+      return {
+        year: parseInt(date.split('-').slice(0)[0]),
+        month: parseInt(date.split('-').slice(0)[1]),
+        day: parseInt(date.split('-').slice(0)[2]),
+        hour: parseInt(fulltime.split(':').slice(0)[0]),
+        minute: parseInt(fulltime.split(':').slice(0)[1])
+      }
     }
   }
-
 };
 </script>
 

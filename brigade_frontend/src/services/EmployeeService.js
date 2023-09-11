@@ -56,10 +56,9 @@ export async function getEmployeeByBarcodeNumber(barcodeNumber) {
     const response = await fetch(`/api/employee/${barcodeNumber}`);
 
     if (response.ok) {
-        const respJson = await response.json();
-        return respJson;
+        return await response.json();
     } else {
-        throw Error(response);
+        throw await createServiceError(response);
     }
 }
 

@@ -115,9 +115,6 @@ router.get('/:employeeNumber', (req, res, next) => {
         });
     } else if (employeeNumberToGet.length == 16)
     {
-
-
-
         employeeQueries.selectEmployeeByBarcodeNumber(employeeNumberToGet).then(employee =>
         {
             if (employee)
