@@ -42,6 +42,7 @@ router.get('/role/:role',
             return next(err);
         });
     });
+
 router.get('/role',
     (req, res, next) => {
         // const employeeConnected = req.employee;
@@ -59,22 +60,6 @@ router.get('/role',
             return next(err);
         });
     });
-
-//Ne pas utiliser le passport authenticate pour l'instant
-//passport.authenticate('basic', {session:false}), (req,res,next)...
-router.post('/', (req, res, next) => {
-    // const employee = req.employee;
-
-    // if(!employee || !employee.isAdmin || !employee.isSuperAdmin) {
-    //     return next(new HttpError(403, "Droit administrateur requis"));
-    // };
-
-    employeeQueries.selectAllRoles().then(roleList => {
-        res.json(roleList);
-    }).catch(err => {
-        return next(err);
-    });
-});
 
 router.get('/:employeeNumber', (req, res, next) => {
     // const employeeConnected = req.employee;
@@ -159,6 +144,37 @@ router.post('/',
             next(err)
         });
 
+        const firstName = req.body.firstName;
+        if (!firstName || firstName == '') {
+            return next(new HttpError(400, 'Le champ firstName est requis'));
+        }
+        if (!regex.validName.test(firstName)) {
+            return next(new HttpError(400, 'Le prénom ne respecte pas les critères d\'acceptation'));
+        }
+
+
+        const lastName = req.body.lastName;
+        if (!lastName || lastName == '') {
+            return next(new HttpError(400, 'Le champ lastName est requis'));
+        }
+        if (!regex.validName.test(lastName)) {
+            return next(new HttpError(400, 'Le nom ne respecte pas les critères d\'acceptation'));
+        }
+
+
+        const role = req.body.role;
+        if (!role || role == '') {
+            return next(new HttpError(400, 'Le champ role est requis'));
+        }
+        if (!regex.validRole.test(role)) {
+            return next(new HttpError(400, 'Le rôle ne respecte pas les critères d\'acceptation'));
+        }
+        employeeQueries.selectRoleByName(role).then(existingRole => {
+            if (!existingRole) {
+                throw new HttpError(400, `Le role ${role} n'existe pas`);
+            }
+        });
+
         const colorHexCode = req.body.colorHexCode;
         if (!colorHexCode || colorHexCode == '') {
             return next(new HttpError(400, 'Le champ colorHexCode est requis'));
@@ -175,7 +191,6 @@ router.post('/',
         });
 
 
-
         let hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') {
             return next(new HttpError(400, 'Le champ hourlyRate est requis'));
@@ -187,7 +202,6 @@ router.post('/',
 
 
         const barcodeNumber = req.body.barcodeNumber;
-
         if (!barcodeNumber || barcodeNumber == '') {
             return next(new HttpError(400, 'Le champ barcodeNumber est requis'));
         }

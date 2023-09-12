@@ -5,12 +5,13 @@
                 <v-text-field class="mx-2" label="Numéro Employé" v-model.trim="employee.employeeNumber" clearable
                     :rules="[rules.required, rules.validateEmployeeNumber]" maxlength="4" :counter="4">
                 </v-text-field>
-                
+
                 <v-select :items="roleList" class="mx-2" id="" label="Rôle" v-model.trim="selectedRole"
                     :rules="[rules.required, rules.validateRole]">
                 </v-select>
-                <v-select :disabled="disableSkillPtsDropDown" :items="skillPointsRange" class="mx-2" label="Points de compétences"
-                    v-model="selectedSkillPoints" :rules="[rules.required, rules.validateSkillPoints]">
+                <v-select :disabled="disableSkillPtsDropDown" :items="skillPointsRange" class="mx-2"
+                    label="Points de compétences" v-model="selectedSkillPoints"
+                    :rules="[rules.required, rules.validateSkillPoints]">
                 </v-select>
             </v-row>
             <v-row>
@@ -28,7 +29,8 @@
             </v-row>
             <v-row>
                 <v-text-field class="mx-2" label="Numéro de téléphone : xxx-xxx-xxxx" density="compact"
-                    v-model.trim="employee.phoneNumber" clearable :rules="[rules.required, rules.validatePhoneNumber]" maxlength="12">
+                    v-model.trim="employee.phoneNumber" clearable :rules="[rules.required, rules.validatePhoneNumber]"
+                    maxlength="12">
                 </v-text-field>
                 <v-text-field class="mx-2" label="Adresse Courriel" density="compact" v-model.trim="employee.email"
                     clearable :rules="[rules.required, rules.validateEmail]" maxlength="125">
@@ -49,11 +51,25 @@
             <v-text-field type="password" class="mx-2 mt-5" label="Mot de passe temporaire" density="compact"
                 v-model.trim="employee.password" clearable>
             </v-text-field>
-            <v-checkbox :disabled="disableCheckbox" v-model="employee.isAdmin" color="red" label="Accès Administrateur"></v-checkbox>
+            <v-checkbox :disabled="disableCheckbox" v-model="employee.isAdmin" color="red"
+                label="Accès Administrateur"></v-checkbox>
             <v-row class="justify-center">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton type="submit" class="mx-5" textbutton="Créer" :disabled="disableCreateEmployeeBtn"></DarkRedButton>
+                <DarkRedButton type="submit" class="mx-5" textbutton="Créer" :disabled="disableCreateEmployeeBtn">
+                </DarkRedButton>
             </v-row>
+            <v-dialog v-model="dialogOKReservation" width="50%" persistent>
+                <v-card height="200px">
+                    <v-card-title>
+                        Confirmation
+                    </v-card-title>
+                    <v-card-text>
+                        <v-row class="justify-center">
+                            <p>{{ employee.firstName }} {{ employee.lastName }} / {{ employee.employeeNumber }} a bien été enregistré(e).</p>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
         </v-form>
     </div>
 </template>
@@ -90,9 +106,10 @@ export default {
             },
             selectedRole: "",
             selectedSkillPoints: "",
+            dialogOKEmployee: false,
             rules: {
                 required: value => {
-                    if(this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints){
+                    if (this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints) {
                         return true;
                     } else {
                         return !!value || "Le champ est requis"
@@ -107,10 +124,10 @@ export default {
                 validateHourlyRate: value => validHourlyRate.test(value) || "Taux horaire invalide -> Respecter un des formats suivant : xx.xx ou xxx.xx \n 1er chiffre ne peut pas être 0",
                 validateBarcodeNumber: value => validBarcodeNumber.test(value) || "Code barre invalide : doit contenir que 16 chiffres",
                 validateSkillPoints: value => {
-                    if(this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints){
+                    if (this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints) {
                         return true;
                     } else {
-                       return validSkillPoints.test(value) || "Skill Points invalide : doit être entre 1 et 10"
+                        return validSkillPoints.test(value) || "Skill Points invalide : doit être entre 1 et 10"
                     }
                 }
             },
@@ -143,15 +160,19 @@ export default {
                 // });
             }
         },
+        closeAllDialog() {
+            this.dialogOKEmployee = false;
+            this.closeDialog();
+        },
         closeDialog() {
             this.closeNewEmployeeDialog();
         },
         updateEmployeeList() {
             this.loadEmployees();
         },
-        updateEmployeeNumberValue(event){
+        updateEmployeeNumberValue(event) {
             const value = event.target.value;
-            if(String(value).length <= 4){
+            if (String(value).length <= 4) {
                 this.employee.employeeNumber = value;
             }
             this.$forceUpdate;
@@ -165,7 +186,7 @@ export default {
                 this.employee.isAdmin = true;
             }
         },
-        selectedSkillPoints(){
+        selectedSkillPoints() {
             this.employee.skillPoints = this.selectedSkillPoints;
         }
     },
@@ -180,32 +201,32 @@ export default {
     },
     computed: {
         disableCreateEmployeeBtn() {
-            if(this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints) {
+            if (this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints) {
                 return !this.employee.employeeNumber
-                || !this.employee.role
-                || !this.employee.barcodeNumber
-                || !this.employee.firstName
-                || !this.employee.lastName
-                || !this.employee.phoneNumber
-                || !this.employee.email
-                || !this.employee.hourlyRate
-                || !this.employee.colorHexCode
-                || !this.employee.password;
+                    || !this.employee.role
+                    || !this.employee.barcodeNumber
+                    || !this.employee.firstName
+                    || !this.employee.lastName
+                    || !this.employee.phoneNumber
+                    || !this.employee.email
+                    || !this.employee.hourlyRate
+                    || !this.employee.colorHexCode
+                    || !this.employee.password;
             } else {
                 return !this.employee.employeeNumber
-                || !this.employee.role
-                || !this.employee.skillPoints
-                || !this.employee.barcodeNumber
-                || !this.employee.firstName
-                || !this.employee.lastName
-                || !this.employee.phoneNumber
-                || !this.employee.email
-                || !this.employee.hourlyRate
-                || !this.employee.colorHexCode
-                || !this.employee.password;
+                    || !this.employee.role
+                    || !this.employee.skillPoints
+                    || !this.employee.barcodeNumber
+                    || !this.employee.firstName
+                    || !this.employee.lastName
+                    || !this.employee.phoneNumber
+                    || !this.employee.email
+                    || !this.employee.hourlyRate
+                    || !this.employee.colorHexCode
+                    || !this.employee.password;
             }
         },
-        disableCheckbox(){
+        disableCheckbox() {
             return this.selectedRole == "Gestionnaire"
         },
         disableSkillPtsDropDown() {
