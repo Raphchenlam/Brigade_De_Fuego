@@ -58,10 +58,10 @@
                 <DarkRedButton type="submit" class="mx-5" textbutton="Créer" :disabled="disableCreateEmployeeBtn">
                 </DarkRedButton>
             </v-row>
-            <v-dialog v-model="dialogOKReservation" width="50%" persistent>
-                <v-card height="200px">
+            <v-dialog v-model="dialogOKEmployee" width="50%">
+                <v-card height="100px">
                     <v-card-title>
-                        Confirmation
+                        Confirmation de création d'employé
                     </v-card-title>
                     <v-card-text>
                         <v-row class="justify-center">
@@ -145,11 +145,11 @@ export default {
             if (validForm.valid) {
                 createEmployee(this.employee).then(() => {
                     console.log("THERE BITCH");
-                    alert(`${this.employee.firstName} ${this.employee.lastName} / ${this.employee.employeeNumber} créé(e) avec succès`);
+                    this.dialogOKEmployee = true;
                     this.updateEmployeeList();
-                    this.closeDialog();
+                    setTimeout(this.closeDialog, 2500);
                 }).catch(error => {
-                    console.log(error)
+                    console.log(error);
                 });
                 //utiliser authError lorsqu'on utilisera session
                 // .catch(authError => {
@@ -160,11 +160,8 @@ export default {
                 // });
             }
         },
-        closeAllDialog() {
-            this.dialogOKEmployee = false;
-            this.closeDialog();
-        },
         closeDialog() {
+            this.dialogOKEmployee = false;
             this.closeNewEmployeeDialog();
         },
         updateEmployeeList() {
