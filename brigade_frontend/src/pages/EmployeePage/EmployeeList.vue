@@ -12,7 +12,7 @@
                     </template>
                     <v-card>
                         <v-card-title>
-                            Creer un nouvel employe
+                            Créer un nouvel employé
                         </v-card-title>
                         <NewEmployeeForm></NewEmployeeForm>
                     </v-card>
@@ -20,7 +20,7 @@
             </v-row>
             <v-select class="w-50" v-model="roleShowed" label="Poste" :items="roleList"></v-select>
             <v-list v-model:selected='selected' :items="employeeList" item-title="listInformation"
-                item-value="employeeNumber">
+                item-value="employeeNumber" class="h-50">
             </v-list>
         </v-card>
     </v-sheet>

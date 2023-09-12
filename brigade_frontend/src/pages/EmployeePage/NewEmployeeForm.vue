@@ -94,8 +94,9 @@ export default {
                 required: value => {
                     if(this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints){
                         return true;
+                    } else {
+                        return !!value || "Le champ est requis"
                     }
-                    !!value || "Le champ est requis"
                 },
                 validateEmployeeNumber: value => validEmployeeNumber.test(value) || "Numéro d'employé invalide : doit contenir que 4 chiffres",
                 validateName: value => validName.test(value) || "Prénom/Nom invalide : Minimum 2 lettres/mot \n 1ère lettre par mot doit être une majuscule \n Aucun accent accepté",
@@ -108,8 +109,9 @@ export default {
                 validateSkillPoints: value => {
                     if(this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints){
                         return true;
+                    } else {
+                       return validSkillPoints.test(value) || "Skill Points invalide : doit être entre 1 et 10"
                     }
-                    validSkillPoints.test(value) || "Skill Points invalide : doit être entre 1 et 10"
                 }
             },
             roleList: [],
