@@ -3,7 +3,7 @@
         <v-form class="pa-10" validate-on="blur lazy" ref="createEventForm">
             <v-row>
                 <v-text-field class="ma-2" v-model.trim="event.name" label="Nom de l'événement"
-                   @blur="capitalizeName" :rules="[rules.requiredName]" clearable>
+                   @blur="capitalizeName" :rules="[rules.requiredName, rules.maxLengthInput]" clearable>
                 </v-text-field>
             </v-row>
             <v-row>
@@ -15,10 +15,10 @@
                     v-model="event.impact" thumb-label="always" :max="300"></v-slider>
                 <ResetButton @click="resetImpact()"></ResetButton>
             </v-row>
-            <v-row class="justify-center">
+            <v-row class="justify-end">
                 <DarkRedButton class="mx-5 ma-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton class="mx-5 ma-5" textbutton="Creer" @click="toggleEventConfirmationDialog()">
-                </DarkRedButton>
+                <DarkRedButton :disabled="!disabledButton" class="mx-5 ma-5 w-25" textbutton="Enregistrer" @click="toggleEventConfirmationDialog()">
+                     </DarkRedButton>
             </v-row>
         </v-form>
     </div>
@@ -58,9 +58,11 @@ export default {
             },
             eventTypes: [],
             dialogConfirmEvent: false,
+        
             rules: {
                 requiredName: value => !!value || "L'événement doit avoir un nom",
                 requiredEventType: value => !!value || "Un type d'événement doit être sélectionné",
+                maxLengthInput: value => !(value.length > 254) || "Le nom est beaucoup trop long, il doit se limiter à 255 caractères."
             }
         }
     },
@@ -87,7 +89,12 @@ export default {
             } else if (this.event.impact == 0) {
                 return "Fermé (X)"
             }
+        },
 
+    },
+    computed: {
+        disabledButton(){
+            return (this.event.name && this.event.eventType)
         }
     },
     methods: {

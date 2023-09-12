@@ -39,6 +39,7 @@ export default {
     NewEventForm,
     BlackButton
   },
+  inject:['loadEvent'], 
   data()
   {
     return {
@@ -102,7 +103,15 @@ export default {
         {
           if (this.eventTypeShowed == "Tous" || this.eventTypeShowed == event.eventType)
           {
-            this.eventList.push(event);
+            const newEvent={
+              name:event.name,
+              eventType:event.eventType,
+              impact:event.impact,
+              props:{
+                color: 'red'
+              }
+            }
+            this.eventList.push(newEvent);
           }
 
         })
@@ -131,8 +140,8 @@ export default {
     },
     selection()
     {
-      console.log("Selection changer");
-      this.$router.push("event/" + this.selection);
+      console.log("Selection changer", this.selection[0] );
+      this.loadEvent(this.selection[0]);
     }
   },
 

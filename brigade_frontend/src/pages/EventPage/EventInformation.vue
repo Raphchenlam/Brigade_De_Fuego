@@ -33,19 +33,19 @@
 </template>
 
 <script>
+import { fetchEventByName } from '../../services/EventService';
 import EditBlackButton from '../../components/Reusable/EditBlackButton.vue';
 import EditEventForm from './EditEventForm.vue';
 
 export default {
     props: {
-        id: String
+        name: String
     },
     components: {
         EditEventForm,
         EditBlackButton
     },
-    data()
-    {
+    data() {
         return {
             dialogEditEvent: false,
             event: {
@@ -56,25 +56,38 @@ export default {
             }
         }
     },
-    methods: {
-        closeEditEventDialog()
-        {
-            this.dialogEditEvent = false;
-        },
-    },
-    provide()
-    {
+    provide() {
         return {
             closeEditEventDialog: this.closeEditEventDialog,
         };
     },
-    mounted()
-    {
-        this.event = {
-            name: "Game du canadien",
-            impact: 2.1,
-            eventType: "Sportif",
-            isActive: true
+    methods: {
+        closeEditEventDialog() {
+            this.dialogEditEvent = false;
+        },
+        loadEventInformation(name) {
+            if (name) {
+                fetchEventByName(this.name).then(event => {
+                    this.event.name = event.name,
+                    this.event.eventType = event.eventType,
+                    this.event.impact = event.impact,
+                    this.event.isActive = event.isActive
+                }).catch(err => {
+                    console.error(err);
+                })
+            } else {
+                this.event = {};
+            }
+        },
+    },
+    watch: {
+        name(){
+            this.loadEventInformation(this.name);
+        }
+    },
+    mounted() {
+        if (this.name) {
+            this.loadEventInformation(this.name);
         }
     }
 }
