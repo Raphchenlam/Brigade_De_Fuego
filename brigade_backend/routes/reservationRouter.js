@@ -32,7 +32,7 @@ router.post("/",
             return next(new HttpError(400, "Le champ Id du client est requis"));
         }
 
-        clientQueries.getClientById().then(clientExists => {
+        clientQueries.getClientById(clientId).then(clientExists => {
             if (!clientExists) {
                 return next(new HttpError(404, `Le client ${clientId} n'existe pas dans la base de données`));
             }
