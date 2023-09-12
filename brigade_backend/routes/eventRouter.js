@@ -90,4 +90,66 @@ router.post(
   }
 );
 
+router.put('/:name',
+  // passport.authenticate('basic', { session: false }),
+  (req, res, next) => {
+    const user = req.user;
+
+    // if (!user || !user.isAdmin) {
+    //   return next(new HttpError(403, "Droit administrateur requis"));
+    // }
+
+    const name = req.params.name;
+    if (!name || name === '') {
+      return next(new HttpError(400, 'Le paramètre nom est requis'));
+    }
+
+    if (name !== req.body.name) {
+      return next(new HttpError(400, `Le paramètre spécifie le nom ${name} alors que l'événement fourni porte le nom ${req.body.name}`));
+    }
+
+    const newEvent = {
+      name: "" + name,
+      eventType: "" + req.body.eventType,
+      impact: req.body.impact,
+      isActive: req.body.isActive
+    };
+
+    eventQueries.updateEvent(newEvent).then(result => {
+      if (!result) {
+        return next(new HttpError(404, `Événement portant le nom ${name} est introuvable`));
+      }
+      res.json(result);
+    }).catch(err => {
+      return next(err);
+    });
+
+  }
+);
+
+router.delete('/:name',
+  //passport.authenticate('basic', { session: false }),
+  (req, res, next) => {
+    const user = req.user;
+
+    // if (!user || !user.isAdmin) {
+    //     return next(HttpError(403, "Droit administrateur requis"));
+    // }
+
+    const name = req.params.name;
+    if (!name || name === '') {
+      return next(new HttpError(400, 'Le paramètre nom est requis'));
+    }
+
+    eventQueries.deleteEvent(name).then(result => {
+      if (!result) {
+        return next(new HttpError(404, `Événement portant le nom ${name} est introuvable`));
+      }
+      res.json(result);
+    }).catch(err => {
+      return next(err);
+    });
+  }
+);
 module.exports = router;
+
