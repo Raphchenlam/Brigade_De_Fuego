@@ -3,7 +3,7 @@
         <v-form @submit.prevent="createEmployee" validate-on="blur" ref="newEmployeeForm" class="pa-10">
             <v-row>
                 <v-text-field class="mx-2" label="Numéro Employé" v-model.trim="employee.employeeNumber" clearable
-                    :rules="[rules.required, rules.validateEmployeeNumber]" maxlength="4">
+                    :rules="[rules.required, rules.validateEmployeeNumber]" maxlength="4" :counter="4">
                 </v-text-field>
                 
                 <v-select :items="roleList" class="mx-2" id="" label="Rôle" v-model.trim="selectedRole"
@@ -13,15 +13,11 @@
                     v-model="selectedSkillPoints" :rules="[rules.required, rules.validateSkillPoints]">
                 </v-select>
             </v-row>
-            <!-- <span v-if="employee.employeeNumber.length == 4" style="color: green;">4/4</span>
-                <span v-else style="color: red;">/4</span> -->
             <v-row>
                 <v-text-field class="mx-2" label="Code barre (Carte)" v-model.trim="employee.barcodeNumber" clearable
-                    :rules="[rules.required, rules.validateBarcodeNumber]" maxlength="16">
+                    :rules="[rules.required, rules.validateBarcodeNumber]" maxlength="16" :counter="16">
                 </v-text-field>
             </v-row>
-            <!-- <span v-if="employee.barcodeNumber.length == 16" style="color: green;">16/16</span>
-                <span v-else style="color: red;">/16</span> -->
             <v-row>
                 <v-text-field class="mx-2" label="Prénom" v-model.trim="employee.firstName" clearable
                     :rules="[rules.required, rules.validateName]" maxlength="255">
