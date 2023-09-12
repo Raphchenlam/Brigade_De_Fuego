@@ -91,7 +91,7 @@ router.post('/',
         //     return next(new HttpError(403, "Droit administrateur requis"));
         // }
 
-        const employeeNumber = req.body.employeeNumber;
+        let employeeNumber = req.body.employeeNumber;
         if (!employeeNumber || employeeNumber == '') {
             return next(new HttpError(400, 'Le champ employeeNumber est requis'));
         }
@@ -102,7 +102,8 @@ router.post('/',
             if (employee) {
                 throw new HttpError(400, `${employee.firstName} ${employee.lastName} est associé(e) à ce numéro d'employé`);
             }
-        }).catch(err => {
+        },
+        employeeNumber = parseInt(employeeNumber)).catch(err => {
             next(err);
         });
 
@@ -156,13 +157,14 @@ router.post('/',
 
 
 
-        const hourlyRate = req.body.hourlyRate;
+        let hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') {
             return next(new HttpError(400, 'Le champ hourlyRate est requis'));
         }
         if (!regex.validHourlyRate.test(hourlyRate)) {
             return next(new HttpError(400, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
         }
+        hourlyRate = parseFloat(hourlyRate);
 
 
         const barcodeNumber = req.body.barcodeNumber;
@@ -208,29 +210,33 @@ router.post('/',
         });
 
 
-
         const isAdmin = req.body.isAdmin;
 
-        const skillPoints = req.body.skillPoints;
-        if (!skillPoints || skillPoints == '') {
-            return next(new HttpError(400, 'Le champ skillPoints est requis'));
-        }
-        if (!regex.validSkillPoints.test(skillPoints)) {
-            return next(new HttpError(400, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
+
+        let skillPoints = req.body.skillPoints;
+        if (isAdmin == false){
+            if (!skillPoints || skillPoints == '') {
+                return next(new HttpError(400, 'Le champ skillPoints est requis'));
+            }
+            if (!regex.validSkillPoints.test(skillPoints)) {
+                return next(new HttpError(400, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
+            }
+            skillPoints = parseInt(skillPoints);
         }
 
+
         const newEmployee = {
-            employeeNumber: parseInt(employeeNumber),
+            employeeNumber: employeeNumber,
             firstName: "" + firstName,
             lastName: "" + lastName,
             role: "" + role,
             colorHexCode: "" + colorHexCode,
-            hourlyRate: parseFloat(hourlyRate),
+            hourlyRate: hourlyRate,
             barcodeNumber: "" + barcodeNumber,
             email: "" + email,
             phoneNumber: "" + phoneNumber,
             isAdmin: isAdmin,
-            skillPoints: parseInt(skillPoints),
+            skillPoints: skillPoints,
         };
 
         const password = req.body.password;

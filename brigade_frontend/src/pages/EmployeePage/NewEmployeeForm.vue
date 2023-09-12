@@ -3,8 +3,9 @@
         <v-form @submit.prevent="createEmployee" validate-on="blur" ref="newEmployeeForm" class="pa-10">
             <v-row>
                 <v-text-field class="mx-2" label="Numéro Employé" v-model.trim="employee.employeeNumber" clearable
-                    :rules="[rules.required, rules.validateEmployeeNumber]">
+                    :rules="[rules.required, rules.validateEmployeeNumber]" maxlength="4">
                 </v-text-field>
+                
                 <v-select :items="roleList" class="mx-2" id="" label="Rôle" v-model.trim="selectedRole"
                     :rules="[rules.required, rules.validateRole]">
                 </v-select>
@@ -12,33 +13,37 @@
                     v-model="selectedSkillPoints" :rules="[rules.required, rules.validateSkillPoints]">
                 </v-select>
             </v-row>
+            <!-- <span v-if="employee.employeeNumber.length == 4" style="color: green;">4/4</span>
+                <span v-else style="color: red;">/4</span> -->
             <v-row>
                 <v-text-field class="mx-2" label="Code barre (Carte)" v-model.trim="employee.barcodeNumber" clearable
-                    :rules="[rules.required, rules.validateBarcodeNumber]">
+                    :rules="[rules.required, rules.validateBarcodeNumber]" maxlength="16">
                 </v-text-field>
             </v-row>
+            <!-- <span v-if="employee.barcodeNumber.length == 16" style="color: green;">16/16</span>
+                <span v-else style="color: red;">/16</span> -->
             <v-row>
                 <v-text-field class="mx-2" label="Prénom" v-model.trim="employee.firstName" clearable
-                    :rules="[rules.required, rules.validateName]">
+                    :rules="[rules.required, rules.validateName]" maxlength="255">
                 </v-text-field>
                 <v-text-field class="mx-2" label="Nom de famille" v-model.trim="employee.lastName" clearable
-                    :rules="[rules.required, rules.validateName]">
+                    :rules="[rules.required, rules.validateName]" maxlength="255">
                 </v-text-field>
             </v-row>
             <v-row>
-                <v-text-field class="mx-2" label="Numéro de téléphone (xxx-xxx-xxxx)" density="compact"
-                    v-model.trim="employee.phoneNumber" clearable :rules="[rules.required, rules.validatePhoneNumber]">
+                <v-text-field class="mx-2" label="Numéro de téléphone : xxx-xxx-xxxx" density="compact"
+                    v-model.trim="employee.phoneNumber" clearable :rules="[rules.required, rules.validatePhoneNumber]" maxlength="12">
                 </v-text-field>
                 <v-text-field class="mx-2" label="Adresse Courriel" density="compact" v-model.trim="employee.email"
-                    clearable :rules="[rules.required, rules.validateEmail]">
+                    clearable :rules="[rules.required, rules.validateEmail]" maxlength="125">
                 </v-text-field>
             </v-row>
             <v-row>
                 <v-text-field class="mx-2" label="Taux Horaire" density="compact" v-model.trim="employee.hourlyRate"
-                    clearable :rules="[rules.required, rules.validateHourlyRate]">
+                    clearable :rules="[rules.required, rules.validateHourlyRate]" maxlength="6">
                 </v-text-field>
                 <v-text-field v-model.trim="employee.colorHexCode" class="mx-2" label="Couleur de l'employé"
-                    density="compact" :rules="[rules.required, rules.validateHexCode]">
+                    density="compact" :rules="[rules.required, rules.validateHexCode]" maxlength="7">
                 </v-text-field>
             </v-row>
             <v-row class="mx-2">
@@ -51,7 +56,7 @@
             <v-checkbox :disabled="disableCheckbox" v-model="employee.isAdmin" color="red" label="Accès Administrateur"></v-checkbox>
             <v-row class="justify-center">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton type="submit" class="mx-5" textbutton="Créer" :disabled="enableCreateEmployeeBtn"></DarkRedButton>
+                <DarkRedButton type="submit" class="mx-5" textbutton="Créer" :disabled="disableCreateEmployeeBtn"></DarkRedButton>
             </v-row>
         </v-form>
     </div>
@@ -90,7 +95,12 @@ export default {
             selectedRole: "",
             selectedSkillPoints: "",
             rules: {
-                required: value => !!value || "Le champ est requis",
+                required: value => {
+                    if(this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints){
+                        return true;
+                    }
+                    !!value || "Le champ est requis"
+                },
                 validateEmployeeNumber: value => validEmployeeNumber.test(value) || "Numéro d'employé invalide : doit contenir que 4 chiffres",
                 validateName: value => validName.test(value) || "Prénom/Nom invalide : Minimum 2 lettres/mot \n 1ère lettre par mot doit être une majuscule \n Aucun accent accepté",
                 validatePhoneNumber: value => validPhoneNumber.test(value) || "# de téléphone invalide -> Respecter ce format : xxx-xxx-xxxx",
@@ -99,7 +109,12 @@ export default {
                 validateHexCode: value => validColorHexCode.test(value) || "Couleur invalide",
                 validateHourlyRate: value => validHourlyRate.test(value) || "Taux horaire invalide -> Respecter un des formats suivant : xx.xx ou xxx.xx \n 1er chiffre ne peut pas être 0",
                 validateBarcodeNumber: value => validBarcodeNumber.test(value) || "Code barre invalide : doit contenir que 16 chiffres",
-                validateSkillPoints: value => validSkillPoints.test(value) || "Skill points invalide : doit être entre 1 et 10"
+                validateSkillPoints: value => {
+                    if(this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints){
+                        return true;
+                    }
+                    validSkillPoints.test(value) || "Skill Points invalide : doit être entre 1 et 10"
+                }
             },
             roleList: [],
             skillPointsRange: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -135,14 +150,19 @@ export default {
         },
         updateEmployeeList() {
             this.loadEmployees();
+        },
+        updateEmployeeNumberValue(event){
+            const value = event.target.value;
+            if(String(value).length <= 4){
+                this.employee.employeeNumber = value;
+            }
+            this.$forceUpdate;
         }
     },
     watch: {
         selectedRole() {
             this.employee.role = this.selectedRole;
             if (this.employee.role == "Gestionnaire") {
-                //disable v-select skillPoints
-                //disabled + mettre à true isAdmin du checkbox Acces Admin
                 this.selectedSkillPoints = null;
                 this.employee.isAdmin = true;
             }
@@ -161,8 +181,20 @@ export default {
         });
     },
     computed: {
-        enableCreateEmployeeBtn() {
-            return !this.employee.employeeNumber
+        disableCreateEmployeeBtn() {
+            if(this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints) {
+                return !this.employee.employeeNumber
+                || !this.employee.role
+                || !this.employee.barcodeNumber
+                || !this.employee.firstName
+                || !this.employee.lastName
+                || !this.employee.phoneNumber
+                || !this.employee.email
+                || !this.employee.hourlyRate
+                || !this.employee.colorHexCode
+                || !this.employee.password;
+            } else {
+                return !this.employee.employeeNumber
                 || !this.employee.role
                 || !this.employee.skillPoints
                 || !this.employee.barcodeNumber
@@ -173,6 +205,7 @@ export default {
                 || !this.employee.hourlyRate
                 || !this.employee.colorHexCode
                 || !this.employee.password;
+            }
         },
         disableCheckbox(){
             return this.selectedRole == "Gestionnaire"
