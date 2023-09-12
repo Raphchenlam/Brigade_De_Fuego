@@ -65,9 +65,9 @@ export default {
         closeEditEventDialog() {
             this.dialogEditEvent = false;
         },
-        loadEvent(name) {
+        loadEventInformation(name) {
             if (name) {
-                fetchEventByName(name).then(event => {
+                fetchEventByName(this.name).then(event => {
                     this.event.name = event.name,
                     this.event.eventType = event.eventType,
                     this.event.impact = event.impact,
@@ -82,12 +82,12 @@ export default {
     },
     watch: {
         name(){
-            this.loadEvent(this.name);
+            this.loadEventInformation(this.name);
         }
     },
     mounted() {
         if (this.name) {
-            this.loadEvent(this.name);
+            this.loadEventInformation(this.name);
         }
     }
 }

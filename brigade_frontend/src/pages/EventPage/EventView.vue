@@ -21,18 +21,23 @@ export default {
         return {
             userSession: userSession,
             selectedEvent: null,
+            updateEvent: false
         }
     },
     methods: {
-        loadEvent(event)
+        loadEvent(eventName)
         {
-            this.selectedEvent = event
+            this.selectedEvent = eventName
+        },
+        toggleUpdateEvent(){
+            this.updateEvent = true;
         }
     },
     provide()
     {
         return {
-            loadEvent: this.loadEvent
+            loadEvent: this.loadEvent,
+            toggleUpdateEvent: this.toggleUpdateEvent
         };
     },
     mounted()

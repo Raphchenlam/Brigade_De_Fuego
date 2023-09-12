@@ -73,7 +73,7 @@ const updateEvent = async (newEvent) => {
   const result = await pool.query(
     `UPDATE event SET event_type = $2, impact = $3, is_active = $4
     WHERE name = $1`,
-    [newEvent.name, newEvent.event_type, newEvent.impact, newEvent.is_active]
+    [newEvent.name, newEvent.eventType, newEvent.impact, newEvent.isActive]
   );
   if (result.rowCount === 0) {
     return undefined

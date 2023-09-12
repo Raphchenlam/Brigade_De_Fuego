@@ -17,8 +17,8 @@
             </v-row>
             <v-row class="justify-end">
                 <DarkRedButton class="mx-5 ma-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton class="mx-5 ma-5 w-25" textbutton="Enregistrer" @click="toggleEventConfirmationDialog()">
-                </DarkRedButton>
+                <DarkRedButton :disabled="!disabledButton" class="mx-5 ma-5 w-25" textbutton="Enregistrer" @click="toggleEventConfirmationDialog()">
+                     </DarkRedButton>
             </v-row>
         </v-form>
     </div>
@@ -58,6 +58,7 @@ export default {
             },
             eventTypes: [],
             dialogConfirmEvent: false,
+        
             rules: {
                 requiredName: value => !!value || "L'événement doit avoir un nom",
                 requiredEventType: value => !!value || "Un type d'événement doit être sélectionné",
@@ -88,7 +89,12 @@ export default {
             } else if (this.event.impact == 0) {
                 return "Fermé (X)"
             }
+        },
 
+    },
+    computed: {
+        disabledButton(){
+            return (this.event.name && this.event.eventType)
         }
     },
     methods: {
