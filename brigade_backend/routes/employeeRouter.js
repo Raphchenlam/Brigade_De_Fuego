@@ -247,7 +247,7 @@ router.post('/',
 
 
         let skillPoints = req.body.skillPoints;
-        if (isAdmin == false) {
+        if (role != "Gestionnaire") {
             if (!skillPoints || skillPoints == '') {
                 return next(new HttpError(400, 'Le champ skillPoints est requis'));
             }

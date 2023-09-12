@@ -4,7 +4,7 @@
             <v-row class="mb-0">
                 <v-text-field @input="loadEmployees" v-model="search" hide-details placeholder="Nom a rechercher..."
                     class="ma-2"></v-text-field>
-                <v-dialog v-model="dialogNewEmployee" width="50%">
+                <v-dialog v-model="dialogNewEmployee" width="50%" persistent>
                     <template v-slot:activator="{ props }">
                         <div class="ma-2 text-center">
                             <BlackButton class="h-100 w-100" v-bind="props" textbutton="+"> </BlackButton>
