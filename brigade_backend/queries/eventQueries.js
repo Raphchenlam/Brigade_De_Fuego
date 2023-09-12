@@ -1,6 +1,6 @@
 const pool = require("./DBPool");
 
-const createEvent = async (event) => {
+const insertEvent = async (event) => {
   const result = await pool.query(
     `INSERT INTO event(name, event_type, impact, is_active)
             VALUES ($1, $2, $3, true) RETURNING id`,
@@ -16,7 +16,7 @@ const createEvent = async (event) => {
 
 };
 
-exports.createEvent = createEvent;
+exports.insertEvent = insertEvent;
 
 const getAllEvents = async () => {
   const result = await pool.query(

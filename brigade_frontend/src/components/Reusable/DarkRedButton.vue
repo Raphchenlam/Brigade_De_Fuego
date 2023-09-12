@@ -1,5 +1,5 @@
 <template>
-    <v-btn :class="class" color="#8b0000" width=40% :height="height" elevation="4" rounded="lg" :text="textbutton">
+    <v-btn :class="class" :height="height" color="#8b0000" elevation="4" rounded="lg" :text="textbutton">
     </v-btn>
 </template>
     

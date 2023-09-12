@@ -24,12 +24,48 @@ router.get('/',
         });
     });
 
-router.get('/role', (req, res, next) => {
-    // const employeeConnected = req.employee;
-    // if (!employeeConnected) {
-    //     return next(new HttpError(401, "Vous devez etre connecté"));
-    // };
-    // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
+
+router.get('/role/:role',
+    (req, res, next) => {
+        // const employeeConnected = req.employee;
+        const role = req.params.role;
+        // if (!employeeConnected) {
+        //     return next(new HttpError(401, "Vous devez etre connecté"));
+        // };
+        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
+        //     return next(new HttpError(403, "Droit administrateur requis"));
+        // };
+
+        employeeQueries.selectAllEmployeesByRole(role).then(employeeList => {
+            res.json(employeeList);
+        }).catch(err => {
+            return next(err);
+        });
+    });
+router.get('/role',
+    (req, res, next) => {
+        // const employeeConnected = req.employee;
+        // if (!employeeConnected) {
+        //     return next(new HttpError(401, "Vous devez etre connecté"));
+        // };
+        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
+        //     return next(new HttpError(403, "Droit administrateur requis"));
+        // };
+
+        employeeQueries.selectAllRoles().then(roleList => {
+            console.log("roleList:", roleList);
+            res.json(roleList);
+        }).catch(err => {
+            return next(err);
+        });
+    });
+
+//Ne pas utiliser le passport authenticate pour l'instant
+//passport.authenticate('basic', {session:false}), (req,res,next)...
+router.post('/', (req, res, next) => {
+    // const employee = req.employee;
+
+    // if(!employee || !employee.isAdmin || !employee.isSuperAdmin) {
     //     return next(new HttpError(403, "Droit administrateur requis"));
     // };
 
@@ -43,7 +79,6 @@ router.get('/role', (req, res, next) => {
 router.get('/:employeeNumber', (req, res, next) => {
     // const employeeConnected = req.employee;
     const employeeNumberToGet = req.params.employeeNumber;
-
     // if (!employeeConnected) {
     //     return next(new HttpError(401, "Vous devez etre connecté"));
     // };
@@ -53,17 +88,33 @@ router.get('/:employeeNumber', (req, res, next) => {
     // if (employeeConnected.employeeNumber != employeeNumberToGet) {
     //     return next(new HttpError(403, "Vous ne pouvez pas acceder aux informations d'un autre employé"));
     // };
-    employeeQueries.selectEmployeeByEmployeeNumber(employeeNumberToGet).then(employee => {
-        if (employee) {
-            res.json(employee);
-        } else {
-            return next(new HttpError(404, `Employé avec le numéro ${employeeNumberToGet} inexistant ou introuvable`));
-        }
-    }).catch(err => {
-        return next(err);
-    });
-});
 
+    if (isNaN(employeeNumberToGet)) { return next(new HttpError(404, `Le Barcode doit contenir seulement des chiffres`)); }
+    if (employeeNumberToGet.length == 4) {
+        employeeQueries.selectEmployeeByEmployeeNumber(employeeNumberToGet).then(employee => {
+            if (employee) {
+                res.json(employee);
+            } else {
+                return next(new HttpError(404, `Employé avec le numéro ${employeeNumberToGet} inexistant ou introuvable`));
+            }
+        }).catch(err => {
+            return next(err);
+
+        });
+    } else if (employeeNumberToGet.length == 16) {
+        employeeQueries.selectEmployeeByBarcodeNumber(employeeNumberToGet).then(employee => {
+            if (employee) {
+                res.json(employee);
+            } else {
+                return next(new HttpError(404, `Barcode ${employeeNumberToGet} inexistant ou introuvable`));
+            }
+        }).catch(err => {
+            return next(err);
+        });
+    } else {
+        return next(new HttpError(404, `Numero non conforme`));
+    }
+})
 
 router.get('/role/:role', (req, res, next) => {
     // const employeeConnected = req.employee;
@@ -103,42 +154,10 @@ router.post('/',
                 throw new HttpError(400, `${employee.firstName} ${employee.lastName} est associé(e) à ce numéro d'employé`);
             }
         },
-        employeeNumber = parseInt(employeeNumber)).catch(err => {
-            next(err);
+            employeeNumber = parseInt(employeeNumber)
+        ).catch(err => {
+            next(err)
         });
-
-
-        const firstName = req.body.firstName;
-        if (!firstName || firstName == '') {
-            return next(new HttpError(400, 'Le champ firstName est requis'));
-        }
-        if (!regex.validName.test(firstName)) {
-            return next(new HttpError(400, 'Le prénom ne respecte pas les critères d\'acceptation'));
-        }
-
-
-        const lastName = req.body.lastName;
-        if (!lastName || lastName == '') {
-            return next(new HttpError(400, 'Le champ lastName est requis'));
-        }
-        if (!regex.validName.test(lastName)) {
-            return next(new HttpError(400, 'Le nom ne respecte pas les critères d\'acceptation'));
-        }
-
-
-        const role = req.body.role;
-        if (!role || role == '') {
-            return next(new HttpError(400, 'Le champ role est requis'));
-        }
-        if (!regex.validRole.test(role)) {
-            return next(new HttpError(400, 'Le rôle ne respecte pas les critères d\'acceptation'));
-        }
-        employeeQueries.selectRoleByName(role).then(existingRole => {
-            if (!existingRole) {
-                throw new HttpError(400, `Le role ${role} n'existe pas`);
-            }
-        });
-
 
         const colorHexCode = req.body.colorHexCode;
         if (!colorHexCode || colorHexCode == '') {
@@ -214,7 +233,7 @@ router.post('/',
 
 
         let skillPoints = req.body.skillPoints;
-        if (isAdmin == false){
+        if (isAdmin == false) {
             if (!skillPoints || skillPoints == '') {
                 return next(new HttpError(400, 'Le champ skillPoints est requis'));
             }

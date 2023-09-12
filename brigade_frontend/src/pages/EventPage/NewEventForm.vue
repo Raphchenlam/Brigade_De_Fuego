@@ -3,16 +3,17 @@
         <v-form class="pa-10" validate-on="blur lazy" ref="createEventForm">
             <v-row>
                 <v-text-field class="ma-2" v-model.trim="event.name" label="Nom de l'événement"
-                    :rules="[rules.requiredName]" clearable>
+                   @blur="capitalizeName" :rules="[rules.requiredName]" clearable>
                 </v-text-field>
             </v-row>
             <v-row>
                 <v-select class="ma-2" v-model="event.eventType" label="Type d'événement" :rules="[rules.requiredEventType]"
                     :items="eventTypes"></v-select>
             </v-row>
-            <v-row>
+            <v-row class="align-center">
                 <v-slider class="ma-2 pa-2" thumb-color="#8b0000" label="Achalandage prevu" :messages="sliderMessage"
                     v-model="event.impact" thumb-label="always" :max="300"></v-slider>
+                <ResetButton @click="resetImpact()"></ResetButton>
             </v-row>
             <v-row class="justify-center">
                 <DarkRedButton class="mx-5 ma-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
@@ -21,7 +22,7 @@
             </v-row>
         </v-form>
     </div>
-    <v-dialog v-model="dialogConfirmEvent" width="50%">
+    <v-dialog persistent v-model="dialogConfirmEvent" width="50%">
         <v-card>
             <NewEventConfirmationForm :name="event.name" :impact="event.impact.toFixed(2)" :eventType="event.eventType">
             </NewEventConfirmationForm>
@@ -29,16 +30,18 @@
     </v-dialog>
 </template>
 <script>
+import ResetButton from '../../components/Reusable/ResetButton.vue';
 import DarkRedButton from '../../components/Reusable/darkredbutton.vue';
 import { fetchAllEventType } from '../../services/EventService';
 import NewEventConfirmationForm from './NewEventConfirmationForm.vue';
 
 
 export default {
-    inject: ['closeNewEventDialog'],
+    inject: ['closeNewEventDialog','capitalizeWords'],
     components: {
         DarkRedButton,
-        NewEventConfirmationForm
+        NewEventConfirmationForm,
+        ResetButton
     },
     provide() {
         return {
@@ -54,46 +57,35 @@ export default {
                 eventType: null,
             },
             eventTypes: [],
-
             dialogConfirmEvent: false,
             rules: {
                 requiredName: value => !!value || "L'événement doit avoir un nom",
                 requiredEventType: value => !!value || "Un type d'événement doit être sélectionné",
-                // requiredImpact: value => !!value || "L'impact sur l'événement doit être saisie",
-                // impactValid: value => {
-                //     const regex = /^\d{1,3}(.\d{1,2})?$/;
-                //     if (value && regex.test(value)) {
-                //         if (value >= 0 && value <= 300) {
-                //             return true;
-                //         }
-                //         else {
-                //             return "Veuillez entrer un impact entre 0.00 % et 300.00 %";
-                //         }
-                //     } else {
-                //         return "Respecter le format de nombre accepté: XXX.XX";
-                //     }
-                // },
             }
         }
     },
     computed: {
         sliderMessage() {
             if (this.event.impact >= 250) {
-                return "C'est la folie!"
+                return "C'est la folie! (+++++)"
             } else if (this.event.impact >= 200 && this.event.impact < 250) {
-                return "Super super occupé"
+                return "Super super occupé (++++)"
             } else if (this.event.impact >= 150 && this.event.impact < 200) {
-                return "Trés occupé"
-            } else if (this.event.impact > 100 && this.event.impact < 150) {
-                return "Un peu plus que d'habitude"
-            } else if (this.event.impact == 100) {
+                return "Wow, c'est trés occupé (+++)"
+            } else if (this.event.impact > 125 && this.event.impact < 150) {
+                return "Intéresant, c'est occupé (++)"
+            } else if (this.event.impact > 101 && this.event.impact < 125) {
+                return "Un peu plus qu'à l'habitude (+)"
+            } else if (this.event.impact >= 99 && this.event.impact <= 101) {
                 return "La normal, quoi?"
-            } else if (this.event.impact >= 50 && this.event.impact < 100) {
-                return "Trés tranquille"
+            } else if (this.event.impact > 75 && this.event.impact < 99) {
+                return "Plus tranquille qu'à l'habitude (-)"
+            } else if (this.event.impact >= 50 && this.event.impact < 75) {
+                return "Trés tranquille (--)"
             } else if (this.event.impact > 0 && this.event.impact < 50) {
-                return "Super super tranquille"
+                return "Super super tranquille (---)"
             } else if (this.event.impact == 0) {
-                return "Fermé"
+                return "Fermé (X)"
             }
 
         }
@@ -102,7 +94,12 @@ export default {
         closeDialog() {
             this.closeNewEventDialog();
         },
-
+        resetImpact(){
+            this.event.impact = 100;
+        },
+        capitalizeName(){
+            this.event.name = this.capitalizeWords(this.event.name);
+        },
         async toggleEventConfirmationDialog() {
             const formValid = await this.$refs.createEventForm.validate();
             if (!formValid.valid) {

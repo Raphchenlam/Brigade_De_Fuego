@@ -1,7 +1,7 @@
 <template>
     <v-row class="justify-center">
-        <ClientList></ClientList>
-        <ClientInformation></ClientInformation>
+        <ClientList class="h-screen w-50"></ClientList>
+        <ClientInformation class="h-screen w-50"></ClientInformation>
     </v-row>
 </template>
 

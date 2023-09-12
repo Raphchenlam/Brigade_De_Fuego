@@ -1,106 +1,152 @@
 <template>
-  <v-sheet>
-    <div class="text-center ma-5">
-      <p>Nombre d'evenements : {{ eventList.length }} <p v-if="selection">{{ selection }}</p> </p>
-    </div>
-    <v-sheet class="mx-16">
-      <v-select class="mx-16" v-model="eventTypeShowed" label="Type d'événement" :items="eventTypeList"></v-select>
-    </v-sheet>
-    <v-card class="mx-auto" max-height="400" max-width="800">
-      <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="name"></v-list>
-    </v-card>
-    <v-dialog v-model="dialogNewEvent" width="70%">
-      <template v-slot:activator="{ props }">
-        <div class="ma-2 text-center">
-          <v-btn width="70%" color="black" v-bind="props">
-            Ajouter un nouvel evenement
-          </v-btn>
-        </div>
-      </template>
-      <v-card>
-        <v-card-title>
-          Creer un nouvel evenement
-        </v-card-title>
-        <NewEventForm></NewEventForm>
+  <v-sheet class="pl-10 py-5">
+    <v-card class="h-screen">
+      <v-row class="mb-0">
+        <v-text-field class="ma-2" v-model="search" hide-details placeholder="Rechercher un événement..."></v-text-field>
+        <v-dialog persistent v-model="dialogNewEvent" width="70%">
+          <template v-slot:activator="{ props }">
+            <div class="ma-2 text-center">
+              <BlackButton class="h-100 w-100" v-bind="props" textbutton="+"> </BlackButton>
+            </div>
+          </template>
+          <v-card>
+            <v-card-title>
+              Creer un nouvel evenement
+            </v-card-title>
+            <NewEventForm></NewEventForm>
+          </v-card>
+        </v-dialog>
+      </v-row>
+      <v-select class="w-50" v-model="eventTypeShowed" label="Type d'événement" :items="eventTypeList"></v-select>
+      <div class="text-center ma-5">
+        <p>Nombre d'evenements : {{ eventList.length }}</p>
+      </div>
+      <v-card class="ma-2">
+        <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="name"></v-list>
       </v-card>
-    </v-dialog>
+    </v-card>
   </v-sheet>
 </template>
-
 
 
 <script>
 import NewEventForm from "../EventPage/NewEventForm.vue";
 import { fetchAllEvents, fetchAllEventType } from '../../services/EventService';
+import BlackButton from "../../components/Reusable/BlackButton.vue";
 
 export default {
   components: {
-    NewEventForm
+    NewEventForm,
+    BlackButton
   },
-  data() {
+  data()
+  {
     return {
+      search: "",
       selection: [],
       eventList: [],
       allEventList: [],
       eventTypeList: [],
-      eventTypeShowed: "all",
+      eventTypeShowed: "Tous",
       dialogNewEvent: false,
     };
   },
 
 
-  provide() {
+  provide()
+  {
     return {
       closeNewEventDialog: this.closeNewEventDialog,
       updateEventTypeShowed: this.updateEventTypeShowed,
       updateEventList: this.updateEventList
     };
   },
+  // computed: {
+  //   searchEvent() {
+  //     this.eventList.forEach((event) => {
+  //       // if (this.search == "") {
+  //       //   this.updateEventList();
+  //       // }
+  //       if (event.name.toUpperCase().indexOf(this.search.toUpperCase() && this.search != "") >= 0) {
+  //         // this.updateEventList();
+  //         this.eventList = [];
+  //         this.eventList.push(event);
+  //       }
+  //     })
+  //   },
+  // },
   methods: {
-    
-    updateEventList() {
+    updateEventTypeList()
+    {
+      this.eventTypeList = [];
+      fetchAllEventType().then(allEventType =>
+      {
+        this.eventTypeList.push("Tous");
+        allEventType.forEach((eventType) =>
+        {
+          this.eventTypeList.push(eventType);
+        })
+      })
+        .catch(err =>
+        {
+          console.error(err);
+        });
+    },
+
+    updateEventList()
+    {
       this.eventList = [];
-      fetchAllEventType().then(allEventType => {
-        this.eventTypeList = allEventType
-      });
-      fetchAllEvents().then(allEventList => 
-        allEventList.forEach((event) => {
-          if (this.eventTypeShowed == "all" || this.eventTypeShowed == event.eventType) {
+      fetchAllEvents().then(allEventList =>
+      {
+        allEventList.forEach((event) =>
+        {
+          if (this.eventTypeShowed == "Tous" || this.eventTypeShowed == event.eventType)
+          {
             this.eventList.push(event);
           }
+
         })
-      )
+      })
+        .catch(err =>
+        {
+          console.error(err);
+        })
     },
-    updateEventTypeShowed(newEventType) {
+
+    updateEventTypeShowed(newEventType)
+    {
       this.eventTypeShowed = newEventType;
       this.updateEventList();
     },
-    closeNewEventDialog() {
+    closeNewEventDialog()
+    {
       this.dialogNewEvent = false;
     },
   },
   watch: {
-    eventTypeShowed() {
+    eventTypeShowed()
+    {
       this.updateEventList();
       this.selection = "";
     },
-    selection() {
+    selection()
+    {
       console.log("Selection changer");
       this.$router.push("event/" + this.selection);
     }
   },
 
-  mounted() {
-    this.eventTypeShowed = "all"
+  mounted()
+  {
+    this.eventTypeShowed = "Tous"
+    this.updateEventTypeList();
     this.updateEventList();
   }
 }
 </script>
 
 
-<style scoped>
-.v-list {
+<style scoped>.v-list {
   height: 400px;
   overflow-y: auto
-}
-</style>
+}</style>

@@ -1,13 +1,13 @@
 <template>
-    <v-sheet width="auto" height="auto" class="ma-2">
-        <v-card class="mx-auto" max-height="400" max-width="800">
-            <v-list v-model:selected='selected' :items="clients" item-title="listInformation" item-value="id">
-            </v-list>
-        </v-card>
-        <v-dialog v-model="dialogNewClient" width="100%">
+    <v-sheet>
+        <v-card class="mx-10 h-75">
+            <v-row class="mb-0">
+            <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
+            class="ma-2"></v-text-field>
+            <v-dialog v-model="dialogNewClient" width="100%">
             <template v-slot:activator="{ props }">
                 <div class="ma-2 text-center">
-                    <BlackButton block textbutton="Creer un nouveau client " v-bind="props"></BlackButton>
+                    <BlackButton class="h-100 w-100" textbutton="+" v-bind="props"></BlackButton>
                 </div>
             </template>
             <v-card>
@@ -17,6 +17,11 @@
                 <NewClientForm></NewClientForm>
             </v-card>
         </v-dialog>
+        </v-row>
+            <v-list v-model:selected='selected' :items="clients" item-title="listInformation" item-value="id">
+            </v-list>
+        </v-card>
+        
     </v-sheet>
 </template>
 
@@ -26,14 +31,16 @@
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import NewClientForm from "../clientpage/NewClientForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
 export default {
     inject: ['loadClientId'],
     components: {
-        VDataTable,
-        NewClientForm,
-        BlackButton
-    },
+    VDataTable,
+    NewClientForm,
+    BlackButton,
+    DarkRedButton
+},
     data() {
         return {
             selected: [],
@@ -178,3 +185,10 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+.v-btn {
+    font-size:xx-large;
+}
+
+</style>
