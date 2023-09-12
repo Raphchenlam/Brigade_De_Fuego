@@ -1,7 +1,7 @@
 <template>
     <v-row class="justify-space-between">
         <EventList class="h-screen" width="35%"></EventList>
-        <EventInformation class="h-screen" width="65%"></EventInformation>
+        <EventInformation v-if="selectedEvent" :name="selectedEvent" class="h-screen" width="65%" ></EventInformation>
     </v-row>
 </template>
 
@@ -21,18 +21,23 @@ export default {
         return {
             userSession: userSession,
             selectedEvent: null,
+            updateEvent: false
         }
     },
     methods: {
-        loadEvent(event)
+        loadEvent(eventName)
         {
-            this.selectedEvent = event
+            this.selectedEvent = eventName
+        },
+        toggleUpdateEvent(){
+            this.updateEvent = true;
         }
     },
     provide()
     {
         return {
-            loadEvent: this.loadEvent
+            loadEvent: this.loadEvent,
+            toggleUpdateEvent: this.toggleUpdateEvent
         };
     },
     mounted()
