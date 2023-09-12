@@ -13,11 +13,11 @@
                     <v-text-field v-if="false" v-model="reservation.clientId" class="ma-2" :rules="[rules.required]">
                     </v-text-field>
                     <v-row class="justify-center">
-                        <v-text-field type="datetime-local" v-model="reservationFullDate" class="ma-2"
+                        <v-text-field type="datetime-local" v-model="reservationFullDate" class="ma-2 pre-wrap h-25 w-25"
                             label="Date de la reservation" :rules="[rules.required, rules.dateIsValid]">
                         </v-text-field>
-                        <v-text-field v-model="reservation.peopleCount" width="10px" type="number" class="shrink ma-2"
-                            label="Nombre de personnes" :rules="[rules.required]">
+                        <v-text-field v-model="reservation.peopleCount" width="10px" type="number" :min="1" :max="30" class="shrink ma-2 h-25 w-25"
+                            label="Nombre de personnes" :rules="[rules.required, rules.reservationMaximum, rules.reservationMinimum]">
                         </v-text-field>
                     </v-row>
                     <v-textarea class="my-5" v-model="reservation.mention" height="200px" no-resize rows="8"
@@ -62,13 +62,13 @@
                                                 </v-row>
                                             </v-sheet>
                                         </template>
-                                        <v-card height="200px">
-                                            <v-card-title>
+                                        <v-card class="ma-2 pa-2 text-center">
+                                            <v-card-title class="justify-center">
                                                 Confirmation
                                             </v-card-title>
                                             <v-card-text>
-                                                <v-row class="justify-center">
-                                                    <p>La reservation a bien ete enregistrer.</p>
+                                                <v-row class="ma-2 justify-center">
+                                                    <p>La reservation a bien été enregistré.</p>
                                                 </v-row>
                                             </v-card-text>
                                         </v-card>
@@ -119,7 +119,9 @@ export default {
             },
             rules: {
                 required: value => !!value || "Le champ est requis",
-                dateIsValid: () => this.dateValid || "Date non valide(Ne doit pas etre avant presentement, ni avant 11h ou apres 23h)",
+                dateIsValid: () => this.dateValid || "Date non valide\n\t- Ne doit pas etre avant la date d'aujourd'hui\n\t- Ni avant 11h ou apres 23h",
+                reservationMaximum: value => (value >= 1) || "Le nombre de personnes minimum est de 1 pour une seule réservation.",
+                reservationMinimum: value => (value <= 30) || "Le nombre de personnes maximum est de 30 pour une seule réservation.",
                 fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.", //Not chatGPT, it's all me (Raph), pls do not touch
             },
             formValid: true
@@ -167,6 +169,7 @@ export default {
             }).catch(err => {
                 console.error(err);
                 alert(err.message);
+                this.dialogConfirmReservation = false;   
             });
         },
         isBeforeToday(fullDate) {
@@ -230,13 +233,13 @@ export default {
     computed: {
         createButtonDisabled() {
             return !(this.dateValid
-                || this.clientIdValid
-                || !!this.reservationFullDate
-                || !!this.reservation.clientId
-                || !!this.reservation.peopleCount
-                || !!this.reservation.date
-                || !!this.reservation.startTime
-                || !!this.reservation.endTime);
+                && this.clientIdValid
+                && !!this.reservationFullDate
+                && !!this.reservation.clientId
+                && !!this.reservation.peopleCount
+                && !!this.reservation.date
+                && !!this.reservation.startTime
+                && !!this.reservation.endTime);
         }
     }
 }
@@ -255,5 +258,9 @@ export default {
 
 .error-message {
     color: red
+}
+
+.pre-wrap {
+    white-space: pre-wrap;
 }
 </style>
