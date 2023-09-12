@@ -66,9 +66,9 @@ export default {
       const cleanedNumber = phoneNumber.replace(/\D/g, '');
 
       if (cleanedNumber.length <= 10) {
-        return cleanedNumber.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+        return cleanedNumber.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
       } else {
-        return cleanedNumber.slice(0, 10).replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+        return cleanedNumber.slice(0, 10).replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
       }
     },
     spliceDate(fullDate) {
