@@ -160,10 +160,13 @@ export default {
             this.takenByNumberValid = true;
 
             createReservation(this.reservation).then(result => {
-                this.dialogOKReservation = true;
-                setTimeout(this.closeAllDialog, 2000);
+                if (result) {
+                    this.dialogOKReservation = true;
+                    setTimeout(this.closeAllDialog, 2000);
+                }
             }).catch(err => {
                 console.error(err);
+                alert(err.message);
             });
         },
         isBeforeToday(fullDate) {
