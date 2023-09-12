@@ -33,7 +33,7 @@
                     maxlength="12">
                 </v-text-field>
                 <v-text-field class="mx-2" label="Adresse Courriel" density="compact" v-model.trim="employee.email"
-                    clearable :rules="[rules.required, rules.validateEmail]" maxlength="125">
+                    clearable :rules="[rules.required, rules.validateEmail]" maxlength="255">
                 </v-text-field>
             </v-row>
             <v-row>
@@ -49,7 +49,7 @@
                     show-swatches></v-color-picker>
             </v-row>
             <v-text-field type="password" class="mx-2 mt-5" label="Mot de passe temporaire" density="compact"
-                v-model.trim="employee.password" clearable>
+                v-model.trim="employee.password" clearable maxlength="255">
             </v-text-field>
             <v-checkbox :disabled="disableCheckbox" v-model="employee.isAdmin" color="red"
                 label="Accès Administrateur"></v-checkbox>

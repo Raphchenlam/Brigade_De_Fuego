@@ -148,6 +148,9 @@ router.post('/',
         if (!firstName || firstName == '') {
             return next(new HttpError(400, 'Le champ firstName est requis'));
         }
+        if(firstName.length >= 256){
+            return next(new HttpError(400, 'Le champ firstName ne peut pas être composé de plus de 255 caractères'));
+        }
         if (!regex.validName.test(firstName)) {
             return next(new HttpError(400, 'Le prénom ne respecte pas les critères d\'acceptation'));
         }
@@ -156,6 +159,9 @@ router.post('/',
         const lastName = req.body.lastName;
         if (!lastName || lastName == '') {
             return next(new HttpError(400, 'Le champ lastName est requis'));
+        }
+        if(lastName.length >= 256){
+            return next(new HttpError(400, 'Le champ lastName ne peut pas être composé de plus de 255 caractères'));
         }
         if (!regex.validName.test(lastName)) {
             return next(new HttpError(400, 'Le nom ne respecte pas les critères d\'acceptation'));
@@ -208,6 +214,11 @@ router.post('/',
         if (!regex.validBarcodeNumber.test(barcodeNumber)) {
             return next(new HttpError(400, 'Le champ barcodeNumber ne respecte pas les critères d\'acceptation'));
         }
+        employeeQueries.selectEmployeeByBarcodeNumber(barcodeNumber).then(assignedBarcodeNumber => {
+            if(assignedBarcodeNumber){
+                throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à ce numéro de la carte)`);
+            }
+        });
 
 
         const email = req.body.email;
@@ -219,7 +230,7 @@ router.post('/',
         }
         employeeQueries.selectUsedEmail(email).then(usedEmail => {
             if (usedEmail) {
-                throw new HttpError(400, `Cette adresse courriel est déjà utilisée`);
+                throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à cette adresse courriel)`);
             }
         }).catch(err => {
             next(err);
@@ -236,7 +247,7 @@ router.post('/',
         }
         employeeQueries.selectUsedPhoneNumber(phoneNumber).then(usedPhoneNumber => {
             if (usedPhoneNumber) {
-                throw new HttpError(400, 'Ce numéro de téléphone est déjà utilisé');
+                throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à ce numéro de téléphone)`);
             }
         }).catch(err => {
             next(err);
