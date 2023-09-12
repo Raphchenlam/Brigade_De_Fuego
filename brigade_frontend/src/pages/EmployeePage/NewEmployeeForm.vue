@@ -58,7 +58,7 @@
                 <DarkRedButton type="submit" class="mx-5" textbutton="Créer" :disabled="disableCreateEmployeeBtn">
                 </DarkRedButton>
             </v-row>
-            <v-dialog v-model="dialogOKEmployee" width="50%">
+            <v-dialog v-model="dialogOKEmployee" width="50%" persistent>
                 <v-card height="100px">
                     <v-card-title>
                         Confirmation de création d'employé
