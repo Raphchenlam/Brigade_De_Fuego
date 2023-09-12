@@ -1,10 +1,10 @@
 <template>
     <v-sheet class="pl-10 py-5">
-        <v-card class="h-screen">
+        <v-card class="h-100">
             <v-row class="mb-0">
                 <v-text-field @input="loadEmployees" v-model="search" hide-details placeholder="Nom a rechercher..."
                     class="ma-2"></v-text-field>
-                <v-dialog v-model="dialogNewEmployee" width="50%">
+                <v-dialog v-model="dialogNewEmployee" width="50%" persistent>
                     <template v-slot:activator="{ props }">
                         <div class="ma-2 text-center">
                             <BlackButton class="h-100 w-100" v-bind="props" textbutton="+"> </BlackButton>
@@ -12,7 +12,7 @@
                     </template>
                     <v-card>
                         <v-card-title>
-                            Creer un nouvel employe
+                            Créer un nouvel employé
                         </v-card-title>
                         <NewEmployeeForm></NewEmployeeForm>
                     </v-card>
@@ -20,7 +20,7 @@
             </v-row>
             <v-select class="w-50" v-model="roleShowed" label="Poste" :items="roleList"></v-select>
             <v-list v-model:selected='selected' :items="employeeList" item-title="listInformation"
-                item-value="employeeNumber">
+                item-value="employeeNumber" class="h-75">
             </v-list>
         </v-card>
     </v-sheet>
