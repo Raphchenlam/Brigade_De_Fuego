@@ -33,6 +33,16 @@
             </v-row>
         </v-form>
     </div>
+    <v-dialog v-model="newClientAdded" width="25%" height="25%">
+        <v-card class="ma-2 pa-2 text-center">
+            <v-card-title>
+                <h2>Confirmation</h2>
+            </v-card-title>
+            <v-card-text>
+                <p>Le client à bien été ajouté</p>
+            </v-card-text>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
@@ -45,8 +55,7 @@ export default {
     components: {
         DarkRedButton,
     },
-    data()
-    {
+    data() {
         return {
             client: {
                 firstName: null,
@@ -69,54 +78,52 @@ export default {
         }
     },
     methods: {
-        closeDialog()
-        {
+        closeDialog() {
             this.closeNewClientDialog();
         },
-        async submitNewClient()
-        {
+        closeAllDialog() {
+            this.newClientAdded = false;
+            this.closeDialog();
+        },
+        async submitNewClient() {
             this.clientIdUnique = true;
             const formValid = await this.$refs.createClientForm.validate();
-            if (!formValid.valid)
-            {
+            if (!formValid.valid) {
                 return;
             }
 
-            try
-            {
-                await createClient(this.client);
+            try {
+                await createClient(this.client).then((client) => {
+                    if (client) {
+                        this.newClientAdded = true;
+                        setTimeout(this.closeAllDialog, 2000);
+                        // this.updateClientList();
+                    }
+                });
                 this.clientIdUnique = true;
-                this.newClientAdded = true;
-                this.closeDialog();
-            } catch (err)
-            {
+            } catch (err) {
                 console.error(err);
                 alert(err.message);
-                if (err.status === 409)
-                {
+                if (err.status === 409) {
                     this.clientIdUnique = false;
                     this.newClientAdded = false;
                 }
                 await this.$refs.createClientForm.validate();
             }
         },
-        capitalizeFirstName()
-        {
+        capitalizeFirstName() {
             this.client.firstName = this.capitalizeWords(this.client.firstName);
         },
-        capitalizeLastName()
-        {
+        capitalizeLastName() {
             this.client.lastName = this.capitalizeWords(this.client.lastName);
         },
-        patternedPhoneNumber()
-        {
+        patternedPhoneNumber() {
             this.client.phoneNumber = this.formatPhoneNumber(this.client.phoneNumber);
         }
 
     },
     computed: {
-        createButtonDisabled()
-        {
+        createButtonDisabled() {
             return !this.client.firstName
                 || !this.client.lastName
                 || !this.client.phoneNumber;
@@ -126,7 +133,8 @@ export default {
 
 </script>
 
-<style scoped>.boxed-center {
+<style scoped>
+.boxed-center {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     margin: 1rem auto;
     border-radius: 10px;
