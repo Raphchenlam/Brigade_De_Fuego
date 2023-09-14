@@ -38,11 +38,8 @@ import EditBlackButton from '../../components/Reusable/EditBlackButton.vue';
 import EditEventForm from './EditEventForm.vue';
 
 export default {
+    inject:['eventDisplay', 'needUpdateEvent','toggleUpdateEvent'],
     
-    props: {
-        name: String,
-        updateEvent: Boolean
-    },
     components: {
         EditEventForm,
         EditBlackButton
@@ -51,7 +48,7 @@ export default {
         return {
             dialogEditEvent: false,
             event: {
-                name: null,
+                name:null,
                 impact: null,
                 eventType: null,
                 isActive: null
@@ -61,15 +58,21 @@ export default {
     provide() {
         return {
             closeEditEventDialog: this.closeEditEventDialog,
+            loadEventInformation: this.loadEventInformation
         };
     },
     methods: {
+        
         closeEditEventDialog() {
             this.dialogEditEvent = false;
+            if (this.needUpdateEvent) {
+                this.toggleUpdateEvent();
+            }
+            this.needUpdateEvent = false;
         },
-        loadEventInformation(name) {
-            if (name) {
-                fetchEventByName(this.name).then(event => {
+        loadEventInformation() {
+            if (this.eventDisplay) {
+                fetchEventByName(this.eventDisplay).then(event => {
                     this.event.name = event.name,
                     this.event.eventType = event.eventType,
                     this.event.impact = event.impact,
@@ -83,13 +86,18 @@ export default {
         },
     },
     watch: {
-        name(){
-            this.loadEventInformation(this.name);
+        eventDisplay(){
+            this.loadEventInformation(this.eventDisplay);
+        },
+        needUpdateEvent(){
+            if (this.needUpdateEvent) {
+                this.dialogEditEvent=true;
+            }
         }
     },
     mounted() {
-        if (this.name) {
-            this.loadEventInformation(this.name);
+        if (this.eventDisplay) {
+            this.loadEventInformation(this.eventDisplay);
         }
     }
 }

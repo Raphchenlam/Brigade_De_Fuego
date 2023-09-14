@@ -1,11 +1,12 @@
 <template>
     <v-row class="justify-space-between">
         <EventList class="h-screen" width="35%"></EventList>
-        <EventInformation v-if="selectedEvent" :name="selectedEvent" class="h-screen" width="65%" :updateEvent="updateEvent"></EventInformation>
+        <EventInformation v-if="selectedEvent" class="h-screen" width="65%"></EventInformation>
     </v-row>
 </template>
 
 <script>
+import { computed } from "vue";
 import userSession from "../../sessions/UserSession"
 import EventInformation from "./EventInformation.vue";
 import EventList from './EventList.vue';
@@ -30,14 +31,17 @@ export default {
             this.selectedEvent = eventName
         },
         toggleUpdateEvent(){
-            this.updateEvent = true;
+            this.updateEvent = !this.updateEvent;
         }
     },
     provide()
     {
         return {
             loadEvent: this.loadEvent,
-            toggleUpdateEvent: this.toggleUpdateEvent
+            toggleUpdateEvent: this.toggleUpdateEvent,
+            eventDisplay: computed(()=>this.selectedEvent),
+            needUpdateEvent:computed(()=>this.updateEvent)
+
         };
     },
     mounted()

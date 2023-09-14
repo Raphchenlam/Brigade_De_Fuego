@@ -124,19 +124,6 @@ export default {
 
 
   watch: {
-    // searchEvent() {
-    //   this.eventList.forEach((event) => {
-    //     if (this.search == "") {
-    //       this.updateEventList();
-    //     }
-    //     if (event.name.toUpperCase().indexOf(this.search.toUpperCase() && this.search != "") >= 0) {
-    //       //this.updateEventList();
-    //       this.eventList = [];
-    //       this.eventList.push(event);
-    //     }
-    //   }
-    //   )
-    // },
     eventTypeShowed() {
       this.updateEventList();
       this.selection[0] = "";

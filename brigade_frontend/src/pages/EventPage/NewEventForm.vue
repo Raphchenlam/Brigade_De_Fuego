@@ -37,7 +37,7 @@ import NewEventConfirmationForm from './NewEventConfirmationForm.vue';
 
 
 export default {
-    inject: ['closeNewEventDialog','capitalizeWords'],
+    inject: ['closeNewEventDialog','lowFormatingName'],
     components: {
         DarkRedButton,
         NewEventConfirmationForm,
@@ -103,7 +103,7 @@ export default {
             this.event.impact = 100;
         },
         capitalizeName(){
-            this.event.name = this.capitalizeWords(this.event.name);
+            this.event.name = this.lowFormatingName(this.event.name);
         },
         async toggleEventConfirmationDialog() {
             const formValid = await this.$refs.createEventForm.validate();
