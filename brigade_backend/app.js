@@ -93,39 +93,6 @@ app.get('/login',
   }
 );
 
-app.post('/login',
-  (req, res, next) => {
-    if (!req.body.userAccountId || req.body.userAccountId === '') return next(new HttpError(400, 'Propriété userAccountId requise'));
-    if (!req.body.password || req.body.password === '') return next(new HttpError(400, 'Propriété password requise'));
-
-    const saltBuf = crypto.randomBytes(16);
-    const salt = saltBuf.toString("base64");
-
-    crypto.pbkdf2(req.body.password, salt, 100000, 64, "sha512", async (err, derivedKey) => {
-      if (err) return next(err);
-
-      const passwordHashBase64 = derivedKey.toString("base64");
-
-      try {
-        const userAccountWithPasswordHash = await userAccountQueries.createUserAccount(req.body.userAccountId,
-          passwordHashBase64, salt, req.body.userFullName);
-
-        const userDetails = {
-          userAccountId: userAccountWithPasswordHash.userAccountId,
-          userFullName: userAccountWithPasswordHash.userFullName,
-          isAdmin: userAccountWithPasswordHash.isAdmin,
-          isActive: userAccountWithPasswordHash.isActive
-        };
-
-        res.json(userDetails);
-      } catch (err) {
-        return next(err);
-      }
-
-    });
-  }
-);
-
 app.use((err, req, res, next) => {
     console.log("error handler: ", err);
     if (res.headersSent) {
