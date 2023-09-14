@@ -23,6 +23,7 @@ export default {
   provide() {
     return {
       capitalizeWords: this.capitalizeWords,
+      lowFormatingName:this.lowFormatingName,
       formatPhoneNumber: this.formatPhoneNumber,
       spliceDate: this.spliceDate
     }
@@ -62,6 +63,32 @@ export default {
           .replace(/[^a-zA-Z]-[^a-zA-Z]/g, '');
       }
     },
+    lowFormatingName(inputString) {
+      if (inputString) {
+        const words = inputString
+          .replace(/-+/g, '-')
+          .replace(/[^a-zA-Z\d\s-]/g, '')
+          .replace(/\s+/g, ' ')
+          .split(' ')
+          .map(word => {
+            const parts = word.split('-');
+            const capitalizedParts = parts.map(part => {
+              return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+            });
+            return capitalizedParts.join('-');
+          });
+
+        return words
+          .join(' ')
+          .replace(/-\s+/g, '-')
+          .replace(/\s+-/g, '-')
+          .trim()
+          .replace(/^-+|-+$/g, '')
+          .replace(/[^a-zA-Z]-[^a-zA-Z]/g, '');
+      }
+    },
+
+
     formatPhoneNumber(phoneNumber) {
       if (phoneNumber) {
         const cleanedNumber = phoneNumber.replace(/\D/g, '');
