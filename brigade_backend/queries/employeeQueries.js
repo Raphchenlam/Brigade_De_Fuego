@@ -18,7 +18,8 @@ const selectLoginByEmployeeNumber = async (employeeNumber, client) => {
             isSuperAdmin: row.is_super_admin,
             isNewEmployee: row.is_new_employee,
             isActive: row.is_active,
-
+            passwordSalt: row.password_salt,
+            passwordHash: row.password_hash
         }
     }
 }
