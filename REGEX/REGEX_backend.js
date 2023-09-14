@@ -4,6 +4,9 @@ exports.validEmployeeNumber = validEmployeeNumber;
 const validName = /^([A-Z][a-z]{1,}(?:[- ][A-Z][a-z]{1,})?)$/;
 exports.validName = validName;
 
+const validName2 = /^[A-Z][a-z]{1,}(?:(?:[- ][A-Z][a-z]{1,})?)*$/;
+exports.validName2 = validName2;
+
 const validRole = /^[A-Z][a-zA-Z]*$/;
 exports.validRole = validRole;
 
@@ -25,4 +28,8 @@ exports.validPhoneNumber = validPhoneNumber;
 const validSkillPoints = /^(?:[1-9]|10)$/;
 exports.validSkillPoints = validSkillPoints;
 
+const validDate = /^\d{4}-\d{1,2}-\d{2}$/;
+exports.validDate = validDate;
 
+const validTime = /^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/;
+exports.validTime = validTime;
