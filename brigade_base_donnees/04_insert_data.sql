@@ -1,14 +1,14 @@
 -- Insertion dans la table event_type
 INSERT INTO event_type("name")
-	VALUES
-  ('Sportif'),
-  ('Ferié');
+VALUES
+('Sportif'),
+('Ferié');
 
 -- Insertion dans la table event
 INSERT INTO event("name", event_type, impact, is_active)
-	VALUES
-  ('Game du canadien', 'Sportif', 1.4, true),
-  ('Fete des meres', 'Ferié', 2.5, true);
+VALUES
+('Game du canadien', 'Sportif', 1.4, true),
+('Fete des meres', 'Ferié', 2.5, true);
 
 -- Insertion dans la table schedule_week
 INSERT INTO schedule_week ("id", "start_date", "end_date")
@@ -28,27 +28,27 @@ VALUES
 -- Insertion dans la table schedule_period
 INSERT INTO schedule_period ("date", shift_name, schedule_week_id, average_traffic, expected_traffic, actual_traffic, average_cost_by_client, required_skill_points, expected_skill_points, scheduled_skill_points)
 VALUES 
-('2023-09-01', 'Midi', (SELECT id FROM schedule_week WHERE '2023-09-01' >= start_date AND '2023-09-01' <= end_date), 100, 100, 0, 50.0, 0, 50, 0),
-('2023-09-01', 'Soir', (SELECT id FROM schedule_week WHERE '2023-09-01' >= start_date AND '2023-09-01' <= end_date), 120, 120, 0, 55.0, 0, 60, 0),
-('2023-09-02', 'Midi', (SELECT id FROM schedule_week WHERE '2023-09-02' >= start_date AND '2023-09-02' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2023-09-02', 'Soir', (SELECT id FROM schedule_week WHERE '2023-09-02' >= start_date AND '2023-09-02' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2023-09-03', 'Midi', (SELECT id FROM schedule_week WHERE '2023-09-03' >= start_date AND '2023-09-03' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2023-09-03', 'Soir', (SELECT id FROM schedule_week WHERE '2023-09-03' >= start_date AND '2023-09-03' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2023-09-04', 'Midi', (SELECT id FROM schedule_week WHERE '2023-09-04' >= start_date AND '2023-09-04' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2023-09-04', 'Soir', (SELECT id FROM schedule_week WHERE '2023-09-04' >= start_date AND '2023-09-04' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2023-09-05', 'Midi', (SELECT id FROM schedule_week WHERE '2023-09-05' >= start_date AND '2023-09-05' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2023-09-05', 'Soir', (SELECT id FROM schedule_week WHERE '2023-09-05' >= start_date AND '2023-09-05' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2023-09-06', 'Midi', (SELECT id FROM schedule_week WHERE '2023-09-06' >= start_date AND '2023-09-06' <= end_date), 110, 110, 24, 52.0, 12, 55, 0),
-('2023-09-06', 'Soir', (SELECT id FROM schedule_week WHERE '2023-09-06' >= start_date AND '2023-09-06' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2023-09-07', 'Midi', (SELECT id FROM schedule_week WHERE '2023-09-07' >= start_date AND '2023-09-07' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2023-09-07', 'Soir', (SELECT id FROM schedule_week WHERE '2023-09-07' >= start_date AND '2023-09-07' <= end_date), 130, 130, 0, 60.0, 0, 65, 0);
+('2024-09-07', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-07' >= start_date AND '2024-09-07' <= end_date), 100, 100, 0, 50.0, 0, 50, 0),
+('2024-09-07', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-07' >= start_date AND '2024-09-07' <= end_date), 120, 120, 0, 55.0, 0, 60, 0),
+('2024-09-08', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-08' >= start_date AND '2024-09-08' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
+('2024-09-08', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-08' >= start_date AND '2024-09-08' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
+('2024-09-09', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-09' >= start_date AND '2024-09-09' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
+('2024-09-09', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-09' >= start_date AND '2024-09-09' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
+('2024-09-10', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-10' >= start_date AND '2024-09-10' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
+('2024-09-10', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-10' >= start_date AND '2024-09-10' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
+('2024-09-11', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-11' >= start_date AND '2024-09-11' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
+('2024-09-11', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-11' >= start_date AND '2024-09-11' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
+('2024-09-12', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-12' >= start_date AND '2024-09-12' <= end_date), 110, 110, 24, 52.0, 12, 55, 0),
+('2024-09-12', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-12' >= start_date AND '2024-09-12' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
+('2024-09-13', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-13' >= start_date AND '2024-09-13' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
+('2024-09-13', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-13' >= start_date AND '2024-09-13' <= end_date), 130, 130, 0, 60.0, 0, 65, 0);
 
 -- Insertion dans la table schedule_event
 INSERT INTO schedule_event(schedule_period_id, event_id)
-	VALUES
-  (2, 1),
-  (9, 2),
-  (10, 2);
+VALUES
+(2, 1),
+(9, 2),
+(10, 2);
 
 -- Insertion dans la table role
 INSERT INTO role ("name", team)
@@ -70,7 +70,6 @@ VALUES
 ('En attente'),
 ('Refusé'),
 ('Approuvé');
-
 
 -- Insertion dans la table employee
 INSERT INTO employee (employee_number, first_name, last_name, "role", color_hexcode, hourly_rate, barcode_number, email, phone_number, is_admin, is_super_admin, is_new_employee, is_active, skill_points, password_salt, password_hash)
@@ -95,7 +94,7 @@ VALUES
 (1111, '2023-09-05', '2023-09-05', 'Maladie', 'Rendez-vous medecin', 'En attente'),
 (2222, '2023-09-10', '2023-09-15', 'Vacance', '1iere semaine de vacance', 'Approuvé');
 
-  -- Insertion dans la table employee+schedule
+-- Insertion dans la table employee+schedule
 INSERT INTO employee_schedule(employee_number, schedule_period_id, start_time, end_time)
 VALUES 
 (1111, 1, '08:00:00', '16:00:00'),
@@ -107,8 +106,7 @@ VALUES
 (3333, 3, '11:00:00', '14:00:00'),
 (2222, 4, '16:00:00', '22:00:00');
 
-
-  -- Insertion dans la table client
+-- Insertion dans la table client
 INSERT INTO client (first_name, last_name, phone_number, allergy, is_favorite, is_blacklisted)
 VALUES 
 ('Alice', 'Aupays', '123-456-7890', null, true, false),
