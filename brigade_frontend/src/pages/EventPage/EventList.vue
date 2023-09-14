@@ -139,7 +139,7 @@ export default {
     // },
     eventTypeShowed() {
       this.updateEventList();
-      this.selection = "";
+      this.selection[0] = "";
     },
     selection() {
       console.log("Selection changer", this.selection[0]);
