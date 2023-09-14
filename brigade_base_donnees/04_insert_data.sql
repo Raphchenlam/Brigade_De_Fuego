@@ -11,13 +11,13 @@ INSERT INTO event("name", event_type, impact, is_active)
   ('Fete des meres', 'Ferié', 2.5, true);
 
 -- Insertion dans la table schedule_week
-INSERT INTO schedule_week ("start_date", "end_date")
+INSERT INTO schedule_week ("id", "start_date", "end_date")
 VALUES 
-('2023-08-28', '2023-09-03'),
-('2023-09-04', '2023-09-10'),
-('2023-09-11', '2023-09-17'),
-('2023-09-18', '2023-09-24'),
-('2023-09-25', '2023-10-01');
+('2024-W40','2024-08-30', '2024-09-06'),
+('2024-W41','2024-09-07', '2024-09-13'),
+('2024-W42','2024-09-14', '2024-09-20'),
+('2024-W43','2024-09-21', '2024-09-27'),
+('2024-W44','2024-09-28', '2024-10-03');
 
 -- Insertion dans la table shift
 INSERT INTO shift ("name", start_time, end_time)
@@ -25,7 +25,7 @@ VALUES
 ('Midi', '10:00:00', '16:00:00'),
 ('Soir', '16:00:00', '23:00:00');
 
-  -- Insertion dans la table schedule_period
+-- Insertion dans la table schedule_period
 INSERT INTO schedule_period ("date", shift_name, schedule_week_id, average_traffic, expected_traffic, actual_traffic, average_cost_by_client, required_skill_points, expected_skill_points, scheduled_skill_points)
 VALUES 
 ('2023-09-01', 'Midi', (SELECT id FROM schedule_week WHERE '2023-09-01' >= start_date AND '2023-09-01' <= end_date), 100, 100, 0, 50.0, 0, 50, 0),
@@ -42,6 +42,7 @@ VALUES
 ('2023-09-06', 'Soir', (SELECT id FROM schedule_week WHERE '2023-09-06' >= start_date AND '2023-09-06' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
 ('2023-09-07', 'Midi', (SELECT id FROM schedule_week WHERE '2023-09-07' >= start_date AND '2023-09-07' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
 ('2023-09-07', 'Soir', (SELECT id FROM schedule_week WHERE '2023-09-07' >= start_date AND '2023-09-07' <= end_date), 130, 130, 0, 60.0, 0, 65, 0);
+
 -- Insertion dans la table schedule_event
 INSERT INTO schedule_event(schedule_period_id, event_id)
 	VALUES
