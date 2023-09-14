@@ -1,28 +1,28 @@
 <template>
     <v-sheet class="px-10 h-75">
         <v-card class="h-75">
-                <v-row class="mb-0">
-                    <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
-                        class="ma-2"></v-text-field>
-                    <v-dialog v-model="dialogNewReservation" width="100%">
-                        <template v-slot:activator="{ props }">
-                            <div class="ma-2 text-center">
-                                <BlackButton class="h-100 w-100" v-bind="props" textbutton="+">
-                                </BlackButton>
-                            </div>
-                        </template>
-                        <v-card>
-                            <v-card-title>
-                                Creer une nouvelle reservation
-                            </v-card-title>
-                            <NewReservationForm></NewReservationForm>
-                        </v-card>
-                    </v-dialog>
-                </v-row>
-                <v-row>
-                <v-text-field type="date" class="ma-2" label="Date Debut" clearable>
+            <v-row class="mb-0">
+                <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
+                    class="ma-2"></v-text-field>
+                <v-dialog v-model="dialogNewReservation" width="100%">
+                    <template v-slot:activator="{ props }">
+                        <div class="ma-2 text-center">
+                            <BlackButton class="h-100 w-100" v-bind="props" textbutton="+">
+                            </BlackButton>
+                        </div>
+                    </template>
+                    <v-card>
+                        <v-card-title>
+                            Creer une nouvelle reservation
+                        </v-card-title>
+                        <NewReservationForm></NewReservationForm>
+                    </v-card>
+                </v-dialog>
+            </v-row>
+            <v-row>
+                <v-text-field type="date" class="ma-2" label="Date Debut" v-model="startDate" clearable>
                 </v-text-field>
-                <v-text-field type="date" class="ma-2" label="Date Fin" clearable>
+                <v-text-field type="date" class="ma-2" label="Date Fin" v-model="endDate" clearable>
                 </v-text-field>
             </v-row>
             <v-radio-group v-model="shiftShow">
@@ -32,8 +32,8 @@
                     <v-radio label="Journee complete" value="all"></v-radio>
                 </v-row>
             </v-radio-group>
-                <v-list v-model:selected='selected' :items="reservations" item-title="listInformation" item-value="id">
-                </v-list>
+            <v-list v-model:selected='selected' :items="reservations" item-title="listInformation" item-value="id">
+            </v-list>
         </v-card>
     </v-sheet>
     <p></p>
@@ -53,9 +53,10 @@ export default {
         BlackButton,
         DarkRedButton
     },
-    data()
-    {
+    data() {
         return {
+            startDate: null,
+            endDate: null,
             search: "",
             shiftShow: "all",
             date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
@@ -65,15 +66,13 @@ export default {
             dialogNewReservation: false,
         };
     },
-    provide()
-    {
+    provide() {
         return {
             closeNewReservationDialog: this.closeNewReservationDialog,
         };
     },
     methods: {
-        loadReservations()
-        {
+        loadReservations() {
             const allReservations = [
                 {
                     listInformation: "Alice Dupays (555-555-5555) - 4 personnes - 15/10/2023 - 10h00",
@@ -168,13 +167,12 @@ export default {
             ];
             this.reservations = allReservations;
         },
-        closeNewReservationDialog()
-        {
+        closeNewReservationDialog() {
             this.dialogNewReservation = false;
         },
     },
-    mounted()
-    {
+    mounted() {
+        this.endDate = this.startDate = new Date().toISOString().split('T')[0];
         this.loadReservations();
     },
 }
