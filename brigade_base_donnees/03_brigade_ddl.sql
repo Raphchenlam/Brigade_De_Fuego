@@ -30,7 +30,7 @@ CREATE TABLE event (
   PRIMARY KEY (id));
 
 CREATE TABLE schedule_week (
-  id           SERIAL NOT NULL, 
+  id           varchar(255) NOT NULL, 
   "start_date" date NOT NULL, 
   end_date     date NOT NULL, 
   PRIMARY KEY (id));
@@ -49,13 +49,13 @@ CREATE TABLE schedule_period (
   id                     SERIAL NOT NULL, 
   "date"                 date NOT NULL, 
   shift_name             varchar(255) NOT NULL REFERENCES shift("name"), 
-  schedule_week_id       int4 NOT NULL REFERENCES schedule_week("id"),
+  schedule_week_id       varchar(255) NOT NULL REFERENCES schedule_week("id"),
   average_traffic        int4 NOT NULL,
   expected_traffic        int4 NOT NULL,
   actual_traffic         int4 NOT NULL, 
   average_cost_by_client float4 NOT NULL, 
   required_skill_points  int4 NOT NULL, 
-  expected_skill_points    int4 NOT NULL, 
+  expected_skill_points    int4 NOT NULL,
   scheduled_skill_points int4 NOT NULL,
   PRIMARY KEY (id));
 
@@ -99,9 +99,10 @@ CREATE TABLE employee (
 CREATE TABLE punch (
   id              SERIAL NOT NULL, 
   employee_number int4 NOT NULL REFERENCES employee("employee_number") , 
-  "date"          date NOT NULL, 
+  date_in         date NOT NULL, 
   punch_in        time NOT NULL, 
-  punch_out       time NOT NULL, 
+  date_out        date, 
+  punch_out       time, 
   PRIMARY KEY (id));
 
 CREATE TABLE leave (

@@ -11,10 +11,13 @@ INSERT INTO event("name", event_type, impact, is_active)
   ('Fete des meres', 'Ferié', 2.5, true);
 
 -- Insertion dans la table schedule_week
-INSERT INTO schedule_week ("start_date", "end_date")
+INSERT INTO schedule_week ("id", "start_date", "end_date")
 VALUES 
-('2023-09-01', '2023-09-07'),
-('2023-09-08', '2023-09-14');
+('2024-W40','2024-08-30', '2024-09-06'),
+('2024-W41','2024-09-07', '2024-09-13'),
+('2024-W42','2024-09-14', '2024-09-20'),
+('2024-W43','2024-09-21', '2024-09-27'),
+('2024-W44','2024-09-28', '2024-10-03');
 
 -- Insertion dans la table shift
 INSERT INTO shift ("name", start_time, end_time)
@@ -25,21 +28,20 @@ VALUES
   -- Insertion dans la table schedule_period
 INSERT INTO schedule_period ("date", shift_name, schedule_week_id, average_traffic, expected_traffic, actual_traffic, average_cost_by_client, required_skill_points, expected_skill_points, scheduled_skill_points)
 VALUES 
-('2023-09-01', 'Midi', 1, 100, 100, 0, 50.0, 0, 50, 0),
-('2023-09-01', 'Soir', 1, 120, 120, 0, 55.0, 0, 60, 0),
-('2023-09-02', 'Midi', 1, 110, 110, 0, 52.0, 0, 55, 0),
-('2023-09-02', 'Soir', 1, 130, 130, 0, 60.0, 0, 65, 0),
-('2023-09-03', 'Midi', 1, 110, 110, 0, 52.0, 0, 55, 0),
-('2023-09-03', 'Soir', 1, 130, 130, 0, 60.0, 0, 65, 0),
-('2023-09-04', 'Midi', 1, 110, 110, 0, 52.0, 0, 55, 0),
-('2023-09-04', 'Soir', 1, 130, 130, 0, 60.0, 0, 65, 0),
-('2023-09-05', 'Midi', 1, 110, 110, 0, 52.0, 0, 55, 0),
-('2023-09-05', 'Soir', 1, 130, 130, 0, 60.0, 0, 65, 0),
-('2023-09-06', 'Midi', 1, 110, 110, 24, 52.0, 12, 55, 0),
-('2023-09-06', 'Soir', 1, 130, 130, 0, 60.0, 0, 65, 0),
-('2023-09-07', 'Midi', 1, 110, 110, 0, 52.0, 0, 55, 0),
-('2023-09-07', 'Soir', 1, 130, 130, 0, 60.0, 0, 65, 0);
-
+('2024-09-07', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-07' >= start_date AND '2024-09-07' <= end_date), 100, 100, 0, 50.0, 0, 50, 0),
+('2024-09-07', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-07' >= start_date AND '2024-09-07' <= end_date), 120, 120, 0, 55.0, 0, 60, 0),
+('2024-09-08', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-08' >= start_date AND '2024-09-08' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
+('2024-09-08', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-08' >= start_date AND '2024-09-08' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
+('2024-09-09', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-09' >= start_date AND '2024-09-09' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
+('2024-09-09', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-09' >= start_date AND '2024-09-09' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
+('2024-09-10', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-10' >= start_date AND '2024-09-10' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
+('2024-09-10', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-10' >= start_date AND '2024-09-10' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
+('2024-09-11', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-11' >= start_date AND '2024-09-11' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
+('2024-09-11', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-11' >= start_date AND '2024-09-11' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
+('2024-09-12', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-12' >= start_date AND '2024-09-12' <= end_date), 110, 110, 24, 52.0, 12, 55, 0),
+('2024-09-12', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-12' >= start_date AND '2024-09-12' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
+('2024-09-13', 'Midi', (SELECT id FROM schedule_week WHERE '2024-09-13' >= start_date AND '2024-09-13' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
+('2024-09-13', 'Soir', (SELECT id FROM schedule_week WHERE '2024-09-13' >= start_date AND '2024-09-13' <= end_date), 130, 130, 0, 60.0, 0, 65, 0);
 -- Insertion dans la table schedule_event
 INSERT INTO schedule_event(schedule_period_id, event_id)
 	VALUES
@@ -77,10 +79,10 @@ VALUES
 (3333, 'Jane', 'Smith', 'Hotesse', '#3355FF', 35.0, '6547559223454321', 'jane@example.com', '987-654-3210', false, false, true, true, 3, 'salt456', 'hash456');
 
 -- Insertion dans la table punch
-INSERT INTO punch (employee_number, "date", punch_in, punch_out)
+INSERT INTO punch (employee_number, date_in, punch_in, date_out, punch_out)
 VALUES 
-(2222, '2023-09-01', '08:00:00', '16:00:00'),
-(3333, '2023-09-01', '09:00:00', '17:00:00');
+(2222, '2023-09-01', '08:00:00', '2023-09-01', '16:00:00'),
+(3333, '2023-09-01', '09:00:00', '2023-09-01', '17:00:00');
 
 -- Insertion dans la table leave
 INSERT INTO leave (employee_number, "start_date", end_date, category, reason, "status")

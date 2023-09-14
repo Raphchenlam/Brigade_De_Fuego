@@ -16,7 +16,7 @@ const eventTypeRouter = require ('./routes/eventTypeRouter');
 const leaveRouter = require ('./routes/leaveRouter');
 const punchRouter = require ('./routes/punchRouter');
 const reservationRouter = require ('./routes/reservationRouter');
-const schedulePeriodRouter = require ('./routes/schedulePeriodRouter');
+const scheduleRouter = require ('./routes/scheduleRouter');
 const sectionRouter = require ('./routes/sectionRouter');
 const tableRouter = require ('./routes/tableRouter');
 
@@ -35,6 +35,7 @@ app.use('/event', eventRouter);
 app.use('/eventType', eventTypeRouter);
 app.use('/leave', leaveRouter);
 app.use('/reservation', reservationRouter);
+app.use('/schedule', scheduleRouter)
 
 class BasicStrategyModified extends BasicStrategy {
     constructor(options, verify) {
