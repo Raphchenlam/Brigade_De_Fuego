@@ -24,7 +24,7 @@
     </div>
     <v-dialog persistent v-model="dialogConfirmEvent" width="50%">
         <v-card>
-            <NewEventConfirmationForm :name="event.name" :impact="event.impact.toFixed(2)" :eventType="event.eventType">
+            <NewEventConfirmationForm :name="event.name" :impact="parseFloat(event.impact.toFixed(2))" :eventType="event.eventType">
             </NewEventConfirmationForm>
         </v-card>
     </v-dialog>
