@@ -30,7 +30,7 @@ CREATE TABLE event (
   PRIMARY KEY (id));
 
 CREATE TABLE schedule_week (
-  id           SERIAL NOT NULL, 
+  id           varchar(255) NOT NULL, 
   "start_date" date NOT NULL, 
   end_date     date NOT NULL, 
   PRIMARY KEY (id));
@@ -49,7 +49,7 @@ CREATE TABLE schedule_period (
   id                     SERIAL NOT NULL, 
   "date"                 date NOT NULL, 
   shift_name             varchar(255) NOT NULL REFERENCES shift("name"), 
-  schedule_week_id       int4 NOT NULL REFERENCES schedule_week("id"),
+  schedule_week_id       varchar(255) NOT NULL REFERENCES schedule_week("id"),
   average_traffic        int4 NOT NULL,
   expected_traffic        int4 NOT NULL,
   actual_traffic         int4 NOT NULL, 
