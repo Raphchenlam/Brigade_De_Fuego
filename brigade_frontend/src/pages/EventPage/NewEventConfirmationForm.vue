@@ -46,14 +46,6 @@
                     </v-card-text>
                 </v-card>
             </v-dialog>
-            <!-- <v-sheet class="ma-3 pa-5">
-                <v-row class="justify-center">
-                    <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeEventConfirmationDialog()">
-                    </DarkRedButton>
-                    <DarkRedButton class="mx-5" textbutton="Confirmer" @click="submitNewEvent">
-                    </DarkRedButton>
-                </v-row>
-            </v-sheet> -->
         </v-sheet>
     </v-form>
     <v-sheet v-if="!uniqueEvent">
@@ -93,7 +85,7 @@
                 <DarkRedButton class="mx-5" textbutton="Modifier l'événement ACTUEL"
                     @click="closeEventConfirmationDialog()">
                 </DarkRedButton>
-                <DarkRedButton class="mx-5" textbutton="Modifier l'événement TROUVÉ" @click="handleRoute()">
+                <DarkRedButton class="mx-5" textbutton="Modifier l'événement TROUVÉ" @click="modififyExistingEvent()">
                 </DarkRedButton>
             </v-row>
         </v-sheet>
@@ -106,7 +98,7 @@ import { createEvent, fetchEventByName } from '../../services/EventService';
 import DarkRedButton from '../../components/Reusable/darkredbutton.vue';
 
 export default {
-    inject: ['toggleEventConfirmationDialog', 'closeNewEventDialog', 'updateEventList'],
+    inject: ['toggleEventConfirmationDialog', 'closeNewEventDialog', 'updateEventList', 'toggleUpdateEvent', 'loadEvent'],
     components: { DarkRedButton },
     props: {
         name: String,
@@ -118,12 +110,12 @@ export default {
         return {
             uniqueEvent: true,
             eventFoundInDB: {},
-            dialogConfirmEvent:false
+            dialogConfirmEvent: false
         }
     },
 
     methods: {
-        closeAllDialog(){
+        closeAllDialog() {
             this.dialogConfirmEvent = false;
             this.closeEventConfirmationDialog();
             this.closeDialog();
@@ -135,7 +127,7 @@ export default {
             this.closeNewEventDialog();
         },
 
-        submitNewEvent() {     
+        submitNewEvent() {
             const event = {
                 name: this.name,
                 impact: this.impact,
@@ -147,7 +139,7 @@ export default {
                 this.dialogConfirmEvent = true;
                 setTimeout(this.closeAllDialog, 2000);
                 this.updateEventList();
-            }).catch (err => {
+            }).catch(err => {
                 console.error(err)
             });
         },
@@ -160,9 +152,12 @@ export default {
                 }
             })
         },
-        handleRoute() {
-            this.$router.push('/event/' + this.name)
+        modififyExistingEvent() {
+            this.closeAllDialog();
+            this.loadEvent(this.eventFoundInDB.name);
+            this.toggleUpdateEvent();
         }
+
 
     },
     mounted() {

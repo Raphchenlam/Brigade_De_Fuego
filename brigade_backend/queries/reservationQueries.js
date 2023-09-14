@@ -10,6 +10,7 @@ const explodingTime = time => {
         minute: parseInt(time.split(':').slice(0)[1])
     }
 }
+exports.explodingTime = explodingTime;
 
 // const remakeDate = date => {
 //     return new Date(date);
@@ -51,15 +52,17 @@ const getReservationByInformations = async (clientId, date, startTime) => {
     const explodedStartTime = explodingTime(startTime);
 
     let result;
-    if(explodedStartTime.hour >= 16){
+    if (explodedStartTime.hour >= 16) {
         result = await pool.query(
             `SELECT * FROM reservation
-                WHERE client_id = $1 AND date = $2 AND start_time >= '16:00:00'`,
+                JOIN client ON client.id = reservation.client_id
+                    WHERE client_id = $1 AND date = $2 AND start_time >= '16:00:00'`,
             [clientId, date]);
-    }else{
+    } else {
         result = await pool.query(
             `SELECT * FROM reservation
-                WHERE client_id = $1 AND date = $2 AND start_time <= '16:00:00'`,
+                JOIN client ON client.id = reservation.client_id
+                    WHERE client_id = $1 AND date = $2 AND start_time <= '16:00:00'`,
             [clientId, date]);
     }
 
@@ -91,15 +94,15 @@ const insertReservation = async (reservationInfos) => {
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING *`,
         [reservationInfos.tableNumber,
-            reservationInfos.clientId,
-            reservationInfos.statusCode,
-            reservationInfos.peopleCount,
-            reservationInfos.date,
-            reservationInfos.startTime,
-            reservationInfos.endTime,
-            reservationInfos.mention,
-            reservationInfos.hasMinor,
-            reservationInfos.takenBy]);
+        reservationInfos.clientId,
+        reservationInfos.statusCode,
+        reservationInfos.peopleCount,
+        reservationInfos.date,
+        reservationInfos.startTime,
+        reservationInfos.endTime,
+        reservationInfos.mention,
+        reservationInfos.hasMinor,
+        reservationInfos.takenBy]);
 
     const row = result.rows[0];
 
