@@ -1,5 +1,29 @@
 const pool = require('./DBPool');
 
+const selectLoginByEmployeeNumber = async (employeeNumber, client) => {
+    const result = await (client || pool).query(
+        `SELECT employee_number, first_name, last_name, is_admin, is_super_admin, is_new_employee, is_active, password_salt, password_hash
+        FROM employee
+        WHERE employee_number = $1`,
+        [employeeNumber]
+    );
+
+    const row = result.rows[0];
+    if(row){
+        return {
+            employeeNumber: row.employee_number,
+            firstName: row.first_name,
+            lastName: row.last_name,
+            isAdmin: row.is_admin,
+            isSuperAdmin: row.is_super_admin,
+            isNewEmployee: row.is_new_employee,
+            isActive: row.is_active,
+
+        }
+    }
+}
+exports.selectLoginByEmployeeNumber = selectLoginByEmployeeNumber;
+
 const selectAllEmployees = async () => {
     const result = await pool.query(
         `SELECT * from employee
