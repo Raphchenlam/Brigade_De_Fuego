@@ -99,23 +99,6 @@ router.get('/:employeeNumber', (req, res, next) => {
     } else {
         return next(new HttpError(404, `Numero non conforme`));
     }
-})
-
-router.get('/role/:role', (req, res, next) => {
-    // const employeeConnected = req.employee;
-    const role = req.params.role;
-    // if (!employeeConnected) {
-    //     return next(new HttpError(401, "Vous devez etre connecté"));
-    // };
-    // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
-    //     return next(new HttpError(403, "Droit administrateur requis"));
-    // };
-
-    employeeQueries.selectAllEmployeesByRole(role).then(employeeList => {
-        res.json(employeeList);
-    }).catch(err => {
-        return next(err);
-    });
 });
 
 router.post('/',
@@ -235,7 +218,6 @@ router.post('/',
         }).catch(err => {
             next(err);
         });
-
 
 
         const phoneNumber = req.body.phoneNumber;
