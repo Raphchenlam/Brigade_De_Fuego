@@ -12,9 +12,15 @@ const explodingTime = time => {
 }
 exports.explodingTime = explodingTime;
 
-// const remakeDate = date => {
-//     return new Date(date);
-// };
+const explodingDate = date => {
+    return {
+        year: parseInt(date.split('-').slice(0)[0]),
+        month: parseInt(date.split('-').slice(0)[1]),
+        day: parseInt(date.split('-').slice(0)[2])
+    }
+}
+exports.explodingDate = explodingDate;
+
 
 const getReservationById = async (id) => {
     const result = await pool.query(

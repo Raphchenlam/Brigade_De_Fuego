@@ -90,12 +90,14 @@ export default {
 
 
     formatPhoneNumber(phoneNumber) {
-      const cleanedNumber = phoneNumber.replace(/\D/g, '');
+      if (phoneNumber) {
+        const cleanedNumber = phoneNumber.replace(/\D/g, '');
 
-      if (cleanedNumber.length <= 10) {
-        return cleanedNumber.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
-      } else {
-        return cleanedNumber.slice(0, 10).replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+        if (cleanedNumber.length <= 10) {
+          return cleanedNumber.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+        } else {
+          return cleanedNumber.slice(0, 10).replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+        }
       }
     },
     spliceDate(fullDate) {
