@@ -20,8 +20,9 @@ const selectLoginByEmployeeNumber = async (employeeNumber, client) => {
             isActive: row.is_active,
             passwordSalt: row.password_salt,
             passwordHash: row.password_hash
-        }
+        };
     }
+    return undefined;
 }
 exports.selectLoginByEmployeeNumber = selectLoginByEmployeeNumber;
 
