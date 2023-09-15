@@ -7,10 +7,10 @@
       </template>
   </v-app-bar>
   <v-navigation-drawer v-if="$vuetify.display.smAndUp || displayDrawer == true" width="200" color="#8b0000" theme="dark" permanent>
-    <p class="ma-5">Bonjour, {{ userSession.user.firstName }}</p>
+    <p class="ma-5">Bonjour, {{ userSession.employee.firstName }}</p>
 
     <!-- Menu de l'admin -->
-    <v-list v-if="userSession.user.isAdmin" color="red">
+    <v-list v-if="userSession.employee.isAdmin" color="red">
       <router-link to="/espace/dashboard" style="text-decoration: none; color: inherit;"><v-list-item
           prepend-icon="mdi-view-dashboard" title="Dashboard" value="dashboard"></v-list-item></router-link>
 
@@ -92,11 +92,11 @@ export default {
   computed: {
     employeeDetailUrl()
     {
-      return "/espace/employee/" + userSession.user.employeeNumber;
+      return "/espace/employee/" + userSession.employee.employeeNumber;
     },
     employeeDetailUrlLeave()
     {
-      return "/espace/leave/" + userSession.user.employeeNumber;
+      return "/espace/leave/" + userSession.employee.employeeNumber;
     },
   }
 };

@@ -1,14 +1,14 @@
 <template>
-    <v-sheet v-if="userSession.user">
+    <v-sheet v-if="userSession.employee.isAdmin || userSession.employee.isSuperAdmin">
         <v-row class="justify-space-between">
-            <EmployeeList v-if="userSession.user.isAdmin" class="h-screen" width="35%"></EmployeeList>
+            <EmployeeList  class="h-screen" width="35%"></EmployeeList>
             <EmployeeInformation v-if="selectedEmployeeNumber" :employeeNumber="selectedEmployeeNumber" class="h-screen" width="65%">
             </EmployeeInformation>
         </v-row>
     </v-sheet>
     <v-sheet v-else>
         <v-row class="m-10 justify-center">
-            <h1>Vous devez etre connecter pour avoir acces a cette page</h1>
+            <h1>Vous devez être connecté et avoir les droits administrateurs pour avoir accès à cette page</h1>
         </v-row>
     </v-sheet>
 </template>

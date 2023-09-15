@@ -84,7 +84,7 @@ app.get('/login',
     if (req.user) {
       
       const employeeDetails = {
-        employeeEmployee: req.user.employeeNumber,
+        employeeNumber: req.user.employeeNumber,
         firstName: req.user.firstName,
         lastName: req.user.lastName,
         isAdmin: req.user.isAdmin,

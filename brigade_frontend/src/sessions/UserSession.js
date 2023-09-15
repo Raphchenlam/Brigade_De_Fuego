@@ -14,7 +14,7 @@ const session = reactive({
 
     initialize() {
         if (sessionStorage.employeeNumber) {
-            this.employee = sessionStorage.employeeNumber;
+            this.employeeNumber = sessionStorage.employeeNumber;
         }
         if (sessionStorage.password) {
             this.password = sessionStorage.password;
