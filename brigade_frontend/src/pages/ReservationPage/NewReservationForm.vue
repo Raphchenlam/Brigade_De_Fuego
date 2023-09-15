@@ -16,8 +16,9 @@
                         <v-text-field type="datetime-local" v-model="reservationFullDate" class="ma-2 pre-wrap h-25 w-25"
                             label="Date de la reservation" :rules="[rules.required, rules.dateIsValid]">
                         </v-text-field>
-                        <v-text-field v-model="reservation.peopleCount" width="10px" type="number" :min="1" :max="30" class="shrink ma-2 h-25 w-25"
-                            label="Nombre de personnes" :rules="[rules.required, rules.reservationMaximum, rules.reservationMinimum]">
+                        <v-text-field v-model="reservation.peopleCount" width="10px" type="number" :min="1" :max="30"
+                            class="shrink ma-2 h-25 w-25" label="Nombre de personnes"
+                            :rules="[rules.required, rules.reservationMaximum, rules.reservationMinimum]">
                         </v-text-field>
                     </v-row>
                     <v-textarea class="my-5" v-model="reservation.mention" height="200px" no-resize rows="8"
@@ -169,7 +170,7 @@ export default {
             }).catch(err => {
                 console.error(err);
                 alert(err.message);
-                this.dialogConfirmReservation = false;   
+                this.dialogConfirmReservation = false;
             });
         },
         isBeforeToday(fullDate) {
@@ -201,21 +202,34 @@ export default {
     watch: {
         reservationFullDate() {
             this.dateValid = true;
+            // console.clear();
 
+            //Date management
             const reservationDate = this.spliceDate(this.reservationFullDate);
-            const month = (reservationDate.month < 10 ) ? "0" + reservationDate.month : reservationDate.month;
-            const day = (reservationDate.day < 10 ) ? "0" + reservationDate.day : reservationDate.day;
+            const month = (reservationDate.month < 10) ? "0" + reservationDate.month : reservationDate.month;
+            const day = (reservationDate.day < 10) ? "0" + reservationDate.day : reservationDate.day;
             this.reservation.date = reservationDate.year + "-" + month + "-" + day;
-            this.reservation.startTime = reservationDate.hour + ":" + reservationDate.minute;
+            // console.log("this.reservation.date  :  " + this.reservation.date);
+
+            //Start time management
+            const startTimeHours = (reservationDate.hour < 10) ? "0" + reservationDate.hour : reservationDate.hour;
+            const startTimeMinutes = (reservationDate.minute < 10) ? "0" + reservationDate.minute : reservationDate.minute;
+            this.reservation.startTime = startTimeHours + ":" + startTimeMinutes;
+            // console.log("this.reservation.startTime  :  " + this.reservation.startTime);
+
+            //End time management
             let endHour = reservationDate.hour + 3;
             let endMinute = reservationDate.minute;
-            console.log("endMinute", endMinute); //verifier pour 00 a 09 car pourrait etre problematique ( affiche 5:2 au lieu de 5:02)
             if (endHour >= 24) {
                 endHour = 23;
                 endMinute = 59;
             }
-            this.reservation.endTime = endHour.toString() + ":" + endMinute.toString();
+            const endTimeHours = (endHour < 10) ? "0" + endHour : endHour.toString();
+            const endTimeMinutes = (endMinute < 10) ? "0" + endMinute : endMinute.toString();
+            this.reservation.endTime = endTimeHours + ":" + endTimeMinutes;
+            // console.log("this.reservation.endTime  :  " + this.reservation.endTime);
 
+            //Date validation
             this.dateValid = !this.isBeforeToday(this.reservationFullDate);
             if (reservationDate.hour < 11 || reservationDate.hour >= 23) {
                 this.dateValid = false;
@@ -243,6 +257,12 @@ export default {
                 && !!this.reservation.startTime
                 && !!this.reservation.endTime);
         }
+    },
+    mounted() {
+        const today = new Date().toISOString().split("T")[0];
+        const explodedNow = new Date().toLocaleTimeString().split(":")
+        const now = explodedNow[0] + ":" + (parseInt(explodedNow[1]) + 5);
+        this.reservationFullDate =  today+ "T" + now;
     }
 }
 </script>
