@@ -1,7 +1,7 @@
 <template>
-    <v-sheet v-if="userSession.employee">
+    <v-sheet v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)">
         <v-row>
-            <LeaveList v-if="userSession.employee.isAdmin || userSession.employee.isSuperAdmin"></LeaveList>
+            <LeaveList v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)"></LeaveList>
         </v-row>
     </v-sheet>
     <v-sheet v-else>
@@ -13,11 +13,22 @@
 
 <script>
 
+import userSession from "../../sessions/UserSession"
 import LeaveList from './LeaveList.vue';
 
 export default {
     components: {
         LeaveList
+    },
+    data() {
+        return{
+            userSession: userSession
+        }
+    },
+    mounted() {
+        if(!userSession.employee){
+            this.$router.push('/espace');
+        }
     }
 }
 

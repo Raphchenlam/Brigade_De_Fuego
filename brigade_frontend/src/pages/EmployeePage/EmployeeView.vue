@@ -1,7 +1,7 @@
 <template>
-    <v-sheet v-if="userSession.employee.isAdmin || userSession.employee.isSuperAdmin">
+    <v-sheet v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)">
         <v-row class="justify-space-between">
-            <EmployeeList  class="h-screen" width="35%"></EmployeeList>
+            <EmployeeList v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)" class="h-screen" width="35%"></EmployeeList>
             <EmployeeInformation v-if="selectedEmployeeNumber" :employeeNumber="selectedEmployeeNumber" class="h-screen" width="65%">
             </EmployeeInformation>
         </v-row>
@@ -15,7 +15,6 @@
 
 <script>
 import userSession from "../../sessions/UserSession"
-
 import EmployeeList from "./EmployeeList.vue"
 import EmployeeInformation from "./EmployeeInformation.vue"
 
@@ -45,9 +44,9 @@ export default {
     },
     mounted()
     {
-        if (!userSession.user)
+        if (!userSession)
         {
-            this.$router.push('/espace');
+            this.$router.push('/espace/dashboard');
         }
     }
 }

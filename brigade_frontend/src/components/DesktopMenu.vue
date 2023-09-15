@@ -42,7 +42,7 @@
     </v-list>
 
     <!-- Menu de l'employee -->
-    <v-list v-else color="red">
+    <v-list v-if="(userSession.employee && userSession.employee.isActive) && !userSession.employee.isAdmin " color="red">
       <router-link to="/espace/dashboard" style="text-decoration: none; color: inherit;"><v-list-item
           prepend-icon="mdi-view-dashboard" title="Dashboard" value="Dashboard"></v-list-item></router-link>
 

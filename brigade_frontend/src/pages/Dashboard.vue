@@ -1,6 +1,6 @@
 <template>
-<AdminDashboard v-if="userSession.employee && userSession.employee.isActive && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)"></AdminDashboard>
-<EmployeeDashboard v-if="userSession.employee && userSession.employee.isActive && !userSession.employee.isAdmin"></EmployeeDashboard>
+<AdminDashboard v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)"></AdminDashboard>
+<EmployeeDashboard v-if="(userSession.employee && userSession.employee.isActive) && !userSession.employee.isAdmin "></EmployeeDashboard>
 </template>
 
 

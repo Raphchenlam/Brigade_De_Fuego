@@ -1,7 +1,7 @@
 <template>
-    <v-sheet v-if="userSession.employee.isAdmin || userSession.employee.isSuperAdmin">
+    <v-sheet v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)">
         <v-row class="justify-space-between">
-            <EventList class="h-screen" width="35%"></EventList>
+            <EventList v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)" class="h-screen" width="35%"></EventList>
             <EventInformation v-if="selectedEvent" class="h-screen" width="65%"></EventInformation>
         </v-row>
     </v-sheet>
@@ -20,7 +20,6 @@ import EventList from './EventList.vue';
 
 export default {
     components: {
-        userSession,
         EventList,
         EventInformation
     },
@@ -55,7 +54,7 @@ export default {
         };
     },
     mounted() {
-        if (!userSession.user) {
+        if (!userSession.employee) {
             this.$router.push('/espace');
         }
     },
