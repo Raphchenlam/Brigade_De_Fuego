@@ -29,7 +29,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { updateEvent, fetchAllEventType } from '../../services/EventService';
 
 export default {
-    inject: ['closeEditEventDialog', 'loadEventInformation'],
+    inject: ['closeEditEventDialog', 'loadEventInformation', 'toggleUpdateEventList'],
     components: {
         DarkRedButton,
         ResetButton
@@ -78,11 +78,13 @@ export default {
                     isActive: this.isActive
                 }
                 await updateEvent(newEvent);
-                this.closeDialog();
-                this.loadEventInformation();
+
             } catch (err) {
                 console.error(err);
             }
+            this.closeDialog();
+            this.loadEventInformation();
+            this.toggleUpdateEventList()
         }
     },
     async mounted() {

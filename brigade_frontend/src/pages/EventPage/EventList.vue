@@ -2,8 +2,8 @@
   <v-sheet class="pl-10 py-5">
     <v-card class="h-screen">
       <v-row class="mb-0">
-        <v-text-field :autofocus="true" class="ma-2" v-model='search' @input="updateSearchedEvent" hide-details
-          placeholder="Rechercher un événement..." clearable></v-text-field>
+        <v-text-field :autofocus="true" class="ma-2" @input="updateSearchedEvent" v-model='search' hide-details
+          placeholder="Rechercher un événement..."></v-text-field>
         <v-dialog persistent v-model="dialogNewEvent" width="70%">
           <template v-slot:activator="{ props }">
             <div class="ma-2 text-center">
@@ -49,7 +49,7 @@ export default {
     NewEventForm,
     BlackButton
   },
-  inject: ['loadEvent'],
+  inject: ['loadEvent', 'needUpdateEventList', 'toggleUpdateEventList'],
   data() {
     return {
       search: null,
@@ -59,7 +59,7 @@ export default {
       eventTypeList: [],
       eventTypeShowed: "Tous",
       dialogNewEvent: false,
-      activeEventFilter: "Tous"
+      activeEventFilter: "Tous",
     };
   },
 
@@ -87,6 +87,9 @@ export default {
     },
     updateSearchedEvent() {
       this.eventList = [];
+      if (this.search == null) {
+        this.search = "";
+      }
       fetchAllEvents().then(allEventList => {
         allEventList.forEach(event => {
           if (event.name.toUpperCase().indexOf(this.search.toUpperCase()) >= 0) {
@@ -140,7 +143,7 @@ export default {
     closeNewEventDialog() {
       this.dialogNewEvent = false;
     },
-
+    
   },
 
 
@@ -163,7 +166,12 @@ export default {
       }else{
         this.updateEventList();
       }
+    },
+    needUpdateEventList() {
+      this.updateEventList();
+      //setTimeout(this.toggleUpdateEventList,500);
     }
+
   },
 
   mounted() {

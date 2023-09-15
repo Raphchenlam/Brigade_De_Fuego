@@ -70,7 +70,6 @@ export default {
             if (this.needUpdateEvent) {
                 this.toggleUpdateEvent();
             }
-            this.needUpdateEvent = false;
         },
         loadEventInformation() {
             if (this.eventToDisplay) {
