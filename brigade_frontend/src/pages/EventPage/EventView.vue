@@ -13,12 +13,11 @@ import EventList from './EventList.vue';
 
 export default {
     components: {
-    userSession,
-    EventList,
-    EventInformation
-},
-    data()
-    {
+        userSession,
+        EventList,
+        EventInformation
+    },
+    data() {
         return {
             userSession: userSession,
             selectedEvent: null,
@@ -26,28 +25,24 @@ export default {
         }
     },
     methods: {
-        loadEvent(eventName)
-        {
-            this.selectedEvent = eventName
+        loadEvent(selectedEvent) {
+            this.selectedEvent = selectedEvent;
         },
-        toggleUpdateEvent(){
+        toggleUpdateEvent() {
             this.updateEvent = !this.updateEvent;
         }
     },
-    provide()
-    {
+    provide() {
         return {
             loadEvent: this.loadEvent,
             toggleUpdateEvent: this.toggleUpdateEvent,
-            eventDisplay: computed(()=>this.selectedEvent),
-            needUpdateEvent:computed(()=>this.updateEvent)
+            eventToDisplay: computed(() => this.selectedEvent),
+            needUpdateEvent: computed(() => this.updateEvent)
 
         };
     },
-    mounted()
-    {
-        if (!userSession.user)
-        {
+    mounted() {
+        if (!userSession.user) {
             this.$router.push('/espace');
         }
     },
