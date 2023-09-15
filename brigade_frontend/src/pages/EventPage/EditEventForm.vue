@@ -18,21 +18,8 @@
                 <v-checkbox v-model="isActive" label="Actif"></v-checkbox>
                 <DarkRedButton class="mx-5 ma-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
                 <DarkRedButton class="mx-5 ma-5 w-25" textbutton="Enregistrer" @click="submitupdatedEvent()">
-                     </DarkRedButton>
+                </DarkRedButton>
             </v-row>
-            
-            <!-- <v-text-field disabled v-model="name" label="Nom de levenement" density="compact" clearable>
-            </v-text-field>
-            <v-row>
-                <v-text-field v-model="impact" dense type="number" class="ma-2" label="Impact" clearable>
-                </v-text-field>
-                <v-select v-model="eventType" label="Type devenement" :items="eventTypes"></v-select>
-            </v-row>
-            <v-checkbox v-model="isActive" label="Actif"></v-checkbox>
-            <v-row class="justify-center">
-                <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton class="mx-5" textbutton="Sauvegarder" @click="submitupdatedEvent"></DarkRedButton>
-            </v-row> -->
         </v-form>
     </div>
 </template>
@@ -42,60 +29,62 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { updateEvent, fetchAllEventType } from '../../services/EventService';
 
 export default {
-    inject: ['closeEditEventDialog'],
+    inject: ['closeEditEventDialog', 'loadEventInformation', 'toggleUpdateEventList'],
     components: {
         DarkRedButton,
         ResetButton
     },
     props: {
         event: {
-            name:String,
-            impact:Number,
-            eventType:String,
-            isActive:Boolean
+            name: String,
+            impact: Number,
+            eventType: String,
+            isActive: Boolean
         }
     },
-    data()
-    {
+    data() {
         return {
             eventTypes: [],
             name: this.event.name,
             impact: this.event.impact,
-            eventType:this.event.eventType,
+            eventType: this.event.eventType,
             isActive: this.event.isActive,
             rules: {
                 requiredEventType: value => !!value || "Un type d'événement doit être sélectionné",
                 maxLengthInput: value => !(value.length > 254) || "Le nom est beaucoup trop long, il doit se limiter à 255 caractères."
-            } 
+            }
         }
     },
     methods: {
-        resetImpact(){
+        resetImpact() {
             this.impact = 100;
         },
 
-        closeDialog()
-        {
+        closeDialog() {
             this.closeEditEventDialog();
         },
-        async submitupdatedEvent(){
+
+        async submitupdatedEvent() {
             const formValid = await this.$refs.editEventForm.validate();
             if (!formValid.valid) {
                 return;
             }
 
             try {
-                const newEvent ={
+                const newEvent = {
                     name: this.name,
-                    impact: this.impact,
-                    eventType:this.eventType,
+                    impact: parseFloat(this.impact.toFixed(2)),
+                    eventType: this.eventType,
                     isActive: this.isActive
                 }
                 await updateEvent(newEvent);
-                this.closeDialog();
+
             } catch (err) {
                 console.error(err);
             }
+            this.closeDialog();
+            this.loadEventInformation();
+            this.toggleUpdateEventList()
         }
     },
     async mounted() {

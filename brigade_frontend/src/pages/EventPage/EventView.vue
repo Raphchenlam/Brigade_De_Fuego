@@ -1,49 +1,54 @@
 <template>
     <v-row class="justify-space-between">
         <EventList class="h-screen" width="35%"></EventList>
-        <EventInformation v-if="selectedEvent" :name="selectedEvent" class="h-screen" width="65%" :updateEvent="updateEvent"></EventInformation>
+        <EventInformation v-if="selectedEvent" class="h-screen" width="65%"></EventInformation>
     </v-row>
 </template>
 
 <script>
+import { computed } from "vue";
 import userSession from "../../sessions/UserSession"
 import EventInformation from "./EventInformation.vue";
 import EventList from './EventList.vue';
 
 export default {
     components: {
-    userSession,
-    EventList,
-    EventInformation
-},
-    data()
-    {
+        userSession,
+        EventList,
+        EventInformation
+    },
+    data() {
         return {
             userSession: userSession,
             selectedEvent: null,
-            updateEvent: false
+            updateEvent: false,
+            updateEventList: false
         }
     },
     methods: {
-        loadEvent(eventName)
-        {
-            this.selectedEvent = eventName
+        loadEvent(selectedEvent) {
+            this.selectedEvent = selectedEvent;
         },
-        toggleUpdateEvent(){
-            this.updateEvent = true;
+        toggleUpdateEvent() {
+            this.updateEvent = !this.updateEvent;
+        },
+        toggleUpdateEventList(){
+            this.updateEventList = !this.updateEventList;
         }
+        
     },
-    provide()
-    {
+    provide() {
         return {
             loadEvent: this.loadEvent,
-            toggleUpdateEvent: this.toggleUpdateEvent
+            toggleUpdateEvent: this.toggleUpdateEvent,
+            eventToDisplay: computed(() => this.selectedEvent),
+            needUpdateEvent: computed(() => this.updateEvent),
+            needUpdateEventList: computed(() =>this.updateEventList),
+            toggleUpdateEventList: this.toggleUpdateEventList
         };
     },
-    mounted()
-    {
-        if (!userSession.user)
-        {
+    mounted() {
+        if (!userSession.user) {
             this.$router.push('/espace');
         }
     },

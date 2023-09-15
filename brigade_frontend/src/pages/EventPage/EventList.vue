@@ -2,7 +2,7 @@
   <v-sheet class="pl-10 py-5">
     <v-card class="h-screen">
       <v-row class="mb-0">
-        <v-text-field class="ma-2" v-model='search' @input="updateSearchedEvent" hide-details
+        <v-text-field :autofocus="true" class="ma-2" @input="updateSearchedEvent" v-model='search' hide-details
           placeholder="Rechercher un événement..."></v-text-field>
         <v-dialog persistent v-model="dialogNewEvent" width="70%">
           <template v-slot:activator="{ props }">
@@ -18,7 +18,16 @@
           </v-card>
         </v-dialog>
       </v-row>
-      <v-select class="w-50" v-model="eventTypeShowed" label="Type d'événement" :items="eventTypeList"></v-select>
+      <v-row>
+        <v-col>
+          <v-select v-model="eventTypeShowed" label="Type d'événement" :items="eventTypeList"></v-select>
+        </v-col>
+        <v-col cols="auto" class="ma-2 pa-2">
+          <v-field-label>Affichage:</v-field-label>
+          <v-switch :label="`${activeEventFilter}`" v-model="activeEventFilter" true-value="Actif" false-value="Tous"
+            inline></v-switch>
+        </v-col>
+      </v-row>
       <div class="text-center ma-5">
         <p>Nombre d'evenements : {{ eventList.length }}</p>
       </div>
@@ -40,7 +49,7 @@ export default {
     NewEventForm,
     BlackButton
   },
-  inject: ['loadEvent'],
+  inject: ['loadEvent', 'needUpdateEventList', 'toggleUpdateEventList'],
   data() {
     return {
       search: null,
@@ -50,6 +59,7 @@ export default {
       eventTypeList: [],
       eventTypeShowed: "Tous",
       dialogNewEvent: false,
+      activeEventFilter: "Tous",
     };
   },
 
@@ -61,7 +71,7 @@ export default {
       updateEventList: this.updateEventList
     };
   },
-  
+
   methods: {
     updateEventTypeList() {
       this.eventTypeList = [];
@@ -77,16 +87,24 @@ export default {
     },
     updateSearchedEvent() {
       this.eventList = [];
+      if (this.search == null) {
+        this.search = "";
+      }
       fetchAllEvents().then(allEventList => {
         allEventList.forEach(event => {
           if (event.name.toUpperCase().indexOf(this.search.toUpperCase()) >= 0) {
-            this.eventList.push(event);
+            if (this.activeEventFilter == "Actif") {
+              if (event.isActive) {
+                this.eventList.push(event);
+              }
+            } else {
+              this.eventList.push(event);
+            }
           }
         })
       }).catch(err => {
         console.error(err);
       });
-     
     },
 
     updateEventList() {
@@ -102,7 +120,13 @@ export default {
                 color: 'red'
               }
             }
-            this.eventList.push(newEvent);
+            if (this.activeEventFilter == "Actif") {
+              if (event.isActive) {
+                this.eventList.push(newEvent);
+              }
+            } else {
+              this.eventList.push(newEvent);
+            }
           }
 
         })
@@ -119,32 +143,35 @@ export default {
     closeNewEventDialog() {
       this.dialogNewEvent = false;
     },
-
+    
   },
 
 
   watch: {
-    // searchEvent() {
-    //   this.eventList.forEach((event) => {
-    //     if (this.search == "") {
-    //       this.updateEventList();
-    //     }
-    //     if (event.name.toUpperCase().indexOf(this.search.toUpperCase() && this.search != "") >= 0) {
-    //       //this.updateEventList();
-    //       this.eventList = [];
-    //       this.eventList.push(event);
-    //     }
-    //   }
-    //   )
-    // },
     eventTypeShowed() {
-      this.updateEventList();
+      if (!!this.search) {
+        this.updateSearchedEvent()
+      }else{
+        this.updateEventList();
+      }
       this.selection[0] = "";
     },
     selection() {
       console.log("Selection changer", this.selection[0]);
       this.loadEvent(this.selection[0]);
+    },
+    activeEventFilter() {
+      if (!!this.search) {
+        this.updateSearchedEvent()
+      }else{
+        this.updateEventList();
+      }
+    },
+    needUpdateEventList() {
+      this.updateEventList();
+      //setTimeout(this.toggleUpdateEventList,500);
     }
+
   },
 
   mounted() {
