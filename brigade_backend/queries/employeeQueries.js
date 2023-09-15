@@ -1,4 +1,5 @@
 const pool = require('./DBPool');
+const HttpError = require('../HTTPError');
 
 const selectLoginByEmployeeNumber = async (employeeNumber, client) => {
     const result = await (client || pool).query(
@@ -9,7 +10,7 @@ const selectLoginByEmployeeNumber = async (employeeNumber, client) => {
     );
 
     const row = result.rows[0];
-    if(row){
+    if (row) {
         return {
             employeeNumber: row.employee_number,
             firstName: row.first_name,
@@ -32,8 +33,7 @@ const selectAllEmployees = async () => {
         ORDER BY first_name`
     );
 
-    return result.rows.map(row =>
-    {
+    return result.rows.map(row => {
         const employee = {
             employeeNumber: row.employee_number,
             firstName: row.first_name,
@@ -45,8 +45,7 @@ const selectAllEmployees = async () => {
 };
 exports.selectAllEmployees = selectAllEmployees;
 
-const selectAllEmployeesByRole = async (role) =>
-{
+const selectAllEmployeesByRole = async (role) => {
     const result = await pool.query(
         `SELECT * from employee
         WHERE role = $1
@@ -54,8 +53,7 @@ const selectAllEmployeesByRole = async (role) =>
         [role]
     );
 
-    return result.rows.map(row =>
-    {
+    return result.rows.map(row => {
         const employee = {
             employeeNumber: row.employee_number,
             firstName: row.first_name,
@@ -67,25 +65,33 @@ const selectAllEmployeesByRole = async (role) =>
 };
 exports.selectAllEmployeesByRole = selectAllEmployeesByRole;
 
-const insertEmployee = async (newEmployee, passwordSalt, passwordHash, clientParam) =>
-{
+const insertEmployee = async (newEmployee, passwordSalt, passwordHash, clientParam) => {
+
     const client = clientParam || await pool.connect();
 
-    const isSuperAdmin = false;
-    const isNewEmployee = true;
-    const isActive = true;
+    try {
+        await client.query('BEGIN');
 
-    const result = await client.query(
-        `INSERT INTO employee(
+        const existingEmployee = await selectLoginByEmployeeNumber(employeeNumber, client);
+        if (existingEmployee) {
+            throw new HttpError(409, `Un employé avec le numéro d'employé ${employeeNumber} existe déjà`);
+        }
+
+        const isSuperAdmin = false;
+        const isNewEmployee = true;
+        const isActive = true;
+
+        const result = await client.query(
+            `INSERT INTO employee(
             employee_number, first_name, last_name, role, color_hexcode, hourly_rate, barcode_number, email, phone_number, is_admin, is_super_admin, is_new_employee, is_active, skill_points, password_salt, password_hash)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
             RETURNING *;`,
-        [newEmployee.employeeNumber, newEmployee.firstName, newEmployee.lastName, newEmployee.role, newEmployee.colorHexCode, newEmployee.hourlyRate, newEmployee.barcodeNumber, newEmployee.email, newEmployee.phoneNumber, newEmployee.isAdmin, isSuperAdmin, isNewEmployee, isActive, newEmployee.skillPoints, passwordSalt, passwordHash]
-    
+            [newEmployee.employeeNumber, newEmployee.firstName, newEmployee.lastName, newEmployee.role, newEmployee.colorHexCode, newEmployee.hourlyRate, newEmployee.barcodeNumber, newEmployee.email, newEmployee.phoneNumber, newEmployee.isAdmin, isSuperAdmin, isNewEmployee, isActive, newEmployee.skillPoints, passwordSalt, passwordHash]
+
         );
 
         const row = result.rows[0];
-        if(row) {
+        if (row) {
             const newEmployee = {
                 employeeNumber: row.employeeNumber,
                 firstName: row.firstName,
@@ -102,16 +108,23 @@ const insertEmployee = async (newEmployee, passwordSalt, passwordHash, clientPar
                 isActive: row.is_active,
                 skillPoints: row.skill_points
             };
+
+            client.query('COMMIT');
+
             return newEmployee;
         }
-
-        throw new Error("L'insertion a échoué pour une raison inconnue");
-};
+    } catch (error) {
+        await client.query("ROLLBACK");
+        throw Error;
+    }
+    // } finally {
+    //     client.release();
+    // }
+}
 
 exports.insertEmployee = insertEmployee;
 
-const selectEmployeeByEmployeeNumber = async (employeeNumber) =>
-{
+const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
     const result = await pool.query(
         `SELECT *
         FROM employee
@@ -142,8 +155,7 @@ const selectEmployeeByEmployeeNumber = async (employeeNumber) =>
 };
 exports.selectEmployeeByEmployeeNumber = selectEmployeeByEmployeeNumber;
 
-const selectEmployeeByBarcodeNumber = async (barcodeNumber) =>
-{
+const selectEmployeeByBarcodeNumber = async (barcodeNumber) => {
     const result = await pool.query(
         `SELECT *
         FROM employee
@@ -152,8 +164,7 @@ const selectEmployeeByBarcodeNumber = async (barcodeNumber) =>
     );
 
     const row = result.rows[0];
-    if (row)
-    {
+    if (row) {
         return {
             employeeNumber: row.employee_number,
             firstName: row.first_name,
@@ -181,7 +192,7 @@ const selectAssignedColorHexcode = async (colorHexCode) => {
     );
 
     const row = result.rows[0];
-    if(row){
+    if (row) {
         return {
             colorHexcode: row.color_hexcode
         };
@@ -199,13 +210,13 @@ const selectUsedPhoneNumber = async (phoneNumber) => {
     );
 
     const row = result.rows[0];
-    if(row){
+    if (row) {
         return {
             firstName: row.first_name,
             lastName: row.last_name,
             phoneNumber: row.phone_number
         }
-        
+
     }
     return undefined;
 };
@@ -221,7 +232,7 @@ const selectUsedEmail = async (email) => {
     );
 
     const row = result.rows[0];
-    if(row){
+    if (row) {
         return {
             email: row.email
         }
@@ -242,7 +253,7 @@ const selectRoleByName = async (roleName) => {
     );
 
     const row = result.rows[0];
-    if(row){
+    if (row) {
         const roleInfo = {
             roleName: row.name,
             team: row.team
@@ -253,14 +264,12 @@ const selectRoleByName = async (roleName) => {
 }
 exports.selectRoleByName = selectRoleByName;
 
-const selectAllRoles = async () =>
-{
+const selectAllRoles = async () => {
     const result = await pool.query(
         `SELECT *
          FROM role`,
     );
-    return result.rows.map(row =>
-    {
+    return result.rows.map(row => {
         const roleInfo = {
             name: row.name,
             team: row.team

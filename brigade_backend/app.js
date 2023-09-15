@@ -20,6 +20,8 @@ const schedulePeriodRouter = require ('./routes/schedulePeriodRouter');
 const sectionRouter = require ('./routes/sectionRouter');
 const tableRouter = require ('./routes/tableRouter');
 
+const employeeQueries = require("./queries/employeeQueries");
+
 
 const app = express();
 
@@ -46,8 +48,8 @@ class BasicStrategyModified extends BasicStrategy {
     }
 };
 
-passport.use(new BasicStrategyModified((user_email, password, cb) => {
-  userAccountQueries.getLoginByUserAccountEmail(user_email).then(login => {
+passport.use(new BasicStrategyModified((employeeNumber, password, cb) => {
+  employeeQueries.selectLoginByEmployeeNumber(employeeNumber).then(login => {
     if (!login || !login.isActive) {
       return cb(null, false);
     }
@@ -78,17 +80,22 @@ passport.use(new BasicStrategyModified((user_email, password, cb) => {
 app.get('/login',
   passport.authenticate('basic', { session: false }),
   (req, res, next) => {
+    //want to change user for employee
     if (req.user) {
-      const userDetails = {
-        userAccountId: req.user.userAccountId,
-        userFullName: req.user.userFullName,
+      
+      const employeeDetails = {
+        employeeEmployee: req.user.employeeNumber,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
         isAdmin: req.user.isAdmin,
+        isSuperAdmin: req.user.isSuperAdmin,
+        isNewEmployee: req.user.isNewEmployee,
         isActive: req.user.isActive
       };
 
-      res.json(userDetails);
+      res.json(employeeDetails);
     } else {
-      return next({ status: 500, message: "Propriété user absente" });
+      return next({ status: 500, message: "Propriété employee absente" });
     }
   }
 );

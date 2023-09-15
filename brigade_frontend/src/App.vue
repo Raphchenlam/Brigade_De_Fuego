@@ -3,7 +3,7 @@
     <OperationMenu
       v-if="$route.fullPath.split('/').slice(1)[0] == 'operation' && ($route.fullPath.split('/').slice(1)[1] || operationSession.isActive == true)">
     </OperationMenu>
-    <EspaceMenu v-if="$route.fullPath.split('/').slice(1)[0] == 'espace' && userSession.user">
+    <EspaceMenu v-if="$route.fullPath.split('/').slice(1)[0] == 'espace' && userSession.employee">
     </EspaceMenu>
     <v-main>
       <router-view class="my-5"></router-view>
