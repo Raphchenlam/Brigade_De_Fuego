@@ -13,13 +13,13 @@
                 <v-card-title>
                     Modfier un evenement
                 </v-card-title>
-                <EditEventForm :event="event" ></EditEventForm>
+                <EditEventForm :event="event"></EditEventForm>
             </v-card>
         </v-dialog>
         <v-divider :thickness="2" class="border-opacity-50"></v-divider>
         <v-sheet class="ma-5">
             <h3> Type : {{ event.eventType }} </h3>
-            <h3> Achalandage : {{ event.impact }}%  </h3>
+            <h3> Achalandage : {{ event.impact }}% </h3>
             <h2>
                 <span v-if="event.isActive" style='color:rgb(3, 211, 3)'>
                     ACTIF
@@ -38,11 +38,8 @@ import EditBlackButton from '../../components/Reusable/EditBlackButton.vue';
 import EditEventForm from './EditEventForm.vue';
 
 export default {
-    
-    props: {
-        name: String,
-        updateEvent: Boolean
-    },
+    inject: ['eventToDisplay', 'needUpdateEvent', 'toggleUpdateEvent'],
+
     components: {
         EditEventForm,
         EditBlackButton
@@ -61,19 +58,26 @@ export default {
     provide() {
         return {
             closeEditEventDialog: this.closeEditEventDialog,
+            loadEventInformation: this.loadEventInformation
         };
     },
     methods: {
-        closeEditEventDialog() {
-            this.dialogEditEvent = false;
+        toggleEditEventDialog() {
+            this.dialogEditEvent = !this.dialogEditEvent;
         },
-        loadEventInformation(name) {
-            if (name) {
-                fetchEventByName(this.name).then(event => {
+        closeEditEventDialog() {
+            this.toggleEditEventDialog();
+            if (this.needUpdateEvent) {
+                this.toggleUpdateEvent();
+            }
+        },
+        loadEventInformation() {
+            if (this.eventToDisplay) {
+                fetchEventByName(this.eventToDisplay).then(event => {
                     this.event.name = event.name,
-                    this.event.eventType = event.eventType,
-                    this.event.impact = event.impact,
-                    this.event.isActive = event.isActive
+                        this.event.eventType = event.eventType,
+                        this.event.impact = event.impact,
+                        this.event.isActive = event.isActive
                 }).catch(err => {
                     console.error(err);
                 })
@@ -83,13 +87,18 @@ export default {
         },
     },
     watch: {
-        name(){
-            this.loadEventInformation(this.name);
+        eventToDisplay() {
+            this.loadEventInformation(this.eventToDisplay);
+        },
+        needUpdateEvent() {
+            if (this.needUpdateEvent) {
+                setTimeout(this.toggleEditEventDialog, 500);
+            }
         }
     },
     mounted() {
-        if (this.name) {
-            this.loadEventInformation(this.name);
+        if (this.eventToDisplay) {
+            this.loadEventInformation(this.eventToDisplay);
         }
     }
 }
