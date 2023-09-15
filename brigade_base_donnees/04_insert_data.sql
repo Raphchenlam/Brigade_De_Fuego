@@ -1,14 +1,14 @@
 -- Insertion dans la table event_type
 INSERT INTO event_type("name")
-	VALUES
-  ('Sportif'),
-  ('Ferié');
+VALUES
+('Sportif'),
+('Ferié');
 
 -- Insertion dans la table event
 INSERT INTO event("name", event_type, impact, is_active)
-	VALUES
-  ('Game du canadien', 'Sportif', 1.4, true),
-  ('Fete des meres', 'Ferié', 2.5, true);
+VALUES
+('Game du canadien', 'Sportif', 1.4, true),
+('Fete des meres', 'Ferié', 2.5, true);
 
 -- Insertion dans la table schedule_week
 INSERT INTO schedule_week ("id", "start_date", "end_date")
@@ -25,7 +25,7 @@ VALUES
 ('Midi', '10:00:00', '16:00:00'),
 ('Soir', '16:00:00', '23:00:00');
 
-  -- Insertion dans la table schedule_period
+-- Insertion dans la table schedule_period
 INSERT INTO schedule_period ("date", shift_name, schedule_week_id, average_traffic, expected_traffic, actual_traffic, average_cost_by_client, required_skill_points, expected_skill_points, scheduled_skill_points)
 VALUES 
 ('2024-10-07', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-07' >= start_date AND '2024-10-07' <= end_date), 100, 100, 0, 50.0, 0, 50, 0),
@@ -70,7 +70,6 @@ VALUES
 ('Refusé'),
 ('Approuvé');
 
-
 -- Insertion dans la table employee
 INSERT INTO employee (employee_number, first_name, last_name, "role", color_hexcode, hourly_rate, barcode_number, email, phone_number, is_admin, is_super_admin, is_new_employee, is_active, skill_points, password_salt, password_hash)
 VALUES 
@@ -81,7 +80,6 @@ VALUES
 (5555, 'Janette', 'Smithers', 'Hotesse', '#3355FF', 35.0, '6547598653454321', 'janette@example.com', '456-654-3210', false, false, true, true, 5, 'salt456', 'hash456'),
 (6666,'Bobby', 'Doolittle', 'Serveur', '#FF5733', 30.0, '8964588639576560', 'johnny@example.com', '987-852-7890', false, false, false, true, 6, 'salt123', 'hash123'),
 (7777, 'Annette', 'Shwartz', 'Serveur', '#3355FF', 35.0, '6547598653454784', 'janette@example.com', '125-654-3210', false, false, true, true, 10, 'salt456', 'hash456');
-
 
 -- Insertion dans la table punch
 INSERT INTO punch (employee_number, date_in, punch_in, date_out, punch_out)
@@ -95,7 +93,7 @@ VALUES
 (1111, '2023-09-05', '2023-09-05', 'Maladie', 'Rendez-vous medecin', 'En attente'),
 (2222, '2023-09-10', '2023-09-15', 'Vacance', '1iere semaine de vacance', 'Approuvé');
 
-  -- Insertion dans la table employee+schedule
+-- Insertion dans la table employee+schedule
 INSERT INTO employee_schedule(employee_number, schedule_period_id, start_time, end_time)
 VALUES 
 (1111, 1, '08:00:00', '16:00:00'),
@@ -107,8 +105,7 @@ VALUES
 (3333, 3, '11:00:00', '14:00:00'),
 (2222, 4, '16:00:00', '22:00:00');
 
-
-  -- Insertion dans la table client
+-- Insertion dans la table client
 INSERT INTO client (first_name, last_name, phone_number, allergy, is_favorite, is_blacklisted)
 VALUES 
 ('Alice', 'Aupays', '123-456-7890', null, true, false),
