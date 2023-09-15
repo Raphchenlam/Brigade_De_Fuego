@@ -122,7 +122,7 @@ export default {
                 dateIsValid: () => this.dateValid || "Date non valide\n\t- Ne doit pas etre avant la date d'aujourd'hui\n\t- Ni avant 11h ou apres 23h",
                 reservationMaximum: value => (value >= 1) || "Le nombre de personnes minimum est de 1 pour une seule réservation.",
                 reservationMinimum: value => (value <= 30) || "Le nombre de personnes maximum est de 30 pour une seule réservation.",
-                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.", //Not chatGPT, it's all me (Raph), pls do not touch
+                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
             },
             formValid: true
         }
@@ -203,7 +203,9 @@ export default {
             this.dateValid = true;
 
             const reservationDate = this.spliceDate(this.reservationFullDate);
-            this.reservation.date = reservationDate.year + "-" + reservationDate.month + "-" + reservationDate.day;
+            const month = (reservationDate.month < 10 ) ? "0" + reservationDate.month : reservationDate.month;
+            const day = (reservationDate.day < 10 ) ? "0" + reservationDate.day : reservationDate.day;
+            this.reservation.date = reservationDate.year + "-" + month + "-" + day;
             this.reservation.startTime = reservationDate.hour + ":" + reservationDate.minute;
             let endHour = reservationDate.hour + 3;
             let endMinute = reservationDate.minute;

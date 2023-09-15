@@ -82,14 +82,6 @@ export async function fetchAllEventType() {
 
 };
 
-// export async function verifyExistingEvent(name) {
-//   const existingEvent = await fetchEventByName(name);
-
-//   if (existingEvent) {
-//     return existingEvent;
-//   } else { return undefined }
-// }
-
 export async function createEvent(event) {
 
   const response = await fetch(`/api/event`, {
@@ -108,21 +100,18 @@ export async function createEvent(event) {
   }
 }
 
-// export async function createEvent(event) {
-
-//   const response = fetch(`/api/event`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//       //...session.getAuthHeaders()
-//     },
-//     body: JSON.stringify(event)
-//   });
-
-//   if (response.ok) {
-//     return convertToEvent(await response.json());
-//   } else {
-//     throw await createServiceError(response);
-//   }
-
-// }
+export async function updateEvent(event) {
+  const response = await fetch(`/api/event/${event.name}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      //...session.getAuthHeaders()
+    },
+    body: JSON.stringify(event)
+  });
+  if (response.ok) {
+    return convertToEvent(await response.json());
+  } else {
+    throw await createServiceError(response);
+  }
+}

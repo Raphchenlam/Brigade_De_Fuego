@@ -13,13 +13,13 @@
                 <v-card-title>
                     Modfier un evenement
                 </v-card-title>
-                <EditEventForm></EditEventForm>
+                <EditEventForm :event="event" ></EditEventForm>
             </v-card>
         </v-dialog>
         <v-divider :thickness="2" class="border-opacity-50"></v-divider>
         <v-sheet class="ma-5">
             <h3> Type : {{ event.eventType }} </h3>
-            <h3> Impact : {{ event.impact * 10 }}% de hausse </h3>
+            <h3> Achalandage : {{ event.impact }}%  </h3>
             <h2>
                 <span v-if="event.isActive" style='color:rgb(3, 211, 3)'>
                     ACTIF
@@ -38,8 +38,10 @@ import EditBlackButton from '../../components/Reusable/EditBlackButton.vue';
 import EditEventForm from './EditEventForm.vue';
 
 export default {
+    
     props: {
-        name: String
+        name: String,
+        updateEvent: Boolean
     },
     components: {
         EditEventForm,

@@ -23,6 +23,7 @@ export default {
   provide() {
     return {
       capitalizeWords: this.capitalizeWords,
+      lowFormatingName:this.lowFormatingName,
       formatPhoneNumber: this.formatPhoneNumber,
       spliceDate: this.spliceDate
     }
@@ -62,13 +63,41 @@ export default {
           .replace(/[^a-zA-Z]-[^a-zA-Z]/g, '');
       }
     },
-    formatPhoneNumber(phoneNumber) {
-      const cleanedNumber = phoneNumber.replace(/\D/g, '');
+    lowFormatingName(inputString) {
+      if (inputString) {
+        const words = inputString
+          .replace(/-+/g, '-')
+          .replace(/[^a-zA-Z\d\s-]/g, '')
+          .replace(/\s+/g, ' ')
+          .split(' ')
+          .map(word => {
+            const parts = word.split('-');
+            const capitalizedParts = parts.map(part => {
+              return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+            });
+            return capitalizedParts.join('-');
+          });
 
-      if (cleanedNumber.length <= 10) {
-        return cleanedNumber.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
-      } else {
-        return cleanedNumber.slice(0, 10).replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+        return words
+          .join(' ')
+          .replace(/-\s+/g, '-')
+          .replace(/\s+-/g, '-')
+          .trim()
+          .replace(/^-+|-+$/g, '')
+          .replace(/[^a-zA-Z]-[^a-zA-Z]/g, '');
+      }
+    },
+
+
+    formatPhoneNumber(phoneNumber) {
+      if (phoneNumber) {
+        const cleanedNumber = phoneNumber.replace(/\D/g, '');
+
+        if (cleanedNumber.length <= 10) {
+          return cleanedNumber.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+        } else {
+          return cleanedNumber.slice(0, 10).replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+        }
       }
     },
     spliceDate(fullDate) {

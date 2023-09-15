@@ -11,7 +11,7 @@
                     :items="eventTypes"></v-select>
             </v-row>
             <v-row class="align-center">
-                <v-slider class="ma-2 pa-2" thumb-color="#8b0000" label="Achalandage prevu" :messages="sliderMessage"
+                <v-slider class="ma-2 pa-2" thumb-color="#8b0000" label="Achalandage prévu" :messages="sliderMessage"
                     v-model="event.impact" thumb-label="always" :max="300"></v-slider>
                 <ResetButton @click="resetImpact()"></ResetButton>
             </v-row>
@@ -24,7 +24,7 @@
     </div>
     <v-dialog persistent v-model="dialogConfirmEvent" width="50%">
         <v-card>
-            <NewEventConfirmationForm :name="event.name" :impact="event.impact.toFixed(2)" :eventType="event.eventType">
+            <NewEventConfirmationForm :name="event.name" :impact="parseFloat(event.impact.toFixed(2))" :eventType="event.eventType">
             </NewEventConfirmationForm>
         </v-card>
     </v-dialog>
@@ -90,13 +90,11 @@ export default {
                 return "Fermé (X)"
             }
         },
-
-    },
-    computed: {
         disabledButton(){
             return (this.event.name && this.event.eventType)
         }
     },
+    
     methods: {
         closeDialog() {
             this.closeNewEventDialog();

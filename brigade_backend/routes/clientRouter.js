@@ -35,18 +35,24 @@ router.post("/",
         // }     
 
         const firstName = req.body.firstName;
-        const lastName = req.body.lastName;
-        const phoneNumber = req.body.phoneNumber;
-
         if (!firstName || firstName === "") return next(new HttpError(400, "Le champ prénom est requis"));
-        if (regex) return next(new HttpError(400, "Le champ prénom est requis"));
+        if (!regex.validName2.test(firstName)) return next(new HttpError(400, "Le champ prénom ne respect pas les critères d'acceptation"));
+        if (firstName.length > 255) return next(new HttpError(400, `Le champ prénom ne peux pas dépasser 255 caractères. Il y a ${firstName.length - 255} caractères de trop.`));
+        
+        const lastName = req.body.lastName;
         if (!lastName || lastName === "") return next(new HttpError(400, "Le champ nom de famille est requis"));
+        if (!regex.validName2.test(lastName)) return next(new HttpError(400, "Le champ nom de famille ne respect pas les critères d'acceptation"));
+        if (lastName.length > 255) return next(new HttpError(400, `Le champ nom de famille ne peux pas dépasser 255 caractères. Il y a ${lastName.length - 255} caractères de trop.`));
+        
+        const phoneNumber = req.body.phoneNumber;
         if (!phoneNumber || phoneNumber === "") return next(new HttpError(400, "Le champ numéro de téléphone est requis"));
+        if (!regex.validPhoneNumber.test(phoneNumber)) return next(new HttpError(400, "Le champ numéro de téléphone ne respect pas les critères d'acceptation"));
+        if (phoneNumber.length > 12 || phoneNumber.length < 10) return next(new HttpError(400, `Le champ numéro de téléphone ne peux pas dépasser 10 caractères. Il y a ${phoneNumber.length - 10} caractères de trop.`));
 
         clientQueries.getClientByInformations(firstName, lastName, phoneNumber)
             .then((client) => {
                 if (client) {
-                    throw new HttpError(409, `Un client avec le prénom "${firstName}", le nom "${lastName}" et le numéro de téléphone "${phoneNumber}" existe déjà`);
+                    throw new HttpError(409, `Un client avec le prénom ''${firstName}'', le nom ''${lastName}'' et le numéro de téléphone ''${phoneNumber}'' existe déjà`);
                 }
 
                 const clientInfos = {

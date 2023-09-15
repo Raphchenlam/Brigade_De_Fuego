@@ -68,9 +68,9 @@ export default {
             rules: {
                 required: value => !!value || "Le champ est requis",
                 clientIdUnique: () => this.clientIdUnique || "Cette combinaison d'identifiants est déjà utilisé, veuillez modifié le(s) champs ou consulter le client associé",
-                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.", //Not chatGPT, it's all me (Raph), pls do not touch
-                firstNameValidation: value => validName.test(value) || 'Le champ prénom ne respecte pas les critères d\'acceptation :   \n\t - Aucune lettre seule\n\t - La 1ere lettre de chaque mot en majuscule\n\t - Ne pas excéder 255 caractères',
-                lastNameValidation: value => validName.test(value) || 'Le champ nom de famille ne respecte pas les critères d\'acceptation.',
+                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
+                firstNameValidation: value => validName.test(value) || 'Le champ prénom ne respecte pas les critères d\'acceptation :   \n\t - Aucune lettre seule\n\t - La 1ere lettre de chaque mot en majuscule\n\t - Ne pas excéder 255 caractères\n\t - Aucun accents',
+                lastNameValidation: value => validName.test(value) || 'Le champ nom de famille ne respecte pas les critères d\'acceptation :   \n\t - Aucune lettre seule\n\t - La 1ere lettre de chaque mot en majuscule\n\t - Ne pas excéder 255 caractères\n\t - Aucun accents',
                 phoneNumberValidation: value => validPhoneNumber.test(value) || 'Le champ numéro de téléphone ne respecte pas les critères d\'acceptation.',
             },
             clientIdUnique: true,

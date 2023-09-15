@@ -2,7 +2,8 @@
   <v-sheet class="pl-10 py-5">
     <v-card class="h-screen">
       <v-row class="mb-0">
-        <v-text-field class="ma-2" v-model="search" hide-details placeholder="Rechercher un événement..."></v-text-field>
+        <v-text-field class="ma-2" v-model='search' @input="updateSearchedEvent" hide-details
+          placeholder="Rechercher un événement..."></v-text-field>
         <v-dialog persistent v-model="dialogNewEvent" width="70%">
           <template v-slot:activator="{ props }">
             <div class="ma-2 text-center">
@@ -39,11 +40,10 @@ export default {
     NewEventForm,
     BlackButton
   },
-  inject:['loadEvent'], 
-  data()
-  {
+  inject: ['loadEvent'],
+  data() {
     return {
-      search: "",
+      search: null,
       selection: [],
       eventList: [],
       allEventList: [],
@@ -54,60 +54,51 @@ export default {
   },
 
 
-  provide()
-  {
+  provide() {
     return {
       closeNewEventDialog: this.closeNewEventDialog,
       updateEventTypeShowed: this.updateEventTypeShowed,
       updateEventList: this.updateEventList
     };
   },
-  // computed: {
-  //   searchEvent() {
-  //     this.eventList.forEach((event) => {
-  //       // if (this.search == "") {
-  //       //   this.updateEventList();
-  //       // }
-  //       if (event.name.toUpperCase().indexOf(this.search.toUpperCase() && this.search != "") >= 0) {
-  //         // this.updateEventList();
-  //         this.eventList = [];
-  //         this.eventList.push(event);
-  //       }
-  //     })
-  //   },
-  // },
+  
   methods: {
-    updateEventTypeList()
-    {
+    updateEventTypeList() {
       this.eventTypeList = [];
-      fetchAllEventType().then(allEventType =>
-      {
+      fetchAllEventType().then(allEventType => {
         this.eventTypeList.push("Tous");
-        allEventType.forEach((eventType) =>
-        {
+        allEventType.forEach((eventType) => {
           this.eventTypeList.push(eventType);
         })
       })
-        .catch(err =>
-        {
+        .catch(err => {
           console.error(err);
         });
     },
-
-    updateEventList()
-    {
+    updateSearchedEvent() {
       this.eventList = [];
-      fetchAllEvents().then(allEventList =>
-      {
-        allEventList.forEach((event) =>
-        {
-          if (this.eventTypeShowed == "Tous" || this.eventTypeShowed == event.eventType)
-          {
-            const newEvent={
-              name:event.name,
-              eventType:event.eventType,
-              impact:event.impact,
-              props:{
+      fetchAllEvents().then(allEventList => {
+        allEventList.forEach(event => {
+          if (event.name.toUpperCase().indexOf(this.search.toUpperCase()) >= 0) {
+            this.eventList.push(event);
+          }
+        })
+      }).catch(err => {
+        console.error(err);
+      });
+     
+    },
+
+    updateEventList() {
+      this.eventList = [];
+      fetchAllEvents().then(allEventList => {
+        allEventList.forEach((event) => {
+          if (this.eventTypeShowed == "Tous" || this.eventTypeShowed == event.eventType) {
+            const newEvent = {
+              name: event.name,
+              eventType: event.eventType,
+              impact: event.impact,
+              props: {
                 color: 'red'
               }
             }
@@ -116,37 +107,47 @@ export default {
 
         })
       })
-        .catch(err =>
-        {
+        .catch(err => {
           console.error(err);
         })
     },
 
-    updateEventTypeShowed(newEventType)
-    {
+    updateEventTypeShowed(newEventType) {
       this.eventTypeShowed = newEventType;
       this.updateEventList();
     },
-    closeNewEventDialog()
-    {
+    closeNewEventDialog() {
       this.dialogNewEvent = false;
     },
+
   },
+
+
   watch: {
-    eventTypeShowed()
-    {
+    // searchEvent() {
+    //   this.eventList.forEach((event) => {
+    //     if (this.search == "") {
+    //       this.updateEventList();
+    //     }
+    //     if (event.name.toUpperCase().indexOf(this.search.toUpperCase() && this.search != "") >= 0) {
+    //       //this.updateEventList();
+    //       this.eventList = [];
+    //       this.eventList.push(event);
+    //     }
+    //   }
+    //   )
+    // },
+    eventTypeShowed() {
       this.updateEventList();
-      this.selection = "";
+      this.selection[0] = "";
     },
-    selection()
-    {
-      console.log("Selection changer", this.selection[0] );
+    selection() {
+      console.log("Selection changer", this.selection[0]);
       this.loadEvent(this.selection[0]);
     }
   },
 
-  mounted()
-  {
+  mounted() {
     this.eventTypeShowed = "Tous"
     this.updateEventTypeList();
     this.updateEventList();
@@ -155,7 +156,9 @@ export default {
 </script>
 
 
-<style scoped>.v-list {
+<style scoped>
+.v-list {
   height: 400px;
   overflow-y: auto
-}</style>
+}
+</style>
