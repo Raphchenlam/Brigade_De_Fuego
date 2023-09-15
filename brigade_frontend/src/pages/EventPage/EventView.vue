@@ -21,7 +21,8 @@ export default {
         return {
             userSession: userSession,
             selectedEvent: null,
-            updateEvent: false
+            updateEvent: false,
+            updateEventList: false
         }
     },
     methods: {
@@ -30,15 +31,20 @@ export default {
         },
         toggleUpdateEvent() {
             this.updateEvent = !this.updateEvent;
+        },
+        toggleUpdateEventList(){
+            this.updateEventList = !this.updateEventList;
         }
+        
     },
     provide() {
         return {
             loadEvent: this.loadEvent,
             toggleUpdateEvent: this.toggleUpdateEvent,
             eventToDisplay: computed(() => this.selectedEvent),
-            needUpdateEvent: computed(() => this.updateEvent)
-
+            needUpdateEvent: computed(() => this.updateEvent),
+            needUpdateEventList: computed(() =>this.updateEventList),
+            toggleUpdateEventList: this.toggleUpdateEventList
         };
     },
     mounted() {
