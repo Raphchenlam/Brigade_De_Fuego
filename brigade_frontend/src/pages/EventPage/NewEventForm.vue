@@ -2,8 +2,8 @@
     <div class="ma-2" width="auto">
         <v-form class="pa-10" validate-on="blur lazy" ref="createEventForm">
             <v-row>
-                <v-text-field class="ma-2" v-model.trim="event.name" label="Nom de l'événement"
-                   @blur="capitalizeName" :rules="[rules.requiredName, rules.maxLengthInput]" clearable>
+                <v-text-field :autofocus="true" class="ma-2" v-model.trim="event.name" label="Nom de l'événement" @blur="capitalizeName"
+                    :rules="[rules.requiredName, rules.maxLengthInput]" clearable>
                 </v-text-field>
             </v-row>
             <v-row>
@@ -17,14 +17,16 @@
             </v-row>
             <v-row class="justify-end">
                 <DarkRedButton class="mx-5 ma-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton :disabled="!disabledButton" class="mx-5 ma-5 w-25" textbutton="Enregistrer" @click="toggleEventConfirmationDialog()">
-                     </DarkRedButton>
+                <DarkRedButton :disabled="!disabledButton" class="mx-5 ma-5 w-25" textbutton="Enregistrer"
+                    @click="toggleEventConfirmationDialog()">
+                </DarkRedButton>
             </v-row>
         </v-form>
     </div>
     <v-dialog persistent v-model="dialogConfirmEvent" width="50%">
         <v-card>
-            <NewEventConfirmationForm :name="event.name" :impact="parseFloat(event.impact.toFixed(2))" :eventType="event.eventType">
+            <NewEventConfirmationForm :name="event.name" :impact="parseFloat(event.impact.toFixed(2))"
+                :eventType="event.eventType">
             </NewEventConfirmationForm>
         </v-card>
     </v-dialog>
@@ -37,7 +39,7 @@ import NewEventConfirmationForm from './NewEventConfirmationForm.vue';
 
 
 export default {
-    inject: ['closeNewEventDialog','capitalizeWords'],
+    inject: ['closeNewEventDialog', 'lowFormatingName'],
     components: {
         DarkRedButton,
         NewEventConfirmationForm,
@@ -58,7 +60,7 @@ export default {
             },
             eventTypes: [],
             dialogConfirmEvent: false,
-        
+
             rules: {
                 requiredName: value => !!value || "L'événement doit avoir un nom",
                 requiredEventType: value => !!value || "Un type d'événement doit être sélectionné",
@@ -90,20 +92,20 @@ export default {
                 return "Fermé (X)"
             }
         },
-        disabledButton(){
+        disabledButton() {
             return (this.event.name && this.event.eventType)
         }
     },
-    
+
     methods: {
         closeDialog() {
             this.closeNewEventDialog();
         },
-        resetImpact(){
+        resetImpact() {
             this.event.impact = 100;
         },
-        capitalizeName(){
-            this.event.name = this.capitalizeWords(this.event.name);
+        capitalizeName() {
+            this.event.name = this.lowFormatingName(this.event.name);
         },
         async toggleEventConfirmationDialog() {
             const formValid = await this.$refs.createEventForm.validate();
