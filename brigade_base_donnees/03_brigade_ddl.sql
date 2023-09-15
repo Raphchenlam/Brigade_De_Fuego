@@ -21,13 +21,12 @@ CREATE TABLE event_type (
   "name" varchar(255) NOT NULL, 
   PRIMARY KEY ("name"));
 
-CREATE TABLE event (
-  id         SERIAL NOT NULL, 
+CREATE TABLE event ( 
   "name"     varchar(255) NOT NULL, 
   event_type varchar(255) NOT NULL REFERENCES event_type("name"), 
   impact     float4 NOT NULL, 
   is_active  bool NOT NULL,
-  PRIMARY KEY (id));
+  PRIMARY KEY ("name"));
 
 CREATE TABLE schedule_week (
   id           varchar(255) NOT NULL, 
@@ -61,8 +60,8 @@ CREATE TABLE schedule_period (
 
 CREATE TABLE schedule_event (
   schedule_period_id int4 NOT NULL REFERENCES schedule_period("id"), 
-  event_id           int4 NOT NULL REFERENCES "event"("id"), 
-  PRIMARY KEY (schedule_period_id, event_id));
+  event_name           varchar(255) NOT NULL REFERENCES "event"("name"), 
+  PRIMARY KEY (schedule_period_id, event_name));
 
 CREATE TABLE role (
   "name" varchar(255) NOT NULL, 

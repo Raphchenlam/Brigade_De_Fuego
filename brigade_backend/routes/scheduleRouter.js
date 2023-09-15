@@ -20,7 +20,11 @@ router.get("/:scheduleweekid",
             {
                 if (scheduleWeek)
                 {
-                    res.json(scheduleWeek);
+                    scheduleQueries.getAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(allScheduledPeriod =>
+                    {
+                        res.json(allScheduledPeriod);
+                    })
+
                 } else
                 {
                     const week = findAllDayOfAWeek(scheduleWeekId);
@@ -29,6 +33,7 @@ router.get("/:scheduleweekid",
                     {
                         if (result)
                         {
+                            console.log("result",result)
                             res.json(result);
                         }
                         else
@@ -44,6 +49,51 @@ router.get("/:scheduleweekid",
             });
     }
 );
+
+
+router.get('/:scheduleweekid/employee',
+    (req, res, next) =>
+    {
+        const scheduleWeekId = req.params.scheduleweekid;
+
+        if (!scheduleWeekId) { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
+
+        scheduleQueries.selectAllEmployeesScheduleByScheduleWeekId(scheduleWeekId).then(result =>
+        {
+            employeeList = [];
+            result.forEach(element =>
+            {
+
+                let found = employeeList.find(({ employeeNumber }) => employeeNumber == element.employeeNumber);
+
+                if (!found)
+                {
+                    const employee = {
+                        employeeNumber: element.employeeNumber,
+                        name: element.name,
+                        role: element.role,
+                        schedules: []
+                    }
+                    employeeList.push(employee);
+                    found = employee;
+                }
+                const schedule = {
+                    id: element.id,
+                    date: element.date,
+                    shiftName: element.shiftName,
+                    startTime: element.startTime,
+                    endTime: element.endTime,
+                    time: element.time
+                }
+                found.schedules.push(schedule);
+            });
+
+            res.json(employeeList);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
 
 router.post("/",
 

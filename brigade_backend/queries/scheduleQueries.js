@@ -25,6 +25,77 @@ const getScheduleWeekInfoByID = async (scheduleWeekId) =>
 };
 exports.getScheduleWeekInfoByID = getScheduleWeekInfoByID;
 
+const getAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
+{
+    const scheduleObj = await pool.query(
+        `SELECT *
+        FROM schedule_period
+        WHERE schedule_week_id = $1`,
+        [scheduleWeekId]
+    )
+
+    return scheduleObj.rows.map(row => {
+        const schedulePeriodObj = {
+            id: row.id,
+            date: row.date,
+            shiftName: row.shift_name,
+            scheduleWeekId: row.schedule_week_id,
+            averageTraffic: row.average_traffic,
+            expectedTraffic: row.expected_traffic,
+            actualTraffic: row.actual_traffic,
+            averageCostByClient: row.average_cost_by_client,
+            requiredSkillPoints: row.required_skill_points,
+            expectedSkillPoints: row.expected_skill_points,
+            scheduledSkillPoints: row.scheduled_skill_points
+        };
+        return schedulePeriodObj;
+    });
+};
+exports.getAllSchedulePeriodsByScheduleWeekID = getAllSchedulePeriodsByScheduleWeekID;
+
+
+const selectAllEmployeesScheduleByScheduleWeekId = async (scheduleWeekId) =>
+{
+    /* const result = await pool.query(
+        `SELECT first_name || ' ' || last_name AS name, e.role, es.*, sp.*
+        FROM schedule_week as sw
+        JOIN schedule_period as sp ON sp.schedule_week_id = sw.id
+        JOIN employee_schedule as es ON es.schedule_period_id = sp.id
+        JOIN employee as e ON e.employee_number = es.employee_number
+        WHERE sw.id = $1`,
+        [scheduleWeekId]
+    ); */
+
+    const result = await pool.query(
+        `SELECT first_name || ' ' || last_name AS name, e.role, es.*, sp.*
+        FROM schedule_week as sw
+        JOIN schedule_period as sp ON sp.schedule_week_id = sw.id
+        JOIN employee_schedule as es ON es.schedule_period_id = sp.id
+        JOIN employee as e ON e.employee_number = es.employee_number
+        WHERE sw.id = $1`,
+        [scheduleWeekId]
+    );
+
+    return result.rows.map(row =>
+    {
+        const employeeSchedule = {
+            id: row.id,
+            employeeNumber: row.employee_number,
+            name: row.name,
+            role: row.role,
+            date: row.date,
+            shiftName : row.shift_name,
+            startTime: row.start_time,
+            endTime: row.end_time,
+            time: row.start_time + "-" + row.end_time
+        };
+        return employeeSchedule;
+    });
+};
+exports.selectAllEmployeesScheduleByScheduleWeekId = selectAllEmployeesScheduleByScheduleWeekId;
+
+
+
 
 const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
 {
@@ -70,7 +141,7 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
 
         const scheduleObj = await client.query(
             `SELECT *
-            FROM public.schedule_period
+            FROM schedule_period
             WHERE schedule_week_id = $1`,
             [row.id]
         )
@@ -79,6 +150,7 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
 
         return scheduleObj.rows.map(row => {
             const schedulePeriodObj = {
+                id: row.id,
                 date: row.date,
                 shiftName: row.shift_name,
                 scheduleWeekId: row.schedule_week_id,
