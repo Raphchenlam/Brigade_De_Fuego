@@ -1,8 +1,15 @@
 <template>
-    <v-row class="justify-space-between">
-        <EventList class="h-screen" width="35%"></EventList>
-        <EventInformation v-if="selectedEvent" class="h-screen" width="65%"></EventInformation>
-    </v-row>
+    <v-sheet v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)">
+        <v-row class="justify-space-between">
+            <EventList v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)" class="h-screen" width="35%"></EventList>
+            <EventInformation v-if="selectedEvent" class="h-screen" width="65%"></EventInformation>
+        </v-row>
+    </v-sheet>
+    <v-sheet v-else>
+        <v-row class="m-10 justify-center">
+            <h1>Vous devez être connecté et avoir les droits administrateurs pour avoir accès à cette page</h1>
+        </v-row>
+    </v-sheet>
 </template>
 
 <script>
@@ -13,7 +20,6 @@ import EventList from './EventList.vue';
 
 export default {
     components: {
-        userSession,
         EventList,
         EventInformation
     },
@@ -32,10 +38,10 @@ export default {
         toggleUpdateEvent() {
             this.updateEvent = !this.updateEvent;
         },
-        toggleUpdateEventList(){
+        toggleUpdateEventList() {
             this.updateEventList = !this.updateEventList;
         }
-        
+
     },
     provide() {
         return {
@@ -43,12 +49,12 @@ export default {
             toggleUpdateEvent: this.toggleUpdateEvent,
             eventToDisplay: computed(() => this.selectedEvent),
             needUpdateEvent: computed(() => this.updateEvent),
-            needUpdateEventList: computed(() =>this.updateEventList),
+            needUpdateEventList: computed(() => this.updateEventList),
             toggleUpdateEventList: this.toggleUpdateEventList
         };
     },
     mounted() {
-        if (!userSession.user) {
+        if (!userSession.employee) {
             this.$router.push('/espace');
         }
     },

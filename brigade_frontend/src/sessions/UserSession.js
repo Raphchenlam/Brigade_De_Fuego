@@ -14,7 +14,7 @@ const session = reactive({
 
     initialize() {
         if (sessionStorage.employeeNumber) {
-            this.employee = sessionStorage.employeeNumber;
+            this.employeeNumber = sessionStorage.employeeNumber;
         }
         if (sessionStorage.password) {
             this.password = sessionStorage.password;
@@ -25,7 +25,7 @@ const session = reactive({
     },
     login(employeeNumber, password) {
         this.setCredentials(employeeNumber, password);
-        return this.fetchUser();
+        return this.fetchEmployee();
     },
     setCredentials(employeeNumber, password) {
         this.employeeNumber = employeeNumber;
@@ -56,7 +56,7 @@ const session = reactive({
             this.employee = employee;
             return employee;
         } else {
-            this.user = null;
+            this.employee = null;
             if (response.status === 401) {
                 throw new AuthError(response.status, "Numéro d'employé ou mot de passe incorrect");
             } else {
@@ -74,35 +74,6 @@ const session = reactive({
             return {};
         }
     }
-    // async createUserAccount(userAccountEmail, userFullName, password) {
-    //     const response = await fetch("/api/login", {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json"
-    //         },
-    //         body: JSON.stringify({
-    //             courrielUtilisateur: userAccountEmail,
-    //             nomComplet: userFullName,
-    //             password: password
-    //         })
-    //     });
-
-    //     if (response.ok) {
-    //         const user = await response.json();
-    //         return user;
-    //     } else {
-    //         this.user = null;
-    //         if (response.status === 409) {
-    //             const respBody = await response.json();
-    //             if (respBody && respBody.message) {
-    //                 throw new AuthError(response.status, respBody.message);
-    //             }
-    //             throw new AuthError(response.status, "Erreur lors de la création du compte");
-    //         } else {
-    //             throw new AuthError(response.status, "Erreur lors de la création du compte: " + response.status);
-    //         }
-    //     }
-    // },
 });
 
 export default session;
