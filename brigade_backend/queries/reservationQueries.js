@@ -134,11 +134,15 @@ const getReservationListByDates = async (startDate, endDate) => {
 
 
     results = await pool.query(
-        `SELECT * FROM reservation AS r
-            JOIN client AS c ON r.client_id = c.id
-            JOIN employee AS e ON r.taken_by = e.barcode_number
-            WHERE date >= $1 AND date <= $2
-            ORDER BY date ASC`,
+        `SELECT 
+            r.id, r.table_number, r.client_id, r.status_code, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by,
+            c.first_name AS client_first_name, c.last_name AS client_last_name, c.phone_number AS client_phone_number, c.allergy, c.is_favorite, c.is_blacklisted,
+            e.barcode_number AS employee_barcode_number, e.first_name AS employee_first_name, e.last_name AS employee_last_name, e.role AS employee_role
+            FROM reservation AS r
+                JOIN client AS c ON r.client_id = c.id
+                JOIN employee AS e ON r.taken_by = e.barcode_number
+                WHERE date >= $1 AND date <= $2
+                ORDER BY date ASC`,
         [queryStartDate, queryEndDate]);
 
     return results.rows.map((row) => {
@@ -153,7 +157,18 @@ const getReservationListByDates = async (startDate, endDate) => {
             endTime: row.end_time,
             mention: row.mention,
             hasMinor: row.has_minor,
-            takenBy: row.taken_by
+            takenBy: row.taken_by,
+            clientFirstname: row.client_first_name,
+            clientLastname: row.client_last_name,
+            clientPhoneNumber: row.client_phone_number,
+            clientAllergy: row.allergy,
+            clientIsFavorite: row.is_favorite,
+            clientIsBlacklisted: row.is_blacklisted,
+            employeeBarcodeNumber: row.employee_barcode_number,
+            employeeFirstname: row.employee_first_name,
+            employeeLastname: row.employee_last_name,
+            employeeRole: row.employee_role,
+            
         };
 
         return reservation;

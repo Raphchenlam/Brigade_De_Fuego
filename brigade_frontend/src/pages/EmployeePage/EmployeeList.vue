@@ -19,6 +19,7 @@
                 </v-dialog>
             </v-row>
             <v-select class="w-50" v-model="roleShowed" label="Poste" :items="roleList"></v-select>
+
             <v-list v-model:selected='selected' :items="employeeList" item-title="listInformation"
                 item-value="employeeNumber" class="h-75">
             </v-list>
@@ -34,9 +35,7 @@ import EditBlackButton from "../../components/Reusable/EditBlackButton.vue";
 import BlackButton from "../../components/Reusable/BlackButton.vue";
 
 export default {
-    inject: [
-        'loadEmployeeNumber'
-    ],
+    inject: [ 'loadEmployeeNumber' ],
     components: {
         NewEmployeeForm,
         EditBlackButton,
@@ -90,8 +89,7 @@ export default {
                 console.log("AllEMPLOYEE BY ROLE ", allEmployees);
                 allEmployees.forEach(employee => {
                     if (employee.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                        || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
-                    {
+                        || employee.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0) {
                         const newEmployee = {
                             "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName,
                             "employeeNumber": employee.employeeNumber,
@@ -109,8 +107,7 @@ export default {
                 console.error(err);
             });
         },
-        closeNewEmployeeDialog()
-        {
+        closeNewEmployeeDialog() {
             this.dialogNewEmployee = false;
         },
     },
@@ -139,12 +136,10 @@ export default {
 
         getAllRoles().then(allRoles => {
             console.log("ALLROLES", allRoles)
-            allRoles.forEach(role =>
-            {
+            allRoles.forEach(role => {
                 this.roleList.push(role.name);
             });
-        }).catch(err =>
-        {
+        }).catch(err => {
             console.error(err);
         });
     },

@@ -21,27 +21,6 @@ function isDateBeforeToday(dateString) {
     return givenDate < currentDate;
 }
 
-
-router.get("/reservations",
-    (req, res, next) => {
-        const startDate = req.body.startDate;
-        const endDate = req.body.endDate;
-
-        reservationQueries
-            .getReservationListByDates(startDate, endDate)
-            .then((reservationList) => {
-                if (reservationList) {
-                    res.json(reservationList);
-                } else {
-                    return next(new HttpError(404, `Les réservations ${startDate} et ${endDate} sont introuvables`));
-                }
-            })
-            .catch((err) => {
-                return next(err);
-            });
-    }
-);
-
 router.get("/:id",
     (req, res, next) => {
         const id = req.params.id;
@@ -63,6 +42,28 @@ router.get("/:id",
             });
     }
 );
+
+router.get("/:startDate/:endDate",
+    (req, res, next) => {
+        const startDate = req.params.startDate;
+        const endDate = req.params.endDate;
+
+        reservationQueries
+            .getReservationListByDates(startDate, endDate)
+            .then((reservationList) => {
+                if (reservationList) {
+                    res.json(reservationList);
+                } else {
+                    return next(new HttpError(404, `Les réservations ${startDate} et ${endDate} sont introuvables`));
+                }
+            })
+            .catch((err) => {
+                return next(err);
+            });
+    }
+);
+
+
 
 router.post("/",
     (req, res, next) => {
@@ -93,7 +94,7 @@ router.post("/",
         if (peopleCount < 1 || peopleCount > 30) return next(new HttpError(400, "La quantité de personne de la réservation doit être entre 1 et 30."));
 
         const mention = req.body.mention;
-        if(mention) if (mention.length > 255) return next(new HttpError(400, `Le champ mention ne peux pas dépasser 255 caractères. Il y a ${mention.length - 255} caractères de trop.`));
+        if (mention) if (mention.length > 255) return next(new HttpError(400, `Le champ mention ne peux pas dépasser 255 caractères. Il y a ${mention.length - 255} caractères de trop.`));
 
         const newReservation = {
             tableNumber: req.body.tableNumber,

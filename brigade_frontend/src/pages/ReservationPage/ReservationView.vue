@@ -1,7 +1,7 @@
 <template>
   <v-row class="justify-space-around">
     <ReservationList class="h-screen w-50"></ReservationList>
-    <ReservationInformation class="h-screen w-50"></ReservationInformation>
+    <ReservationInformation class="h-screen w-50" v-if="selectedReservationId" :reservationId="selectedReservationId"></ReservationInformation>
   </v-row>
 </template>
     
@@ -19,16 +19,24 @@ export default {
     ReservationList,
     ReservationInformation
   },
-  data()
-  {
+  data() {
     return {
-      operationSession: operationSession
+      operationSession: operationSession,
+      selectedReservationId: null
     }
   },
-  mounted()
-  {
-    if (!operationSession.isActive)
-    {
+  methods: {
+    loadReservation(receivedReservationId) {
+      this.selectedReservationId = receivedReservationId;
+    }
+  },
+  provide() {
+    return {
+      loadReservation: this.loadReservation
+    };
+  },
+  mounted() {
+    if (!operationSession.isActive) {
       this.$router.push('/operation');
     }
   }
