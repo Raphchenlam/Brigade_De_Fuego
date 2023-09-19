@@ -3,7 +3,14 @@
         <v-card class="mr-10 ml-5 h-75">
             <v-dialog v-model="dialogEditReservation" width="100%">
                 <template v-slot:activator="{ props }">
-                    <v-row class="justify-end">
+                    <v-row class="justify-space-between">
+                        <div>
+                            <h1 class="mt-5 ml-10">{{ reservation.firstName + " " + reservation.lastName }}</h1>
+                        </div>
+                        <div>
+                            <h1 class="mt-5 ml-10" :class="{ noTable: !reservation.tableNumber }">{{ reservation.tableNumber
+                                ? "Table #" + reservation.tableNumber : "Aucune Table" }}</h1>
+                        </div>
                         <EditBlackButton class="ma-2" v-bind="props"></EditBlackButton>
                     </v-row>
                     <v-divider class="my-5"></v-divider>
@@ -15,16 +22,26 @@
                     <EditReservationForm :reservationId="reservation.id"></EditReservationForm>
                 </v-card>
             </v-dialog>
-            <p>Numero reservation : {{ reservation.id }}</p>
-            <p>Nom client : {{ reservation.id }}</p>
-            <p>Date: {{ reservation.id }}</p>
-            <p>Heure : {{ reservation.id }}</p>
-            <p>Nombre de personne: {{ reservation.id }}</p>
-            <p>Table : {{ reservation.id }}</p>
-            <p>Mention: {{ reservation.id }}</p>
-            <p>Allergy: {{ reservation.id }}</p>
-            <p>Mineur sur place ? {{ reservation.id }}</p>
-            <p></p>
+            <v-row>
+                <v-col class="ma-5 justify-space-between">
+                    <p :class="{ green: reservation.status == 'Confirmé' }">Status : {{ reservation.status }}</p>
+                    <p>Numero reservation : {{ reservation.id }}</p>
+                    <p>Nombre de personne: {{ reservation.peopleCount }}</p>
+                    <p v-if="reservation.hasMinor"><strong>Mineur sur place !</strong></p>
+                    <p v-if="reservation.isFavorite"><strong>Est un client favoris !</strong></p>
+                </v-col>
+                <v-col class="ma-5 justify-space-between">
+                    <p>Date: {{ reservation.date }}</p>
+                    <p>Heure : {{ reservation.startTime }}</p>
+                    <p v-if="reservation.mention">Mention: {{ reservation.mention }}</p>
+                    <p v-if="reservation.allergy">Allergy: {{ reservation.allergy }}</p>
+                </v-col>
+            </v-row>
+            <v-card class="ma-5 justify-space-between" color="#36454f">
+                <v-card-title v-if="reservation.isBlacklisted" class="red ma-2">
+                    <strong>BLACKLISTED!</strong>
+                </v-card-title>
+            </v-card>
         </v-card>
     </v-sheet>
 </template>
@@ -48,13 +65,12 @@ export default {
         return {
             dialogEditReservation: false,
             reservation: {},
-            receivedId: {}
         };
     },
     watch: {
-        receivedId() {
+        reservationId() {
             console.log("In the res infos watch");
-            this.loadReservation(this.receivedId);
+            this.loadReservation(this.reservationId);
         }
     },
     methods: {
@@ -97,3 +113,19 @@ export default {
 }
 
 </script>
+
+<style scoped>
+.noTable {
+    color: orange
+}
+
+.red {
+    color: red;
+    font-size: 2em;
+    text-align: center
+}
+
+.green {
+    color: green
+}
+</style>

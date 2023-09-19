@@ -1,5 +1,5 @@
 <template>
-  <v-row class="justify-space-around">
+  <v-row class="justify-space-between">
     <ReservationList class="h-screen w-50"></ReservationList>
     <ReservationInformation class="h-screen w-50" v-if="selectedReservationId" :reservationId="selectedReservationId"></ReservationInformation>
   </v-row>
@@ -26,13 +26,13 @@ export default {
     }
   },
   methods: {
-    loadReservation(receivedReservationId) {
+    loadReservationInformations(receivedReservationId) {
       this.selectedReservationId = receivedReservationId;
     }
   },
   provide() {
     return {
-      loadReservation: this.loadReservation
+      loadReservationInformations: this.loadReservationInformations
     };
   },
   mounted() {

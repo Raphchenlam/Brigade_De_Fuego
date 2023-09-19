@@ -49,7 +49,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: [ 'loadReservation' ],
+    inject: ['loadReservationInformations'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -78,18 +78,21 @@ export default {
         shiftShow() {
             this.filterReservations();
         },
-        startDate(){
-            this.loadReservations(this.startDate, this.endDate);
-        },
-        endDate(){
-            this.loadReservations(this.startDate, this.endDate);
-        },
-        reservations(){
+        reservations() {
             this.filterReservations();
         },
-        selected(){
-            this.loadReservation(this.selected[0]);
-        }
+        search(){
+            this.filterReservations();
+        },
+        startDate() {
+            this.loadReservations(this.startDate, this.endDate);
+        },
+        endDate() {
+            this.loadReservations(this.startDate, this.endDate);
+        },
+        selected() {
+            this.loadReservationInformations(this.selected[0]);
+        },
     },
     methods: {
         loadReservations(startDate, endDate) {
@@ -107,6 +110,7 @@ export default {
 
             this.reservations.forEach(reservation => {
                 var reservationtoKeep;
+
                 if (this.shiftShow == "lunch" && parseInt(reservation.startTime.split(':').slice(0)[0]) < 15) {
                     reservationtoKeep = reservation;
                 } else if (this.shiftShow == "dinner" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) {
@@ -116,18 +120,22 @@ export default {
                 }
 
                 if (reservationtoKeep) {
-                    // const allergies = (reservationtoKeep.clientAllergy) ?  ", Allergie(s) : " + reservationtoKeep.clientAllergy : " aucune";
-                    const allergies = (reservationtoKeep.clientAllergy) ?  reservationtoKeep.clientAllergy : " - ";
-                    const reservationToAdd = {
-                        "listInformation": 
-                        reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname + " (" + reservationtoKeep.clientPhoneNumber + ") - " + reservationtoKeep.peopleCount + " personnes - " + reservationtoKeep.date + " à " + reservationtoKeep.startTime + ", Allergie(s) : " + allergies,
-                        ...reservationtoKeep,
-                        props: {
-                            color: 'red',
-                        },
-                    };
+                    if (reservationtoKeep.clientFirstname.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                        || reservationtoKeep.clientLastname.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                        || reservationtoKeep.clientPhoneNumber.indexOf(this.search) >= 0) {
+                        const allergies = (reservationtoKeep.clientAllergy) ? " - Allergie(s) : " + reservationtoKeep.clientAllergy : "";
+                        const reservationToAdd = {
+                            "listInformation":
+                                reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname + " (" + reservationtoKeep.clientPhoneNumber + ") - " + reservationtoKeep.peopleCount + " personnes - " + reservationtoKeep.date + " à " + reservationtoKeep.startTime  + allergies,
+                            ...reservationtoKeep,
+                            props: {
+                                color: 'red',
+                            },
+                        };
 
-                    this.filteredReservationList.push(reservationToAdd);
+                        this.filteredReservationList.push(reservationToAdd);
+                    }
+
                 }
             });
         },
