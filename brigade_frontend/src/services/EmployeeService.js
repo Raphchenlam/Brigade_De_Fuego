@@ -1,5 +1,3 @@
-import session from '../sessions/UserSession';
-
 class ServiceError extends Error {
     constructor(status, message) {
         super(message);

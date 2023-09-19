@@ -21,6 +21,27 @@ function isDateBeforeToday(dateString) {
     return givenDate < currentDate;
 }
 
+
+router.get("/reservations",
+    (req, res, next) => {
+        const startDate = req.body.startDate;
+        const endDate = req.body.endDate;
+
+        reservationQueries
+            .getReservationListByDates(startDate, endDate)
+            .then((reservationList) => {
+                if (reservationList) {
+                    res.json(reservationList);
+                } else {
+                    return next(new HttpError(404, `Les réservations ${startDate} et ${endDate} sont introuvables`));
+                }
+            })
+            .catch((err) => {
+                return next(err);
+            });
+    }
+);
+
 router.get("/:id",
     (req, res, next) => {
         const id = req.params.id;
