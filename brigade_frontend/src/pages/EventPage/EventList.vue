@@ -49,7 +49,7 @@ export default {
     NewEventForm,
     BlackButton
   },
-  inject: ['loadEvent', 'needUpdateEventList', 'toggleUpdateEventList'],
+  inject: ['loadEvent', 'needUpdateEventList', 'toggleUpdateEventList','eventToDisplay'],
   data() {
     return {
       search: null,
@@ -170,6 +170,9 @@ export default {
     needUpdateEventList() {
       this.updateEventList();
       //setTimeout(this.toggleUpdateEventList,500);
+    },
+    eventToDisplay(){
+      this.selection[0] = this.eventToDisplay;
     }
 
   },
