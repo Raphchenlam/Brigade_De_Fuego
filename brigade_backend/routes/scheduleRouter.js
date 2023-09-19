@@ -15,12 +15,12 @@ router.get("/:scheduleweekid",
             return next(new HttpError(400, "Le champ ScheduleWeekId est requis"));
         }
         scheduleQueries
-            .getScheduleWeekInfoByID(scheduleWeekId)
+            .selectScheduleWeekInfoByID(scheduleWeekId)
             .then((scheduleWeek) =>
             {
                 if (scheduleWeek)
                 {
-                    scheduleQueries.getAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(allScheduledPeriod =>
+                    scheduleQueries.selectAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(allScheduledPeriod =>
                     {
                         res.json(allScheduledPeriod);
                     })
@@ -63,7 +63,6 @@ router.get('/:scheduleweekid/employee',
             employeeList = [];
             result.forEach(element =>
             {
-
                 let found = employeeList.find(({ employeeNumber }) => employeeNumber == element.employeeNumber);
 
                 if (!found)
@@ -72,6 +71,7 @@ router.get('/:scheduleweekid/employee',
                         employeeNumber: element.employeeNumber,
                         name: element.name,
                         role: element.role,
+                        skillPoints: element.skillPoints,
                         schedules: []
                     }
                     employeeList.push(employee);
@@ -95,18 +95,9 @@ router.get('/:scheduleweekid/employee',
         });
     });
 
+
 router.post("/",
-
 );
-
-
-
-
-
-
-
-
-
 
 function findAllDayOfAWeek(yearWeek)
 {

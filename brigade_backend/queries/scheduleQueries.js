@@ -1,7 +1,7 @@
 const pool = require('./DBPool');
 
 
-const getScheduleWeekInfoByID = async (scheduleWeekId) =>
+const selectScheduleWeekInfoByID = async (scheduleWeekId) =>
 {
     const result = await pool.query(
         `SELECT * FROM schedule_week
@@ -23,9 +23,9 @@ const getScheduleWeekInfoByID = async (scheduleWeekId) =>
 
     return undefined;
 };
-exports.getScheduleWeekInfoByID = getScheduleWeekInfoByID;
+exports.selectScheduleWeekInfoByID = selectScheduleWeekInfoByID;
 
-const getAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
+const selectAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
 {
     const scheduleObj = await pool.query(
         `SELECT *
@@ -51,23 +51,15 @@ const getAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
         return schedulePeriodObj;
     });
 };
-exports.getAllSchedulePeriodsByScheduleWeekID = getAllSchedulePeriodsByScheduleWeekID;
+exports.selectAllSchedulePeriodsByScheduleWeekID = selectAllSchedulePeriodsByScheduleWeekID;
 
 
 const selectAllEmployeesScheduleByScheduleWeekId = async (scheduleWeekId) =>
 {
-    /* const result = await pool.query(
-        `SELECT first_name || ' ' || last_name AS name, e.role, es.*, sp.*
-        FROM schedule_week as sw
-        JOIN schedule_period as sp ON sp.schedule_week_id = sw.id
-        JOIN employee_schedule as es ON es.schedule_period_id = sp.id
-        JOIN employee as e ON e.employee_number = es.employee_number
-        WHERE sw.id = $1`,
-        [scheduleWeekId]
-    ); */
+
 
     const result = await pool.query(
-        `SELECT first_name || ' ' || last_name AS name, e.role, es.*, sp.*
+        `SELECT first_name || ' ' || last_name AS name, e.role, e.skill_points, es.*, sp.*
         FROM schedule_week as sw
         JOIN schedule_period as sp ON sp.schedule_week_id = sw.id
         JOIN employee_schedule as es ON es.schedule_period_id = sp.id
@@ -83,6 +75,7 @@ const selectAllEmployeesScheduleByScheduleWeekId = async (scheduleWeekId) =>
             employeeNumber: row.employee_number,
             name: row.name,
             role: row.role,
+            skillPoints : row.skill_points,
             date: row.date,
             shiftName : row.shift_name,
             startTime: row.start_time,
@@ -117,8 +110,8 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
             return undefined;
         }
         const row = result.rows[0];
-        console.log("scheduleWeekToInsert", scheduleWeekToInsert)
         let weekIdToInsert;
+        
         for (let day of Object.keys(scheduleWeekToInsert)) 
         {
             if (day == "weekId")
