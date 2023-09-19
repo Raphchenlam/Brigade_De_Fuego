@@ -2,25 +2,32 @@
     <div class="ma-2" width="auto">
         <v-form @submit.prevent="createEmployee" validate-on="blur" ref="newEmployeeForm" class="pa-10">
             <v-row>
-                <v-text-field class="mx-2" label="Numéro Employé" v-model.trim="employee.employeeNumber" clearable
-                    :rules="[rules.required, rules.validateEmployeeNumber]" maxlength="4" :counter="4">
-                </v-text-field>
+                <v-col cols="3">
+                    <v-text-field label="# Employé" v-model.trim="employee.employeeNumber" clearable
+                        :rules="[rules.required, rules.validateEmployeeNumber]" maxlength="4" :counter="4">
+                    </v-text-field>
+                </v-col>
 
-                <v-select :items="roleList" class="mx-2" id="" label="Rôle" v-model.trim="selectedRole"
-                    :rules="[rules.required, rules.validateRole]">
-                </v-select>
-                <v-select :disabled="disableSkillPtsDropDown" :items="skillPointsRange" class="mx-2"
-                    label="Points de compétences" v-model="selectedSkillPoints"
-                    :rules="[rules.required, rules.validateSkillPoints]">
-                </v-select>
+                <v-col cols="4">
+                    <v-select :items="roleList" id="" label="Rôle" v-model.trim="selectedRole"
+                        :rules="[rules.required, rules.validateRole]">
+                    </v-select>
+                </v-col>
+
+                <v-col cols="5">
+                    <v-select :disabled="disableSkillPtsDropDown" :items="skillPointsRange" label="Points de compétences"
+                        v-model="selectedSkillPoints" :rules="[rules.required, rules.validateSkillPoints]">
+                    </v-select>
+                </v-col>
             </v-row>
             <v-row>
-                <v-text-field class="mx-2" label="Code barre (Carte)" v-model.trim="employee.barcodeNumber" clearable
-                    :rules="[rules.required, rules.validateBarcodeNumber]" maxlength="16" :counter="16">
-                </v-text-field>
+                <v-col>
+                    <v-text-field label="Code barre (Carte)" v-model.trim="employee.barcodeNumber" clearable
+                        :rules="[rules.required, rules.validateBarcodeNumber]" maxlength="16" :counter="16">
+                    </v-text-field>
+                </v-col>
             </v-row>
             <v-row>
-                <!-- SUIVRE CETTE STRUCTURE POUR LES AUTRES INPUTS -->
                 <v-col>
                     <v-text-field label="Prénom" v-model.trim="employee.firstName" clearable
                         :rules="[rules.required, rules.validateName]" maxlength="255">
@@ -29,34 +36,48 @@
                 <v-col>
                     <v-text-field label="Nom de famille" v-model.trim="employee.lastName" clearable
                         :rules="[rules.required, rules.validateName]" maxlength="255">
-                    </v-text-field></v-col>
-
+                    </v-text-field>
+                </v-col>
             </v-row>
             <v-row>
-                <v-text-field class="mx-2" label="Numéro de téléphone : xxx-xxx-xxxx" density="compact"
-                    v-model.trim="employee.phoneNumber" clearable :rules="[rules.required, rules.validatePhoneNumber]"
-                    maxlength="12">
-                </v-text-field>
-                <v-text-field class="mx-2" label="Adresse Courriel" density="compact" v-model.trim="employee.email"
-                    clearable :rules="[rules.required, rules.validateEmail]" maxlength="255">
-                </v-text-field>
+                <v-col>
+                    <v-text-field label="Numéro de téléphone : xxx-xxx-xxxx" density="compact"
+                        v-model.trim="employee.phoneNumber" clearable :rules="[rules.required, rules.validatePhoneNumber]"
+                        maxlength="12">
+                    </v-text-field>
+                </v-col>
+                <v-col>
+                    <v-text-field label="Adresse Courriel" density="compact" v-model.trim="employee.email" clearable
+                        :rules="[rules.required, rules.validateEmail]" maxlength="255">
+                    </v-text-field>
+                </v-col>
             </v-row>
             <v-row>
-                <v-text-field class="mx-2" label="Taux Horaire" density="compact" v-model.trim="employee.hourlyRate"
-                    clearable :rules="[rules.required, rules.validateHourlyRate]" maxlength="6">
-                </v-text-field>
-                <v-text-field v-model.trim="employee.colorHexCode" class="mx-2" label="Couleur de l'employé"
-                    density="compact" :rules="[rules.required, rules.validateHexCode]" maxlength="7">
-                </v-text-field>
+                <v-col>
+                    <v-text-field label="Taux Horaire" density="compact" v-model.trim="employee.hourlyRate" clearable
+                        :rules="[rules.required, rules.validateHourlyRate]" maxlength="6">
+                    </v-text-field>
+                </v-col>
+                <v-col>
+                    <v-text-field v-model.trim="employee.colorHexCode" label="Couleur de l'employé" density="compact"
+                        :rules="[rules.required, rules.validateHexCode]" maxlength="7">
+                    </v-text-field>
+                    <span v-if="warningColorMessage" class="warning-message">Changez la couleur par défaut</span>
+                </v-col>
             </v-row>
-            <v-row class="mx-2">
+            <v-row>
                 <!-- //VERIFIER SLIDER pour qu'il soit fonctionnel avant de sélectionner une  -->
-                <v-color-picker v-model.trim="employee.colorHexCode" class="ma-2" hide-canvas hide-inputs
-                    show-swatches></v-color-picker>
+                <v-col>
+                    <v-color-picker v-model.trim="employee.colorHexCode" :mode="colorMode" hide-canvas
+                        hide-inputs show-swatches></v-color-picker>
+                </v-col>
             </v-row>
-            <v-text-field type="password" class="mx-2 mt-5" label="Mot de passe temporaire" density="compact"
-                v-model.trim="employee.password" clearable maxlength="255">
-            </v-text-field>
+            <v-col class="mt-5">
+                <v-text-field type="password" label="Mot de passe temporaire" density="compact"
+                    v-model.trim="employee.password" clearable maxlength="255">
+                </v-text-field>
+            </v-col>
+
             <v-checkbox :disabled="disableCheckbox" v-model="employee.isAdmin" color="red"
                 label="Accès Administrateur"></v-checkbox>
             <v-row class="justify-center">
@@ -102,7 +123,7 @@ export default {
                 firstName: "",
                 lastName: "",
                 role: "",
-                colorHexCode: "",
+                colorHexCode: "#827717",
                 hourlyRate: "",
                 barcodeNumber: "",
                 email: "",
@@ -111,8 +132,10 @@ export default {
                 skillPoints: "",
                 password: ""
             },
+            colorMode: "hexa",
             selectedRole: "",
             selectedSkillPoints: "",
+            warningColorMessage: false,
             dialogOKEmployee: false,
             rules: {
                 required: value => {
@@ -122,7 +145,7 @@ export default {
                         return !!value || "Le champ est requis"
                     }
                 },
-                validateEmployeeNumber: value => validEmployeeNumber.test(value) || "Numéro d'employé invalide : doit contenir que 4 chiffres",
+                validateEmployeeNumber: value => validEmployeeNumber.test(value) || "# d'employé invalide : doit contenir que 4 chiffres",
                 validateName: value => validName.test(value) || "Prénom/Nom invalide : Minimum 2 lettres/mot \n 1ère lettre par mot doit être une majuscule \n Aucun accent accepté",
                 validatePhoneNumber: value => validPhoneNumber.test(value) || "# de téléphone invalide -> Respecter ce format : xxx-xxx-xxxx",
                 validateEmail: value => validEmail.test(value) || "Adresse courriel invalide",
@@ -144,6 +167,9 @@ export default {
     },
     methods: {
         async createEmployee() {
+
+            this.warningColorMessage = "#827717" ? true : false;
+
             const validForm = await this.$refs.newEmployeeForm.validate();
             if (!validForm.valid) {
                 return;
@@ -240,6 +266,10 @@ export default {
 }
 </script>
 <style scoped>
+
+.warning-message {
+  color: red
+}
 .boxed-center {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     margin: 1rem auto;
