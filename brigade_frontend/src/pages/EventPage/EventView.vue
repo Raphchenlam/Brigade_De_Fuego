@@ -54,8 +54,8 @@ export default {
         };
     },
     mounted() {
-        if (!userSession.employee) {
-            this.$router.push('/espace');
+        if (!userSession) {
+            this.$router.push('/espace/dashboard');
         }
     },
 }

@@ -24,9 +24,9 @@ export default {
   },
 mounted()
     {
-        if (!userSession || !userSession.employee)
+        if (!userSession)
         {
-            this.$router.push('/espace');
+            this.$router.push('/espace/dashboard');
         }
     }
 }

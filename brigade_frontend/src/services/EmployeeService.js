@@ -50,6 +50,7 @@ console.log("response:",response)
         throw Error(response);
     }
 }
+
 export async function getEmployeeByBarcodeNumber(barcodeNumber) {
     const response = await fetch(`/api/employee/${barcodeNumber}`);
 

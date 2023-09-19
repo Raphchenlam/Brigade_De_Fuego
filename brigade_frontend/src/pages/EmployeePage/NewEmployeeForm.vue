@@ -20,12 +20,17 @@
                 </v-text-field>
             </v-row>
             <v-row>
-                <v-text-field class="mx-2" label="Prénom" v-model.trim="employee.firstName" clearable
-                    :rules="[rules.required, rules.validateName]" maxlength="255">
-                </v-text-field>
-                <v-text-field class="mx-2" label="Nom de famille" v-model.trim="employee.lastName" clearable
-                    :rules="[rules.required, rules.validateName]" maxlength="255">
-                </v-text-field>
+                <!-- SUIVRE CETTE STRUCTURE POUR LES AUTRES INPUTS -->
+                <v-col>
+                    <v-text-field label="Prénom" v-model.trim="employee.firstName" clearable
+                        :rules="[rules.required, rules.validateName]" maxlength="255">
+                    </v-text-field>
+                </v-col>
+                <v-col>
+                    <v-text-field label="Nom de famille" v-model.trim="employee.lastName" clearable
+                        :rules="[rules.required, rules.validateName]" maxlength="255">
+                    </v-text-field></v-col>
+
             </v-row>
             <v-row>
                 <v-text-field class="mx-2" label="Numéro de téléphone : xxx-xxx-xxxx" density="compact"
@@ -45,6 +50,7 @@
                 </v-text-field>
             </v-row>
             <v-row class="mx-2">
+                <!-- //VERIFIER SLIDER pour qu'il soit fonctionnel avant de sélectionner une  -->
                 <v-color-picker v-model.trim="employee.colorHexCode" class="ma-2" hide-canvas hide-inputs
                     show-swatches></v-color-picker>
             </v-row>
@@ -65,7 +71,8 @@
                     </v-card-title>
                     <v-card-text>
                         <v-row class="justify-center">
-                            <p>{{ employee.firstName }} {{ employee.lastName }} / {{ employee.employeeNumber }} a bien été enregistré(e).</p>
+                            <p>{{ employee.firstName }} {{ employee.lastName }} / {{ employee.employeeNumber }} a bien été
+                                enregistré(e).</p>
                         </v-row>
                     </v-card-text>
                 </v-card>

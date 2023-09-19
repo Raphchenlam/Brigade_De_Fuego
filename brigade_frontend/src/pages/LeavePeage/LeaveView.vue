@@ -1,7 +1,10 @@
 <template>
-    <v-sheet v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)">
+    <v-sheet
+        v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)">
         <v-row>
-            <LeaveList v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)"></LeaveList>
+            <LeaveList
+                v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)">
+            </LeaveList>
         </v-row>
     </v-sheet>
     <v-sheet v-else>
@@ -21,13 +24,13 @@ export default {
         LeaveList
     },
     data() {
-        return{
+        return {
             userSession: userSession
         }
     },
     mounted() {
-        if(!userSession.employee){
-            this.$router.push('/espace');
+        if (!userSession) {
+            this.$router.push('/espace/dashboard');
         }
     }
 }
