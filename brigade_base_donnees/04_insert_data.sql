@@ -176,8 +176,34 @@ VALUES
 (12, 2, 1, 4, '2023-10-08', '20:00:00', '22:15:00', 'Réunion de groupe', false, '6547598653454321');
 
 -- Insertion dans la table assignation
-INSERT INTO assignation(employee_number, table_number, "date", shift)
-	VALUES 
-  (2222, 1, '2023-09-01', 'Midi'),
-  (2222, 2, '2023-09-01', 'Midi'),
-  (3333, 3, '2023-09-01', 'Midi');
+INSERT INTO assignation (employee_number, table_number, "date", shift, assignation_is_active)
+VALUES
+    -- Employee 2222 on '2023-09-19' and '2023-09-20'
+    (2222, 1, '2023-09-19', 'Midi', true),
+    (2222, 2, '2023-09-19', 'Soir', true),
+    (2222, 3, '2023-09-20', 'Midi', true),
+    (2222, 4, '2023-09-20', 'Soir', true),
+	(2222, 1, '2023-09-20', 'Midi', true),
+    (2222, 2, '2023-09-20', 'Soir', true),
+    
+    -- Employee 4444 on '2023-09-19' and '2023-09-20'
+    (4444, 5, '2023-09-19', 'Midi', true),
+    (4444, 6, '2023-09-19', 'Soir', true),
+    (4444, 7, '2023-09-20', 'Midi', true),
+    (4444, 8, '2023-09-20', 'Soir', true),
+	  (4444, 5, '2023-09-20', 'Midi', false),
+    (4444, 6, '2023-09-20', 'Soir', true),
+    
+    -- Employee 6666 on '2023-09-19' and '2023-09-20'
+    (6666, 9, '2023-09-19', 'Midi', true),
+    (6666, 10, '2023-09-19', 'Soir', true),
+    (6666, 11, '2023-09-20', 'Midi', true),
+    (6666, 12, '2023-09-20', 'Soir', true),
+    
+    -- Employee 7777 on '2023-09-19' and '2023-09-20'
+    (7777, 13, '2023-09-19', 'Midi', true),
+    (7777, 14, '2023-09-19', 'Soir', true),
+    (7777, 15, '2023-09-20', 'Midi', true),
+    (7777, 16, '2023-09-20', 'Soir', true)
+;
+
