@@ -1,8 +1,6 @@
 <template>
-<AdminDashboard v-if="userSession.user && userSession.user.isAdmin"></AdminDashboard>
-<EmployeeDashboard v-else></EmployeeDashboard>
-
-
+<AdminDashboard v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)"></AdminDashboard>
+<EmployeeDashboard v-if="(userSession.employee && userSession.employee.isActive) && !userSession.employee.isAdmin "></EmployeeDashboard>
 </template>
 
 
@@ -26,7 +24,7 @@ export default {
   },
 mounted()
     {
-        if (!userSession || !userSession.user)
+        if (!userSession || !userSession.employee)
         {
             this.$router.push('/espace');
         }

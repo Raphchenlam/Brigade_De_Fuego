@@ -7,7 +7,6 @@ const getAllEvents = async () => {
 
   return result.rows.map(row => {
     const event = {
-      id: row.id,
       name: row.name,
       eventType: row.event_type,
       impact: row.impact,
@@ -26,7 +25,6 @@ const getEventByName = async (eventName) => {
   const row = result.rows[0];
   if (row) {
     const event = {
-      id: row.id,
       name: row.name,
       eventType: row.event_type,
       impact: row.impact,
@@ -55,13 +53,13 @@ exports.getAllEventType = getAllEventType;
 const insertEvent = async (event) => {
   const result = await pool.query(
     `INSERT INTO event(name, event_type, impact, is_active)
-            VALUES ($1, $2, $3, true) RETURNING id`,
+            VALUES ($1, $2, $3, true) RETURNING name`,
     [event.name, event.eventType, event.impact]
   );
   const row = result.rows[0];
 
   if (row) {
-    return row.id;
+    return row.name;
   }
 
   throw new Error("L'insertion a échoué pour une raison inconnue");

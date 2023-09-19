@@ -22,7 +22,6 @@ async function createServiceError(response) {
 
 const convertToEvent = jsonEvent => {
   return {
-    id: + jsonEvent.id,
     name: "" + jsonEvent.name,
     eventType: "" + jsonEvent.eventType,
     impact: Number(jsonEvent.impact),
