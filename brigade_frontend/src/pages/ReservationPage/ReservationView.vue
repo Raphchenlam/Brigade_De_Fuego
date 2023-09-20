@@ -1,7 +1,11 @@
 <template>
-  <v-row class="justify-space-around">
-    <ReservationList class="h-screen w-50"></ReservationList>
-    <ReservationInformation class="h-screen w-50"></ReservationInformation>
+  <v-row class="pa-2">
+    <v-col>
+      <ReservationList class="pa-2"></ReservationList>
+    </v-col>
+    <v-col>
+      <ReservationInformation class="pa-2"></ReservationInformation>
+    </v-col>
   </v-row>
 </template>
     

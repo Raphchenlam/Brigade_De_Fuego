@@ -1,6 +1,6 @@
 <template>
-    <v-sheet>
-        <v-card class="mr-10 ml-5 h-75">
+    <v-sheet width="100%" class="pa-2">
+        <v-card >
             <v-dialog v-model="dialogEditReservation" width="100%">
                 <template v-slot:activator="{ props }">
                     <v-row class="justify-end">

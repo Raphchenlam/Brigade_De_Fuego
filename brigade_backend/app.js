@@ -37,7 +37,9 @@ app.use('/event', eventRouter);
 app.use('/eventType', eventTypeRouter);
 app.use('/leave', leaveRouter);
 app.use('/reservation', reservationRouter);
-app.use('/schedule', scheduleRouter)
+app.use('/schedule', scheduleRouter);
+app.use('/table', tableRouter);
+app.use('/section', sectionRouter)
 
 class BasicStrategyModified extends BasicStrategy {
     constructor(options, verify) {
