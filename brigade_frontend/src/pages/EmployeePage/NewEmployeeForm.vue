@@ -10,7 +10,7 @@
 
                 <v-col cols="4">
                     <v-select :items="roleList" id="" label="Rôle" v-model.trim="selectedRole"
-                        :rules="[rules.required, rules.validateRole]">
+                        :rules="[rules.required, rules.validateRole, rules.fieldLength255]">
                     </v-select>
                 </v-col>
 
@@ -23,32 +23,31 @@
             <v-row>
                 <v-col>
                     <v-text-field label="Code barre (Carte)" v-model.trim="employee.barcodeNumber" clearable
-                        :rules="[rules.required, rules.validateBarcodeNumber]" maxlength="16" :counter="16">
+                        :rules="[rules.required, rules.validateBarcodeNumber, rules.fieldLength255]" maxlength="16" :counter="16">
                     </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col>
-                    <v-text-field label="Prénom" v-model.trim="employee.firstName" clearable
-                        :rules="[rules.required, rules.validateName]" maxlength="255">
+                    <v-text-field label="Prénom" v-model.trim="employee.firstName" @blur="capitalizeFirstName()" clearable
+                        :rules="[rules.required, rules.validateName, rules.fieldLength255]" maxlength="255">
                     </v-text-field>
                 </v-col>
                 <v-col>
-                    <v-text-field label="Nom de famille" v-model.trim="employee.lastName" clearable
-                        :rules="[rules.required, rules.validateName]" maxlength="255">
+                    <v-text-field label="Nom de famille" v-model.trim="employee.lastName" @blur="capitalizeLastName()" clearable
+                        :rules="[rules.required, rules.validateName, rules.fieldLength255]" maxlength="255">
                     </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col>
-                    <v-text-field label="Numéro de téléphone : xxx-xxx-xxxx" density="compact"
-                        v-model.trim="employee.phoneNumber" clearable :rules="[rules.required, rules.validatePhoneNumber]"
-                        maxlength="12">
+                    <v-text-field label="Numéro de téléphone : xxx-xxx-xxxx" density="compact" v-model.trim="employee.phoneNumber" @blur="patternedPhoneNumber()" clearable 
+                    :rules="[rules.required, rules.validatePhoneNumber, rules.fieldLength255]" maxlength="12">
                     </v-text-field>
                 </v-col>
                 <v-col>
                     <v-text-field label="Adresse Courriel" density="compact" v-model.trim="employee.email" clearable
-                        :rules="[rules.required, rules.validateEmail]" maxlength="255">
+                        :rules="[rules.required, rules.validateEmail, rules.fieldLength255]" maxlength="255">
                     </v-text-field>
                 </v-col>
             </v-row>
@@ -60,7 +59,7 @@
                 </v-col>
                 <v-col>
                     <v-text-field v-model.trim="employee.colorHexCode" label="Couleur de l'employé" density="compact"
-                        :rules="[rules.required, rules.validateHexCode]" maxlength="7">
+                        :rules="[rules.required, rules.validateHexCode, rules.fieldLength255]" maxlength="7">
                     </v-text-field>
                     <span v-if="warningColorMessage" class="warning-message">Changez la couleur par défaut</span>
                 </v-col>
@@ -110,7 +109,7 @@ import { validEmployeeNumber, validName, validPhoneNumber, validEmail, validRole
 import { createEmployee, getAllRoles } from '../../services/EmployeeService';
 
 export default {
-    inject: ['closeNewEmployeeDialog', 'loadEmployees', 'isUserAuthorized'],
+    inject: ['closeNewEmployeeDialog', 'loadEmployees', 'isUserAuthorized', 'capitalizeWords', 'formatPhoneNumber'],
     components: {
         DarkRedButton
     },
@@ -144,6 +143,7 @@ export default {
                         return !!value || "Le champ est requis"
                     }
                 },
+                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
                 validateEmployeeNumber: value => validEmployeeNumber.test(value) || "# d'employé invalide : doit contenir que 4 chiffres",
                 validateName: value => validName.test(value) || "Prénom/Nom invalide : Minimum 2 lettres/mot \n 1ère lettre par mot doit être une majuscule \n Aucun accent accepté",
                 validatePhoneNumber: value => validPhoneNumber.test(value) || "# de téléphone invalide -> Respecter ce format : xxx-xxx-xxxx",
@@ -205,6 +205,15 @@ export default {
                 this.employee.employeeNumber = value;
             }
             this.$forceUpdate;
+        },
+        capitalizeFirstName() {
+            this.employee.firstName = this.capitalizeWords(this.employee.firstName);
+        },
+        capitalizeLastName() {
+            this.employee.lastName = this.capitalizeWords(this.employee.lastName);
+        },
+        patternedPhoneNumber() {
+            this.employee.phoneNumber = this.formatPhoneNumber(this.employee.phoneNumber);
         }
     },
     watch: {
