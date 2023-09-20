@@ -81,9 +81,13 @@ export default {
                     || client.last_name.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
                     || client.phone_number.indexOf(this.search) >= 0) {
 
+                    const isClientFavorite = client.is_favorite ? " - FAVORIS" : "";
+                    const isClientBlacklisted = client.is_blacklisted ? " - BLACKLISTED !" : "";
+                    const isClientAllergic = client.allergy ? " - Allergie(s) " : "";
+
                     const clientToKeep = {
                         "listInformation":
-                            client.first_name + " " + client.last_name + " (" + client.phone_number + ") - Favorite ? " + client.is_favorite + " Blacklisted ? " + client.is_blacklisted + " Allergie(s) : " + client.allergy,
+                            client.first_name + " " + client.last_name + " (" + client.phone_number + ")" + isClientFavorite + isClientBlacklisted + isClientAllergic,
                         ...client,
                         props: {
                             color: 'red',

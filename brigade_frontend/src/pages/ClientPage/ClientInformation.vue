@@ -26,14 +26,16 @@
                     <p class="ma-5 pb-5">Numero de client : <strong>{{ client.id }}</strong></p>
                     <p class="ma-5 pb-5">Prénom : <strong>{{ client.firstName }}</strong></p>
                     <p class="ma-5 pb-5">Nom de famille : <strong>{{ client.lastName }}</strong></p>
+                    <p class="ma-5 pb-5" :class="{ warning: client.allergy }">Allergie(s) : <strong>{{ client.allergy || "Aucune"}}</strong></p>
                 </v-col>
                 <v-col class="ma-5 pb-5">
                     <p class="ma-5 pb-5">Numero telephone : <strong>{{ client.phoneNumber }}</strong></p>
-                    <p class="ma-5 pb-5" :class="{ favorite: client.isFavorite }">Client favoris ? <strong>{{ client.isFavorite ? "Oui" :
-                        "Non"
-                    }}</strong></p>
-                    <p class="ma-5 justify-space-between" :class="{ blacklisted: client.isBlacklisted }">Blacklist ? <strong>{{ client.isBlacklisted ? "Oui" :
-                        "Non" }}</strong> </p>
+                    <p class="ma-5 pb-5" :class="{ favorite: client.isFavorite }">Client favoris ?
+                        <strong>{{ client.isFavorite ? "Oui" : "Non" }}</strong>
+                    </p>
+                    <p class="ma-5 pb-5" :class="{ blacklisted: client.isBlacklisted }">Blacklist ?
+                        <strong>{{ client.isBlacklisted ? "Oui" : "Non" }}</strong>
+                    </p>
                 </v-col>
             </v-row>
         </v-card>
@@ -118,6 +120,12 @@ export default {
 }
 
 .blacklisted {
+    color: red;
+    font-size: 1.5em;
+}
+
+
+.warning {
     color: red;
     font-size: 1.5em;
 }
