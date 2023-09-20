@@ -1,5 +1,5 @@
 <template>
-    <div class="ma-2" width="auto">
+    <div class="ma-2" width="auto" v-if="this.isUserAuthorized()">
         <v-form @submit.prevent="createEmployee" validate-on="blur" ref="newEmployeeForm" class="pa-10">
             <v-row>
                 <v-col cols="3">
@@ -66,10 +66,9 @@
                 </v-col>
             </v-row>
             <v-row>
-                <!-- //VERIFIER SLIDER pour qu'il soit fonctionnel avant de sélectionner une  -->
                 <v-col>
-                    <v-color-picker v-model.trim="employee.colorHexCode" :mode="colorMode" hide-canvas
-                        hide-inputs show-swatches></v-color-picker>
+                    <v-color-picker v-model.trim="employee.colorHexCode" :mode="colorMode" hide-canvas hide-inputs
+                        show-swatches></v-color-picker>
                 </v-col>
             </v-row>
             <v-col class="mt-5">
@@ -111,7 +110,7 @@ import { validEmployeeNumber, validName, validPhoneNumber, validEmail, validRole
 import { createEmployee, getAllRoles } from '../../services/EmployeeService';
 
 export default {
-    inject: ['closeNewEmployeeDialog', 'loadEmployees'],
+    inject: ['closeNewEmployeeDialog', 'loadEmployees', 'isUserAuthorized'],
     components: {
         DarkRedButton
     },
@@ -221,13 +220,15 @@ export default {
         }
     },
     mounted() {
-        getAllRoles().then(allRoles => {
-            allRoles.forEach(role => {
-                this.roleList.push(role.name);
+        if (this.isUserAuthorized()) {
+            getAllRoles().then(allRoles => {
+                allRoles.forEach(role => {
+                    this.roleList.push(role.name);
+                });
+            }).catch(err => {
+                console.error(err);
             });
-        }).catch(err => {
-            console.error(err);
-        });
+        }
     },
     computed: {
         disableCreateEmployeeBtn() {
@@ -266,10 +267,10 @@ export default {
 }
 </script>
 <style scoped>
-
 .warning-message {
-  color: red
+    color: red
 }
+
 .boxed-center {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     margin: 1rem auto;

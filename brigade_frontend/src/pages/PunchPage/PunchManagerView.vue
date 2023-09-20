@@ -1,6 +1,6 @@
 <template>
-    <v-sheet v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)">
-        <PunchList v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)"></PunchList>
+    <v-sheet v-if="userSession && this.isUserAuthorized()">
+        <PunchList v-if="this.isUserAuthorized()"></PunchList>
     </v-sheet>
 </template>
 
@@ -10,6 +10,7 @@ import userSession from "../../sessions/UserSession"
 import PunchList from './PunchList.vue'
 
 export default {
+    inject:['isUserAuthorized'],
     components: {
         PunchList,
     },

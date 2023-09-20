@@ -13,7 +13,7 @@
     <p class="ma-5">Bonjour, {{ userSession.employee.firstName }}</p>
 
     <!-- Menu de l'admin -->
-    <v-list v-if="userSession.employee.isAdmin" color="red">
+    <v-list v-if="this.isUserAuthorized()" color="red">
       <router-link to="/espace/dashboard" style="text-decoration: none; color: inherit;"><v-list-item
           prepend-icon="mdi-view-dashboard" title="Dashboard" value="dashboard"></v-list-item></router-link>
 
@@ -79,6 +79,7 @@
 import userSession from "../sessions/UserSession"
 
 export default {
+  inject:['isUserAuthorized'],
   props: {
     username: String,
   },
@@ -104,7 +105,7 @@ export default {
   },
   mounted() {
     if (!userSession) {
-      this.$router.push('/espace/dashboard');
+      this.$router.push('/espace');
     }
   }
 };
