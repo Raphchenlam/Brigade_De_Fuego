@@ -21,7 +21,7 @@
                                 <p align="center" class="text-caption elevation-1">Lundi</p>
                                 <p align="center" class="text-caption">{{ weekDate[0].getDate() + "/" +
                                     (weekDate[0].getMonth() + 1)
-                                    + "/" +  weekDate[0].getFullYear() }}</p>
+                                    + "/" + weekDate[0].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Mardi</p>
@@ -79,26 +79,26 @@
                                 <p align="right" class="text-caption">Facture moyenne par client</p>
                             </v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="weekInformations[0].averageCostByClient" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[0].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="weekInformations[2].averageCostByClient" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[2].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
                                     v-model="weekInformations[4].averageCostByClient" density="compact"
                                     class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="weekInformations[6].averageCostByClient" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[6].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="weekInformations[8].averageCostByClient" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[8].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="weekInformations[10].averageCostByClient" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[10].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="weekInformations[12].averageCostByClient" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[12].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                         </v-row>
                         <v-row class="justify-end" no-gutters>
                             <v-col class="ml-2" cols="1">
@@ -133,7 +133,6 @@
                                 <p align="center" class="text-caption">${{ weekInformations[12].traffic *
                                     weekInformations[12].averageCostByClient }}</p>
                             </v-col>
-
                         </v-row>
                     </v-card>
                     <v-card v-else class="pa-1">
@@ -158,34 +157,33 @@
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Mardi</p>
-                                <p align="center" class="text-caption">{{  weekDate[3].getDate() + "/" +
-                                    ( weekDate[3].getMonth() + 1) + "/" +  weekDate[3].getFullYear() }}</p>
-
+                                <p align="center" class="text-caption">{{ weekDate[3].getDate() + "/" +
+                                    (weekDate[3].getMonth() + 1) + "/" + weekDate[3].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Mercredi</p>
-                                <p align="center" class="text-caption">{{  weekDate[5].getDate() + "/" +
-                                    ( weekDate[5].getMonth() + 1) + "/" +  weekDate[5].getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[5].getDate() + "/" +
+                                    (weekDate[5].getMonth() + 1) + "/" + weekDate[5].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Jeudi</p>
-                                <p align="center" class="text-caption">{{  weekDate[7].getDate() + "/" +
-                                    ( weekDate[7].getMonth() + 1) + "/" +  weekDate[7].getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[7].getDate() + "/" +
+                                    (weekDate[7].getMonth() + 1) + "/" + weekDate[7].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Vendredi</p>
-                                <p align="center" class="text-caption">{{  weekDate[9].getDate() + "/" +
-                                    ( weekDate[9].getMonth() + 1) + "/" +  weekDate[9].getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[9].getDate() + "/" +
+                                    (weekDate[9].getMonth() + 1) + "/" + weekDate[9].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Samedi</p>
-                                <p align="center" class="text-caption">{{  weekDate[11].getDate() + "/" +
-                                    ( weekDate[11].getMonth() + 1) + "/" +  weekDate[11].getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[11].getDate() + "/" +
+                                    (weekDate[11].getMonth() + 1) + "/" + weekDate[11].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Dimanche</p>
                                 <p align="center" class="text-caption">{{ weekDate[13].getDate() + "/" +
-                                    ( weekDate[13].getMonth() + 1) + "/" +  weekDate[13].getFullYear() }}</p>
+                                    (weekDate[13].getMonth() + 1) + "/" + weekDate[13].getFullYear() }}</p>
                             </v-col>
                         </v-row>
                         <v-row class="justify-end" no-gutters>
@@ -212,11 +210,11 @@
                                 <p align="right" class="text-caption">Facture moyenne par client</p>
                             </v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="weekInformations[1].averageCostByClient" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[1].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="weekInformations[3].averageCostByClient" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[3].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
                                     v-model="weekInformations[5].averageCostByClient" density="compact"
                                     class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
@@ -224,14 +222,14 @@
                                     v-model="weekInformations[7].averageCostByClient" density="compact"
                                     class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="weekInformations[9].averageCostByClient" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[9].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
                                     v-model="weekInformations[11].averageCostByClient" density="compact"
                                     class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="weekInformations[13].averageCostByClient" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[13].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                         </v-row>
                         <v-row class="justify-end" no-gutters>
                             <v-col class="ml-2" cols="1">
@@ -266,7 +264,6 @@
                                 <p align="center" class="text-caption">${{ weekInformations[13].traffic *
                                     weekInformations[13].averageCostByClient }}</p>
                             </v-col>
-
                         </v-row>
                     </v-card>
                 </v-col>
@@ -282,8 +279,8 @@
         </v-sheet>
         <v-sheet class="mx-15 my-5">
             <v-row class="justify-space-between">
-                <v-btn>Ajouter un employe</v-btn>
-                <v-btn>Sauvegarger</v-btn>
+                <v-btn @click="dialogAddEmployee = true">Ajouter un employe</v-btn>
+                <v-btn @click="saveSchedule()">Sauvegarger</v-btn>
             </v-row>
         </v-sheet>
         <v-sheet class="mx-10">
@@ -366,146 +363,187 @@
                 </v-row>
                 <v-divider class="border-opacity-50 mt-2"></v-divider>
                 <v-sheet v-if="showedShift == 'Lunch'">
-                <v-row v-for="employee in scheduledEmployees" class="justify-end my-2" no-gutters>
-                    <v-col class="ml-2" cols="3">
-                        <p align="right" class="text-caption">{{ employee.employeeNumber + "-" + employee.name }}</p>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <p align="center" class="text-caption"> {{ employee.skillPoint }}</p>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[0].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[0].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn @click="addShiftToEmployee(employee, 0)" align="center" height="25"
-                                width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[2].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[2].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[4].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[4].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[6].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[6].time }}</v-btn>
-                        </div>
+                    <v-row v-for="employee in scheduledEmployeesShow" class="justify-end my-2" no-gutters>
+                        <v-col class="ml-2" cols="3">
+                            <v-row align="center" class="justify-space-between">
+                                <v-col cols="1">
+                                    <CloseRedButton @click="removeEmployeeFromSchedule(employee.employeeNumber)">
+                                    </CloseRedButton>
+                                </v-col>
+                                <v-col cols="11">
+                                    <p align="center">({{ employee.employeeNumber }}) {{ employee.name }}</p>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <p align="center">{{ employee.skillPoints }}</p>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[0].time != null">
+                                <v-btn :color="employee.schedules[1].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[0].time }}</v-btn>
+                            </div>
+                            <div v-else>
+                                <v-btn @click="addShiftToEmployee(employee, 0)" :color="employee.schedules[1].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[2].time != null">
+                                <v-btn :color="employee.schedules[3].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[2].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 2)" :color="employee.schedules[3].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[4].time != null">
+                                <v-btn :color="employee.schedules[5].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[4].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 4)" :color="employee.schedules[5].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[6].time != null">
+                                <v-btn :color="employee.schedules[7].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[6].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 6)" :color="employee.schedules[7].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[8].time != null">
+                                <v-btn :color="employee.schedules[9].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[8].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 8)" :color="employee.schedules[9].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[10].time != null">
+                                <v-btn :color="employee.schedules[11].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[10].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 10)" :color="employee.schedules[11].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[12].time != null">
+                                <v-btn :color="employee.schedules[13].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[12].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 12)" :color="employee.schedules[13].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-divider class="border-opacity-50 mt-2"></v-divider>
+                    </v-row>
+                </v-sheet>
 
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[8].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[8].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[10].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[10].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[12].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[12].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-divider class="border-opacity-50 mt-2"></v-divider>
-                </v-row>
-            </v-sheet>
-
-            <v-sheet v-else>
-                <v-row v-for="employee in scheduledEmployees" class="justify-end my-2" no-gutters>
-                    <v-col class="ml-2" cols="3">
-                        <p align="right" class="text-caption">{{ employee.employeeNumber + "-" + employee.name }}</p>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <p align="center" class="text-caption"> {{ employee.skillPoint }}</p>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[1].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[1].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn @click="addShiftToEmployee(employee, 1)" align="center" height="25"
-                                width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[3].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[3].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[5].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[5].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[7].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[7].time }}</v-btn>
-                        </div>
-
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[9].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[9].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[11].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[11].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedules[13].time != null">
-                            <v-btn align="center" class="text-caption" height="25" width="100">{{
-                                employee.schedules[13].time }}</v-btn>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-divider class="border-opacity-50 mt-2"></v-divider>
-                </v-row>
-            </v-sheet>
+                <v-sheet v-else>
+                    <v-row v-for="employee in scheduledEmployeesShow" class="justify-end my-2" no-gutters>
+                        <v-col class="ml-2" cols="3">
+                            <v-row align="center" class="justify-space-between">
+                                <v-col cols="1">
+                                    <CloseRedButton @click="removeEmployeeFromSchedule(employee.employeeNumber)">
+                                    </CloseRedButton>
+                                </v-col>
+                                <v-col cols="11">
+                                    <p align="center">({{ employee.employeeNumber }}) {{ employee.name }}</p>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <p align="center"> {{ employee.skillPoints }}</p>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[1].time != null">
+                                <v-btn :color="employee.schedules[0].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[1].time }}</v-btn>
+                            </div>
+                            <div v-else>
+                                <v-btn :color="employee.schedules[0].time ? '#dcdcdc' : ''"
+                                    @click="addShiftToEmployee(employee, 1)" align="center" height="25"
+                                    width="100">+</v-btn>
+                            </div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[3].time != null">
+                                <v-btn :color="employee.schedules[2].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[3].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 3)" :color="employee.schedules[2].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[5].time != null">
+                                <v-btn :color="employee.schedules[4].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[5].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 5)" :color="employee.schedules[4].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[7].time != null">
+                                <v-btn :color="employee.schedules[6].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[7].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 7)" :color="employee.schedules[6].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[9].time != null">
+                                <v-btn :color="employee.schedules[8].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[9].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 9)" :color="employee.schedules[8].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[11].time != null">
+                                <v-btn :color="employee.schedules[10].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[11].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 11)" :color="employee.schedules[10].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[13].time != null">
+                                <v-btn :color="employee.schedules[12].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[13].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 13)" :color="employee.schedules[12].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-divider class="border-opacity-50 mt-2"></v-divider>
+                    </v-row>
+                </v-sheet>
             </v-card>
         </v-sheet>
-
-
-
-        
     </v-sheet>
-    <v-dialog v-model="dialogNewShift" width="75%">
-        <v-card>
+
+    <v-dialog v-model="dialogAddEmployee" width="75%" persistent>
+        <v-card class="pa-5">
             <v-card-title>
-                Ajouter un nouveau shift a {{ employeeNewShift }} pour le {{ dayNewShift }}
+                Ajouter un employé a la liste
             </v-card-title>
-            <v-card-actions>
-                <v-btn @click="dialogNewShift = false">Annuler</v-btn>
-                <v-btn>Sauvegarder</v-btn>
-            </v-card-actions>
+            <p v-if="warningEmployeeAlreadyInScheduleMessage" align="center" class="warning-message">L'employé est déjà dans
+                l'horaire</p>
+            <EmployeeList height="600"></EmployeeList>
+            <v-row class="justify-end">
+                <DarkRedButton class="mx-5" textbutton="Annuler" @click="dialogAddEmployee = false"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Sauvegarder" @click="addNewEmployeeToSchedule()"></DarkRedButton>
+            </v-row>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogNewShift" width="75%" persistent>
+        <v-card class="pa-5">
+            <v-card-title>
+                Ajouter un nouveau shift a {{ employeeNewShift.name }} pour le {{ this.weekDate[dayNewShift] }}
+            </v-card-title>
+            <v-row class="justify-end">
+                <DarkRedButton class="mx-5" textbutton="Annuler" @click="dialogNewShift = false"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Sauvegarder" @click="confirmShiftToEmployee()"></DarkRedButton>
+            </v-row>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogSaved" width="75%" persistent>
+        <v-card class="pa-5">
+            <v-card-title>
+                Sauvegarde de l'horaire
+            </v-card-title>
+            <v-row class="justify-center">
+                <p>Votre horaire a bien été sauvegardé</p>
+            </v-row>
         </v-card>
     </v-dialog>
 </template>
@@ -513,12 +551,18 @@
 
 
 <script>
-
-import { getAllRoles } from '../../services/EmployeeService'
-import { getScheduleWeekInfoByID, getEmployeeScheduleByScheduleWeekId } from '../../services/ScheduleService'
+import CloseRedButton from '../../components/Reusable/CloseRedButton.vue'
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue'
+import EmployeeList from '../EmployeePage/EmployeeList.vue'
+import { getAllRoles, getEmployeeByEmployeeNumber } from '../../services/EmployeeService'
+import { getScheduleWeekInfoByID, getEmployeeScheduleByScheduleWeekId, updateSchedule } from '../../services/ScheduleService'
 
 export default {
-
+    components: {
+        EmployeeList,
+        DarkRedButton,
+        CloseRedButton
+    },
     data()
     {
         return {
@@ -532,12 +576,24 @@ export default {
             ],
             scheduledEmployees: [
             ],
+            scheduledEmployeesShow: [
+            ],
             dialogNewShift: false,
+            dialogAddEmployee: false,
+            dialogSaved: false,
             employeeNewShift: null,
             dayNewShift: null,
             startTimeNewShift: null,
             endTimeNewShift: null,
-            datePropertyMapping: null
+            datePropertyMapping: null,
+            selectedEmployeeNumberToAdd: null,
+            warningEmployeeAlreadyInScheduleMessage: false
+        }
+    },
+    provide()
+    {
+        return {
+            loadEmployeeNumber: this.loadSelectedEmployeeNumberToAdd,
         }
     },
     methods: {
@@ -588,33 +644,19 @@ export default {
         {
             getScheduleWeekInfoByID(this.scheduleWeek).then(result =>
             {
-                //console.log("result de getScheduleWeekInfoByID", result)
-                //console.log("date du monday dans le data", this.weekDate.monday.toISOString())
-                //console.log("date du monday recu", result[0].date)
-                //console.log("est ce egal ?", this.weekDate.monday.toISOString() == result[0].date)
-
-
-                console.log("result", result);
                 result.forEach(element =>
                 {
-                    console.log("element", element)
                     const dateKey = element.date;
                     const shiftName = element.shiftName;
                     const mapping = this.datePropertyMapping[dateKey];
-                    console.log("datekey", dateKey);
-                    console.log("shiftName", shiftName);
-                    console.log("mapping", mapping);
 
                     if (mapping && mapping[shiftName])
                     {
                         const properties = mapping[shiftName];
-                        console.log("properties",properties)
                         const shiftIndex = properties.index;
-                        console.log("shiftIndex",shiftIndex)
                         this.weekInformations[shiftIndex].id = element.id;
                         this.weekInformations[shiftIndex].traffic = element.averageTraffic;
                         this.weekInformations[shiftIndex].averageCostByClient = element.averageCostByClient;
-                        console.log("blabla",this.weekInformations)
                     }
                 });
             }).catch(err =>
@@ -646,7 +688,6 @@ export default {
                             time: null
                         })
                     }
-
                     employee.schedules.forEach(element =>
                     {
                         const dateKey = element.date;
@@ -658,11 +699,8 @@ export default {
                             const properties = mapping[shiftName];
                             const shiftIndex = properties.index;
 
-                            const newSchedule = {
-                                id: element.id,
-                            }
-
                             newEmployee.schedules[shiftIndex] = {
+                                id: element.id,
                                 shiftName: element.shiftName,
                                 startTime: element.startTime.split(':').slice(0, 2).join(':'),
                                 endTime: element.endTime.split(':').slice(0, 2).join(':'),
@@ -671,37 +709,194 @@ export default {
                         }
                     });
                     this.scheduledEmployees.push(newEmployee);
+                    this.scheduledEmployeesShow = this.scheduledEmployees;
                 });
+                this.refreshEmployee();
             }).catch(err =>
             {
                 console.log(err)
             });
         },
+        refreshEmployee()
+        {
+            console.log("ICI REFRESHEMPLOYEE")
+            let newEmployeeList = [];
+            this.scheduledEmployees.forEach(employee =>
+            {
+                if (this.roleShowed == "Tous" || employee.role == this.roleShowed)
+                {
+                    newEmployeeList.push(employee);
+                }
+            });
+            this.scheduledEmployeesShow = newEmployeeList;
+        },
         addShiftToEmployee(employee, dayIndex)
         {
-
-            employee.schedules[dayIndex] =
-            {
-                startTime: "10:00",
-                endTime: "20:00",
-                time: "10:00 - 20:00"
-            }
-            this.employeeNewShift = employee.name;
-            this.dayNewShift = this.weekDate[dayIndex];
+            this.employeeNewShift = employee;
+            this.dayNewShift = dayIndex;
             this.dialogNewShift = true;
+        },
+        confirmShiftToEmployee()
+        {
+            let shiftId = this.employeeNewShift.schedules[this.dayNewShift].id;
+            if (this.dayNewShift % 2 == 0)
+            {
+                this.employeeNewShift.schedules[this.dayNewShift] =
+                {
+                    id: shiftId,
+                    startTime: "10:00",
+                    endTime: "16:00",
+                    time: "10:00 - 16:00"
+                }
+            } else
+            {
+                this.employeeNewShift.schedules[this.dayNewShift] =
+                {
+                    id: shiftId,
+                    startTime: "16:00",
+                    endTime: "23:00",
+                    time: "16:00 - 23:00"
+                }
+            }
+            this.dialogNewShift = false;
+        },
+        addNewEmployeeToSchedule()
+        {
+            //if (!this.selectedEmployeeNumberToAdd) { return }
+            let found = this.scheduledEmployees.find(({ employeeNumber }) => employeeNumber == this.selectedEmployeeNumberToAdd);
+            console.log("found", found);
+            if (found)
+            {
+                this.warningEmployeeAlreadyInScheduleMessage = true;
+            }
+            else
+            {
+                this.warningEmployeeAlreadyInScheduleMessage = false;
+                getEmployeeByEmployeeNumber(this.selectedEmployeeNumberToAdd).then(employee =>
+                {
+                    const newEmployee = {
+                        employeeNumber: employee.employeeNumber,
+                        name: employee.firstName + " " + employee.lastName,
+                        role: employee.role,
+                        skillPoints: employee.skillPoints,
+                        schedules: []
+                    }
+                    for (let i = 0; i < 14; i++)
+                    {
+                        newEmployee.schedules.push({
+                            id: this.weekInformations[i].id,
+                            startTime: null,
+                            endTime: null,
+                            time: null
+                        });
+                    }
+                    this.scheduledEmployees.push(newEmployee);
+                    this.dialogAddEmployee = false;
+                    this.refreshEmployee();
+
+                }).catch(err =>
+                {
+                    console.log(err);
+                })
+
+            }
+        },
+        removeEmployeeFromSchedule(employeeNumberToRemove)
+        {
+            let found = this.scheduledEmployees.find(({ employeeNumber }) => employeeNumber == employeeNumberToRemove);
+            console.log("found", found);
+            if (found)
+            {
+                const index = this.scheduledEmployees.indexOf(found);
+                console.log(index);
+                const x = this.scheduledEmployees.splice(index, 1);
+                this.refreshEmployee();
+            }
+        },
+        loadSelectedEmployeeNumberToAdd(employeeNumber)
+        {
+            this.selectedEmployeeNumberToAdd = employeeNumber;
+        },
+        saveSchedule()
+        {
+            const weekInformations = {
+                scheduleWeekId: this.scheduleWeek,
+                weekInformations: this.weekInformations,
+                scheduledEmployees: this.scheduledEmployees
+            }
+            console.log("weekInformations", weekInformations)
+            updateSchedule(weekInformations).then((result) =>
+            {
+                console.log("ICI CRISS", this.dialogSaved);
+                this.dialogSaved = true;
+                setTimeout(this.closeDialogSaved, 2000);
+            }).catch(err =>
+            {
+                console.error(err);
+            });
+        },
+        closeDialogSaved()
+        {
+            this.dialogSaved = false;  
+        },
+        setDatePropertyMappingateMap()
+        {
+            this.datePropertyMapping = {
+                [this.weekDate[0].toISOString()]: {
+                    Midi: { index: 0 },
+                    Soir: { index: 1 }
+                },
+                [this.weekDate[2].toISOString()]: {
+                    Midi: { index: 2 },
+                    Soir: { index: 3 }
+                },
+                [this.weekDate[4].toISOString()]: {
+                    Midi: { index: 4 },
+                    Soir: { index: 5 }
+                },
+                [this.weekDate[6].toISOString()]: {
+                    Midi: { index: 6 },
+                    Soir: { index: 7 }
+                },
+                [this.weekDate[8].toISOString()]: {
+                    Midi: { index: 8 },
+                    Soir: { index: 9 }
+                },
+                [this.weekDate[10].toISOString()]: {
+                    Midi: { index: 10 },
+                    Soir: { index: 11 }
+                },
+                [this.weekDate[12].toISOString()]: {
+                    Midi: { index: 12 },
+                    Soir: { index: 13 }
+                }
+            }
         }
     },
     watch: {
         scheduleWeek()
         {
+            this.showedShift = "Lunch";
+            this.roleShowed = "Tous";
             this.setWeekDayDate();
-            this.loadScheduleWeekInfo(this.scheduleWeek);
+            this.setDatePropertyMappingateMap();
+            this.loadScheduleWeekInfo()
             this.loadEmployee();
+
+        },
+        roleShowed()
+        {
+            this.refreshEmployee();
         }
     },
     beforeMount()
     {
-        this.scheduleWeek = "2024-W41";
+        let currentDate = new Date();
+        let startDate = new Date(currentDate.getFullYear(), 0, 1);
+        let days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
+        let weekNumber = Math.ceil(days / 7);
+        this.scheduleWeek = currentDate.getFullYear() + "-W" + weekNumber;
+        //this.scheduleWeek = "2024-W41";
         this.setWeekDayDate();
         for (let i = 0; i < 14; i++)
         {
@@ -723,38 +918,9 @@ export default {
                 this.roleList.push(role.name)
             });
         })
-        this.loadScheduleWeekInfo();
         this.loadEmployee();
-        this.datePropertyMapping = {
-            [this.weekDate[0].toISOString()]: {
-                Midi: { index: 0 },
-                Soir: { index: 1 }
-            },
-            [this.weekDate[2].toISOString()]: {
-                Midi: { index: 2 },
-                Soir: { index: 3 }
-            },
-            [this.weekDate[4].toISOString()]: {
-                Midi: { index: 4 },
-                Soir: { index: 5 }
-            },
-            [this.weekDate[6].toISOString()]: {
-                Midi: { index: 6 },
-                Soir: { index: 7 }
-            },
-            [this.weekDate[8].toISOString()]: {
-                Midi: { index: 8 },
-                Soir: { index: 9 }
-            },
-            [this.weekDate[10].toISOString()]: {
-                Midi: { index: 10 },
-                Soir: { index: 11 }
-            },
-            [this.weekDate[12].toISOString()]: {
-                Midi: { index: 12 },
-                Soir: { index: 13 }
-            }
-        }
+        this.setDatePropertyMappingateMap();
+        this.loadScheduleWeekInfo();
     }
 }
 </script>

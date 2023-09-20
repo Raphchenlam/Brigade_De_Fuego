@@ -33,7 +33,7 @@ router.get("/:scheduleweekid",
                     {
                         if (result)
                         {
-                            console.log("result",result)
+                            console.log("result", result)
                             res.json(result);
                         }
                         else
@@ -56,7 +56,7 @@ router.get('/:scheduleweekid/employee',
     {
         const scheduleWeekId = req.params.scheduleweekid;
 
-        if (!scheduleWeekId) { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
+        if (!scheduleWeekId || scheduleWeekId == "") { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
 
         scheduleQueries.selectAllEmployeesScheduleByScheduleWeekId(scheduleWeekId).then(result =>
         {
@@ -96,7 +96,62 @@ router.get('/:scheduleweekid/employee',
     });
 
 
-router.post("/",
+router.put("/",
+    (req, res, next) =>
+    {
+        let body = req.body;
+        console.log("body", body)
+
+        const scheduleWeekId = body.scheduleWeekId;
+        if (!scheduleWeekId || scheduleWeekId == "")
+        {
+            return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`));
+        }
+        if (!body.weekInformations)
+        {
+            return next(new HttpError(400, `Des weekInformations doivent etre fournis`));
+        }
+        if (body.weekInformations.length != 14) 
+        {
+            return next(new HttpError(400, `weekInformation est invalide`));
+        }
+
+        scheduleQueries.selectAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(result =>
+        {
+            let periodIdList = [];
+            result.forEach(element =>
+            {
+                periodIdList.push(element.id)
+            });
+            scheduleQueries.deleteEmployeeFromSchedule(periodIdList).then(() =>
+            {
+                const scheduledEmployeeList = req.body.scheduledEmployees;
+                console.log("scheduledEmployeeList.length",scheduledEmployeeList.length)
+                {
+                    scheduleQueries.insertNewEmployeeSchedule(scheduledEmployeeList).then(() =>
+                    {
+                        const weekInformationsList = req.body.weekInformations;
+                        scheduleQueries.updatePeriodsInformations(weekInformationsList).then(() =>
+                        {
+                            res.status(200).json("Mise a jour reussi");
+                        }).catch(err =>
+                        {
+                            return next(err);
+                        })
+                    }).catch(err =>
+                    {
+                        return next(err);
+                    })
+                }
+            }).catch(err =>
+            {
+                return next(err);
+            });
+        }).catch(err =>
+        {
+            return next(err);
+        })
+    }
 );
 
 function findAllDayOfAWeek(yearWeek)
