@@ -102,13 +102,16 @@ router.get('/:employeeNumber', (req, res, next) => {
 });
 
 router.post('/',
-    //passport.authenticate('basic', {session:false}),
+    passport.authenticate('basic', {session:false}),
     (req, res, next) => {
-        // const employee = req.employee;
 
-        // if(!employee || !employee.isAdmin || !employee.isSuperAdmin) {
-        //     return next(new HttpError(403, "Droit administrateur requis"));
-        // }
+        console.log("REQ.EMPLOYEE", req.user);
+
+        const employee = req.user;
+
+        if(!employee || !employee.isAdmin) {
+            return next(new HttpError(403, "Droit administrateur requis"));
+        }
 
         let employeeNumber = req.body.employeeNumber;
         if (!employeeNumber || employeeNumber == '') {
@@ -170,6 +173,9 @@ router.post('/',
         }
         if (!regex.validColorHexCode.test(colorHexCode)) {
             return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
+        }
+        if(colorHexCode == "#827717"){
+            return next(new HttpError(400, 'La couleur par défaut (#827717) n\'a pas été changée lors de la création de l\'employé(e)'));
         }
         employeeQueries.selectAssignedColorHexcode(colorHexCode).then(assignedColorHexcode => {
             if (assignedColorHexcode) {

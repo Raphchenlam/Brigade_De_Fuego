@@ -23,7 +23,8 @@
             <v-row>
                 <v-col>
                     <v-text-field label="Code barre (Carte)" v-model.trim="employee.barcodeNumber" clearable
-                        :rules="[rules.required, rules.validateBarcodeNumber, rules.fieldLength255]" maxlength="16" :counter="16">
+                        :rules="[rules.required, rules.validateBarcodeNumber, rules.fieldLength255]" maxlength="16"
+                        :counter="16">
                     </v-text-field>
                 </v-col>
             </v-row>
@@ -34,15 +35,16 @@
                     </v-text-field>
                 </v-col>
                 <v-col>
-                    <v-text-field label="Nom de famille" v-model.trim="employee.lastName" @blur="capitalizeLastName()" clearable
-                        :rules="[rules.required, rules.validateName, rules.fieldLength255]" maxlength="255">
+                    <v-text-field label="Nom de famille" v-model.trim="employee.lastName" @blur="capitalizeLastName()"
+                        clearable :rules="[rules.required, rules.validateName, rules.fieldLength255]" maxlength="255">
                     </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col>
-                    <v-text-field label="Numéro de téléphone : xxx-xxx-xxxx" density="compact" v-model.trim="employee.phoneNumber" @blur="patternedPhoneNumber()" clearable 
-                    :rules="[rules.required, rules.validatePhoneNumber, rules.fieldLength255]" maxlength="12">
+                    <v-text-field label="Numéro de téléphone : xxx-xxx-xxxx" density="compact"
+                        v-model.trim="employee.phoneNumber" @blur="patternedPhoneNumber()" clearable
+                        :rules="[rules.required, rules.validatePhoneNumber, rules.fieldLength255]" maxlength="12">
                     </v-text-field>
                 </v-col>
                 <v-col>
@@ -59,9 +61,9 @@
                 </v-col>
                 <v-col>
                     <v-text-field v-model.trim="employee.colorHexCode" label="Couleur de l'employé" density="compact"
-                        :rules="[rules.required, rules.validateHexCode, rules.fieldLength255]" maxlength="7">
+                        :rules="[rules.required, rules.validateHexCode, rules.invalidColor, rules.fieldLength255]" maxlength="7">
                     </v-text-field>
-                    <span v-if="warningColorMessage" class="warning-message">Changez la couleur par défaut</span>
+                    <!-- <p v-if="employee.colorHexCode == '#827717'" class="warning-message">Changez la couleur par défaut</p> -->
                 </v-col>
             </v-row>
             <v-row>
@@ -150,6 +152,7 @@ export default {
                 validateEmail: value => validEmail.test(value) || "Adresse courriel invalide",
                 validateRole: value => validRole.test(value) || "Rôle invalide",
                 validateHexCode: value => validColorHexCode.test(value) || "Couleur invalide",
+                invalidColor: value => ((value) ? !(value == "#827717") : true) || 'Veuillez changer la couleur par défaut',
                 validateHourlyRate: value => validHourlyRate.test(value) || "Taux horaire invalide -> Respecter un des formats suivant : xx.xx ou xxx.xx \n 1er chiffre ne peut pas être 0",
                 validateBarcodeNumber: value => validBarcodeNumber.test(value) || "Code barre invalide : doit contenir que 16 chiffres",
                 validateSkillPoints: value => {
@@ -167,13 +170,13 @@ export default {
     methods: {
         async createEmployee() {
 
-            this.warningColorMessage = "#827717" ? true : false;
+            // this.warningColorMessage = "#827717" ? true : false;
 
             const validForm = await this.$refs.newEmployeeForm.validate();
             if (!validForm.valid) {
                 return;
             }
-            //session.createEmployee...
+            
             if (validForm.valid) {
                 createEmployee(this.employee).then(() => {
                     console.log("THERE BITCH");
