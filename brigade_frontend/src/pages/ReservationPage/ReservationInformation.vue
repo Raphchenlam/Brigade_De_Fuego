@@ -4,13 +4,13 @@
             <v-dialog v-model="dialogEditReservation" width="100%">
                 <template v-slot:activator="{ props }">
                     <v-row class="justify-space-between">
-                        <div>
+                        <v-col>
                             <h1 class="mt-5 ml-10">{{ reservation.firstName + " " + reservation.lastName }}</h1>
-                        </div>
-                        <div>
+                        </v-col>
+                        <v-col>
                             <h1 class="mt-5 ml-10" :class="{ noTable: !reservation.tableNumber }">{{ reservation.tableNumber
                                 ? "Table #" + reservation.tableNumber : "Aucune Table" }}</h1>
-                        </div>
+                        </v-col>
                         <EditBlackButton class="ma-2" v-bind="props"></EditBlackButton>
                     </v-row>
                     <v-divider class="my-5"></v-divider>

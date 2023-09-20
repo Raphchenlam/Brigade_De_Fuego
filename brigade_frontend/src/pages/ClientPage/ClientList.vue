@@ -1,5 +1,5 @@
 <template>
-    <v-sheet>
+    <v-sheet class="h-15">
         <v-card class="mx-10 h-75">
             <v-row class="mb-0">
                 <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
@@ -18,7 +18,8 @@
                     </v-card>
                 </v-dialog>
             </v-row>
-            <v-list v-model:selected='selected' :items="filteredClientList" item-title="listInformation" item-value="id">
+            <v-list fill-height v-model:selected='selected' :items="filteredClientList" item-title="listInformation"
+                item-value="id">
             </v-list>
         </v-card>
 
@@ -117,7 +118,12 @@ export default {
 </script>
 
 <style scoped>
-.v-btn {
+.v-btn { 
     font-size: xx-large;
+}
+
+.v-list {
+    height:600px;
+    overflow-y:auto;
 }
 </style>
