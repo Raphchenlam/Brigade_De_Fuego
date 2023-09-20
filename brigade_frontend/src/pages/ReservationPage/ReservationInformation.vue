@@ -75,7 +75,8 @@ export default {
     methods: {
         loadReservation(selectedReservationId) {
             if (selectedReservationId) {
-                getReservationById(selectedReservationId).then(reservation => {
+                getReservationById(selectedReservationId)
+                .then(reservation => {
                     this.reservation = reservation;
                 }).catch(err => {
                     console.error(err);

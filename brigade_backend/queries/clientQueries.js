@@ -17,7 +17,17 @@ const getClientById = async (id) => {
         WHERE id = $1`,
         [id]);
 
-    return result.rows[0];
+    const row = result.rows[0];
+
+    return {
+        id: row.id,
+        firstName: row.first_name,
+        lastName: row.last_name,
+        phoneNumber: row.phone_number,
+        allergy: row.allergy,
+        isFavorite: row.is_favorite,
+        isBlacklisted: row.is_blacklisted
+    }
 };
 exports.getClientById = getClientById;
 

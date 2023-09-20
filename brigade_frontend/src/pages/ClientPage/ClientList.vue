@@ -63,7 +63,6 @@ export default {
 
             getClientList()
                 .then((clientList) => {
-
                     this.clients = clientList;
                 })
                 .catch((err) => {
