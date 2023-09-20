@@ -79,7 +79,8 @@ VALUES
 (4444,'Johnny', 'Sins', 'Serveur', '#FF5733', 30.0, '2344588639576560', 'johnny@example.com', '987-654-7890', false, false, false, true, 10, 'salt123', 'hash123'),
 (5555, 'Janette', 'Smithers', 'Hotesse', '#3355FF', 35.0, '6547598653454321', 'janette@example.com', '456-654-3210', false, false, true, true, 5, 'salt456', 'hash456'),
 (6666,'Bobby', 'Doolittle', 'Serveur', '#FF5733', 30.0, '8964588639576560', 'johnny@example.com', '987-852-7890', false, false, false, true, 6, 'salt123', 'hash123'),
-(7777, 'Annette', 'Shwartz', 'Serveur', '#3355FF', 35.0, '6547598653454784', 'janette@example.com', '125-654-3210', false, false, true, true, 10, 'salt456', 'hash456');
+(7777, 'Annette', 'Shwartz', 'Serveur', '#3355FF', 35.0, '6547598653454784', 'janette@example.com', '125-654-3210', false, false, true, true, 10, 'salt456', 'hash456'),
+(1999, 'Francis', 'Maynard', 'Gestionnaire', '#4CAF50', 28.75, '1999199919991999', 'francis@gmail.com', '819-975-1678', true, false, true, true, null, '1FWoqQKDysX5Rla/6wfZgg==', 'hdvTc+tGgkgK32lHopmpPU8Bgjv0pHC2KUUsQl5bxapV3tmiSIkFWknLkD/scsKMCJlRM6ONKXMMGrOQWgCmeg==');
 
 -- Insertion dans la table punch
 INSERT INTO punch (employee_number, date_in, punch_in, date_out, punch_out)
@@ -175,8 +176,34 @@ VALUES
 (12, 2, 1, 4, '2023-10-08', '20:00:00', '22:15:00', 'Réunion de groupe', false, '6547598653454321');
 
 -- Insertion dans la table assignation
-INSERT INTO assignation(employee_number, table_number, "date", shift)
-	VALUES 
-  (2222, 1, '2023-09-01', 'Midi'),
-  (2222, 2, '2023-09-01', 'Midi'),
-  (3333, 3, '2023-09-01', 'Midi');
+INSERT INTO assignation (employee_number, table_number, "date", shift, assignation_is_active)
+VALUES
+    -- Employee 2222 on '2023-09-19' and '2023-09-20'
+    (2222, 1, '2023-09-19', 'Midi', true),
+    (2222, 2, '2023-09-19', 'Soir', true),
+    (2222, 3, '2023-09-20', 'Midi', true),
+    (2222, 4, '2023-09-20', 'Soir', true),
+	(2222, 1, '2023-09-20', 'Midi', true),
+    (2222, 2, '2023-09-20', 'Soir', true),
+    
+    -- Employee 4444 on '2023-09-19' and '2023-09-20'
+    (4444, 5, '2023-09-19', 'Midi', true),
+    (4444, 6, '2023-09-19', 'Soir', true),
+    (4444, 7, '2023-09-20', 'Midi', true),
+    (4444, 8, '2023-09-20', 'Soir', true),
+	  (4444, 5, '2023-09-20', 'Midi', false),
+    (4444, 6, '2023-09-20', 'Soir', true),
+    
+    -- Employee 6666 on '2023-09-19' and '2023-09-20'
+    (6666, 9, '2023-09-19', 'Midi', true),
+    (6666, 10, '2023-09-19', 'Soir', true),
+    (6666, 11, '2023-09-20', 'Midi', true),
+    (6666, 12, '2023-09-20', 'Soir', true),
+    
+    -- Employee 7777 on '2023-09-19' and '2023-09-20'
+    (7777, 13, '2023-09-19', 'Midi', true),
+    (7777, 14, '2023-09-19', 'Soir', true),
+    (7777, 15, '2023-09-20', 'Midi', true),
+    (7777, 16, '2023-09-20', 'Soir', true)
+;
+
