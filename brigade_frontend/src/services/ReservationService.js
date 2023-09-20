@@ -53,3 +53,25 @@ export async function createReservation(reservation) {
         throw await createServiceError(response);
     }
 }
+
+export async function getReservationList(startDate, endDate) {
+    const response = await fetch(`/api/reservation/${startDate}/${endDate}`);
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        console.log(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
+
+export async function getReservationById(reservationId) {
+    const response = await fetch(`/api/reservation/${reservationId}`);
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        console.log(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
