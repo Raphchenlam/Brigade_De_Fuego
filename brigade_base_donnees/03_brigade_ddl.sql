@@ -169,4 +169,5 @@ CREATE TABLE assignation (
   table_number    int4 NOT NULL REFERENCES "table"("number"), 
   "date"          date NOT NULL, 
   shift           varchar(255) NOT NULL, 
+  assignation_is_active bool NOT NULL,
   PRIMARY KEY (id));

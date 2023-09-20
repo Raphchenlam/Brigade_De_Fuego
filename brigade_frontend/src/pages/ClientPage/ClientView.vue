@@ -1,7 +1,7 @@
 <template>
-    <v-row class="justify-center">
+    <v-row class="justify-space-between">
         <ClientList class="h-screen w-50"></ClientList>
-        <ClientInformation class="h-screen w-50"></ClientInformation>
+        <ClientInformation class="h-screen w-50" v-if="selectedClientId" :clientId="selectedClientId"></ClientInformation>
     </v-row>
 </template>
 
@@ -17,19 +17,24 @@ export default {
         ClientList,
         ClientInformation
     },
-    data()
-    {
+    data() {
         return {
             operationSession: operationSession,
+            selectedClientId: null
         }
     },
     methods: {
-
+        loadClientId(clientId) {
+            this.selectedClientId = clientId;
+        },
     },
-    mounted()
-    {
-        if (!operationSession.isActive)
-        {
+    provide() {
+        return {
+            loadClientId: this.loadClientId
+        };
+    },
+    mounted() {
+        if (!operationSession.isActive) {
             this.$router.push('/operation');
         }
     }

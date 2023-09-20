@@ -6,6 +6,24 @@ const regex = require('../../REGEX/REGEX_backend');
 
 const HttpError = require("../HttpError");
 
+router.get("/",
+    (req, res, next) => {
+
+        clientQueries
+            .getClientList()
+            .then((clients) => {
+                if (clients) {
+                    res.json(clients);
+                } else {
+                    return next(new HttpError(404, `Une erreur inconnue est survenue`));
+                }
+            })
+            .catch((err) => {
+                return next(err);
+            });
+    }
+);
+
 router.get("/:id",
     (req, res, next) => {
         const id = req.params.id;
