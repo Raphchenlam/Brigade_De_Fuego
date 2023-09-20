@@ -19,59 +19,59 @@
                         <v-row class="justify-end ma-0 pa-0" no-gutters>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Lundi</p>
-                                <p align="center" class="text-caption">{{ weekDate.monday.getDate() + "/" +
-                                    weekDate.monday.getMonth()
-                                    + "/" + weekDate.monday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[0].getDate() + "/" +
+                                    (weekDate[0].getMonth() + 1)
+                                    + "/" + weekDate[0].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Mardi</p>
-                                <p align="center" class="text-caption">{{ weekDate.tuesday.getDate() + "/" +
-                                    weekDate.tuesday.getMonth() + "/" + weekDate.tuesday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[2].getDate() + "/" +
+                                    (weekDate[2].getMonth() + 1) + "/" + weekDate[2].getFullYear() }}</p>
 
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Mercredi</p>
-                                <p align="center" class="text-caption">{{ weekDate.wednesday.getDate() + "/" +
-                                    weekDate.wednesday.getMonth() + "/" + weekDate.wednesday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[4].getDate() + "/" +
+                                    (weekDate[4].getMonth() + 1) + "/" + weekDate[4].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Jeudi</p>
-                                <p align="center" class="text-caption">{{ weekDate.thursday.getDate() + "/" +
-                                    weekDate.thursday.getMonth() + "/" + weekDate.thursday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[6].getDate() + "/" +
+                                    (weekDate[6].getMonth() + 1) + "/" + weekDate[6].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Vendredi</p>
-                                <p align="center" class="text-caption">{{ weekDate.friday.getDate() + "/" +
-                                    weekDate.friday.getMonth() + "/" + weekDate.friday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[8].getDate() + "/" +
+                                    (weekDate[8].getMonth() + 1) + "/" + weekDate[8].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Samedi</p>
-                                <p align="center" class="text-caption">{{ weekDate.saturday.getDate() + "/" +
-                                    weekDate.saturday.getMonth() + "/" + weekDate.saturday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[10].getDate() + "/" +
+                                    (weekDate[10].getMonth() + 1) + "/" + weekDate[10].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Dimanche</p>
-                                <p align="center" class="text-caption">{{ weekDate.sunday.getDate() + "/" +
-                                    weekDate.sunday.getMonth() + "/" + weekDate.sunday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[12].getDate() + "/" +
+                                    (weekDate[12].getMonth() + 1) + "/" + weekDate[12].getFullYear() }}</p>
                             </v-col>
                         </v-row>
                         <v-row class="justify-end" no-gutters>
                             <v-col cols="3">
                                 <p align="right" class="text-caption">Achalendage Moyen</p>
                             </v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.mondayLunch"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[0].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.tuesdayLunch"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[2].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.wednesdayLunch"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[4].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.thursdayLunch"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[6].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.fridayLunch"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[8].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.saturdayLunch"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[10].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.sundayLunch"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[12].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                         </v-row>
                         <v-row class="justify-end" no-gutters>
@@ -79,61 +79,60 @@
                                 <p align="right" class="text-caption">Facture moyenne par client</p>
                             </v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.mondayLunch" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.tuesdayLunch" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.wednesdayLunch" density="compact"
+                                    v-model="weekInformations[0].averageCostByClient" density="compact"
                                     class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.thursdayLunch" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[2].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.fridayLunch" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[4].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.saturdayLunch" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[6].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.sundayLunch" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[8].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
+                                    v-model="weekInformations[10].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
+                                    v-model="weekInformations[12].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                         </v-row>
                         <v-row class="justify-end" no-gutters>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption">$
-                                    {{ traffic.mondayLunch * averageCostByClient.mondayLunch }}
+                                    {{ weekInformations[0].traffic * weekInformations[0].averageCostByClient }}
                                 </p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.tuesdayLunch *
-                                    averageCostByClient.tuesdayLunch }}
+                                <p align="center" class="text-caption">${{ weekInformations[2].traffic *
+                                    weekInformations[2].averageCostByClient }}
                                 </p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.wednesdayLunch *
-                                    averageCostByClient.wednesdayLunch }}</p>
+                                <p align="center" class="text-caption">${{ weekInformations[4].traffic *
+                                    weekInformations[4].averageCostByClient }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.thursdayLunch *
-                                    averageCostByClient.thursdayLunch }}
+                                <p align="center" class="text-caption">${{ weekInformations[6].traffic *
+                                    weekInformations[6].averageCostByClient }}
                                 </p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.fridayLunch *
-                                    averageCostByClient.fridayLunch }}</p>
+                                <p align="center" class="text-caption">${{ weekInformations[8].traffic *
+                                    weekInformations[8].averageCostByClient }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.saturdayLunch *
-                                    averageCostByClient.saturdayLunch }}
+                                <p align="center" class="text-caption">${{ weekInformations[10].traffic *
+                                    weekInformations[10].averageCostByClient }}
                                 </p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.sundayLunch *
-                                    averageCostByClient.sundayLunch }}</p>
+                                <p align="center" class="text-caption">${{ weekInformations[12].traffic *
+                                    weekInformations[12].averageCostByClient }}</p>
                             </v-col>
-
                         </v-row>
                     </v-card>
                     <v-card v-else class="pa-1">
@@ -152,59 +151,58 @@
                         <v-row class="justify-end ma-0 pa-0" no-gutters>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Lundi</p>
-                                <p align="center" class="text-caption">{{ weekDate.monday.getDate() + "/" +
-                                    weekDate.monday.getMonth()
-                                    + "/" + weekDate.monday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[1].getDate() + "/" +
+                                    (weekDate[1].getMonth() + 1)
+                                    + "/" + weekDate[1].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Mardi</p>
-                                <p align="center" class="text-caption">{{ weekDate.tuesday.getDate() + "/" +
-                                    weekDate.tuesday.getMonth() + "/" + weekDate.tuesday.getFullYear() }}</p>
-
+                                <p align="center" class="text-caption">{{ weekDate[3].getDate() + "/" +
+                                    (weekDate[3].getMonth() + 1) + "/" + weekDate[3].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Mercredi</p>
-                                <p align="center" class="text-caption">{{ weekDate.wednesday.getDate() + "/" +
-                                    weekDate.wednesday.getMonth() + "/" + weekDate.wednesday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[5].getDate() + "/" +
+                                    (weekDate[5].getMonth() + 1) + "/" + weekDate[5].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Jeudi</p>
-                                <p align="center" class="text-caption">{{ weekDate.thursday.getDate() + "/" +
-                                    weekDate.thursday.getMonth() + "/" + weekDate.thursday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[7].getDate() + "/" +
+                                    (weekDate[7].getMonth() + 1) + "/" + weekDate[7].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Vendredi</p>
-                                <p align="center" class="text-caption">{{ weekDate.friday.getDate() + "/" +
-                                    weekDate.friday.getMonth() + "/" + weekDate.friday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[9].getDate() + "/" +
+                                    (weekDate[9].getMonth() + 1) + "/" + weekDate[9].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Samedi</p>
-                                <p align="center" class="text-caption">{{ weekDate.saturday.getDate() + "/" +
-                                    weekDate.saturday.getMonth() + "/" + weekDate.saturday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[11].getDate() + "/" +
+                                    (weekDate[11].getMonth() + 1) + "/" + weekDate[11].getFullYear() }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption elevation-1">Dimanche</p>
-                                <p align="center" class="text-caption">{{ weekDate.sunday.getDate() + "/" +
-                                    weekDate.sunday.getMonth() + "/" + weekDate.sunday.getFullYear() }}</p>
+                                <p align="center" class="text-caption">{{ weekDate[13].getDate() + "/" +
+                                    (weekDate[13].getMonth() + 1) + "/" + weekDate[13].getFullYear() }}</p>
                             </v-col>
                         </v-row>
                         <v-row class="justify-end" no-gutters>
                             <v-col cols="3">
                                 <p align="right" class="text-caption">Achalendage Moyen</p>
                             </v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.mondayDinner"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[1].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.tuesdayDinner"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[3].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.wednesdayDinner"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[5].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.thursdayDinner"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[7].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.fridayDinner"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[9].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.saturdayDinner"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[11].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="traffic.sundayDinner"
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" v-model="weekInformations[13].traffic"
                                     density="compact" class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                         </v-row>
                         <v-row class="justify-end" no-gutters>
@@ -212,61 +210,60 @@
                                 <p align="right" class="text-caption">Facture moyenne par client</p>
                             </v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.mondayDinner" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.tuesdayDinner" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.wednesdayDinner" density="compact"
+                                    v-model="weekInformations[1].averageCostByClient" density="compact"
                                     class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.thursdayDinner" density="compact"
+                                    v-model="weekInformations[3].averageCostByClient" density="compact"
                                     class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.fridayDinner" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
-                            <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.saturdayDinner" density="compact"
+                                    v-model="weekInformations[5].averageCostByClient" density="compact"
                                     class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                             <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
-                                    v-model="averageCostByClient.sundayDinner" density="compact" class="traffic-input pa-0"
-                                    hide-spin-buttons></v-text-field></v-col>
+                                    v-model="weekInformations[7].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
+                                    v-model="weekInformations[9].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
+                                    v-model="weekInformations[11].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
+                            <v-col class="ml-2" cols="1"><v-text-field type="number" prefix="$"
+                                    v-model="weekInformations[13].averageCostByClient" density="compact"
+                                    class="traffic-input pa-0" hide-spin-buttons></v-text-field></v-col>
                         </v-row>
                         <v-row class="justify-end" no-gutters>
                             <v-col class="ml-2" cols="1">
                                 <p align="center" class="text-caption">$
-                                    {{ traffic.mondayDinner * averageCostByClient.mondayDinner }}
+                                    {{ weekInformations[1].traffic * weekInformations[1].averageCostByClient }}
                                 </p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.tuesdayDinner *
-                                    averageCostByClient.tuesdayDinner }}
+                                <p align="center" class="text-caption">${{ weekInformations[3].traffic *
+                                    weekInformations[3].averageCostByClient }}
                                 </p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.wednesdayDinner *
-                                    averageCostByClient.wednesdayDinner }}</p>
+                                <p align="center" class="text-caption">${{ weekInformations[5].traffic *
+                                    weekInformations[5].averageCostByClient }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.thursdayDinner *
-                                    averageCostByClient.thursdayDinner }}
+                                <p align="center" class="text-caption">${{ weekInformations[7].traffic *
+                                    weekInformations[7].averageCostByClient }}
                                 </p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.fridayDinner *
-                                    averageCostByClient.fridayDinner }}</p>
+                                <p align="center" class="text-caption">${{ weekInformations[9].traffic *
+                                    weekInformations[9].averageCostByClient }}</p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.saturdayDinner *
-                                    averageCostByClient.saturdayDinner }}
+                                <p align="center" class="text-caption">${{ weekInformations[11].traffic *
+                                    weekInformations[11].averageCostByClient }}
                                 </p>
                             </v-col>
                             <v-col class="ml-2" cols="1">
-                                <p align="center" class="text-caption">${{ traffic.sundayDinner *
-                                    averageCostByClient.sundayDinner }}</p>
+                                <p align="center" class="text-caption">${{ weekInformations[13].traffic *
+                                    weekInformations[13].averageCostByClient }}</p>
                             </v-col>
-
                         </v-row>
                     </v-card>
                 </v-col>
@@ -282,152 +279,290 @@
         </v-sheet>
         <v-sheet class="mx-15 my-5">
             <v-row class="justify-space-between">
-                <v-btn>Ajouter un employe</v-btn>
-                <v-btn>Sauvegarger</v-btn>
+                <v-btn @click="dialogAddEmployee = true">Ajouter un employe</v-btn>
+                <v-btn @click="saveSchedule()">Sauvegarger</v-btn>
             </v-row>
         </v-sheet>
         <v-sheet class="mx-10">
             <v-card class="pa-2 w-100 h-screen elevation-4">
                 <v-row class="justify-end" no-gutters>
-                    <v-col class="ml-2" cols="1">Poste:</v-col>
-                    <v-col class="ml-2" cols="2">
-                        <v-select v-model="roleShowed" :items="roleList" density="compact"></v-select>
+                    <v-col class="ml-2" cols="3">
+                        <v-row class="justify-start" no-gutters>
+                            <v-col class="ml-2" cols="12">Poste</v-col>
+                            <v-col class="ml-2" cols="10">
+                                <v-select v-model="roleShowed" :items="roleList" density="compact"></v-select>
+                            </v-col>
+                        </v-row>
                     </v-col>
                     <v-col class="ml-2" cols="1">
-                        <p align="center">Point de competence</p>
+                        <p align="center" class="text-caption">Point de competence</p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Lundi</p>
-                        <p align="center" class="text-caption">{{ weekDate.monday.getDate() + "/" +
-                            weekDate.monday.getMonth() + "/" +
-                            weekDate.monday.getFullYear() }}</p>
+                        <p align="center" class="text-caption">{{ weekDate[0].getDate() + "/" +
+                            (weekDate[0].getMonth() + 1) + "/" +
+                            weekDate[0].getFullYear() }}</p>
                         <p align="center" class="text-caption">PC requis : 45</p>
                         <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
                                 style="color:red">35</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Mardi</p>
-                        <p align="center" class="text-caption">{{ weekDate.tuesday.getDate() + "/" +
-                            weekDate.tuesday.getMonth() + "/" +
-                            weekDate.tuesday.getFullYear() }}</p>
+                        <p align="center" class="text-caption">{{ weekDate[2].getDate() + "/" +
+                            (weekDate[2].getMonth() + 1) + "/" +
+                            weekDate[2].getFullYear() }}</p>
                         <p align="center" class="text-caption">PC requis : 0</p>
                         <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
                                 style="color:green">3</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Mercredi</p>
-                        <p align="center" class="text-caption">{{ weekDate.wednesday.getDate() + "/" +
-                            weekDate.wednesday.getMonth() + "/" +
-                            weekDate.wednesday.getFullYear() }}</p>
+                        <p align="center" class="text-caption">{{ weekDate[4].getDate() + "/" +
+                            (weekDate[4].getMonth() + 1) + "/" +
+                            weekDate[4].getFullYear() }}</p>
                         <p align="center" class="text-caption">PC requis : 0</p>
                         <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
                                 style="color:green">3</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Jeudi</p>
-                        <p align="center" class="text-caption">{{ weekDate.thursday.getDate() + "/" +
-                            weekDate.thursday.getMonth() + "/" +
-                            weekDate.thursday.getFullYear() }}</p>
+                        <p align="center" class="text-caption">{{ weekDate[6].getDate() + "/" +
+                            (weekDate[6].getMonth() + 1) + "/" +
+                            weekDate[6].getFullYear() }}</p>
                         <p align="center" class="text-caption">PC requis : 0</p>
                         <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
                                 style="color:green">0</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Vendredi</p>
-                        <p align="center" class="text-caption">{{ weekDate.friday.getDate() + "/" +
-                            weekDate.friday.getMonth() + "/" +
-                            weekDate.friday.getFullYear() }}</p>
+                        <p align="center" class="text-caption">{{ weekDate[8].getDate() + "/" +
+                            (weekDate[8].getMonth() + 1) + "/" +
+                            weekDate[8].getFullYear() }}</p>
                         <p align="center" class="text-caption">PC requis : 0</p>
                         <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
                                 style="color:green">0</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Samedi</p>
-                        <p align="center" class="text-caption">{{ weekDate.saturday.getDate() + "/" +
-                            weekDate.saturday.getMonth() + "/" +
-                            weekDate.saturday.getFullYear() }}</p>
+                        <p align="center" class="text-caption">{{ weekDate[10].getDate() + "/" +
+                            (weekDate[10].getMonth() + 1) + "/" +
+                            weekDate[10].getFullYear() }}</p>
                         <p align="center" class="text-caption">PC requis : 0</p>
                         <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
                                 style="color:green">0</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Dimanche</p>
-                        <p align="center" class="text-caption">{{ weekDate.sunday.getDate() + "/" +
-                            weekDate.sunday.getMonth() + "/" +
-                            weekDate.sunday.getFullYear() }}</p>
+                        <p align="center" class="text-caption">{{ weekDate[12].getDate() + "/" +
+                            (weekDate[12].getMonth() + 1) + "/" +
+                            weekDate[12].getFullYear() }}</p>
                         <p align="center" class="text-caption">PC requis : 0</p>
                         <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
                                 style="color:green">0</span></p>
                     </v-col>
                 </v-row>
                 <v-divider class="border-opacity-50 mt-2"></v-divider>
-                <v-row v-for="employee in scheduledEmployees" class="justify-end my-2" no-gutters>
-                    <v-col class="ml-2" cols="3">
-                        <p align="right">{{ employee.employeeNumber + "-" + employee.name }}</p>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <p align="center"> {{ employee.skillPoint }}</p>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedule[1].monday != null">
-                            <p class="text-caption" align="center"> {{ employee.schedule[1].monday }}</p>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedule[2].tuesday != null">
-                            <p class="text-caption" align="center">{{ employee.schedule[2].tuesday }}</p>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedule[3].wednesday != null">
-                            <p class="text-caption" align="center"> {{ employee.schedule[3].wednesday }}</p>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedule[4].thursday != null">
-                            <p class="text-caption" align="center">{{ employee.schedule[4].thursday }}</p>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedule[5].friday != null">
-                            <p class="text-caption" align="center">{{ employee.schedule[5].friday }}</p>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedule[6].saturday != null">
-                            <p class="text-caption" align="center">{{ employee.schedule[6].saturday }}</p>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-col class="ml-2" cols="1">
-                        <div v-if="employee.schedule[0].sunday != null">
-                            <p class="text-caption" align="center">{{ employee.schedule[0].sunday }}</p>
-                        </div>
-                        <div v-else><v-btn align="center" height="25" width="100">+</v-btn></div>
-                    </v-col>
-                    <v-divider class="border-opacity-50 mt-2"></v-divider>
-                </v-row>
+                <v-sheet v-if="showedShift == 'Lunch'">
+                    <v-row v-for="employee in scheduledEmployeesShow" class="justify-end my-2" no-gutters>
+                        <v-col class="ml-2" cols="3">
+                            <v-row align="center" class="justify-space-between">
+                                <v-col cols="1">
+                                    <CloseRedButton @click="removeEmployeeFromSchedule(employee.employeeNumber)">
+                                    </CloseRedButton>
+                                </v-col>
+                                <v-col cols="11">
+                                    <p align="center">({{ employee.employeeNumber }}) {{ employee.name }}</p>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <p align="center">{{ employee.skillPoints }}</p>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[0].time != null">
+                                <v-btn :color="employee.schedules[1].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[0].time }}</v-btn>
+                            </div>
+                            <div v-else>
+                                <v-btn @click="addShiftToEmployee(employee, 0)" :color="employee.schedules[1].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[2].time != null">
+                                <v-btn :color="employee.schedules[3].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[2].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 2)" :color="employee.schedules[3].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[4].time != null">
+                                <v-btn :color="employee.schedules[5].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[4].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 4)" :color="employee.schedules[5].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[6].time != null">
+                                <v-btn :color="employee.schedules[7].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[6].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 6)" :color="employee.schedules[7].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[8].time != null">
+                                <v-btn :color="employee.schedules[9].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[8].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 8)" :color="employee.schedules[9].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[10].time != null">
+                                <v-btn :color="employee.schedules[11].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[10].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 10)" :color="employee.schedules[11].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[12].time != null">
+                                <v-btn :color="employee.schedules[13].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[12].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 12)" :color="employee.schedules[13].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-divider class="border-opacity-50 mt-2"></v-divider>
+                    </v-row>
+                </v-sheet>
 
-
+                <v-sheet v-else>
+                    <v-row v-for="employee in scheduledEmployeesShow" class="justify-end my-2" no-gutters>
+                        <v-col class="ml-2" cols="3">
+                            <v-row align="center" class="justify-space-between">
+                                <v-col cols="1">
+                                    <CloseRedButton @click="removeEmployeeFromSchedule(employee.employeeNumber)">
+                                    </CloseRedButton>
+                                </v-col>
+                                <v-col cols="11">
+                                    <p align="center">({{ employee.employeeNumber }}) {{ employee.name }}</p>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <p align="center"> {{ employee.skillPoints }}</p>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[1].time != null">
+                                <v-btn :color="employee.schedules[0].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[1].time }}</v-btn>
+                            </div>
+                            <div v-else>
+                                <v-btn :color="employee.schedules[0].time ? '#dcdcdc' : ''"
+                                    @click="addShiftToEmployee(employee, 1)" align="center" height="25"
+                                    width="100">+</v-btn>
+                            </div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[3].time != null">
+                                <v-btn :color="employee.schedules[2].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[3].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 3)" :color="employee.schedules[2].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[5].time != null">
+                                <v-btn :color="employee.schedules[4].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[5].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 5)" :color="employee.schedules[4].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[7].time != null">
+                                <v-btn :color="employee.schedules[6].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[7].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 7)" :color="employee.schedules[6].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[9].time != null">
+                                <v-btn :color="employee.schedules[8].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[9].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 9)" :color="employee.schedules[8].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[11].time != null">
+                                <v-btn :color="employee.schedules[10].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[11].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 11)" :color="employee.schedules[10].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-col class="ml-2" cols="1">
+                            <div v-if="employee.schedules[13].time != null">
+                                <v-btn :color="employee.schedules[12].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
+                                    employee.schedules[13].time }}</v-btn>
+                            </div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 13)" :color="employee.schedules[12].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                        </v-col>
+                        <v-divider class="border-opacity-50 mt-2"></v-divider>
+                    </v-row>
+                </v-sheet>
             </v-card>
         </v-sheet>
     </v-sheet>
+
+    <v-dialog v-model="dialogAddEmployee" width="75%" persistent>
+        <v-card class="pa-5">
+            <v-card-title>
+                Ajouter un employé a la liste
+            </v-card-title>
+            <p v-if="warningEmployeeAlreadyInScheduleMessage" align="center" class="warning-message">L'employé est déjà dans
+                l'horaire</p>
+            <EmployeeList height="600"></EmployeeList>
+            <v-row class="justify-end">
+                <DarkRedButton class="mx-5" textbutton="Annuler" @click="dialogAddEmployee = false"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Sauvegarder" @click="addNewEmployeeToSchedule()"></DarkRedButton>
+            </v-row>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogNewShift" width="75%" persistent>
+        <v-card class="pa-5">
+            <v-card-title>
+                Ajouter un nouveau shift a {{ employeeNewShift.name }} pour le {{ this.weekDate[dayNewShift] }}
+            </v-card-title>
+            <v-row class="justify-end">
+                <DarkRedButton class="mx-5" textbutton="Annuler" @click="dialogNewShift = false"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Sauvegarder" @click="confirmShiftToEmployee()"></DarkRedButton>
+            </v-row>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogSaved" width="75%" persistent>
+        <v-card class="pa-5">
+            <v-card-title>
+                Sauvegarde de l'horaire
+            </v-card-title>
+            <v-row class="justify-center">
+                <p>Votre horaire a bien été sauvegardé</p>
+            </v-row>
+        </v-card>
+    </v-dialog>
 </template>
 
 
 
 <script>
-
-import { getAllRoles } from '../../services/EmployeeService'
-import { getScheduleWeekInfoByID, getEmployeeScheduleByScheduleWeekId } from '../../services/ScheduleService'
+import CloseRedButton from '../../components/Reusable/CloseRedButton.vue'
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue'
+import EmployeeList from '../EmployeePage/EmployeeList.vue'
+import { getAllRoles, getEmployeeByEmployeeNumber } from '../../services/EmployeeService'
+import { getScheduleWeekInfoByID, getEmployeeScheduleByScheduleWeekId, updateSchedule } from '../../services/ScheduleService'
 
 export default {
-
+    components: {
+        EmployeeList,
+        DarkRedButton,
+        CloseRedButton
+    },
     data()
     {
         return {
@@ -435,49 +570,30 @@ export default {
             roleShowed: "Tous",
             scheduleWeek: null,
             showedShift: "Lunch",
-            weekDate: {
-                monday: "",
-                tuesday: "",
-                wednesday: "",
-                thursday: "",
-                friday: "",
-                saturday: "",
-                sunday: ""
-            },
-            traffic: {
-                mondayLunch: null,
-                mondayDinner: null,
-                tuesdayLunch: null,
-                tuesdayDinner: null,
-                wednesdayLunch: null,
-                wednesdayDinner: null,
-                thursdayLunch: null,
-                thursdayDinner: null,
-                fridayLunch: null,
-                fridayDinner: null,
-                saturdayLunch: null,
-                saturdayDinner: null,
-                sundayLunch: null,
-                sundayDinner: null
-            },
-            averageCostByClient: {
-                mondayLunch: null,
-                mondayDinner: null,
-                tuesdayLunch: null,
-                tuesdayDinner: null,
-                wednesdayLunch: null,
-                wednesdayDinner: null,
-                thursdayLunch: null,
-                thursdayDinner: null,
-                fridayLunch: null,
-                fridayDinner: null,
-                saturdayLunch: null,
-                saturdayDinner: null,
-                sundayLunch: null,
-                sundayDinner: null
-            },
+            weekDate: [
+            ],
+            weekInformations: [
+            ],
             scheduledEmployees: [
             ],
+            scheduledEmployeesShow: [
+            ],
+            dialogNewShift: false,
+            dialogAddEmployee: false,
+            dialogSaved: false,
+            employeeNewShift: null,
+            dayNewShift: null,
+            startTimeNewShift: null,
+            endTimeNewShift: null,
+            datePropertyMapping: null,
+            selectedEmployeeNumberToAdd: null,
+            warningEmployeeAlreadyInScheduleMessage: false
+        }
+    },
+    provide()
+    {
+        return {
+            loadEmployeeNumber: this.loadSelectedEmployeeNumberToAdd,
         }
     },
     methods: {
@@ -508,66 +624,39 @@ export default {
                 friday.setDate(sunday.getDate() - 2)
                 saturday.setDate(sunday.getDate() - 1)
             }
-            this.weekDate.monday = monday;
-            this.weekDate.tuesday = tuesday;
-            this.weekDate.wednesday = wednesday;
-            this.weekDate.thursday = thursday;
-            this.weekDate.friday = friday;
-            this.weekDate.saturday = saturday;
-            this.weekDate.sunday = sunday;
+            this.weekDate[0] = monday;
+            this.weekDate[1] = monday;
+            this.weekDate[2] = tuesday;
+            this.weekDate[3] = tuesday;
+            this.weekDate[4] = wednesday;
+            this.weekDate[5] = wednesday;
+            this.weekDate[6] = thursday;
+            this.weekDate[7] = thursday;
+            this.weekDate[8] = friday;
+            this.weekDate[9] = friday;
+            this.weekDate[10] = saturday;
+            this.weekDate[11] = saturday;
+            this.weekDate[12] = sunday;
+            this.weekDate[13] = sunday;
 
         },
         loadScheduleWeekInfo()
         {
             getScheduleWeekInfoByID(this.scheduleWeek).then(result =>
             {
-                //console.log("result de getScheduleWeekInfoByID", result)
-                //console.log("date du monday dans le data", this.weekDate.monday.toISOString())
-                //console.log("date du monday recu", result[0].date)
-                //console.log("est ce egal ?", this.weekDate.monday.toISOString() == result[0].date)
-
-                const datePropertyMapping = {
-                    [this.weekDate.monday.toISOString()]: {
-                        Midi: { traffic: 'mondayLunch', averageCostByClient: 'mondayLunch' },
-                        Soir: { traffic: 'mondayDinner', averageCostByClient: 'mondayDinner' }
-                    },
-                    [this.weekDate.tuesday.toISOString()]: {
-                        Midi: { traffic: 'tuesdayLunch', averageCostByClient: 'tuesdayLunch' },
-                        Soir: { traffic: 'tuesdayDinner', averageCostByClient: 'tuesdayDinner' }
-                    },
-                    [this.weekDate.wednesday.toISOString()]: {
-                        Midi: { traffic: 'wednesdayLunch', averageCostByClient: 'wednesdayLunch' },
-                        Soir: { traffic: 'wednesdayDinner', averageCostByClient: 'wednesdayDinner' }
-                    },
-                    [this.weekDate.thursday.toISOString()]: {
-                        Midi: { traffic: 'thursdayLunch', averageCostByClient: 'thursdayLunch' },
-                        Soir: { traffic: 'thursdayDinner', averageCostByClient: 'thursdayDinner' }
-                    },
-                    [this.weekDate.friday.toISOString()]: {
-                        Midi: { traffic: 'fridayLunch', averageCostByClient: 'fridayLunch' },
-                        Soir: { traffic: 'fridayDinner', averageCostByClient: 'fridayDinner' }
-                    },
-                    [this.weekDate.saturday.toISOString()]: {
-                        Midi: { traffic: 'saturdayLunch', averageCostByClient: 'saturdayLunch' },
-                        Soir: { traffic: 'saturdayDinner', averageCostByClient: 'saturdayDinner' }
-                    },
-                    [this.weekDate.sunday.toISOString()]: {
-                        Midi: { traffic: 'sundayLunch', averageCostByClient: 'sundayLunch' },
-                        Soir: { traffic: 'sundayDinner', averageCostByClient: 'sundayDinner' }
-                    }
-                };
-
                 result.forEach(element =>
                 {
                     const dateKey = element.date;
                     const shiftName = element.shiftName;
-                    const mapping = datePropertyMapping[dateKey];
+                    const mapping = this.datePropertyMapping[dateKey];
 
                     if (mapping && mapping[shiftName])
                     {
                         const properties = mapping[shiftName];
-                        this.traffic[properties.traffic] = element.averageTraffic;
-                        this.averageCostByClient[properties.averageCostByClient] = element.averageCostByClient;
+                        const shiftIndex = properties.index;
+                        this.weekInformations[shiftIndex].id = element.id;
+                        this.weekInformations[shiftIndex].traffic = element.averageTraffic;
+                        this.weekInformations[shiftIndex].averageCostByClient = element.averageCostByClient;
                     }
                 });
             }).catch(err =>
@@ -577,95 +666,250 @@ export default {
         },
         loadEmployee()
         {
-            getEmployeeScheduleByScheduleWeekId(this.scheduleWeek).then(employeeSchedule =>
+            getEmployeeScheduleByScheduleWeekId(this.scheduleWeek).then(employeeInSchedule =>
             {
-                console.log("employeeSchedule", employeeSchedule)
-                console.log("weekdate", this.weekDate.friday.getDay())
+                this.scheduledEmployees = [];
+                employeeInSchedule.forEach(employee =>
+                {
+                    const newEmployee = {
+                        employeeNumber: employee.employeeNumber,
+                        name: employee.name,
+                        role: employee.role,
+                        skillPoints: employee.skillPoints,
+                        schedules: [
+                        ]
+                    };
+                    for (let i = 0; i < 14; i++)
+                    {
+                        newEmployee.schedules.push({
+                            id: this.weekInformations[i].id,
+                            startTime: null,
+                            endTime: null,
+                            time: null
+                        })
+                    }
+                    employee.schedules.forEach(element =>
+                    {
+                        const dateKey = element.date;
+                        const shiftName = element.shiftName;
+                        const mapping = this.datePropertyMapping[dateKey];
 
+                        if (mapping && mapping[shiftName])
+                        {
+                            const properties = mapping[shiftName];
+                            const shiftIndex = properties.index;
 
+                            newEmployee.schedules[shiftIndex] = {
+                                id: element.id,
+                                shiftName: element.shiftName,
+                                startTime: element.startTime.split(':').slice(0, 2).join(':'),
+                                endTime: element.endTime.split(':').slice(0, 2).join(':'),
+                                time: element.startTime.split(':').slice(0, 2).join(':') + " - " + element.endTime.split(':').slice(0, 2).join(':')
+                            }
+                        }
+                    });
+                    this.scheduledEmployees.push(newEmployee);
+                    this.scheduledEmployeesShow = this.scheduledEmployees;
+                });
+                this.refreshEmployee();
             }).catch(err =>
             {
                 console.log(err)
             });
-            const allEmployessTemporaire = [
-                {
-                    employeeNumber: 3333,
-                    name: "Maxime Marchand",
-                    role: "Hotesse",
-                    skillPoint: 2,
-                    schedule: [
-                        { sunday: null },
-                        { monday: "10:00-16:00" },
-                        { tuesday: null },
-                        { wednesday: null },
-                        { friday: "10:00-16:00" },
-                        { saturday: null },
-                        { sunday: null }
-                    ]
-                },
-                {
-                    employeeNumber: 2222,
-                    name: "David Beaudry",
-                    role: "Serveur",
-                    skillPoint: 9,
-                    schedule: [
-                        { sunday: "10:00-16:00" },
-                        { monday: null },
-                        { tuesday: null },
-                        { wednesday: null },
-                        { friday: null },
-                        { saturday: "10:00-16:00" },
-                        { sunday: null }
-                    ]
-                },
-                {
-                    employeeNumber: 1111,
-                    name: "Raphael Chenard-Lamothe",
-                    role: "Serveur",
-                    skillPoint: 7,
-                    schedule: [
-                        { sunday: null },
-                        { monday: null },
-                        { tuesday: null },
-                        { wednesday: "10:00-16:00" },
-                        { friday: "10:00-16:00" },
-                        { saturday: null },
-                        { sunday: null }
-                    ]
-                },
-                {
-                    employeeNumber: 4444,
-                    name: "Francis Maynard",
-                    role: "Serveur",
-                    skillPoint: 5,
-                    schedule: [
-                        { sunday: null },
-                        { monday: "10:00-16:00" },
-                        { tuesday: null },
-                        { wednesday: null },
-                        { friday: "10:00-16:00" },
-                        { saturday: null },
-                        { sunday: "10:00-16:00" }
-                    ]
-                }
-            ]
-            this.scheduledEmployees = allEmployessTemporaire;
         },
+        refreshEmployee()
+        {
+            console.log("ICI REFRESHEMPLOYEE")
+            let newEmployeeList = [];
+            this.scheduledEmployees.forEach(employee =>
+            {
+                if (this.roleShowed == "Tous" || employee.role == this.roleShowed)
+                {
+                    newEmployeeList.push(employee);
+                }
+            });
+            this.scheduledEmployeesShow = newEmployeeList;
+        },
+        addShiftToEmployee(employee, dayIndex)
+        {
+            this.employeeNewShift = employee;
+            this.dayNewShift = dayIndex;
+            this.dialogNewShift = true;
+        },
+        confirmShiftToEmployee()
+        {
+            let shiftId = this.employeeNewShift.schedules[this.dayNewShift].id;
+            if (this.dayNewShift % 2 == 0)
+            {
+                this.employeeNewShift.schedules[this.dayNewShift] =
+                {
+                    id: shiftId,
+                    startTime: "10:00",
+                    endTime: "16:00",
+                    time: "10:00 - 16:00"
+                }
+            } else
+            {
+                this.employeeNewShift.schedules[this.dayNewShift] =
+                {
+                    id: shiftId,
+                    startTime: "16:00",
+                    endTime: "23:00",
+                    time: "16:00 - 23:00"
+                }
+            }
+            this.dialogNewShift = false;
+        },
+        addNewEmployeeToSchedule()
+        {
+            //if (!this.selectedEmployeeNumberToAdd) { return }
+            let found = this.scheduledEmployees.find(({ employeeNumber }) => employeeNumber == this.selectedEmployeeNumberToAdd);
+            console.log("found", found);
+            if (found)
+            {
+                this.warningEmployeeAlreadyInScheduleMessage = true;
+            }
+            else
+            {
+                this.warningEmployeeAlreadyInScheduleMessage = false;
+                getEmployeeByEmployeeNumber(this.selectedEmployeeNumberToAdd).then(employee =>
+                {
+                    const newEmployee = {
+                        employeeNumber: employee.employeeNumber,
+                        name: employee.firstName + " " + employee.lastName,
+                        role: employee.role,
+                        skillPoints: employee.skillPoints,
+                        schedules: []
+                    }
+                    for (let i = 0; i < 14; i++)
+                    {
+                        newEmployee.schedules.push({
+                            id: this.weekInformations[i].id,
+                            startTime: null,
+                            endTime: null,
+                            time: null
+                        });
+                    }
+                    this.scheduledEmployees.push(newEmployee);
+                    this.dialogAddEmployee = false;
+                    this.refreshEmployee();
+
+                }).catch(err =>
+                {
+                    console.log(err);
+                })
+
+            }
+        },
+        removeEmployeeFromSchedule(employeeNumberToRemove)
+        {
+            let found = this.scheduledEmployees.find(({ employeeNumber }) => employeeNumber == employeeNumberToRemove);
+            console.log("found", found);
+            if (found)
+            {
+                const index = this.scheduledEmployees.indexOf(found);
+                console.log(index);
+                const x = this.scheduledEmployees.splice(index, 1);
+                this.refreshEmployee();
+            }
+        },
+        loadSelectedEmployeeNumberToAdd(employeeNumber)
+        {
+            this.selectedEmployeeNumberToAdd = employeeNumber;
+        },
+        saveSchedule()
+        {
+            const weekInformations = {
+                scheduleWeekId: this.scheduleWeek,
+                weekInformations: this.weekInformations,
+                scheduledEmployees: this.scheduledEmployees
+            }
+            console.log("weekInformations", weekInformations)
+            updateSchedule(weekInformations).then((result) =>
+            {
+                console.log("ICI CRISS", this.dialogSaved);
+                this.dialogSaved = true;
+                setTimeout(this.closeDialogSaved, 2000);
+            }).catch(err =>
+            {
+                console.error(err);
+            });
+        },
+        closeDialogSaved()
+        {
+            this.dialogSaved = false;  
+        },
+        setDatePropertyMappingateMap()
+        {
+            this.datePropertyMapping = {
+                [this.weekDate[0].toISOString()]: {
+                    Midi: { index: 0 },
+                    Soir: { index: 1 }
+                },
+                [this.weekDate[2].toISOString()]: {
+                    Midi: { index: 2 },
+                    Soir: { index: 3 }
+                },
+                [this.weekDate[4].toISOString()]: {
+                    Midi: { index: 4 },
+                    Soir: { index: 5 }
+                },
+                [this.weekDate[6].toISOString()]: {
+                    Midi: { index: 6 },
+                    Soir: { index: 7 }
+                },
+                [this.weekDate[8].toISOString()]: {
+                    Midi: { index: 8 },
+                    Soir: { index: 9 }
+                },
+                [this.weekDate[10].toISOString()]: {
+                    Midi: { index: 10 },
+                    Soir: { index: 11 }
+                },
+                [this.weekDate[12].toISOString()]: {
+                    Midi: { index: 12 },
+                    Soir: { index: 13 }
+                }
+            }
+        }
     },
     watch: {
         scheduleWeek()
         {
+            this.showedShift = "Lunch";
+            this.roleShowed = "Tous";
             this.setWeekDayDate();
-            this.loadScheduleWeekInfo(this.scheduleWeek)
+            this.setDatePropertyMappingateMap();
+            this.loadScheduleWeekInfo()
+            this.loadEmployee();
+
+        },
+        roleShowed()
+        {
+            this.refreshEmployee();
         }
     },
     beforeMount()
     {
-        this.scheduleWeek = "2024-W41";
+        let currentDate = new Date();
+        let startDate = new Date(currentDate.getFullYear(), 0, 1);
+        let days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
+        let weekNumber = Math.ceil(days / 7);
+        this.scheduleWeek = currentDate.getFullYear() + "-W" + weekNumber;
+        //this.scheduleWeek = "2024-W41";
         this.setWeekDayDate();
+        for (let i = 0; i < 14; i++)
+        {
+            this.weekInformations.push({
+                id: 0,
+                traffic: 0,
+                averageCostByClient: 0
+            });
+        }
     },
     mounted()
     {
+
         this.roleList.push("Tous");
         getAllRoles().then(allRoles =>
         {
@@ -674,13 +918,12 @@ export default {
                 this.roleList.push(role.name)
             });
         })
-        this.loadScheduleWeekInfo();
         this.loadEmployee();
+        this.setDatePropertyMappingateMap();
+        this.loadScheduleWeekInfo();
     }
 }
-
 </script>
-
 
 <style scoped>
 :deep(input)::-webkit-outer-spin-button,

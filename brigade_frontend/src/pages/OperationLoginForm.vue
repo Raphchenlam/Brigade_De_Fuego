@@ -76,9 +76,3 @@ export default {
   components: { DarkRedButton }
 };
 </script>
-
-<style scoped>
-.warning-message {
-  color: red
-}
-</style>

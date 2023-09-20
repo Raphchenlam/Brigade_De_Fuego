@@ -1,7 +1,7 @@
 const pool = require('./DBPool');
 
 
-const getScheduleWeekInfoByID = async (scheduleWeekId) =>
+const selectScheduleWeekInfoByID = async (scheduleWeekId) =>
 {
     const result = await pool.query(
         `SELECT * FROM schedule_week
@@ -23,9 +23,9 @@ const getScheduleWeekInfoByID = async (scheduleWeekId) =>
 
     return undefined;
 };
-exports.getScheduleWeekInfoByID = getScheduleWeekInfoByID;
+exports.selectScheduleWeekInfoByID = selectScheduleWeekInfoByID;
 
-const getAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
+const selectAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
 {
     const scheduleObj = await pool.query(
         `SELECT *
@@ -34,7 +34,8 @@ const getAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
         [scheduleWeekId]
     )
 
-    return scheduleObj.rows.map(row => {
+    return scheduleObj.rows.map(row =>
+    {
         const schedulePeriodObj = {
             id: row.id,
             date: row.date,
@@ -51,28 +52,21 @@ const getAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
         return schedulePeriodObj;
     });
 };
-exports.getAllSchedulePeriodsByScheduleWeekID = getAllSchedulePeriodsByScheduleWeekID;
+exports.selectAllSchedulePeriodsByScheduleWeekID = selectAllSchedulePeriodsByScheduleWeekID;
 
 
 const selectAllEmployeesScheduleByScheduleWeekId = async (scheduleWeekId) =>
 {
-    /* const result = await pool.query(
-        `SELECT first_name || ' ' || last_name AS name, e.role, es.*, sp.*
-        FROM schedule_week as sw
-        JOIN schedule_period as sp ON sp.schedule_week_id = sw.id
-        JOIN employee_schedule as es ON es.schedule_period_id = sp.id
-        JOIN employee as e ON e.employee_number = es.employee_number
-        WHERE sw.id = $1`,
-        [scheduleWeekId]
-    ); */
+
 
     const result = await pool.query(
-        `SELECT first_name || ' ' || last_name AS name, e.role, es.*, sp.*
+        `SELECT first_name || ' ' || last_name AS name, e.role, e.skill_points, es.*, sp.*
         FROM schedule_week as sw
         JOIN schedule_period as sp ON sp.schedule_week_id = sw.id
         JOIN employee_schedule as es ON es.schedule_period_id = sp.id
         JOIN employee as e ON e.employee_number = es.employee_number
-        WHERE sw.id = $1`,
+        WHERE sw.id = $1
+        ORDER BY e.role`,
         [scheduleWeekId]
     );
 
@@ -83,8 +77,9 @@ const selectAllEmployeesScheduleByScheduleWeekId = async (scheduleWeekId) =>
             employeeNumber: row.employee_number,
             name: row.name,
             role: row.role,
+            skillPoints: row.skill_points,
             date: row.date,
-            shiftName : row.shift_name,
+            shiftName: row.shift_name,
             startTime: row.start_time,
             endTime: row.end_time,
             time: row.start_time + "-" + row.end_time
@@ -93,8 +88,6 @@ const selectAllEmployeesScheduleByScheduleWeekId = async (scheduleWeekId) =>
     });
 };
 exports.selectAllEmployeesScheduleByScheduleWeekId = selectAllEmployeesScheduleByScheduleWeekId;
-
-
 
 
 const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
@@ -117,8 +110,8 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
             return undefined;
         }
         const row = result.rows[0];
-        console.log("scheduleWeekToInsert", scheduleWeekToInsert)
         let weekIdToInsert;
+
         for (let day of Object.keys(scheduleWeekToInsert)) 
         {
             if (day == "weekId")
@@ -148,7 +141,8 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
 
         await client.query("COMMIT");
 
-        return scheduleObj.rows.map(row => {
+        return scheduleObj.rows.map(row =>
+        {
             const schedulePeriodObj = {
                 id: row.id,
                 date: row.date,
@@ -175,4 +169,65 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
         client.release();
     }
 };
+
 exports.insertNewScheduleWeek = insertNewScheduleWeek;
+
+const insertNewEmployeeSchedule = async (scheduledEmployeeList) =>
+{
+    console.log("scheduledEmployeeList recu",scheduledEmployeeList);
+    if (scheduledEmployeeList.length > 0)
+    {
+        console.log("ICI0");
+        for (i = 0; i < scheduledEmployeeList.length; i++)
+        {
+            console.log("ICI1");
+            for (j = 0; j < 14; j++)
+            {
+                console.log("ICI2");
+                if (
+                    scheduledEmployeeList[i] &&
+                    scheduledEmployeeList[i].schedules &&
+                    scheduledEmployeeList[i].schedules[j].startTime != null
+                )
+                {
+                    console.log("ICI3");
+                    const result = await pool.query(
+                        `INSERT INTO employee_schedule (employee_number, schedule_period_id, start_time, end_time)
+                VALUES ($1,$2,$3,$4)`,
+                        [scheduledEmployeeList[i].employeeNumber, scheduledEmployeeList[i].schedules[j].id, scheduledEmployeeList[i].schedules[j].startTime, scheduledEmployeeList[i].schedules[j].endTime]
+                    );
+                }
+            }
+        }
+    }
+};
+exports.insertNewEmployeeSchedule = insertNewEmployeeSchedule;
+
+
+const updatePeriodsInformations = async (weekInformationsList) =>
+{
+    for (i = 0; i < weekInformationsList.length; i++)
+    {
+        const result = await pool.query(
+            `UPDATE schedule_period
+            SET average_traffic = $2, average_cost_by_client = $3
+                WHERE id = $1`,
+            [weekInformationsList[i].id, weekInformationsList[i].traffic, weekInformationsList[i].averageCostByClient]
+        );
+    }
+};
+exports.updatePeriodsInformations = updatePeriodsInformations;
+
+
+const deleteEmployeeFromSchedule = async (periodIdList) =>
+{
+    const lowest = Math.min(...periodIdList);
+    const highest = Math.max(...periodIdList);
+    const result = await pool.query(
+        `DELETE FROM employee_schedule
+        WHERE schedule_period_id >= $1 AND schedule_period_id <= $2`,
+        [lowest, highest]
+    );
+};
+
+exports.deleteEmployeeFromSchedule = deleteEmployeeFromSchedule;

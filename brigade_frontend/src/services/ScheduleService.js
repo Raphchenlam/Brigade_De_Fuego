@@ -52,3 +52,22 @@ export async function getEmployeeScheduleByScheduleWeekId(scheduleWeekId)
         throw await createServiceError(response);
     }
 }
+
+
+export async function updateSchedule(scheduleInformations)
+{
+    const response = await fetch(`/api/schedule`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            // ...session.getAuthHeaders()
+        },
+        body: JSON.stringify(scheduleInformations)
+    });
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        throw await createServiceError(response);
+    }
+}
