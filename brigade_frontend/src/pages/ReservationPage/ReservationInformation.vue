@@ -69,26 +69,19 @@ export default {
     },
     watch: {
         reservationId() {
-            console.log("In the res infos watch");
             this.loadReservation(this.reservationId);
         }
     },
     methods: {
         loadReservation(selectedReservationId) {
-            console.log("dans le loadReservation");
-            console.log("selectedReservationId " + selectedReservationId);
             if (selectedReservationId) {
-                console.log("FETCH ICI")
-
                 getReservationById(selectedReservationId).then(reservation => {
-                    console.log("getReservationById" + this.reservation);
                     this.reservation = reservation;
                 }).catch(err => {
                     console.error(err);
                 })
             }
             else {
-                console.log("RESET ICI")
                 this.reservation = {};
             }
         },
@@ -102,11 +95,7 @@ export default {
         };
     },
     mounted() {
-        console.log("mounted");
-        console.log("this.reservationId " + this.reservationId);
-
         if (this.reservationId) {
-            console.log("inside mounted if");
             this.loadReservation(this.reservationId);
         }
     }

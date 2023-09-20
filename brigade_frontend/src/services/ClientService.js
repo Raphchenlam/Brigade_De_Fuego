@@ -32,6 +32,17 @@ const convertToClient = jsonClient => {
     };
 };
 
+export async function getClientList() {
+    const response = await fetch(`/api/client`);
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        console.log(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
+
 export async function createClient(client) {
     const response = await fetch(`/api/client`, {
         method: "POST",

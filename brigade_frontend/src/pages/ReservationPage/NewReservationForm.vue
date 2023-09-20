@@ -51,6 +51,7 @@
                                         <v-text-field :counter="16" autofocus type="number" v-model="reservation.takenBy"
                                             label="Numero de la carte employe" :rules="[rules.required]"></v-text-field>
                                     </v-row>
+                                    <p>6547598653454321</p>
                                     <v-dialog v-model="dialogOKReservation" width="50%" persistent>
                                         <template v-slot:activator="{ props }">
                                             <v-sheet class="ma-2 text-center">
@@ -91,7 +92,7 @@ import ClientList from '../ClientPage/ClientList.vue';
 import { createReservation } from '../../services/ReservationService'
 
 export default {
-    inject: ['closeNewReservationDialog', 'spliceDate'],
+    inject: ['closeNewReservationDialog', 'spliceDate', 'refreshWithNewreservation'],
     components: {
         DarkRedButton,
         ClientList,
@@ -165,6 +166,9 @@ export default {
             createReservation(this.reservation).then(result => {
                 if (result) {
                     this.dialogOKReservation = true;
+                    if(this.dialogOKReservation){
+                        this.refreshWithNewreservation([result.id]);
+                    }
                     setTimeout(this.closeAllDialog, 2000);
                 }
             }).catch(err => {

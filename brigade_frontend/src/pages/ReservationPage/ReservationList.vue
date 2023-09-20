@@ -20,9 +20,9 @@
                 </v-dialog>
             </v-row>
             <v-row>
-                <v-text-field type="date" class="ma-2" label="Date Debut" v-model="startDate" clearable>
+                <v-text-field type="date" class="ma-2 pa-4" label="Date Debut" v-model="startDate" @click:clear="resetStartDate" clearable hint="'Clear' réinitialise la date courante" persistent-hint>
                 </v-text-field>
-                <v-text-field type="date" class="ma-2" label="Date Fin" v-model="endDate" clearable>
+                <v-text-field type="date" class="ma-2 pa-4" label="Date Fin" v-model="endDate" @click:clear="resetEndDate" clearable hint="'Clear' réinitialise la date courante" persistent-hint>
                 </v-text-field>
             </v-row>
             <v-radio-group v-model="shiftShow">
@@ -72,6 +72,7 @@ export default {
     provide() {
         return {
             closeNewReservationDialog: this.closeNewReservationDialog,
+            refreshWithNewreservation: this.refreshWithNewreservation
         };
     },
     watch: {
@@ -85,9 +86,15 @@ export default {
             this.filterReservations();
         },
         startDate() {
+            if(this.startDate == ""){
+                this.resetStartDate();
+            }
             this.loadReservations(this.startDate, this.endDate);
         },
         endDate() {
+            if(this.endDate == ""){
+                this.resetEndDate();
+            }
             this.loadReservations(this.startDate, this.endDate);
         },
         selected() {
@@ -95,6 +102,10 @@ export default {
         },
     },
     methods: {
+        refreshWithNewreservation(newReservation){
+            this.loadReservations(this.startDate, this.endDate);
+            this.selected = newReservation;
+        },
         loadReservations(startDate, endDate) {
             getReservationList(startDate, endDate)
                 .then((reservationList) => {
@@ -142,6 +153,12 @@ export default {
         closeNewReservationDialog() {
             this.dialogNewReservation = false;
         },
+        resetStartDate() {
+            this.startDate = new Date().toISOString().split('T')[0];
+        },
+        resetEndDate() {
+            this.endDate = new Date().toISOString().split('T')[0];
+        }
     },
     mounted() {
         this.endDate = this.startDate = new Date().toISOString().split('T')[0];

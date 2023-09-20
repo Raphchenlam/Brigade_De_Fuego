@@ -2,26 +2,26 @@
     <v-sheet>
         <v-card class="mx-10 h-75">
             <v-row class="mb-0">
-            <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
-            class="ma-2"></v-text-field>
-            <v-dialog v-model="dialogNewClient" width="100%">
-            <template v-slot:activator="{ props }">
-                <div class="ma-2 text-center">
-                    <BlackButton class="h-100 w-100" textbutton="+" v-bind="props"></BlackButton>
-                </div>
-            </template>
-            <v-card>
-                <v-card-title>
-                    Creer un nouveau client
-                </v-card-title>
-                <NewClientForm></NewClientForm>
-            </v-card>
-        </v-dialog>
-        </v-row>
-            <v-list v-model:selected='selected' :items="clients" item-title="listInformation" item-value="id">
+                <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
+                    class="ma-2"></v-text-field>
+                <v-dialog v-model="dialogNewClient" width="100%">
+                    <template v-slot:activator="{ props }">
+                        <div class="ma-2 text-center">
+                            <BlackButton class="h-100 w-100" textbutton="+" v-bind="props"></BlackButton>
+                        </div>
+                    </template>
+                    <v-card>
+                        <v-card-title>
+                            Creer un nouveau client
+                        </v-card-title>
+                        <NewClientForm></NewClientForm>
+                    </v-card>
+                </v-dialog>
+            </v-row>
+            <v-list v-model:selected='selected' :items="filteredClientList" item-title="listInformation" item-value="id">
             </v-list>
         </v-card>
-        
+
     </v-sheet>
 </template>
 
@@ -32,142 +32,68 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 import NewClientForm from "../clientpage/NewClientForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
+import { getClientList } from '../../services/ClientService';
 
 export default {
     inject: ['loadClientId'],
     components: {
-    VDataTable,
-    NewClientForm,
-    BlackButton,
-    DarkRedButton
-},
+        VDataTable,
+        NewClientForm,
+        BlackButton,
+        DarkRedButton
+    },
     data() {
         return {
             selected: [],
             search: '',
             clients: [],
+            filteredClientList: [],
             dialogNewClient: false,
         };
     },
     provide() {
         return {
             closeNewClientDialog: this.closeNewClientDialog,
+            loadClients: this.loadClients
         };
     },
     methods: {
-        loadClients() {
-            const allClients = [
-                {
-                    listInformation: "Alice Dupays (111-111-1111)",
-                    id: 1,
-                    firstName: "Alice",
-                    lastName: "dupays",
-                    phoneNumber: "111-111-1111",
-                    allergy: null,
-                    isFavorite: false,
-                    isBlacklisted: false,
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "Bob Gratton (555-555-5555)",
-                    id: 2,
-                    firstName: "Bob",
-                    lastName: "Gratton",
-                    phoneNumber: "555-555-5555",
-                    allergy: "Gluten",
-                    isFavorite: true,
-                    isBlacklisted: false,
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "Maxime Marchand (888-111-1111)",
-                    id: 3,
-                    firstName: "Maxime",
-                    lastName: "Marchand",
-                    phoneNumber: "888-111-1111",
-                    allergy: null,
-                    isFavorite: false,
-                    isBlacklisted: false,
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "Francis Maynard (999-555-5555)",
-                    id: 4,
-                    firstName: "Francis",
-                    lastName: "Maynard",
-                    phoneNumber: "999-555-5555",
-                    allergy: "Gluten",
-                    isFavorite: true,
-                    isBlacklisted: false,
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "Raphael Chenard Lamothe (888-888-8888)",
-                    id: 5,
-                    firstName: "Raphael",
-                    lastName: "Chenard Lamothe",
-                    phoneNumber: "888-888-8888",
-                    allergy: null,
-                    isFavorite: false,
-                    isBlacklisted: false,
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "Alice Dupays (555-555-5555)",
-                    id: 6,
-                    firstName: "David",
-                    lastName: "Beaudry",
-                    phoneNumber: "000-111-5555",
-                    allergy: "Gluten",
-                    isFavorite: true,
-                    isBlacklisted: false,
-                    props: {
-                        color: 'red',
-                    },
-                }, {
-                    listInformation: "Maxime Roy (555-444-1111)",
-                    id: 7,
-                    firstName: "Maxime",
-                    lastName: "Roy",
-                    phoneNumber: "555-444-1111",
-                    allergy: null,
-                    isFavorite: false,
-                    isBlacklisted: false,
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "Gab D'amours (666-666-6666)",
-                    id: 8,
-                    firstName: "Gab",
-                    lastName: "D'amours",
-                    phoneNumber: "666-666-6666",
-                    allergy: "Gluten",
-                    isFavorite: true,
-                    isBlacklisted: false,
-                    props: {
-                        color: 'red',
-                    },
-                },
-            ]
+        loadClients(clientAdded) {
             this.clients = [];
-            allClients.forEach(client => {
-                if (client.firstName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                    || client.lastName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                    || client.phoneNumber.indexOf(this.search) >= 0) {
-                    this.clients.push(client);
+
+            getClientList()
+                .then((clientList) => {
+
+                    this.clients = clientList;
+                })
+                .catch((err) => {
+                    console.log(err);
+                    alert(err.message);
+                });
+
+            if (clientAdded) this.selected = clientAdded, this.search = clientAdded[1];
+        },
+        filterClients() {
+            this.filteredClientList = [];
+
+            this.clients.forEach(client => {
+                if (client.first_name.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                    || client.last_name.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                    || client.phone_number.indexOf(this.search) >= 0) {
+
+                    const clientToKeep = {
+                        "listInformation":
+                            client.first_name + " " + client.last_name + " (" + client.phone_number + ") - Favorite ? " + client.is_favorite + " Blacklisted ? " + client.is_blacklisted + " Allergie(s) : " + client.allergy,
+                        ...client,
+                        props: {
+                            color: 'red',
+                        },
+                    }
+
+                    this.filteredClientList.push(clientToKeep);
                 }
+
+
             });
         },
         closeNewClientDialog() {
@@ -175,10 +101,15 @@ export default {
         },
     },
     watch: {
-        selected()
-        {
+        selected() {
             this.loadClientId(this.selected[0]);
-        }
+        },
+        clients() {
+            this.filterClients();
+        },
+        search() {
+            this.filterClients();
+        },
     },
     mounted() {
         this.loadClients();
@@ -188,7 +119,6 @@ export default {
 
 <style scoped>
 .v-btn {
-    font-size:xx-large;
+    font-size: xx-large;
 }
-
 </style>

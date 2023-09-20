@@ -1,5 +1,16 @@
 const pool = require("./DBPool");
 
+
+const getClientList = async () => {
+    const result = await pool.query(
+        `SELECT * FROM client
+            ORDER BY first_name`);
+
+    return result.rows;
+};
+exports.getClientList = getClientList;
+
+
 const getClientById = async (id) => {
     const result = await pool.query(
         `SELECT * FROM client
