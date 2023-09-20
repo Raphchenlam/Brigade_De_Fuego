@@ -13,11 +13,8 @@ VALUES
 -- Insertion dans la table schedule_week
 INSERT INTO schedule_week ("id", "start_date", "end_date")
 VALUES 
-('2024-W40','2024-09-30', '2024-10-06'),
-('2024-W41','2024-10-07', '2024-10-13'),
-('2024-W42','2024-10-14', '2024-10-20'),
-('2024-W43','2024-10-21', '2024-10-27'),
-('2024-W44','2024-10-28', '2024-11-03');
+('2023-W38','2023-09-18', '2023-09-24'),
+('2023-W39','2023-09-25', '2023-10-01');
 
 -- Insertion dans la table shift
 INSERT INTO shift ("name", start_time, end_time)
@@ -28,20 +25,34 @@ VALUES
 -- Insertion dans la table schedule_period
 INSERT INTO schedule_period ("date", shift_name, schedule_week_id, average_traffic, expected_traffic, actual_traffic, average_cost_by_client, required_skill_points, expected_skill_points, scheduled_skill_points)
 VALUES 
-('2024-10-07', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-07' >= start_date AND '2024-10-07' <= end_date), 100, 100, 0, 50.0, 0, 50, 0),
-('2024-10-07', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-07' >= start_date AND '2024-10-07' <= end_date), 120, 120, 0, 55.0, 0, 60, 0),
-('2024-10-08', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-08' >= start_date AND '2024-10-08' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2024-10-08', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-08' >= start_date AND '2024-10-08' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2024-10-09', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-09' >= start_date AND '2024-10-09' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2024-10-09', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-09' >= start_date AND '2024-10-09' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2024-10-10', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-10' >= start_date AND '2024-10-10' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2024-10-10', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-10' >= start_date AND '2024-10-10' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2024-10-11', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-11' >= start_date AND '2024-10-11' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2024-10-11', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-11' >= start_date AND '2024-10-11' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2024-10-12', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-12' >= start_date AND '2024-10-12' <= end_date), 110, 110, 24, 52.0, 12, 55, 0),
-('2024-10-12', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-12' >= start_date AND '2024-10-12' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2024-10-13', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-13' >= start_date AND '2024-10-13' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2024-10-13', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-13' >= start_date AND '2024-10-13' <= end_date), 130, 130, 0, 60.0, 0, 65, 0);
+('2023-09-18', 'Midi', '2023-W38', 100, 100, 0, 50.0, 0, 50, 0),
+('2023-09-18', 'Soir', '2023-W38', 120, 120, 0, 55.0, 0, 60, 0),
+('2023-09-19', 'Midi', '2023-W38', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-19', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-20', 'Midi', '2023-W38', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-20', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-21', 'Midi', '2023-W38', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-21', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-22', 'Midi', '2023-W38', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-22', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-23', 'Midi', '2023-W38', 110, 110, 24, 52.0, 12, 55, 0),
+('2023-09-23', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-24', 'Midi', '2023-W38', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-24', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-25', 'Midi', '2023-W39', 100, 100, 0, 50.0, 0, 50, 0),
+('2023-09-25', 'Soir', '2023-W39', 120, 120, 0, 55.0, 0, 60, 0),
+('2023-09-26', 'Midi', '2023-W39', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-26', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-27', 'Midi', '2023-W39', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-27', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-28', 'Midi', '2023-W39', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-28', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-29', 'Midi', '2023-W39', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-29', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-30', 'Midi', '2023-W39', 110, 110, 24, 52.0, 12, 55, 0),
+('2023-09-30', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-10-01', 'Midi', '2023-W39', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-10-01', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0);
 -- Insertion dans la table schedule_event
 INSERT INTO schedule_event(schedule_period_id, event_name)
 	VALUES
@@ -104,7 +115,15 @@ VALUES
 (2222, 1, '10:00:00', '15:00:00'),
 (3333, 2, '17:00:00', '20:00:00'),
 (3333, 3, '11:00:00', '14:00:00'),
-(2222, 4, '16:00:00', '22:00:00');
+(2222, 4, '16:00:00', '22:00:00'),
+(1111, 15, '08:00:00', '16:00:00'),
+(1111, 16, '16:00:00', '22:00:00'),
+(1111, 17, '8:00:00', '16:00:00'),
+(1111, 18, '16:00:00', '22:00:00'),
+(2222, 20, '10:00:00', '15:00:00'),
+(3333, 22, '17:00:00', '20:00:00'),
+(3333, 23, '11:00:00', '14:00:00'),
+(2222, 22, '16:00:00', '22:00:00');
 
 -- Insertion dans la table client
 INSERT INTO client (first_name, last_name, phone_number, allergy, is_favorite, is_blacklisted)
