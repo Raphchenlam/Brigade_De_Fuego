@@ -1,5 +1,5 @@
 <template>
-    <v-sheet v-if="userSession && this.isUserAuthorized()">
+    <v-sheet v-if="userSession">
         <PunchList v-if="this.isUserAuthorized()"></PunchList>
     </v-sheet>
 </template>
