@@ -1,8 +1,7 @@
 <template>
-<AdminDashboard v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)"></AdminDashboard>
+<AdminDashboard v-if="this.isUserAuthorized()"></AdminDashboard>
 <EmployeeDashboard v-if="(userSession.employee && userSession.employee.isActive) && !userSession.employee.isAdmin "></EmployeeDashboard>
 </template>
-
 
 
 <script>
@@ -12,6 +11,7 @@ import AdminDashboard from "./AdminDashboard.vue"
 
 
 export default {
+  inject:['isUserAuthorized'],
     components: {
         EmployeeDashboard,
         AdminDashboard
@@ -24,7 +24,7 @@ export default {
   },
 mounted()
     {
-        if (!userSession || !userSession.employee)
+        if (!this.userSession)
         {
             this.$router.push('/espace');
         }

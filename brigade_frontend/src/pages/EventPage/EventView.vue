@@ -1,7 +1,7 @@
 <template>
-    <v-sheet v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)">
+    <v-sheet v-if="userSession && this.isUserAuthorized()">
         <v-row class="justify-space-between">
-            <EventList v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)" class="h-screen" width="35%"></EventList>
+            <EventList v-if="this.isUserAuthorized()" class="h-screen" width="35%"></EventList>
             <EventInformation v-if="selectedEvent" class="h-screen" width="65%"></EventInformation>
         </v-row>
     </v-sheet>
@@ -19,6 +19,7 @@ import EventInformation from "./EventInformation.vue";
 import EventList from './EventList.vue';
 
 export default {
+    inject:['isUserAuthorized'],
     components: {
         EventList,
         EventInformation
@@ -53,9 +54,9 @@ export default {
             toggleUpdateEventList: this.toggleUpdateEventList
         };
     },
-    mounted() {
-        if (!userSession.employee) {
-            this.$router.push('/espace');
+    beforeMount() {
+        if (!this.userSession) {
+            this.$router.push('/espace/dashboard');
         }
     },
 }
