@@ -27,6 +27,7 @@ const selectLoginByEmployeeNumber = async (employeeNumber, client) => {
 }
 exports.selectLoginByEmployeeNumber = selectLoginByEmployeeNumber;
 
+
 const selectAllEmployees = async () => {
     const result = await pool.query(
         `SELECT * from employee
@@ -44,6 +45,7 @@ const selectAllEmployees = async () => {
     });
 };
 exports.selectAllEmployees = selectAllEmployees;
+
 
 const selectAllEmployeesByRole = async (role) => {
     const result = await pool.query(
@@ -116,10 +118,15 @@ const insertEmployee = async (newEmployee, passwordSalt, passwordHash, clientPar
         client.release();
     }
 }
-
 exports.insertEmployee = insertEmployee;
 
-const selectEmployeeByEmployeeNumber = async (employeeNumber, clientParam) => {
+
+// const updateEmployeeByAdmin = async (employeeToUpdate) => {
+
+// };
+// exports.updateEmployeeByAdmin = updateEmployeeByAdmin;
+
+const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
     const result = await pool.query(
         `SELECT *
         FROM employee
@@ -150,6 +157,7 @@ const selectEmployeeByEmployeeNumber = async (employeeNumber, clientParam) => {
 };
 exports.selectEmployeeByEmployeeNumber = selectEmployeeByEmployeeNumber;
 
+
 const selectEmployeeByBarcodeNumber = async (barcodeNumber) => {
     const result = await pool.query(
         `SELECT *
@@ -174,9 +182,6 @@ const selectEmployeeByBarcodeNumber = async (barcodeNumber) => {
 };
 exports.selectEmployeeByBarcodeNumber = selectEmployeeByBarcodeNumber;
 
-//const getLoginByEmployeeNumber (se référer à getLoginByUserAccountEmail de recettesRodrigo)
-
-//const getEmployeeNumber (verif dans employeeRouter) PAS FAIT
 
 const selectAssignedColorHexcode = async (colorHexCode) => {
     const result = await pool.query(
@@ -195,6 +200,7 @@ const selectAssignedColorHexcode = async (colorHexCode) => {
     return undefined;
 };
 exports.selectAssignedColorHexcode = selectAssignedColorHexcode;
+
 
 const selectUsedPhoneNumber = async (phoneNumber) => {
     const result = await pool.query(
@@ -215,8 +221,8 @@ const selectUsedPhoneNumber = async (phoneNumber) => {
     }
     return undefined;
 };
-
 exports.selectUsedPhoneNumber = selectUsedPhoneNumber;
+
 
 const selectUsedEmail = async (email) => {
     const result = await pool.query(

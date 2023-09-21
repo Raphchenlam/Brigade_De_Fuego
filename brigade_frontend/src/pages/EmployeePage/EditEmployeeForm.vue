@@ -1,6 +1,6 @@
 <template>
     <div class="ma-2" width="auto">
-        <v-form class="pa-10" validate-on="submit lazy" ref="editEmployeeForm">
+        <v-form @submit.prevent="updateEmployee" class="pa-10" validate-on="blur" ref="editEmployeeForm">
             <v-row>
                 <v-col cols="3">
                     <v-text-field disabled v-model="updatingEmployee.employeeNumber" class="mx-2" label="# Employé"
@@ -28,19 +28,19 @@
             </v-row>
             <v-row>
                 <v-col>
-                    <v-text-field v-model="updatingEmployee.firstName" class="mx-2" label="Prénom" clearable
+                    <v-text-field disabled v-model="updatingEmployee.firstName" class="mx-2" label="Prénom" clearable
                         :rules="[rules.required, rules.validateName, rules.fieldLength255]" maxlength="255">
                     </v-text-field>
                 </v-col>
                 <v-col>
-                    <v-text-field v-model="updatingEmployee.lastName" class="mx-2" label="Nom de famille" clearable
+                    <v-text-field disabled v-model="updatingEmployee.lastName" class="mx-2" label="Nom de famille" clearable
                         :rules="[rules.required, rules.validateName, rules.fieldLength255]" maxlength="255">
                     </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col>
-                    <v-text-field v-model="updatingEmployee.phoneNumber" class="mx-2"
+                    <v-text-field v-model="updatingEmployee.phoneNumber" @blur="patternedPhoneNumber()" class="mx-2"
                         label="Numero de telephone(xxx-xxx-xxxx)" density="compact" clearable
                         :rules="[rules.required, rules.validatePhoneNumber, rules.fieldLength255]" maxlength="12">
                     </v-text-field>
@@ -84,15 +84,19 @@
                 </v-col>
             </v-row>
 
-            <v-row>
-                <v-text-field @input="validatePassword" v-model="password" label="Mot de passe" type="password"
-                        :rules="[rules.required, rules.validPassword]" density="compact" ref="passwordInput" clearable>
+            <!-- <v-row v-if path = espace/employee/{employeeNumber}>
+                <v-col>
+                    <v-text-field @input="validatePassword" v-model="password" label="Mot de passe" type="password"
+                        :rules="[rules.required, rules.validPassword, rules.fieldLength255]" density="compact" ref="passwordInput" clearable>
                     </v-text-field>
-                    <v-text-field @input="validatePasswordMatch" v-model="passwordConfirmation" label="Confirmer le mot de passe"
-                        :rules="[rules.required, rules.passwordsMatch]" type="password" density="compact"
-                        ref="passwordConfirmInput" clearable>
+                </v-col>
+                <v-col>
+                    <v-text-field @input="validatePasswordMatch" v-model="passwordConfirmation"
+                        label="Confirmer le mot de passe" :rules="[rules.required, rules.passwordsMatch, rules.fieldLength255]" type="password"
+                        density="compact" ref="passwordConfirmInput" clearable>
                     </v-text-field>
-            </v-row>
+                </v-col>
+            </v-row> -->
 
             <v-col>
                 <v-row class="justify-center">
@@ -100,6 +104,19 @@
                     <DarkRedButton class="mx-5" textbutton="Sauvegarder"></DarkRedButton>
                 </v-row>
             </v-col>
+            <v-dialog v-model="updatedEmployee" width="50%" persistent>
+                <v-card height="100px">
+                    <v-card-title>
+                        Confirmation de modification d'employé
+                    </v-card-title>
+                    <v-card-text>
+                        <v-row class="justify-center">
+                            <p>{{ employee.firstName }} {{ employee.lastName }} / {{ employee.employeeNumber }} a bien été
+                                modifié(e).</p>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
         </v-form>
     </div>
 </template>
@@ -110,11 +127,11 @@ import { getEmployeeByEmployeeNumber } from '../../services/EmployeeService';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import {
     validEmployeeNumber, validName, validPhoneNumber, validEmail, validRole, validColorHexCode,
-    validHourlyRate, validBarcodeNumber, validSkillPoints
+    validHourlyRate, validBarcodeNumber, validSkillPoints, validPassword
 } from '../../../../REGEX/REGEX_frontend';
 
 export default {
-    inject: ['closeEditEmployeeDialog', 'capitalizeWords', 'formatPhoneNumber'],
+    inject: ['closeEditEmployeeDialog', 'loadEmployees', 'capitalizeWords', 'formatPhoneNumber'],
     props: {
         employeeNumber: Number
     },
@@ -136,11 +153,11 @@ export default {
                 isAdmin: false,
                 isActive: true,
                 skillPoints: null,
-                password:"",
+                password: "",
                 passwordConfirmation: null,
             },
-            
             selectedRole: "",
+            updatedEmployee: false,
             rules: {
                 required: value => {
                     if (this.updatingEmployee.role == "Gestionnaire" && !this.updatingEmployee.skillPoints) {
@@ -165,14 +182,13 @@ export default {
                     } else {
                         return validSkillPoints.test(value) || "Skill Points invalide : doit être entre 1 et 10"
                     }
-                }
+                },
+                // validPassword: value => validPassword.test(value) || "Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial",
+                // passwordsMatch: () => this.password === this.passwordConf || "Les mots de passe ne correspondent pas",
             }
         }
     },
     methods: {
-        closeDialog() {
-            this.closeEditEmployeeDialog();
-        },
         loadEmployeeByNumber(employeeNumber) {
             if (employeeNumber) {
                 getEmployeeByEmployeeNumber(employeeNumber).then(employee => {
@@ -192,10 +208,31 @@ export default {
                 return;
             }
             try {
-                //await updateEmployee(updatingEmployee)
+                await updateEmployee(updatingEmployee).then((employee) => {
+                    if (employee) {
+                        this.updatedEmployee = true;
+                        this.updateEmployeeList();
+                        setTimeout(this.closeDialog, 2500);
+                    }
+                });
             } catch (error) {
-
+                console.error(err);
+                alert(err.message);
+                if (err.status === 409) {
+                    this.uniqueEmployee = false;
+                }
+                await this.$refs.editEmployeeForm.validate();
             }
+        },
+        closeDialog() {
+            this.updatedEmployee = false;
+            this.closeEditEmployeeDialog();
+        },
+        updateEmployeeList() {
+            this.loadEmployees();
+        },
+        patternedPhoneNumber() {
+            this.employee.phoneNumber = this.formatPhoneNumber(this.employee.phoneNumber);
         }
     },
     mounted() {
