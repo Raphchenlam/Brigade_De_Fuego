@@ -9,10 +9,8 @@ const selectScheduleWeekInfoByID = async (scheduleWeekId) =>
         [scheduleWeekId]);
 
     const row = result.rows[0];
-
     if (row)
     {
-
         const scheduleWeek = {
             id: row.id,
             starDate: row.start_date,
@@ -120,7 +118,6 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
             }
             if (day != "weekId")
             {
-                console.log("DATE", scheduleWeekToInsert[day]);
                 await client.query(
                     `INSERT INTO schedule_period ("date", shift_name, schedule_week_id, average_traffic, expected_traffic, actual_traffic, average_cost_by_client, required_skill_points, expected_skill_points, scheduled_skill_points)
                     VALUES ($1, 'Midi', $2, 0, 0, 0, 0, 0, 0, 0)`,
@@ -174,23 +171,18 @@ exports.insertNewScheduleWeek = insertNewScheduleWeek;
 
 const insertNewEmployeeSchedule = async (scheduledEmployeeList) =>
 {
-    console.log("scheduledEmployeeList recu",scheduledEmployeeList);
     if (scheduledEmployeeList.length > 0)
     {
-        console.log("ICI0");
         for (i = 0; i < scheduledEmployeeList.length; i++)
         {
-            console.log("ICI1");
             for (j = 0; j < 14; j++)
             {
-                console.log("ICI2");
                 if (
                     scheduledEmployeeList[i] &&
                     scheduledEmployeeList[i].schedules &&
                     scheduledEmployeeList[i].schedules[j].startTime != null
                 )
                 {
-                    console.log("ICI3");
                     const result = await pool.query(
                         `INSERT INTO employee_schedule (employee_number, schedule_period_id, start_time, end_time)
                 VALUES ($1,$2,$3,$4)`,
@@ -204,7 +196,7 @@ const insertNewEmployeeSchedule = async (scheduledEmployeeList) =>
 exports.insertNewEmployeeSchedule = insertNewEmployeeSchedule;
 
 
-const updatePeriodsInformations = async (weekInformationsList) =>
+const updateSchedulePeriodsInformations = async (weekInformationsList) =>
 {
     for (i = 0; i < weekInformationsList.length; i++)
     {
@@ -216,13 +208,16 @@ const updatePeriodsInformations = async (weekInformationsList) =>
         );
     }
 };
-exports.updatePeriodsInformations = updatePeriodsInformations;
+exports.updateSchedulePeriodsInformations = updateSchedulePeriodsInformations;
 
 
 const deleteEmployeeFromSchedule = async (periodIdList) =>
 {
+    console.log("periodIdList",periodIdList)
     const lowest = Math.min(...periodIdList);
     const highest = Math.max(...periodIdList);
+    console.log("lowest",lowest)
+    console.log("highest",highest)
     const result = await pool.query(
         `DELETE FROM employee_schedule
         WHERE schedule_period_id >= $1 AND schedule_period_id <= $2`,

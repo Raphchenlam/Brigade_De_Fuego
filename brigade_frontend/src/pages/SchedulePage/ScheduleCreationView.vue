@@ -743,8 +743,8 @@ export default {
                 console.log(err)
             });
         },
-        refreshEmployee() {
-            console.log("ICI REFRESHEMPLOYEE")
+        refreshEmployee()
+        {
             let newEmployeeList = [];
             this.scheduledEmployees.forEach(employee => {
                 if (this.roleShowed == "Tous" || employee.role == this.roleShowed) {
@@ -782,8 +782,8 @@ export default {
         addNewEmployeeToSchedule() {
             //if (!this.selectedEmployeeNumberToAdd) { return }
             let found = this.scheduledEmployees.find(({ employeeNumber }) => employeeNumber == this.selectedEmployeeNumberToAdd);
-            console.log("found", found);
-            if (found) {
+            if (found)
+            {
                 this.warningEmployeeAlreadyInScheduleMessage = true;
             }
             else {
@@ -816,10 +816,9 @@ export default {
         },
         removeEmployeeFromSchedule(employeeNumberToRemove) {
             let found = this.scheduledEmployees.find(({ employeeNumber }) => employeeNumber == employeeNumberToRemove);
-            console.log("found", found);
-            if (found) {
+            if (found)
+            {
                 const index = this.scheduledEmployees.indexOf(found);
-                console.log(index);
                 const x = this.scheduledEmployees.splice(index, 1);
                 this.refreshEmployee();
             }
@@ -833,12 +832,15 @@ export default {
                 weekInformations: this.weekInformations,
                 scheduledEmployees: this.scheduledEmployees
             }
-            console.log("weekInformations", weekInformations)
-            updateSchedule(weekInformations).then((result) => {
-                console.log("ICI CRISS", this.dialogSaved);
-                this.dialogSaved = true;
-                setTimeout(this.closeDialogSaved, 2000);
-            }).catch(err => {
+            updateSchedule(weekInformations).then((result) =>
+            {
+                if (result)
+                {
+                    this.dialogSaved = true;
+                    setTimeout(this.closeDialogSaved, 2000);
+                }
+            }).catch(err =>
+            {
                 console.error(err);
             });
         },
@@ -914,7 +916,8 @@ export default {
             });
         }
     },
-    mounted() {
+    mounted()
+    {
         this.roleList.push("Tous");
         getAllRoles().then(allRoles => {
             allRoles.forEach(role => {
