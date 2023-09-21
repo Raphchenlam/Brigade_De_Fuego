@@ -1,9 +1,9 @@
 <template>
     <v-sheet
-        v-if="(userSession && this.isUserAuthorized())">
-        <v-row>
+        v-if="userSession">
+        <v-row v-if="this.isUserAuthorized()">
             <LeaveList
-                v-if="(this.isUserAuthorized())">
+                v-if="this.isUserAuthorized()">
             </LeaveList>
         </v-row>
     </v-sheet>

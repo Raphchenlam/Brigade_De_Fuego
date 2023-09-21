@@ -1,6 +1,6 @@
 <template>
-    <v-sheet class="ma-2">
-        <v-sheet class="my-2 mx-10">
+    <v-sheet class="ma-2" v-if="userSession">
+        <v-sheet class="my-2 mx-10" v-if="this.isUserAuthorized()">
             <v-row class="justify-space-around">
                 <v-col cols="9">
                     <v-card v-if="showedShift == 'Lunch'" class="pa-1">
@@ -277,13 +277,13 @@
                 </v-col>
             </v-row>
         </v-sheet>
-        <v-sheet class="mx-15 my-5">
+        <v-sheet class="mx-15 my-5" v-if="this.isUserAuthorized()">
             <v-row class="justify-space-between">
                 <v-btn @click="dialogAddEmployee = true">Ajouter un employe</v-btn>
                 <v-btn @click="saveSchedule()">Sauvegarger</v-btn>
             </v-row>
         </v-sheet>
-        <v-sheet class="mx-10">
+        <v-sheet class="mx-10" v-if="this.isUserAuthorized()">
             <v-card class="pa-2 w-100 h-screen elevation-4">
                 <v-row class="justify-end" no-gutters>
                     <v-col class="ml-2" cols="3">
@@ -380,54 +380,75 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[0].time != null">
-                                <v-btn :color="employee.schedules[1].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[0].time }}</v-btn>
+                                <v-btn :color="employee.schedules[1].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[0].time }}</v-btn>
                             </div>
                             <div v-else>
-                                <v-btn @click="addShiftToEmployee(employee, 0)" :color="employee.schedules[1].time ? '#dcdcdc' : ''" align="center" height="25"
-                                    width="100">+</v-btn></div>
+                                <v-btn @click="addShiftToEmployee(employee, 0)"
+                                    :color="employee.schedules[1].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn>
+                            </div>
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[2].time != null">
-                                <v-btn :color="employee.schedules[3].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[2].time }}</v-btn>
+                                <v-btn :color="employee.schedules[3].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[2].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 2)" :color="employee.schedules[3].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 2)"
+                                    :color="employee.schedules[3].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[4].time != null">
-                                <v-btn :color="employee.schedules[5].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[4].time }}</v-btn>
+                                <v-btn :color="employee.schedules[5].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[4].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 4)" :color="employee.schedules[5].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 4)"
+                                    :color="employee.schedules[5].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[6].time != null">
-                                <v-btn :color="employee.schedules[7].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[6].time }}</v-btn>
+                                <v-btn :color="employee.schedules[7].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[6].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 6)" :color="employee.schedules[7].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 6)"
+                                    :color="employee.schedules[7].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[8].time != null">
-                                <v-btn :color="employee.schedules[9].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[8].time }}</v-btn>
+                                <v-btn :color="employee.schedules[9].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[8].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 8)" :color="employee.schedules[9].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 8)"
+                                    :color="employee.schedules[9].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[10].time != null">
-                                <v-btn :color="employee.schedules[11].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[10].time }}</v-btn>
+                                <v-btn :color="employee.schedules[11].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[10].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 10)" :color="employee.schedules[11].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 10)"
+                                    :color="employee.schedules[11].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[12].time != null">
-                                <v-btn :color="employee.schedules[13].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[12].time }}</v-btn>
+                                <v-btn :color="employee.schedules[13].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[12].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 12)" :color="employee.schedules[13].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 12)"
+                                    :color="employee.schedules[13].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-divider class="border-opacity-50 mt-2"></v-divider>
                     </v-row>
@@ -451,8 +472,9 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[1].time != null">
-                                <v-btn :color="employee.schedules[0].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[1].time }}</v-btn>
+                                <v-btn :color="employee.schedules[0].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[1].time }}</v-btn>
                             </div>
                             <div v-else>
                                 <v-btn :color="employee.schedules[0].time ? '#dcdcdc' : ''"
@@ -462,45 +484,63 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[3].time != null">
-                                <v-btn :color="employee.schedules[2].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[3].time }}</v-btn>
+                                <v-btn :color="employee.schedules[2].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[3].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 3)" :color="employee.schedules[2].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 3)"
+                                    :color="employee.schedules[2].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[5].time != null">
-                                <v-btn :color="employee.schedules[4].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[5].time }}</v-btn>
+                                <v-btn :color="employee.schedules[4].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[5].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 5)" :color="employee.schedules[4].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 5)"
+                                    :color="employee.schedules[4].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[7].time != null">
-                                <v-btn :color="employee.schedules[6].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[7].time }}</v-btn>
+                                <v-btn :color="employee.schedules[6].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[7].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 7)" :color="employee.schedules[6].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 7)"
+                                    :color="employee.schedules[6].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[9].time != null">
-                                <v-btn :color="employee.schedules[8].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[9].time }}</v-btn>
+                                <v-btn :color="employee.schedules[8].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[9].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 9)" :color="employee.schedules[8].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 9)"
+                                    :color="employee.schedules[8].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[11].time != null">
-                                <v-btn :color="employee.schedules[10].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[11].time }}</v-btn>
+                                <v-btn :color="employee.schedules[10].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[11].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 11)" :color="employee.schedules[10].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 11)"
+                                    :color="employee.schedules[10].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[13].time != null">
-                                <v-btn :color="employee.schedules[12].time ? '#dcdcdc' : ''" align="center" class="text-caption" height="25" width="100">{{
-                                    employee.schedules[13].time }}</v-btn>
+                                <v-btn :color="employee.schedules[12].time ? '#dcdcdc' : ''" align="center"
+                                    class="text-caption" height="25" width="100">{{
+                                        employee.schedules[13].time }}</v-btn>
                             </div>
-                            <div v-else><v-btn @click="addShiftToEmployee(employee, 13)" :color="employee.schedules[12].time ? '#dcdcdc' : ''" align="center" height="25" width="100">+</v-btn></div>
+                            <div v-else><v-btn @click="addShiftToEmployee(employee, 13)"
+                                    :color="employee.schedules[12].time ? '#dcdcdc' : ''" align="center" height="25"
+                                    width="100">+</v-btn></div>
                         </v-col>
                         <v-divider class="border-opacity-50 mt-2"></v-divider>
                     </v-row>
@@ -556,15 +596,16 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue'
 import EmployeeList from '../EmployeePage/EmployeeList.vue'
 import { getAllRoles, getEmployeeByEmployeeNumber } from '../../services/EmployeeService'
 import { getScheduleWeekInfoByID, getEmployeeScheduleByScheduleWeekId, updateSchedule } from '../../services/ScheduleService'
+import userSession from '../../sessions/UserSession'
 
 export default {
+    inject: ['isUserAuthorized'],
     components: {
         EmployeeList,
         DarkRedButton,
         CloseRedButton
     },
-    data()
-    {
+    data() {
         return {
             roleList: [],
             roleShowed: "Tous",
@@ -587,25 +628,23 @@ export default {
             endTimeNewShift: null,
             datePropertyMapping: null,
             selectedEmployeeNumberToAdd: null,
-            warningEmployeeAlreadyInScheduleMessage: false
+            warningEmployeeAlreadyInScheduleMessage: false,
+            userSession: userSession
         }
     },
-    provide()
-    {
+    provide() {
         return {
             loadEmployeeNumber: this.loadSelectedEmployeeNumberToAdd,
         }
     },
     methods: {
-        splitWeekAndYear(yearWeek)
-        {
+        splitWeekAndYear(yearWeek) {
             return {
                 year: parseInt(yearWeek.split('-').slice(0)[0]),
                 week: parseInt(yearWeek.split('W').slice(0)[1])
             }
         },
-        setWeekDayDate()
-        {
+        setWeekDayDate() {
             const splittedYearWeek = this.splitWeekAndYear(this.scheduleWeek);
             const monday = new Date(splittedYearWeek.year, 0, (1 + (splittedYearWeek.week) * 7) - 6);
             const tuesday = new Date(splittedYearWeek.year, 0, (1 + (splittedYearWeek.week) * 7) - 5);
@@ -614,8 +653,7 @@ export default {
             const friday = new Date(splittedYearWeek.year, 0, (1 + (splittedYearWeek.week) * 7) - 2);
             const saturday = new Date(splittedYearWeek.year, 0, (1 + (splittedYearWeek.week) * 7) - 1);
             const sunday = new Date(splittedYearWeek.year, 0, (1 + (splittedYearWeek.week) * 7));
-            while (sunday.getDay() !== 0)
-            {
+            while (sunday.getDay() !== 0) {
                 sunday.setDate(sunday.getDate() - 1);
                 monday.setDate(sunday.getDate() - 6)
                 tuesday.setDate(sunday.getDate() - 5)
@@ -640,18 +678,14 @@ export default {
             this.weekDate[13] = sunday;
 
         },
-        loadScheduleWeekInfo()
-        {
-            getScheduleWeekInfoByID(this.scheduleWeek).then(result =>
-            {
-                result.forEach(element =>
-                {
+        loadScheduleWeekInfo() {
+            getScheduleWeekInfoByID(this.scheduleWeek).then(result => {
+                result.forEach(element => {
                     const dateKey = element.date;
                     const shiftName = element.shiftName;
                     const mapping = this.datePropertyMapping[dateKey];
 
-                    if (mapping && mapping[shiftName])
-                    {
+                    if (mapping && mapping[shiftName]) {
                         const properties = mapping[shiftName];
                         const shiftIndex = properties.index;
                         this.weekInformations[shiftIndex].id = element.id;
@@ -659,18 +693,14 @@ export default {
                         this.weekInformations[shiftIndex].averageCostByClient = element.averageCostByClient;
                     }
                 });
-            }).catch(err =>
-            {
+            }).catch(err => {
                 console.log(err)
             });
         },
-        loadEmployee()
-        {
-            getEmployeeScheduleByScheduleWeekId(this.scheduleWeek).then(employeeInSchedule =>
-            {
+        loadEmployee() {
+            getEmployeeScheduleByScheduleWeekId(this.scheduleWeek).then(employeeInSchedule => {
                 this.scheduledEmployees = [];
-                employeeInSchedule.forEach(employee =>
-                {
+                employeeInSchedule.forEach(employee => {
                     const newEmployee = {
                         employeeNumber: employee.employeeNumber,
                         name: employee.name,
@@ -679,8 +709,7 @@ export default {
                         schedules: [
                         ]
                     };
-                    for (let i = 0; i < 14; i++)
-                    {
+                    for (let i = 0; i < 14; i++) {
                         newEmployee.schedules.push({
                             id: this.weekInformations[i].id,
                             startTime: null,
@@ -688,14 +717,12 @@ export default {
                             time: null
                         })
                     }
-                    employee.schedules.forEach(element =>
-                    {
+                    employee.schedules.forEach(element => {
                         const dateKey = element.date;
                         const shiftName = element.shiftName;
                         const mapping = this.datePropertyMapping[dateKey];
 
-                        if (mapping && mapping[shiftName])
-                        {
+                        if (mapping && mapping[shiftName]) {
                             const properties = mapping[shiftName];
                             const shiftIndex = properties.index;
 
@@ -712,34 +739,28 @@ export default {
                     this.scheduledEmployeesShow = this.scheduledEmployees;
                 });
                 this.refreshEmployee();
-            }).catch(err =>
-            {
+            }).catch(err => {
                 console.log(err)
             });
         },
         refreshEmployee()
         {
             let newEmployeeList = [];
-            this.scheduledEmployees.forEach(employee =>
-            {
-                if (this.roleShowed == "Tous" || employee.role == this.roleShowed)
-                {
+            this.scheduledEmployees.forEach(employee => {
+                if (this.roleShowed == "Tous" || employee.role == this.roleShowed) {
                     newEmployeeList.push(employee);
                 }
             });
             this.scheduledEmployeesShow = newEmployeeList;
         },
-        addShiftToEmployee(employee, dayIndex)
-        {
+        addShiftToEmployee(employee, dayIndex) {
             this.employeeNewShift = employee;
             this.dayNewShift = dayIndex;
             this.dialogNewShift = true;
         },
-        confirmShiftToEmployee()
-        {
+        confirmShiftToEmployee() {
             let shiftId = this.employeeNewShift.schedules[this.dayNewShift].id;
-            if (this.dayNewShift % 2 == 0)
-            {
+            if (this.dayNewShift % 2 == 0) {
                 this.employeeNewShift.schedules[this.dayNewShift] =
                 {
                     id: shiftId,
@@ -747,8 +768,7 @@ export default {
                     endTime: "16:00",
                     time: "10:00 - 16:00"
                 }
-            } else
-            {
+            } else {
                 this.employeeNewShift.schedules[this.dayNewShift] =
                 {
                     id: shiftId,
@@ -759,19 +779,16 @@ export default {
             }
             this.dialogNewShift = false;
         },
-        addNewEmployeeToSchedule()
-        {
+        addNewEmployeeToSchedule() {
             //if (!this.selectedEmployeeNumberToAdd) { return }
             let found = this.scheduledEmployees.find(({ employeeNumber }) => employeeNumber == this.selectedEmployeeNumberToAdd);
             if (found)
             {
                 this.warningEmployeeAlreadyInScheduleMessage = true;
             }
-            else
-            {
+            else {
                 this.warningEmployeeAlreadyInScheduleMessage = false;
-                getEmployeeByEmployeeNumber(this.selectedEmployeeNumberToAdd).then(employee =>
-                {
+                getEmployeeByEmployeeNumber(this.selectedEmployeeNumberToAdd).then(employee => {
                     const newEmployee = {
                         employeeNumber: employee.employeeNumber,
                         name: employee.firstName + " " + employee.lastName,
@@ -779,8 +796,7 @@ export default {
                         skillPoints: employee.skillPoints,
                         schedules: []
                     }
-                    for (let i = 0; i < 14; i++)
-                    {
+                    for (let i = 0; i < 14; i++) {
                         newEmployee.schedules.push({
                             id: this.weekInformations[i].id,
                             startTime: null,
@@ -792,15 +808,13 @@ export default {
                     this.dialogAddEmployee = false;
                     this.refreshEmployee();
 
-                }).catch(err =>
-                {
+                }).catch(err => {
                     console.log(err);
                 })
 
             }
         },
-        removeEmployeeFromSchedule(employeeNumberToRemove)
-        {
+        removeEmployeeFromSchedule(employeeNumberToRemove) {
             let found = this.scheduledEmployees.find(({ employeeNumber }) => employeeNumber == employeeNumberToRemove);
             if (found)
             {
@@ -809,12 +823,10 @@ export default {
                 this.refreshEmployee();
             }
         },
-        loadSelectedEmployeeNumberToAdd(employeeNumber)
-        {
+        loadSelectedEmployeeNumberToAdd(employeeNumber) {
             this.selectedEmployeeNumberToAdd = employeeNumber;
         },
-        saveSchedule()
-        {
+        saveSchedule() {
             const weekInformations = {
                 scheduleWeekId: this.scheduleWeek,
                 weekInformations: this.weekInformations,
@@ -832,12 +844,10 @@ export default {
                 console.error(err);
             });
         },
-        closeDialogSaved()
-        {
-            this.dialogSaved = false;  
+        closeDialogSaved() {
+            this.dialogSaved = false;
         },
-        setDatePropertyMappingateMap()
-        {
+        setDatePropertyMappingateMap() {
             this.datePropertyMapping = {
                 [this.weekDate[0].toISOString()]: {
                     Midi: { index: 0 },
@@ -871,8 +881,7 @@ export default {
         }
     },
     watch: {
-        scheduleWeek()
-        {
+        scheduleWeek() {
             this.showedShift = "Lunch";
             this.roleShowed = "Tous";
             this.setWeekDayDate();
@@ -881,13 +890,17 @@ export default {
             this.loadEmployee();
 
         },
-        roleShowed()
-        {
+        roleShowed() {
             this.refreshEmployee();
         }
     },
-    beforeMount()
-    {
+    created() {
+        this.userSession = userSession;
+        if (!this.userSession) {
+            this.$router.push('/espace');
+        }
+    },
+    beforeMount() {
         let currentDate = new Date();
         let startDate = new Date(currentDate.getFullYear(), 0, 1);
         let days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
@@ -895,8 +908,7 @@ export default {
         this.scheduleWeek = currentDate.getFullYear() + "-W" + weekNumber;
         //this.scheduleWeek = "2024-W41";
         this.setWeekDayDate();
-        for (let i = 0; i < 14; i++)
-        {
+        for (let i = 0; i < 14; i++) {
             this.weekInformations.push({
                 id: 0,
                 traffic: 0,
@@ -907,10 +919,8 @@ export default {
     mounted()
     {
         this.roleList.push("Tous");
-        getAllRoles().then(allRoles =>
-        {
-            allRoles.forEach(role =>
-            {
+        getAllRoles().then(allRoles => {
+            allRoles.forEach(role => {
                 this.roleList.push(role.name)
             });
         })
