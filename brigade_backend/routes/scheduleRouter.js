@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const reservationQueries = require('../queries/reservationQueries');
 const scheduleQueries = require('../queries/scheduleQueries');
+const regex = require('../../REGEX/REGEX_backend');
 
 const HttpError = require("../HttpError");
 
@@ -14,6 +15,7 @@ router.get("/:scheduleweekid",
         {
             return next(new HttpError(400, "Le champ ScheduleWeekId est requis"));
         }
+        if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
         scheduleQueries
             .selectScheduleWeekInfoByID(scheduleWeekId)
             .then((scheduleWeek) =>
@@ -28,7 +30,6 @@ router.get("/:scheduleweekid",
                 } else
                 {
                     const week = findAllDayOfAWeek(scheduleWeekId);
-                    console.log("Week", week)
                     scheduleQueries.insertNewScheduleWeek(week).then(result =>
                     {
                         if (result)
@@ -57,6 +58,7 @@ router.get('/:scheduleweekid/employee',
         const scheduleWeekId = req.params.scheduleweekid;
 
         if (!scheduleWeekId || scheduleWeekId == "") { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
+        if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
 
         scheduleQueries.selectAllEmployeesScheduleByScheduleWeekId(scheduleWeekId).then(result =>
         {
@@ -103,35 +105,35 @@ router.put("/",
         console.log("body", body)
 
         const scheduleWeekId = body.scheduleWeekId;
-        if (!scheduleWeekId || scheduleWeekId == "")
-        {
-            return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`));
-        }
-        if (!body.weekInformations)
-        {
-            return next(new HttpError(400, `Des weekInformations doivent etre fournis`));
-        }
-        if (body.weekInformations.length != 14) 
-        {
-            return next(new HttpError(400, `weekInformation est invalide`));
-        }
+        if (!scheduleWeekId || scheduleWeekId == "") return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`));
+        if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
+        if (!body.weekInformations) return next(new HttpError(400, `Des weekInformations doivent etre fournis`));
+        if (body.weekInformations.length != 14) return next(new HttpError(400, `weekInformation est invalide`));
+        if (!body.scheduledEmployees) return next(new HttpError(400, `Un array d'employés est manquant`));
 
         scheduleQueries.selectAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(result =>
         {
+            console.log("result", result)
+
             let periodIdList = [];
             result.forEach(element =>
             {
                 periodIdList.push(element.id)
             });
+            if (periodIdList.length != 14) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Nous en avons obtenus seumlement ${periodIdList.length} `));
+            const lowest = Math.min(...periodIdList);
+            const highest = Math.min(...periodIdList);
+            if (lowest != body.weekInformations[0].id) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Elle ne correspondent pas a la semaine dans la demande`));
+            if (highest != body.weekInformations[13].id) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Elle ne correspondent pas a la semaine dans la demande`));
             scheduleQueries.deleteEmployeeFromSchedule(periodIdList).then(() =>
             {
                 const scheduledEmployeeList = req.body.scheduledEmployees;
-                console.log("scheduledEmployeeList.length",scheduledEmployeeList.length)
+                console.log("scheduledEmployeeList.length", scheduledEmployeeList.length)
                 {
                     scheduleQueries.insertNewEmployeeSchedule(scheduledEmployeeList).then(() =>
                     {
                         const weekInformationsList = req.body.weekInformations;
-                        scheduleQueries.updatePeriodsInformations(weekInformationsList).then(() =>
+                        scheduleQueries.updateSchedulePeriodsInformations(weekInformationsList).then(() =>
                         {
                             res.status(200).json("Mise a jour reussi");
                         }).catch(err =>
