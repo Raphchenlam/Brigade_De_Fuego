@@ -48,7 +48,7 @@ export default {
     },
     mounted()
     {
-        if (userSession.employee)
+        if (userSession)
         {
             this.$router.push('/espace/dashboard');
         }

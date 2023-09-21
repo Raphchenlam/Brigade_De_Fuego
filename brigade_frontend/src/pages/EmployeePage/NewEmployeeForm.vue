@@ -10,7 +10,7 @@
 
                 <v-col cols="4">
                     <v-select :items="roleList" id="" label="Rôle" v-model.trim="selectedRole"
-                        :rules="[rules.required, rules.validateRole, rules.fieldLength255]">
+                        :rules="[rules.required, rules.validateRole]">
                     </v-select>
                 </v-col>
 
@@ -169,9 +169,6 @@ export default {
     },
     methods: {
         async createEmployee() {
-
-            // this.warningColorMessage = "#827717" ? true : false;
-
             const validForm = await this.$refs.newEmployeeForm.validate();
             if (!validForm.valid) {
                 return;
@@ -186,13 +183,6 @@ export default {
                 }).catch(error => {
                     console.log(error);
                 });
-                //utiliser authError lorsqu'on utilisera session
-                // .catch(authError => {
-                //     alert(authError.message);
-                //     if (authError.status === 409) {
-                //         this.$refs.newEmployeeForm.validate();
-                //     }
-                // });
             }
         },
         closeDialog() {
