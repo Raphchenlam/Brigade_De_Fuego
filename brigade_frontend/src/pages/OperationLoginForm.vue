@@ -47,6 +47,7 @@ export default {
           this.$router.push('/operation/punch');
         } else {
           this.warningLoginMessage = true;
+          this.loginNumber = "";
         }
       }).catch(err => {
         this.warningLoginMessage = true;
