@@ -82,6 +82,8 @@
         </v-sheet>
         <v-sheet class="ma-3 pa-5">
             <v-row class="justify-center">
+                <DarkRedButton class="mx-5" textbutton="Annuler" @click="refreshAndCloseAllDialog()">
+                            </DarkRedButton>
                 <DarkRedButton class="mx-5" textbutton="Modifier l'événement ACTUEL"
                     @click="closeEventConfirmationDialog()">
                 </DarkRedButton>
@@ -119,6 +121,10 @@ export default {
             this.dialogConfirmEvent = false;
             this.closeEventConfirmationDialog();
             this.closeDialog();
+        },
+        refreshAndCloseAllDialog(){
+            this.loadEvent(this.eventFoundInDB.name);
+            this.closeAllDialog();
         },
         closeEventConfirmationDialog() {
             this.toggleEventConfirmationDialog();

@@ -140,4 +140,8 @@ export default {
   width: 80%;
   max-width: 80rem;
 }
+
+.warning-message {
+  color: red
+}
 </style>

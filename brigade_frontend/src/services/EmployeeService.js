@@ -44,7 +44,6 @@ export async function getAllEmployeesByRole(role) {
 
 export async function getEmployeeByEmployeeNumber(employeeNumber) {
     const response = await fetch(`/api/employee/${employeeNumber}`);
-console.log("response:",response)
     if (response.ok) {
         const respJson = await response.json();
         return respJson;

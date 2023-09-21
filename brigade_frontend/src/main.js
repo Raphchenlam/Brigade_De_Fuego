@@ -20,6 +20,7 @@ import ClientView from './pages/ClientPage/ClientView.vue'
 import ReservationView from './pages/ReservationPage/ReservationView.vue'
 import PlanSalleView from './pages/TablePage/TablePlanView.vue'
 import PunchView from './pages/PunchPage/PunchView.vue'
+import ScheduleView from './pages/SchedulePage/ScheduleCreationView.vue'
 
 //Route pour l espace employee
 import EspaceLoginForm from './pages/EspaceLoginForm.vue'
@@ -52,7 +53,8 @@ const router = createRouter({
         { path: '/espace/event/:name', component: EventInformation, props: true },
         { path: '/espace/employee', component: EmployeeView },
         { path: '/espace/employee/:employeeNumber', component: EmployeeInformationView, props: true },
-        { path: '/espace/punch', component : PunchManagerView },
+        { path: '/espace/punch', component: PunchManagerView },
+        { path: '/espace/schedule', component : ScheduleView },
 
         { path: '/operation', component: OperationLoginForm },
         { path: '/operation/client', component: ClientView },

@@ -13,11 +13,8 @@ VALUES
 -- Insertion dans la table schedule_week
 INSERT INTO schedule_week ("id", "start_date", "end_date")
 VALUES 
-('2024-W40','2024-09-30', '2024-10-06'),
-('2024-W41','2024-10-07', '2024-10-13'),
-('2024-W42','2024-10-14', '2024-10-20'),
-('2024-W43','2024-10-21', '2024-10-27'),
-('2024-W44','2024-10-28', '2024-11-03');
+('2023-W38','2023-09-18', '2023-09-24'),
+('2023-W39','2023-09-25', '2023-10-01');
 
 -- Insertion dans la table shift
 INSERT INTO shift ("name", start_time, end_time)
@@ -28,20 +25,34 @@ VALUES
 -- Insertion dans la table schedule_period
 INSERT INTO schedule_period ("date", shift_name, schedule_week_id, average_traffic, expected_traffic, actual_traffic, average_cost_by_client, required_skill_points, expected_skill_points, scheduled_skill_points)
 VALUES 
-('2024-10-07', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-07' >= start_date AND '2024-10-07' <= end_date), 100, 100, 0, 50.0, 0, 50, 0),
-('2024-10-07', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-07' >= start_date AND '2024-10-07' <= end_date), 120, 120, 0, 55.0, 0, 60, 0),
-('2024-10-08', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-08' >= start_date AND '2024-10-08' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2024-10-08', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-08' >= start_date AND '2024-10-08' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2024-10-09', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-09' >= start_date AND '2024-10-09' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2024-10-09', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-09' >= start_date AND '2024-10-09' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2024-10-10', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-10' >= start_date AND '2024-10-10' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2024-10-10', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-10' >= start_date AND '2024-10-10' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2024-10-11', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-11' >= start_date AND '2024-10-11' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2024-10-11', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-11' >= start_date AND '2024-10-11' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2024-10-12', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-12' >= start_date AND '2024-10-12' <= end_date), 110, 110, 24, 52.0, 12, 55, 0),
-('2024-10-12', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-12' >= start_date AND '2024-10-12' <= end_date), 130, 130, 0, 60.0, 0, 65, 0),
-('2024-10-13', 'Midi', (SELECT id FROM schedule_week WHERE '2024-10-13' >= start_date AND '2024-10-13' <= end_date), 110, 110, 0, 52.0, 0, 55, 0),
-('2024-10-13', 'Soir', (SELECT id FROM schedule_week WHERE '2024-10-13' >= start_date AND '2024-10-13' <= end_date), 130, 130, 0, 60.0, 0, 65, 0);
+('2023-09-18', 'Midi', '2023-W38', 100, 100, 0, 50.0, 0, 50, 0),
+('2023-09-18', 'Soir', '2023-W38', 120, 120, 0, 55.0, 0, 60, 0),
+('2023-09-19', 'Midi', '2023-W38', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-19', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-20', 'Midi', '2023-W38', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-20', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-21', 'Midi', '2023-W38', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-21', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-22', 'Midi', '2023-W38', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-22', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-23', 'Midi', '2023-W38', 110, 110, 24, 52.0, 12, 55, 0),
+('2023-09-23', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-24', 'Midi', '2023-W38', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-24', 'Soir', '2023-W38', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-25', 'Midi', '2023-W39', 100, 100, 0, 50.0, 0, 50, 0),
+('2023-09-25', 'Soir', '2023-W39', 120, 120, 0, 55.0, 0, 60, 0),
+('2023-09-26', 'Midi', '2023-W39', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-26', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-27', 'Midi', '2023-W39', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-27', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-28', 'Midi', '2023-W39', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-28', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-29', 'Midi', '2023-W39', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-09-29', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-09-30', 'Midi', '2023-W39', 110, 110, 24, 52.0, 12, 55, 0),
+('2023-09-30', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0),
+('2023-10-01', 'Midi', '2023-W39', 110, 110, 0, 52.0, 0, 55, 0),
+('2023-10-01', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0);
 -- Insertion dans la table schedule_event
 INSERT INTO schedule_event(schedule_period_id, event_name)
 	VALUES
@@ -79,7 +90,8 @@ VALUES
 (4444,'Johnny', 'Sins', 'Serveur', '#FF5733', 30.0, '2344588639576560', 'johnny@example.com', '987-654-7890', false, false, false, true, 10, 'salt123', 'hash123'),
 (5555, 'Janette', 'Smithers', 'Hotesse', '#3355FF', 35.0, '6547598653454321', 'janette@example.com', '456-654-3210', false, false, true, true, 5, 'salt456', 'hash456'),
 (6666,'Bobby', 'Doolittle', 'Serveur', '#FF5733', 30.0, '8964588639576560', 'johnny@example.com', '987-852-7890', false, false, false, true, 6, 'salt123', 'hash123'),
-(7777, 'Annette', 'Shwartz', 'Serveur', '#3355FF', 35.0, '6547598653454784', 'janette@example.com', '125-654-3210', false, false, true, true, 10, 'salt456', 'hash456');
+(7777, 'Annette', 'Shwartz', 'Serveur', '#3355FF', 35.0, '6547598653454784', 'janette@example.com', '125-654-3210', false, false, true, true, 10, 'salt456', 'hash456'),
+(1999, 'Francis', 'Maynard', 'Gestionnaire', '#4CAF50', 28.75, '1999199919991999', 'francis@gmail.com', '819-975-1678', true, false, true, true, null, '1FWoqQKDysX5Rla/6wfZgg==', 'hdvTc+tGgkgK32lHopmpPU8Bgjv0pHC2KUUsQl5bxapV3tmiSIkFWknLkD/scsKMCJlRM6ONKXMMGrOQWgCmeg==');
 
 -- Insertion dans la table punch
 INSERT INTO punch (employee_number, date_in, punch_in, date_out, punch_out)
@@ -103,7 +115,15 @@ VALUES
 (2222, 1, '10:00:00', '15:00:00'),
 (3333, 2, '17:00:00', '20:00:00'),
 (3333, 3, '11:00:00', '14:00:00'),
-(2222, 4, '16:00:00', '22:00:00');
+(2222, 4, '16:00:00', '22:00:00'),
+(1111, 15, '08:00:00', '16:00:00'),
+(1111, 16, '16:00:00', '22:00:00'),
+(1111, 17, '8:00:00', '16:00:00'),
+(1111, 18, '16:00:00', '22:00:00'),
+(2222, 20, '10:00:00', '15:00:00'),
+(3333, 22, '17:00:00', '20:00:00'),
+(3333, 23, '11:00:00', '14:00:00'),
+(2222, 22, '16:00:00', '22:00:00');
 
 -- Insertion dans la table client
 INSERT INTO client (first_name, last_name, phone_number, allergy, is_favorite, is_blacklisted)
@@ -164,19 +184,45 @@ VALUES
 (1, 1, 1, 3, '2023-09-10', '18:00:00', '20:00:00', null, false, '6547559223454321'),
 (2, 1, 1, 5, '2023-09-12', '19:00:00', '22:00:00', 'Fete de Alice', true, '6547559223454321'),
 (3, 2, 1, 4, '2023-09-15', '20:30:00', '22:30:00', 'Réunion d"affaires', false, '6547559223454321'),
-(4, 3, 1, 6, '2023-09-18', '12:15:00', '15:30:00', null, true, '6547559223454321'),
+(null, 3, 1, 6, '2023-09-18', '12:15:00', '15:30:00', null, true, '6547559223454321'),
 (5, 4, 1, 2, '2023-09-20', '17:00:00', '18:30:00', 'Anniversaire de Marie', false, '6547559223454321'),
 (6, 5, 1, 3, '2023-09-22', '18:45:00', '20:15:00', null, false, '6547559223454321'),
-(7, 6, 1, 5, '2023-09-25', '11:00:00', '13:00:00', 'Réunion familiale', true, '6547598653454321'),
+(null, 6, 1, 5, '2023-09-25', '11:00:00', '13:00:00', 'Réunion familiale', true, '6547598653454321'),
 (8, 7, 1, 4, '2023-09-28', '19:30:00', '21:30:00', null, false, '6547598653454321'),
 (9, 8, 1, 2, '2023-09-30', '12:30:00', '13:30:00', 'Dîner romantique', false, '6547598653454321'),
 (10, 9, 1, 7, '2023-10-02', '18:15:00', '22:30:00', 'Fête d"anniversaire surprise', true, '6547598653454321'),
-(11, 10, 1, 3, '2023-10-05', '19:00:00', '20:45:00', null, false, '6547598653454321'),
+(null, 10, 1, 3, '2023-10-05', '19:00:00', '20:45:00', null, false, '6547598653454321'),
 (12, 2, 1, 4, '2023-10-08', '20:00:00', '22:15:00', 'Réunion de groupe', false, '6547598653454321');
 
 -- Insertion dans la table assignation
-INSERT INTO assignation(employee_number, table_number, "date", shift)
-	VALUES 
-  (2222, 1, '2023-09-01', 'Midi'),
-  (2222, 2, '2023-09-01', 'Midi'),
-  (3333, 3, '2023-09-01', 'Midi');
+INSERT INTO assignation (employee_number, table_number, "date", shift, assignation_is_active)
+VALUES
+    -- Employee 2222 on '2023-09-19' and '2023-09-20'
+    (2222, 1, '2023-09-19', 'Midi', true),
+    (2222, 2, '2023-09-19', 'Soir', true),
+    (2222, 3, '2023-09-20', 'Midi', true),
+    (2222, 4, '2023-09-20', 'Soir', true),
+	  (2222, 1, '2023-09-20', 'Midi', true),
+    (2222, 2, '2023-09-20', 'Soir', true),
+    
+    -- Employee 4444 on '2023-09-19' and '2023-09-20'
+    (4444, 5, '2023-09-19', 'Midi', true),
+    (4444, 6, '2023-09-19', 'Soir', true),
+    (4444, 7, '2023-09-20', 'Midi', true),
+    (4444, 8, '2023-09-20', 'Soir', true),
+	  (4444, 5, '2023-09-20', 'Midi', false),
+    (4444, 6, '2023-09-20', 'Soir', true),
+    
+    -- Employee 6666 on '2023-09-19' and '2023-09-20'
+    (6666, 9, '2023-09-19', 'Midi', true),
+    (6666, 10, '2023-09-19', 'Soir', true),
+    (6666, 11, '2023-09-20', 'Midi', true),
+    (6666, 12, '2023-09-20', 'Soir', true),
+    
+    -- Employee 7777 on '2023-09-19' and '2023-09-20'
+    (7777, 13, '2023-09-19', 'Midi', true),
+    (7777, 14, '2023-09-19', 'Soir', true),
+    (7777, 15, '2023-09-20', 'Midi', true),
+    (7777, 16, '2023-09-20', 'Soir', true)
+;
+
