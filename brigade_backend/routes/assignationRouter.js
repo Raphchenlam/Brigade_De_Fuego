@@ -4,13 +4,12 @@ const passport = require('passport');
 
 const HttpError = require("../HttpError");
 
-const sectionQueries = require("../queries/sectionQueries");
+const assignationQueries = require("../queries/assignationQueries");
 
 //GET assignation par date
 router.get('/:date', (req, res, next) => {
     const date = req.params.date;
-    console.log("Date : " + date);
-    sectionQueries.getAssignationsByDate(date)
+    assignationQueries.getAssignationsByDate(date)
     .then(assignationList => {
         if (assignationList) {
             res.json(assignationList);

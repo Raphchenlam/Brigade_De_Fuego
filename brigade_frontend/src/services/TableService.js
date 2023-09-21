@@ -20,34 +20,35 @@ class ServiceError extends Error {
     return new ServiceError(response.status, await getResponseMessage(response));
   }
 
-  const convertToSection = jsonSection => {
+  const convertToAssignation = jsonAssignation => {
     return {
-        date: "" + jsonSection.date,
-        shift: "" + jsonSection.shift,
-        tableNumber : Number(jsonSection.tableNumber),
-        employeeNumber: "" + jsonSection.employeeNumber,
-        employeeFirstName: "" + jsonSection.employeeFirstName,
-        employeeLastName: "" + jsonSection.employeeLastName,
-        employeeColor: "" + jsonSection.employeeColor,
-        isActive: jsonSection.isActive
+        date: "" + jsonAssignation.date,
+        shift: "" + jsonAssignation.shift,
+        tableNumber : "" + jsonAssignation.tableNumber,
+        employeeNumber: "" + jsonAssignation.employeeNumber,
+        employeeFirstName: "" + jsonAssignation.employeeFirstName,
+        employeeLastName: "" + jsonAssignation.employeeLastName,
+        employeeColor: "" + jsonAssignation.employeeColor,
+        isActive: jsonAssignation.isActive
     };
   };
 
   const convertToTable = jsonTable =>{
     return {
-        number: Number(jsonTable.number),
+        number: "" + jsonTable.number,
         capacity: Number(jsonTable.capacity),
         isActive: jsonTable.isActive
     }
   }
 
-  ///**************** SECTIONS ****************///
+  ///**************** AssignationS ****************///
 
-  export async function fetchSectionByDate(date) {
-    const response = await fetch(`/api/section/${date}`);
+  export async function fetchAssignationByDate(date) {
+    const response = await fetch(`/api/assignation/${date}`);
 
     if(response.ok) {
-        return convertToSection(await response.json());
+      const respJson = await response.json();
+        return respJson.map(assignation => convertToTable(assignation));
     }else{
         throw await createServiceError(response);
     }

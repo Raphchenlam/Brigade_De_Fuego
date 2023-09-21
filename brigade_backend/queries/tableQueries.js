@@ -45,7 +45,6 @@ const getTableByNumber = async (tableNumber) => {
     const result = await pool.query(
         `SELECT * FROM "table" WHERE number = $1`, [tableNumber]
     );
-    console.log(result.rowCount)
     const row = result.rows[0];
     if (row) {
         const table = {
@@ -53,7 +52,6 @@ const getTableByNumber = async (tableNumber) => {
             capacity: row.capacity,
             isActive: row.is_active
         }
-        console.log("table : " + table)
         return table; 
     } 
     return undefined;

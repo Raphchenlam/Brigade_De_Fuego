@@ -41,7 +41,6 @@ router.get('/', (req, res, next) => {
 // GET A table by number
 router.get('/:tableNumber', (req, res, next) => {
     const tableNumber = req.params.tableNumber;
-    console.log("TableNumber : " + tableNumber);
     tableQueries.getTableByNumber(tableNumber)
     .then(table => {
         if (table) {

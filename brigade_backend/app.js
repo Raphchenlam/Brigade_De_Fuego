@@ -17,7 +17,7 @@ const leaveRouter = require ('./routes/leaveRouter');
 const punchRouter = require ('./routes/punchRouter');
 const reservationRouter = require ('./routes/reservationRouter');
 const scheduleRouter = require ('./routes/scheduleRouter');
-const sectionRouter = require ('./routes/sectionRouter');
+const assignationRouter = require ('./routes/assignationRouter');
 const tableRouter = require ('./routes/tableRouter');
 
 const employeeQueries = require("./queries/employeeQueries");
@@ -39,7 +39,7 @@ app.use('/leave', leaveRouter);
 app.use('/reservation', reservationRouter);
 app.use('/schedule', scheduleRouter);
 app.use('/table', tableRouter);
-app.use('/section', sectionRouter)
+app.use('/assignation', assignationRouter)
 
 class BasicStrategyModified extends BasicStrategy {
     constructor(options, verify) {

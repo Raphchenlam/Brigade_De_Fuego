@@ -26,7 +26,6 @@ const getAssignationsByDate = async (assignationDate) => {
             employeeColor: row.color_hexcode, 
             isActive: row.assignation_is_active
         };
-        console.log(assignation);
         return assignation;
     });
 };
