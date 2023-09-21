@@ -84,7 +84,12 @@ router.get('/:employeeNumber',
             {
                 if (employee)
                 {
-                    res.json(employee);
+                    const newEmployee = {
+                        employeeNumber: employee.employeeNumber,
+                        isAdmin: employee.isAdmin,
+                        isSuperAdmin: employee.isSuperAdmin
+                    }
+                    res.json(newEmployee);
                 } else
                 {
                     return next(new HttpError(404, `Employé avec le numéro ${employeeNumberToGet} inexistant ou introuvable`));
