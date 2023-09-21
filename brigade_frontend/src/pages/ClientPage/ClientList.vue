@@ -3,7 +3,7 @@
         <v-card class="mx-10 h-75">
             <v-row class="mb-0">
                 <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
-                    class="ma-2"></v-text-field>
+                    class="ma-2" clearable @click:clear="clearSearchInput"></v-text-field>
                 <v-dialog v-model="dialogNewClient" width="100%">
                     <template v-slot:activator="{ props }">
                         <div class="ma-2 text-center">
@@ -36,7 +36,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getClientList } from '../../services/ClientService';
 
 export default {
-    inject: ['loadClientId'],
+    inject: ['loadClientInformations'],
     components: {
         VDataTable,
         NewClientForm,
@@ -59,45 +59,42 @@ export default {
         };
     },
     methods: {
+        clearSearchInput(){
+            this.search = "";
+        },
         loadClients(clientAdded) {
             this.clients = [];
 
             getClientList()
                 .then((clientList) => {
                     this.clients = clientList;
+                    if (clientAdded) this.selected = clientAdded, this.search = clientAdded[1];
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.error(err);
                     alert(err.message);
                 });
-
-            if (clientAdded) this.selected = clientAdded, this.search = clientAdded[1];
         },
         filterClients() {
             this.filteredClientList = [];
 
             this.clients.forEach(client => {
-                if (client.first_name.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                    || client.last_name.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                    || client.phone_number.indexOf(this.search) >= 0) {
+                const isClientFavorite = client.is_favorite ? " - FAVORIS" : "";
+                const isClientBlacklisted = client.is_blacklisted ? " - BLACKLISTED !" : "";
+                const isClientAllergic = client.allergy ? " - Allergie(s) " : "";
 
-                    const isClientFavorite = client.is_favorite ? " - FAVORIS" : "";
-                    const isClientBlacklisted = client.is_blacklisted ? " - BLACKLISTED !" : "";
-                    const isClientAllergic = client.allergy ? " - Allergie(s) " : "";
-
-                    const clientToKeep = {
-                        "listInformation":
-                            client.first_name + " " + client.last_name + " (" + client.phone_number + ")" + isClientFavorite + isClientBlacklisted + isClientAllergic,
-                        ...client,
-                        props: {
-                            color: 'red',
-                        },
-                    }
-
-                    this.filteredClientList.push(clientToKeep);
+                const clientToKeep = {
+                    "listInformation":
+                        client.first_name + " " + client.last_name + " (" + client.phone_number + ")" + isClientFavorite + isClientBlacklisted + isClientAllergic,
+                    ...client,
+                    props: {
+                        color: 'red',
+                    },
                 }
 
-
+                if (clientToKeep.listInformation.toUpperCase().indexOf(this.search.toUpperCase()) >= 0) {
+                    this.filteredClientList.push(clientToKeep);
+                }
             });
         },
         closeNewClientDialog() {
@@ -106,7 +103,13 @@ export default {
     },
     watch: {
         selected() {
-            this.loadClientId(this.selected[0]);
+            if (this.selected.length !== 0) {
+                const isBlacklisted = this.clients.find(client => client.id == this.selected[0]).is_blacklisted;
+                this.loadClientInformations([this.selected[0], isBlacklisted]);
+            } else if (this.selected.length === 0) {
+                this.loadClientInformations([]);
+
+            }
         },
         clients() {
             this.filterClients();
@@ -122,12 +125,12 @@ export default {
 </script>
 
 <style scoped>
-.v-btn { 
+.v-btn {
     font-size: xx-large;
 }
 
 .v-list {
-    height:600px;
-    overflow-y:auto;
+    height: 600px;
+    overflow-y: auto;
 }
 </style>

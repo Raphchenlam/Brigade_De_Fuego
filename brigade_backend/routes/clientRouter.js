@@ -85,7 +85,6 @@ router.post("/",
                 return clientQueries.insertClient(clientInfos);
             })
             .then((result) => {
-                console.log(result);
                 res.json(result);
             })
             .catch((err) => {
