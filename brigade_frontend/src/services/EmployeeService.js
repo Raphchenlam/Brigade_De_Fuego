@@ -1,3 +1,5 @@
+import session from '../sessions/UserSession'
+
 class ServiceError extends Error {
     constructor(status, message) {
         super(message);
@@ -49,6 +51,7 @@ export async function getEmployeeByEmployeeNumber(employeeNumber) {
         throw Error(response);
     }
 }
+
 export async function getEmployeeByBarcodeNumber(barcodeNumber) {
     const response = await fetch(`/api/employee/${barcodeNumber}`);
 
@@ -75,7 +78,7 @@ export async function createEmployee(employee) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            // ...session.getAuthHeaders()
+            ...session.getAuthHeaders()
         },
         body: JSON.stringify(employee)
     });
