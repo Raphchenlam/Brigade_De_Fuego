@@ -1,13 +1,12 @@
 <template>
-    <v-sheet v-if="userSession && this.isUserAuthorized()">
-        <v-row class="justify-space-between">
+    <v-sheet v-if="userSession">
+        <v-row class="justify-space-between" v-if="this.isUserAuthorized()">
             <EmployeeList v-if="this.isUserAuthorized()" class="h-screen" width="35%"></EmployeeList>
             <EmployeeInformation v-if="selectedEmployeeNumber" :employeeNumber="selectedEmployeeNumber" class="h-screen"
                 width="65%">
             </EmployeeInformation>
         </v-row>
     </v-sheet>
-    <!-- FAIRE un isUserNotAuthorized -->
     <v-sheet v-else>
         <v-row class="m-10 justify-center">
             <h1>Vous devez être connecté et avoir les droits administrateurs pour avoir accès à cette page</h1>
@@ -29,7 +28,8 @@ export default {
     data() {
         return {
             userSession: userSession,
-            selectedEmployeeNumber: null
+            selectedEmployeeNumber: null,
+            loading: true
         }
     },
     methods: {
@@ -42,7 +42,8 @@ export default {
             loadEmployeeNumber: this.loadEmployeeNumber,
         };
     },
-    beforeMount() {
+    created() {
+        this.userSession = userSession;
         if (!this.userSession) {
             this.$router.push('/espace');
         }
