@@ -8,8 +8,14 @@ const regex = require('../../REGEX/REGEX_backend');
 const HttpError = require("../HttpError");
 
 router.get("/:scheduleweekid",
+    passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
+        const employee = req.user;
+
+        if (!employee) return next(new HttpError(401, "Connexion requise"));
+        if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
+
         const scheduleWeekId = req.params.scheduleweekid;
         if (!scheduleWeekId || scheduleWeekId === "")
         {
@@ -53,8 +59,13 @@ router.get("/:scheduleweekid",
 
 
 router.get('/:scheduleweekid/employee',
+    passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
+        const employee = req.user;
+
+        if (!employee) return next(new HttpError(401, "Connexion requise"));
+        if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
         const scheduleWeekId = req.params.scheduleweekid;
 
         if (!scheduleWeekId || scheduleWeekId == "") { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
@@ -99,8 +110,16 @@ router.get('/:scheduleweekid/employee',
 
 
 router.put("/",
+    passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
+        console.log("REQ.EMPLOYEE", req.user);
+
+        const employee = req.user;
+
+        if (!employee) return next(new HttpError(401, "Connexion requise"));
+        if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
+
         let body = req.body;
         console.log("body", body)
 
@@ -122,9 +141,10 @@ router.put("/",
             });
             if (periodIdList.length != 14) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Nous en avons obtenus seumlement ${periodIdList.length} `));
             const lowest = Math.min(...periodIdList);
-            const highest = Math.min(...periodIdList);
+            const highest = Math.max(...periodIdList);
             if (lowest != body.weekInformations[0].id) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Elle ne correspondent pas a la semaine dans la demande`));
             if (highest != body.weekInformations[13].id) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Elle ne correspondent pas a la semaine dans la demande`));
+            
             scheduleQueries.deleteEmployeeFromSchedule(periodIdList).then(() =>
             {
                 const scheduledEmployeeList = req.body.scheduledEmployees;
