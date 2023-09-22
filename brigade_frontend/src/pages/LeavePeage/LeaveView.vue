@@ -1,7 +1,10 @@
 <template>
-    <v-sheet v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)">
-        <v-row>
-            <LeaveList v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)"></LeaveList>
+    <v-sheet
+        v-if="userSession">
+        <v-row v-if="this.isUserAuthorized()">
+            <LeaveList
+                v-if="this.isUserAuthorized()">
+            </LeaveList>
         </v-row>
     </v-sheet>
     <v-sheet v-else>
@@ -17,16 +20,17 @@ import userSession from "../../sessions/UserSession"
 import LeaveList from './LeaveList.vue';
 
 export default {
+    inject:['isUserAuthorized'],
     components: {
         LeaveList
     },
     data() {
-        return{
+        return {
             userSession: userSession
         }
     },
     mounted() {
-        if(!userSession.employee){
+        if (!userSession) {
             this.$router.push('/espace');
         }
     }

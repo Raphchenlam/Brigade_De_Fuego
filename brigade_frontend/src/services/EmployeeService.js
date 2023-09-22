@@ -1,3 +1,5 @@
+import session from '../sessions/UserSession'
+
 class ServiceError extends Error {
     constructor(status, message) {
         super(message);
@@ -20,7 +22,13 @@ async function createServiceError(response) {
 
 
 export async function getAllEmployees() {
-    const response = await fetch(`/api/employee`);
+    const response = await fetch(`/api/employee`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
 
     if (response.ok) {
         const respJson = await response.json();
@@ -31,7 +39,13 @@ export async function getAllEmployees() {
 }
 
 export async function getAllEmployeesByRole(role) {
-    const response = await fetch(`/api/employee/role/${role}`);
+    const response = await fetch(`/api/employee/role/${role}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
     if (response.ok) {
         const respJson = await response.json();
         return respJson;
@@ -41,8 +55,13 @@ export async function getAllEmployeesByRole(role) {
 }
 
 export async function getEmployeeByEmployeeNumber(employeeNumber) {
-    const response = await fetch(`/api/employee/${employeeNumber}`);
-console.log("response:",response)
+    const response = await fetch(`/api/employee/${employeeNumber}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
     if (response.ok) {
         const respJson = await response.json();
         return respJson;
@@ -50,8 +69,9 @@ console.log("response:",response)
         throw Error(response);
     }
 }
+
 export async function getEmployeeByBarcodeNumber(barcodeNumber) {
-    const response = await fetch(`/api/employee/${barcodeNumber}`);
+    const response = await fetch(`/api/employee/barcode/${barcodeNumber}`);
 
     if (response.ok) {
         return await response.json();
@@ -61,7 +81,13 @@ export async function getEmployeeByBarcodeNumber(barcodeNumber) {
 }
 
 export async function getAllRoles() {
-    const response = await fetch(`/api/employee/role`);
+    const response = await fetch(`/api/employee/role`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
 
     if (response.ok) {
         const respJson = await response.json();
@@ -76,7 +102,7 @@ export async function createEmployee(employee) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            // ...session.getAuthHeaders()
+            ...session.getAuthHeaders()
         },
         body: JSON.stringify(employee)
     });

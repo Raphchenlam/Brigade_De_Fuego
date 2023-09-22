@@ -1,6 +1,6 @@
 <template>
     <v-sheet class="h-auto">
-    <v-sheet v-if="userSession.user.isAdmin && $route.fullPath == '/espace/leave'">
+    <v-sheet v-if="userSession.employee.isAdmin && $route.fullPath == '/espace/leave'">
         <v-row class="ma-5 justify-space-around">
             <v-col cols="6">
                 <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }}</h3>

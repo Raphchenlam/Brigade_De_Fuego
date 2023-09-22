@@ -73,11 +73,6 @@ const insertEmployee = async (newEmployee, passwordSalt, passwordHash, clientPar
     try {
         await client.query('BEGIN');
 
-        const existingEmployee = await selectLoginByEmployeeNumber(employeeNumber, client);
-        if (existingEmployee) {
-            throw new HttpError(409, `Un employé avec le numéro d'employé ${employeeNumber} existe déjà`);
-        }
-
         const isSuperAdmin = false;
         const isNewEmployee = true;
         const isActive = true;
@@ -117,15 +112,14 @@ const insertEmployee = async (newEmployee, passwordSalt, passwordHash, clientPar
     } catch (error) {
         await client.query("ROLLBACK");
         throw Error;
+    } finally {
+        client.release();
     }
-    // } finally {
-    //     client.release();
-    // }
 }
 
 exports.insertEmployee = insertEmployee;
 
-const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
+const selectEmployeeByEmployeeNumber = async (employeeNumber, clientParam) => {
     const result = await pool.query(
         `SELECT *
         FROM employee

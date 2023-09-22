@@ -4,7 +4,7 @@
       <ReservationList class="pa-2"></ReservationList>
     </v-col>
     <v-col>
-      <ReservationInformation class="pa-2"></ReservationInformation>
+      <ReservationInformation class="pa-2" v-if="selectedReservationId" :reservationId="selectedReservationId"></ReservationInformation>
     </v-col>
   </v-row>
 </template>
@@ -23,16 +23,24 @@ export default {
     ReservationList,
     ReservationInformation
   },
-  data()
-  {
+  data() {
     return {
-      operationSession: operationSession
+      operationSession: operationSession,
+      selectedReservationId: null
     }
   },
-  mounted()
-  {
-    if (!operationSession.isActive)
-    {
+  methods: {
+    loadReservationInformations(receivedReservationId) {
+      this.selectedReservationId = receivedReservationId;
+    }
+  },
+  provide() {
+    return {
+      loadReservationInformations: this.loadReservationInformations
+    };
+  },
+  mounted() {
+    if (!operationSession.isActive) {
       this.$router.push('/operation');
     }
   }

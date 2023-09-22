@@ -1,8 +1,9 @@
 <template>
-    <v-sheet v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)">
-        <v-row class="justify-space-between">
-            <EmployeeList v-if="(userSession.employee && userSession.employee.isActive) && (userSession.employee.isAdmin || userSession.employee.isSuperAdmin)" class="h-screen" width="35%"></EmployeeList>
-            <EmployeeInformation v-if="selectedEmployeeNumber" :employeeNumber="selectedEmployeeNumber" class="h-screen" width="65%">
+    <v-sheet v-if="userSession">
+        <v-row class="justify-space-between" v-if="this.isUserAuthorized()">
+            <EmployeeList v-if="this.isUserAuthorized()" class="h-screen" width="35%"></EmployeeList>
+            <EmployeeInformation v-if="selectedEmployeeNumber" :employeeNumber="selectedEmployeeNumber" class="h-screen"
+                width="65%">
             </EmployeeInformation>
         </v-row>
     </v-sheet>
@@ -19,35 +20,33 @@ import EmployeeList from "./EmployeeList.vue"
 import EmployeeInformation from "./EmployeeInformation.vue"
 
 export default {
+    inject:['isUserAuthorized'],
     components: {
         EmployeeList,
         EmployeeInformation
     },
-    data()
-    {
+    data() {
         return {
             userSession: userSession,
             selectedEmployeeNumber: null,
+            loading: true
         }
     },
     methods: {
-        loadEmployeeNumber(employeeNumber)
-        {
+        loadEmployeeNumber(employeeNumber) {
             this.selectedEmployeeNumber = employeeNumber
         }
     },
-    provide()
-    {
+    provide() {
         return {
-            loadEmployeeNumber: this.loadEmployeeNumber
+            loadEmployeeNumber: this.loadEmployeeNumber,
         };
     },
-    mounted()
-    {
-        if (!userSession)
-        {
-            this.$router.push('/espace/dashboard');
+    created() {
+        this.userSession = userSession;
+        if (!this.userSession) {
+            this.$router.push('/espace');
         }
-    }
+    },
 }
 </script>

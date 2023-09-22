@@ -23,9 +23,10 @@ export default {
   provide() {
     return {
       capitalizeWords: this.capitalizeWords,
-      lowFormatingName:this.lowFormatingName,
+      lowFormatingName: this.lowFormatingName,
       formatPhoneNumber: this.formatPhoneNumber,
-      spliceDate: this.spliceDate
+      spliceDate: this.spliceDate,
+      isUserAuthorized: this.isUserAuthorized,
     }
   },
   components: {
@@ -87,8 +88,6 @@ export default {
           .replace(/[^a-zA-Z]-[^a-zA-Z]/g, '');
       }
     },
-
-
     formatPhoneNumber(phoneNumber) {
       if (phoneNumber) {
         const cleanedNumber = phoneNumber.replace(/\D/g, '');
@@ -100,6 +99,7 @@ export default {
         }
       }
     },
+
     spliceDate(fullDate) {
       const date = fullDate.split('T').slice(0)[0];
       const fulltime = fullDate.split('T').slice(0)[1];
@@ -110,6 +110,11 @@ export default {
         hour: parseInt(fulltime.split(':').slice(0)[0]),
         minute: parseInt(fulltime.split(':').slice(0)[1])
       }
+    },
+
+    isUserAuthorized() {
+      return ((this.userSession.employee && this.userSession.employee.isActive) && (this.userSession.employee.isAdmin || this.userSession.employee.isSuperAdmin)
+      );
     }
   }
 };
@@ -134,5 +139,9 @@ export default {
   text-align: center;
   width: 80%;
   max-width: 80rem;
+}
+
+.warning-message {
+  color: red
 }
 </style>

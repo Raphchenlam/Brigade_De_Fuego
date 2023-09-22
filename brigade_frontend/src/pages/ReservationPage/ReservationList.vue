@@ -20,9 +20,11 @@
                 </v-dialog>
             </v-row>
             <v-row>
-                <v-text-field type="date" class="ma-2" label="Date Debut" v-model="startDate" clearable>
+                <v-text-field type="date" class="ma-2 pa-4" label="Date Debut" v-model="startDate"
+                    @click:clear="resetStartDate" clearable hint="'Clear' réinitialise la date courante" persistent-hint>
                 </v-text-field>
-                <v-text-field type="date" class="ma-2" label="Date Fin" v-model="endDate" clearable>
+                <v-text-field type="date" class="ma-2 pa-4" label="Date Fin" v-model="endDate" @click:clear="resetEndDate"
+                    clearable hint="'Clear' réinitialise la date courante" persistent-hint>
                 </v-text-field>
             </v-row>
             <v-radio-group v-model="shiftShow">
@@ -32,7 +34,8 @@
                     <v-radio label="Journee complete" value="all"></v-radio>
                 </v-row>
             </v-radio-group>
-            <v-list v-model:selected='selected' :items="reservations" item-title="listInformation" item-value="id">
+            <v-list class="v-list" v-model:selected='selected' :items="filteredReservationList" item-title="listInformation"
+                item-value="id">
             </v-list>
         </v-card>
     </v-sheet>
@@ -45,8 +48,10 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 import NewReservationForm from "../reservationpage/NewReservationForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
+import { getReservationList } from '../../services/ReservationService';
 
 export default {
+    inject: ['loadReservationInformations'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -62,118 +67,104 @@ export default {
             modal: false,
             selected: [],
             reservations: [],
+            filteredReservationList: [],
             dialogNewReservation: false,
         };
     },
     provide() {
         return {
             closeNewReservationDialog: this.closeNewReservationDialog,
+            refreshWithNewreservation: this.refreshWithNewreservation
         };
     },
+    watch: {
+        shiftShow() {
+            this.filterReservations();
+        },
+        reservations() {
+            this.filterReservations();
+        },
+        search() {
+            this.filterReservations();
+        },
+        startDate() {
+            if (this.startDate == "") {
+                this.resetStartDate();
+            }
+            this.loadReservations(this.startDate, this.endDate);
+        },
+        endDate() {
+            if (this.endDate == "") {
+                this.resetEndDate();
+            }
+            this.loadReservations(this.startDate, this.endDate);
+        },
+        selected() {
+            this.loadReservationInformations(this.selected[0]);
+        },
+    },
     methods: {
-        loadReservations() {
-            const allReservations = [
-                {
-                    listInformation: "Alice Dupays (555-555-5555) - 4 personnes - 15/10/2023 - 10h00",
-                    id: 1,
-                    tableNumber: null,
-                    clientId: "1",
-                    clientName: "Alice Dupays (555-555-5555)",
-                    statusCode: "1",
-                    peopleCount: 4,
-                    date: "2023-10-15",
-                    startTime: "10:00:00",
-                    endTime: "12:00:00",
-                    mention: null,
-                    hasMinor: false,
-                    takenBy: "3883344939293432",
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "Alice Dupays (555-555-5555) - 12 personnes - 15/10/2023 - 18h00",
-                    id: 2,
-                    tableNumber: null,
-                    clientId: "1",
-                    clientName: "Alice Dupays (555-555-5555)",
-                    statusCode: "1",
-                    peopleCount: 12,
-                    date: "2023-10-15",
-                    startTime: "18:00:00",
-                    endTime: "20:00:00",
-                    mention: "Fete a Annie",
-                    hasMinor: false,
-                    takenBy: "3883344939293432",
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "Bob Gratton (111-111-1111) - 4 personnes - 15/10/2023 - 19h00",
-                    id: 3,
-                    tableNumber: null,
-                    clientId: "2",
-                    clientName: "Bob Gratton (111-111-1111)",
-                    statusCode: "1",
-                    peopleCount: 4,
-                    date: "2023-10-15",
-                    startTime: "19:00:00",
-                    endTime: "21:00:00",
-                    mention: null,
-                    hasMinor: true,
-                    takenBy: "3883344939293432",
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "Alice Dupays (555-555-5555) - 6 personnes - 17/10/2023 - 10h00",
-                    id: 4,
-                    tableNumber: null,
-                    clientId: "1",
-                    clientName: "Alice Dupays (555-555-5555)",
-                    statusCode: "1",
-                    peopleCount: 6,
-                    date: "2023-10-17",
-                    startTime: "10:00:00",
-                    endTime: "12:00:00",
-                    mention: null,
-                    hasMinor: false,
-                    takenBy: "3883344939293432",
-                    props: {
-                        color: 'red',
-                    },
-                },
-                {
-                    listInformation: "Alice Dupays (555-555-5555) - 4 personnes - 18/10/2023 - 10h00",
-                    id: 5,
-                    tableNumber: null,
-                    clientId: "1",
-                    clientName: "Alice Dupays (555-555-5555)",
-                    statusCode: "1",
-                    peopleCount: 4,
-                    date: "2023-10-18",
-                    startTime: "10:00:00",
-                    endTime: "12:00:00",
-                    mention: null,
-                    hasMinor: false,
-                    takenBy: "3883344939293432",
-                    props: {
-                        color: 'red',
-                    },
-                },
-            ];
-            this.reservations = allReservations;
+        refreshWithNewreservation(newReservation) {
+            this.loadReservations(this.startDate, this.endDate);
+            this.selected = newReservation;
+        },
+        loadReservations(startDate, endDate) {
+            getReservationList(startDate, endDate)
+                .then((reservationList) => {
+                    this.reservations = reservationList;
+                })
+                .catch((err) => {
+                    console.log(err);
+                    alert(err.message);
+                });
+        },
+        filterReservations() {
+            this.filteredReservationList = [];
+
+            this.reservations.forEach(reservation => {
+                var reservationtoKeep;
+
+                if (this.shiftShow == "lunch" && parseInt(reservation.startTime.split(':').slice(0)[0]) < 15) {
+                    reservationtoKeep = reservation;
+                } else if (this.shiftShow == "dinner" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) {
+                    reservationtoKeep = reservation;
+                } else if (this.shiftShow == "all") {
+                    reservationtoKeep = reservation;
+                }
+
+                if (reservationtoKeep) {
+                    if (reservationtoKeep.clientFirstname.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                        || reservationtoKeep.clientLastname.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
+                        || reservationtoKeep.clientPhoneNumber.indexOf(this.search) >= 0) {
+                        const allergies = (reservationtoKeep.clientAllergy) ? " - Allergie(s) : " + reservationtoKeep.clientAllergy : "";
+                        const reservationToAdd = {
+                            "listInformation":
+                                reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname + " (" + reservationtoKeep.clientPhoneNumber + ") - " + reservationtoKeep.peopleCount + " personnes - " + reservationtoKeep.date + " à " + reservationtoKeep.startTime + allergies,
+                            ...reservationtoKeep,
+                            props: {
+                                color: 'red',
+                            },
+                        };
+
+                        this.filteredReservationList.push(reservationToAdd);
+                    }
+
+                }
+            });
         },
         closeNewReservationDialog() {
             this.dialogNewReservation = false;
         },
+        resetStartDate() {
+            this.startDate = new Date().toISOString().split('T')[0];
+        },
+        resetEndDate() {
+            this.endDate = new Date().toISOString().split('T')[0];
+        }
     },
     mounted() {
         this.endDate = this.startDate = new Date().toISOString().split('T')[0];
-        this.loadReservations();
-    },
+    }
 }
 </script>
 
@@ -181,5 +172,10 @@ export default {
 <style scoped>
 .v-btn {
     font-size: xx-large;
+}
+
+.v-list {
+    height: 600px;
+    overflow-y: auto;
 }
 </style>

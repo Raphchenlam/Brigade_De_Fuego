@@ -51,7 +51,7 @@ import { createClient } from '../../services/ClientService';
 import { validName, validPhoneNumber } from '../../../../REGEX/REGEX_frontend.js';
 
 export default {
-    inject: ['closeNewClientDialog', 'capitalizeWords', 'formatPhoneNumber'],
+    inject: ['closeNewClientDialog', 'capitalizeWords', 'formatPhoneNumber', 'loadClients'],
     components: {
         DarkRedButton,
     },
@@ -97,7 +97,7 @@ export default {
                     if (client) {
                         this.newClientAdded = true;
                         setTimeout(this.closeAllDialog, 2000);
-                        // this.updateClientList();
+                        this.loadClients([client.id, client.firstName]);
                     }
                 });
                 this.clientIdUnique = true;
