@@ -182,7 +182,7 @@ export default {
                 await createEmployee(this.employee).then((employee) => {
                     if (employee) {
                         this.dialogOKEmployee = true;
-                        this.updateEmployeeList();
+                        this.loadEmployees();
                         setTimeout(this.closeDialog, 2500);
                     }
                     this.uniqueEmployee = true;
@@ -199,9 +199,6 @@ export default {
             closeDialog() {
                 this.dialogOKEmployee = false;
                 this.closeNewEmployeeDialog();
-            },
-            updateEmployeeList() {
-                this.loadEmployees();
             },
             updateEmployeeNumberValue(event) {
                 const value = event.target.value;

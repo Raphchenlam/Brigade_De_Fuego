@@ -213,7 +213,7 @@ export default {
                 await updateEmployee(this.updatingEmployee).then((employee) => {
                     if (employee) {
                         this.updatedEmployee = true;
-                        this.updateEmployeeList();
+                        this.loadEmployees();
                         setTimeout(this.closeDialog, 2500);
                     }
                 });
@@ -229,9 +229,6 @@ export default {
         closeDialog() {
             this.updatedEmployee = false;
             this.closeEditEmployeeDialog();
-        },
-        updateEmployeeList() {
-            this.loadEmployees();
         },
         patternedPhoneNumber() {
             this.employee.phoneNumber = this.formatPhoneNumber(this.employee.phoneNumber);
