@@ -43,8 +43,8 @@ export default {
         };
     },
     created() {
-        this.userSession = userSession;
-        if (!this.userSession) {
+        
+        if (!userSession.employeeNumber && !userSession.password) {
             this.$router.push('/espace');
         }
     },

@@ -178,25 +178,25 @@ router.post('/',
         });;
 
         employeeQueries.selectAssignedColorHexcode(colorHexCode).then(assignedColorHexcode => {
-            if (assignedColorHexcode) throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à cette couleur`);
+            if (assignedColorHexcode) throw new HttpError(400, `${assignedColorHexcode.firstName} ${assignedColorHexcode.lastName} est associé(e) à cette couleur`);
         }).catch(err => {
             next(err);
         });
 
         employeeQueries.selectEmployeeByBarcodeNumber(barcodeNumber).then(assignedBarcodeNumber => {
-            if (assignedBarcodeNumber) throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à ce numéro de la carte)`);
+            if (assignedBarcodeNumber) throw new HttpError(400, `${assignedBarcodeNumber.firstName} ${assignedBarcodeNumber.lastName} est associé(e) à ce numéro de la carte)`);
         }).catch(err => {
             next(err);
         });;
 
         employeeQueries.selectUsedEmail(email).then(usedEmail => {
-            if (usedEmail) throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à cette adresse courriel)`);
+            if (usedEmail) throw new HttpError(400, `${usedEmail.firstName} ${usedEmail.lastName} est associé(e) à cette adresse courriel)`);
         }).catch(err => {
             next(err);
         });
 
         employeeQueries.selectUsedPhoneNumber(phoneNumber).then(usedPhoneNumber => {
-            if (usedPhoneNumber) throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à ce numéro de téléphone)`);
+            if (usedPhoneNumber) throw new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`);
         }).catch(err => {
             next(err);
         });
@@ -363,7 +363,7 @@ router.post('/',
 
 router.put('/',
     passport.authenticate('basic', { session: false }),
-    (req, res, next) => {
+    async (req, res, next) => {
         console.log("REQ.EMPLOYEE", req.user);
 
         const employee = req.user;
@@ -373,6 +373,7 @@ router.put('/',
         let employeeNumber = req.body.employeeNumber;
         if (!employeeNumber || employeeNumber == '') return next(new HttpError(400, 'Le champ employeeNumber est requis'));
         if (!regex.validEmployeeNumber.test(employeeNumber)) return next(new HttpError(400, 'Le numéro d\'employé ne respecte pas les critères d\'acceptation'));
+        employeeNumber = parseInt(employeeNumber);
 
         const firstName = req.body.firstName;
         if (!firstName || firstName == '') return next(new HttpError(400, 'Le champ firstName est requis'));
@@ -413,6 +414,8 @@ router.put('/',
 
         const isAdmin = req.body.isAdmin;
 
+        const isActive = req.body.isActive;
+
         let skillPoints = req.body.skillPoints;
         if (role != "Gestionnaire") {
             if (!skillPoints || skillPoints == '') return next(new HttpError(400, 'Le champ skillPoints est requis'));
@@ -420,36 +423,40 @@ router.put('/',
             skillPoints = parseInt(skillPoints);
         }
 
-        employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber).then(employee => {
-            if (employee) throw new HttpError(400, `${employee.firstName} ${employee.lastName} est associé(e) à ce numéro d'employé`);
-        },
-            employeeNumber = parseInt(employeeNumber)
-        ).catch(err => {
-            next(err)
-        });
+        try {
+            const resultEmployee = await employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber);
 
-        employeeQueries.selectRoleByName(role).then(existingRole => {
-            if (!existingRole) throw new HttpError(400, `Le role ${role} n'existe pas`);
-        }).catch(err => {
-            next(err);
-        });
+            if (!resultEmployee) {
+                return next(new HttpError(404, 'Employé(e) introuvable'));
+            }
 
-        if (email != employee.email) {
-            employeeQueries.selectUsedEmail(email).then(usedEmail => {
-                if (usedEmail) throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à cette adresse courriel)`);
-            }).catch(err => {
-                next(err);
-            });
-        }
+            //verif employeeNumber qui ne fonctionne pas en Insomnia
+            if (employeeNumber != resultEmployee.employeeNumber) return next(new HttpError(409, 'Le numéro de l\'employé ne peut pas être modifié'));
 
-        if(phoneNumber != employee.phoneNumber)
-        employeeQueries.selectUsedPhoneNumber(phoneNumber).then(usedPhoneNumber => {
-            if (usedPhoneNumber) throw new HttpError(400, `${req.body.firstName} ${req.body.lastName} est associé(e) à ce numéro de téléphone)`);
-        }).catch(err => {
-            next(err);
-        });
+            if (firstName != resultEmployee.firstName) return next(new HttpError(409, 'Le prénom de l\'employé ne peut pas être modifié'));
 
-        const employeeToUpdate = {
+            if (lastName != resultEmployee.lastName) return next(new HttpError(409, 'Le nom de famille de l\'employé ne peut pas être modifié'));
+
+            if (colorHexCode != resultEmployee.colorHexCode) return next(new HttpError(409, 'Le code de couleur de l\'employé ne peut pas être modifié'));
+            
+            if (barcodeNumber != resultEmployee.barcodeNumber ) return next(new HttpError(409, 'Le code barre de l\'employé ne peut pas être modifié'));
+
+            if (resultEmployee.role != role) {
+                const existingRole = await employeeQueries.selectRoleByName(role);
+                if (!existingRole) return next(new HttpError(400, `Le poste ${role} n'existe pas dans la base de données, contactez Brigade pour l'ajouter à votre application`));
+            }
+
+            if (resultEmployee.email != email) {
+                const usedEmail = await employeeQueries.selectUsedEmail(email);
+                if (usedEmail) return next(new HttpError(400, `${usedEmail.firstName} ${usedEmail.lastName} est associé(e) à cette adresse courriel)`));
+            }
+
+            if (resultEmployee.phoneNumber != phoneNumber) {
+                const usedPhoneNumber = await employeeQueries.selectUsedPhoneNumber(phoneNumber);
+                    if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`));
+            }
+
+            const employeeToUpdate = {
             employeeNumber: employeeNumber,
             firstName: "" + firstName,
             lastName: "" + lastName,
@@ -460,15 +467,16 @@ router.put('/',
             email: "" + email,
             phoneNumber: "" + phoneNumber,
             isAdmin: isAdmin,
+            isActive: isActive,
             skillPoints: skillPoints,
         };
 
-        try {
-            const updatedEmployee = employeeQueries.updateEmployeeByAdmin(employeeToUpdate);
-            res.json(updatedEmployee);
-        } catch (err) {
-            return next(err);
+        const updatedEmployee = await employeeQueries.updateEmployeeByAdmin(employeeToUpdate);
+        res.json(updatedEmployee);
+        } catch (error) {
+            return next(error);
         }
+
     });
 
 module.exports = router;

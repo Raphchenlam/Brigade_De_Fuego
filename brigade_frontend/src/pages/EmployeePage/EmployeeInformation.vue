@@ -1,6 +1,6 @@
 <template>
         <v-sheet v-if="employee.employeeNumber" class="px-10 py-3">
-                <v-dialog v-model="dialogEditEmployee" width="50%">
+                <v-dialog v-model="dialogEditEmployee" width="50%" persistent>
                         <template v-slot:activator="{ props }">
                                 <v-row class="justify-space-between">
                                         <div>
@@ -100,7 +100,6 @@ export default {
         methods: {
                 loadEmployeeByNumber(employeeNumber) {
                         if (employeeNumber) {
-                                console.log("FETCH ICI")
                                 getEmployeeByEmployeeNumber(employeeNumber).then(employee => {
                                         employee.scheduledHours = 0,
                                                 employee.actualWorkedHours = 0;
@@ -110,7 +109,6 @@ export default {
                                 })
                         }
                         else {
-                                console.log("RESET ICI")
                                 this.employee = {};
                         }
                 },
@@ -120,7 +118,6 @@ export default {
         },
         watch: {
                 employeeNumber() {
-                        console.log("Watch4");
                         this.loadEmployeeByNumber(this.employeeNumber);
                 }
         },
@@ -131,9 +128,7 @@ export default {
                 };
         },
         mounted() {
-                console.log("Watch5");
                 if (this.employeeNumber) {
-                        console.log("Watch6");
                         this.loadEmployeeByNumber(this.employeeNumber);
                 }
         }

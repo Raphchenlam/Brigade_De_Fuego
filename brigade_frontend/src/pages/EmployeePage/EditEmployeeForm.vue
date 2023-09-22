@@ -1,6 +1,6 @@
 <template>
     <div class="ma-2" width="auto">
-        <v-form @submit.prevent="updateEmployee" class="pa-10" validate-on="blur" ref="editEmployeeForm">
+        <v-form @submit.prevent="saveUpdatedEmployeeInfos" class="pa-10" validate-on="blur" ref="editEmployeeForm">
             <v-row>
                 <v-col cols="3">
                     <v-text-field disabled v-model="updatingEmployee.employeeNumber" class="mx-2" label="# Employé"
@@ -8,12 +8,12 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="4">
-                    <v-select v-model="updatingEmployee.role" class="mx-2" label="Poste"
+                    <v-select v-model="updatingEmployee.role" :items="roleList" class="mx-2" label="Poste"
                         :rules="[rules.required, rules.validateRole]">
                     </v-select>
                 </v-col>
                 <v-col cols="5">
-                    <v-select :disabled="disableSkillPtsDropDown" v-model="updatingEmployee.skillPoints" class="mx-2"
+                    <v-select :disabled="disableSkillPtsDropDown" :items="skillPointsRange" v-model="updatingEmployee.skillPoints" class="mx-2"
                         label="Points de compétences" :rules="[rules.required, rules.validateSkillPoints]">
                     </v-select>
                 </v-col>
@@ -76,7 +76,7 @@
 
             <v-row>
                 <v-col>
-                    <v-checkbox :disabled="disableCheckbox" v-model="updatingEmployee.isAdmin"
+                    <v-checkbox :disabled="disableAdminCheckbox" v-model="updatingEmployee.isAdmin"
                         label="Accès Administrateur"></v-checkbox>
                 </v-col>
                 <v-col>
@@ -101,7 +101,7 @@
             <v-col>
                 <v-row class="justify-center">
                     <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                    <DarkRedButton class="mx-5" textbutton="Sauvegarder"></DarkRedButton>
+                    <DarkRedButton type="submit" class="mx-5" textbutton="Sauvegarder"></DarkRedButton>
                 </v-row>
             </v-col>
             <v-dialog v-model="updatedEmployee" width="50%" persistent>
@@ -111,7 +111,7 @@
                     </v-card-title>
                     <v-card-text>
                         <v-row class="justify-center">
-                            <p>{{ employee.firstName }} {{ employee.lastName }} / {{ employee.employeeNumber }} a bien été
+                            <p>{{ updatingEmployee.firstName }} {{ updatingEmployee.lastName }} / {{ updatingEmployee.employeeNumber }} a bien été
                                 modifié(e).</p>
                         </v-row>
                     </v-card-text>
@@ -123,7 +123,7 @@
 
 
 <script>
-import { getEmployeeByEmployeeNumber } from '../../services/EmployeeService';
+import { updateEmployee, getEmployeeByEmployeeNumber, getAllRoles } from '../../services/EmployeeService';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import {
     validEmployeeNumber, validName, validPhoneNumber, validEmail, validRole, validColorHexCode,
@@ -185,7 +185,9 @@ export default {
                 },
                 // validPassword: value => validPassword.test(value) || "Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial",
                 // passwordsMatch: () => this.password === this.passwordConf || "Les mots de passe ne correspondent pas",
-            }
+            },
+            roleList: [],
+            skillPointsRange: [1,2,3,4,5,6,7,8,9,10]
         }
     },
     methods: {
@@ -202,20 +204,20 @@ export default {
                 this.updatingEmployee = {};
             }
         },
-        async updateEmployee() {
+        async saveUpdatedEmployeeInfos() {
             const formValid = await this.$refs.editEmployeeForm.validate();
             if (!formValid.valid) {
                 return;
             }
             try {
-                await updateEmployee(updatingEmployee).then((employee) => {
+                await updateEmployee(this.updatingEmployee).then((employee) => {
                     if (employee) {
                         this.updatedEmployee = true;
                         this.updateEmployeeList();
                         setTimeout(this.closeDialog, 2500);
                     }
                 });
-            } catch (error) {
+            } catch (err) {
                 console.error(err);
                 alert(err.message);
                 if (err.status === 409) {
@@ -237,36 +239,16 @@ export default {
     },
     mounted() {
         this.loadEmployeeByNumber(this.employeeNumber);
-        console.log("EMPLOYEE", this.employeeToUpdate);
+        getAllRoles().then(allRoles => {
+                    allRoles.forEach(role => {
+                        this.roleList.push(role.name);
+                    });
+                }).catch(err => {
+                    console.error(err);
+                });
     },
     computed: {
-        disableCreateEmployeeBtn() {
-            if (this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints) {
-                return !this.employee.employeeNumber
-                    || !this.employee.role
-                    || !this.employee.barcodeNumber
-                    || !this.employee.firstName
-                    || !this.employee.lastName
-                    || !this.employee.phoneNumber
-                    || !this.employee.email
-                    || !this.employee.hourlyRate
-                    || !this.employee.colorHexCode
-                    || !this.employee.password;
-            } else {
-                return !this.employee.employeeNumber
-                    || !this.employee.role
-                    || !this.employee.skillPoints
-                    || !this.employee.barcodeNumber
-                    || !this.employee.firstName
-                    || !this.employee.lastName
-                    || !this.employee.phoneNumber
-                    || !this.employee.email
-                    || !this.employee.hourlyRate
-                    || !this.employee.colorHexCode
-                    || !this.employee.password;
-            }
-        },
-        disableCheckbox() {
+        disableAdminCheckbox() {
             return this.updatingEmployee.role == "Gestionnaire"
         },
         disableSkillPtsDropDown() {

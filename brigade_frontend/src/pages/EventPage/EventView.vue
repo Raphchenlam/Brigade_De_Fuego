@@ -56,7 +56,7 @@ export default {
     },
     beforeMount() {
         if (!this.userSession) {
-            this.$router.push('/espace/dashboard');
+            this.$router.push('/espace');
         }
     },
 }
