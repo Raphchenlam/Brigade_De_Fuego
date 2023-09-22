@@ -50,7 +50,8 @@ export default {
             //isAssign: false,
             tableList: [],
             assignationList: [],
-            date:"2023-09-19",
+            //tableWithAssignationList: [],
+            date: "2023-09-19",
         }
     },
     provide() {
@@ -58,16 +59,19 @@ export default {
             employeeColor: computed(() => this.employeeColor),
             hasReservation: computed(() => this.hasReservation),
             //isAssign: computed(() => this.isAssign),
-            tableList: computed(()=>this.tableList),
-            assignationList: computed(()=>this.assignationList),
+            tableList: computed(() => this.tableList),
+            assignationList: computed(() => this.assignationList),
+            tableWithAssignationList: computed(() => this.tableWithAssignationList),
+            //updateTableLayout: this.updateTableLayout
         }
     },
     methods: {
-        initialLoading(){
+        initialLoading() {
             this.loadTableList();
             this.loadAssignationList();
         },
         loadTableList() {
+            console.log('Loading table list...');
             this.tableList = [];
             fetchAllTables().then(allTables => {
                 allTables.forEach(table => {
@@ -77,7 +81,8 @@ export default {
                 console.error(err);
             });
         },
-        loadAssignationList(){
+        loadAssignationList() {
+            console.log('Loading assignation list...');
             this.assignationList = [];
             fetchAssignationByDate(this.date).then(allAssignations => {
                 allAssignations.forEach(assignation => {
@@ -86,13 +91,52 @@ export default {
             }).catch(err => {
                 console.error(err);
             });
-        }
+        },
+        // updateTableLayout() {
+
+        //     console.log('tableList:', this.tableList);
+        //     console.log('tableList:', this.tableList.length);
+        //     console.log('assignationList:', this.assignationList);
+        //     console.log('assignationList:', this.assignationList.length);
+        //     if ((this.tableList.length>0) && (this.assignationList.length>0)) {
+        //         console.log("yeesssss")
+        //         const tempTable = this.tableList.map(table => {
+        //             return {
+        //                 number: table.number,
+        //                 capacity: table.capacity,
+        //                 isActive: table.isActive,
+        //                 isAssign: false
+        //             }
+        //         });
+        //         console.log("tableWithAssi..." + tempTable + this.tableWithAssignationList)
+
+        //         this.assignationList.forEach(assignation => {
+        //             const table = this.tableWithAssignationList.find(table => table.number === assignation.tableNumber);
+        //             if (table) {
+        //                 table.isAssign = true;
+        //             }
+        //         });
+        //     }else{console.log("NONONNONNOOOOO")}
+        // }
+    },
+    // watch: {
+    //     assignationList() {
+    //         console.log('assignationList changed');
+    //         this.updateTableLayout();
+    //     },
+    //     tableList(){
+    //         console.log('tableList changed');
+    //         this.updateTableLayout();
+    //     }
+    // },
+    async created(){
+        await this.initialLoading();
     },
     mounted() {
         if (!operationSession.isActive) {
             this.$router.push('/operation');
         }
-        this.initialLoading();
+       
     }
 }
 </script>

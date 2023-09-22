@@ -37,7 +37,8 @@ class ServiceError extends Error {
     return {
         number: "" + jsonTable.number,
         capacity: Number(jsonTable.capacity),
-        isActive: jsonTable.isActive
+        isActive: jsonTable.isActive,
+        isAssign: false
     }
   }
 
@@ -48,7 +49,7 @@ class ServiceError extends Error {
 
     if(response.ok) {
       const respJson = await response.json();
-        return respJson.map(assignation => convertToTable(assignation));
+        return respJson.map(assignation => convertToAssignation(assignation));
     }else{
         throw await createServiceError(response);
     }
