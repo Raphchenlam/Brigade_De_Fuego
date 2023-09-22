@@ -23,20 +23,21 @@ export default {
     ReservationList,
     ReservationInformation
   },
+  inject:['selectedReservationId'],
   data() {
     return {
       operationSession: operationSession,
-      selectedReservationId: null
+      // selectedReservationId: null
     }
   },
   methods: {
-    loadReservationInformations(receivedReservationId) {
-      this.selectedReservationId = receivedReservationId;
-    }
+    // loadReservationInformations(receivedReservationId) {
+    //   this.selectedReservationId = receivedReservationId;
+    // }
   },
   provide() {
     return {
-      loadReservationInformations: this.loadReservationInformations
+      //loadReservationInformations: this.loadReservationInformations
     };
   },
   mounted() {

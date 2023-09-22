@@ -18,6 +18,7 @@ import userSession from "./sessions/UserSession"
 
 import OperationMenu from "./components/OperationMenu.vue"
 import EspaceMenu from "./components/DesktopMenu.vue"
+import { computed } from "vue";
 
 export default {
   provide() {
@@ -27,6 +28,9 @@ export default {
       formatPhoneNumber: this.formatPhoneNumber,
       spliceDate: this.spliceDate,
       isUserAuthorized: this.isUserAuthorized,
+      loadReservationInformations: this.loadReservationInformations,
+      selectedReservationId: computed(()=>this.selectedReservationId),
+
     }
   },
   components: {
@@ -36,10 +40,14 @@ export default {
   data() {
     return {
       operationSession: operationSession,
-      userSession: userSession
+      userSession: userSession,
+      selectedReservationId: null
     }
   },
   methods: {
+    loadReservationInformations(receivedReservationId) {
+      this.selectedReservationId = receivedReservationId;
+    },
     capitalizeWords(inputString) {
       if (inputString) {
         const words = inputString
