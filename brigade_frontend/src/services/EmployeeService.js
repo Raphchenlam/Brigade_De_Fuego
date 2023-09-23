@@ -135,3 +135,21 @@ const convertToEmployee = jsonEmployee => {
         skillPoints: "" + jsonEmployee.skillPoints
     };
 };
+
+export async function updateEmployee(employee){
+    const response = await fetch(`/api/employee`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+        body: JSON.stringify(employee)
+    });
+
+    if (response.ok) {
+        return convertToEmployee(await response.json());
+    } else {
+        console.log(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}

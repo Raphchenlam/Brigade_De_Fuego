@@ -29,11 +29,11 @@ export default {
             userSession: userSession
         }
     },
-    mounted() {
-        if (!userSession) {
+    created() {
+        if (!userSession.employeeNumber && !userSession.password) {
             this.$router.push('/espace');
         }
-    }
+    },
 }
 
 

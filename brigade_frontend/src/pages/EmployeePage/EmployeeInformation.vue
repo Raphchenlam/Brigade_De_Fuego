@@ -1,21 +1,19 @@
 <template>
         <v-sheet v-if="employee.employeeNumber" class="px-10 py-3">
-                <v-dialog v-model="dialogEditEmployee" width="50%">
+                <v-dialog v-model="dialogEditEmployee" width="50%" persistent>
                         <template v-slot:activator="{ props }">
                                 <v-row class="justify-space-between">
                                         <div>
-                                                <h1 class="mt-5 ml-10">{{ employee.firstName + " " + employee.lastName
-                                                }}</h1>
+                                                <h1 class="mt-5 ml-10">{{ employee.firstName + " " + employee.lastName }}</h1>
                                         </div>
-                                        <EditBlackButton class="ma-5" v-bind="props">
-                                        </EditBlackButton>
+                                        <EditBlackButton class="ma-5" v-bind="props"></EditBlackButton>
                                 </v-row>
                         </template>
                         <v-card>
                                 <v-card-title>
-                                        Editer les informations de l'employé
+                                        Éditer les informations de l'employé(e)
                                 </v-card-title>
-                                <EditEmployeeForm :employeeNumber="2222"></EditEmployeeForm>
+                                <EditEmployeeForm :employeeNumber="employeeNumber"></EditEmployeeForm>
                         </v-card>
                 </v-dialog>
                 <v-divider :thickness="2" class="border-opacity-50"></v-divider>
@@ -78,6 +76,18 @@ export default {
         data() {
                 return {
                         employee: {
+                                employeeNumber: null,
+                                firstName: "",
+                                lastName: "",
+                                role: "",
+                                colorHexCode: "",
+                                hourlyRate: null,
+                                barcodeNumber: "",
+                                email: "",
+                                phoneNumber: "",
+                                isAdmin: false,
+                                isActive: true,
+                                skillPoints: null
                         },
                         dialogEditEmployee: false
                 };
@@ -90,7 +100,6 @@ export default {
         methods: {
                 loadEmployeeByNumber(employeeNumber) {
                         if (employeeNumber) {
-                                console.log("FETCH ICI")
                                 getEmployeeByEmployeeNumber(employeeNumber).then(employee => {
                                         employee.scheduledHours = 0,
                                                 employee.actualWorkedHours = 0;
@@ -100,7 +109,6 @@ export default {
                                 })
                         }
                         else {
-                                console.log("RESET ICI")
                                 this.employee = {};
                         }
                 },
@@ -110,19 +118,17 @@ export default {
         },
         watch: {
                 employeeNumber() {
-                        console.log("Watch4");
                         this.loadEmployeeByNumber(this.employeeNumber);
                 }
         },
         provide() {
                 return {
-                        closeEditEmployeeDialog: this.closeEditEmployeeDialog
+                        closeEditEmployeeDialog: this.closeEditEmployeeDialog,
+                        loadEmployeeByNumber: this.loadEmployeeByNumber
                 };
         },
         mounted() {
-                console.log("Watch5");
                 if (this.employeeNumber) {
-                        console.log("Watch6");
                         this.loadEmployeeByNumber(this.employeeNumber);
                 }
         }
