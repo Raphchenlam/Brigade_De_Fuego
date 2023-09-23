@@ -4,7 +4,7 @@
             <v-row>
                 <v-col cols="6">
                     <v-row class="justify-center">
-                        <p v-if="!clientIdValid" class="error-message">Un client doit etre selectionner
+                        <p v-if="!clientIdValid" class="error-message">Un client (non-Blacklisted) doit etre selectionner
                         </p>
                     </v-row>
                     <ClientList class="mt-5"></ClientList>
@@ -107,6 +107,7 @@ export default {
             dialogOKReservation: false,
             reservationFullDate: null,
             selectedClientId: null,
+            selectedClientIsBlacklisted: false,
             reservation: {
                 tableNumber: null,
                 clientId: null,
@@ -140,7 +141,7 @@ export default {
         },
         async verifyReservation() {
             this.clientIdValid = true;
-            if (!this.reservation.clientId) {
+            if (!this.reservation.clientId || this.selectedClientIsBlacklisted) {
                 this.clientIdValid = false;
             }
             await this.$refs.createReservationForm
@@ -151,8 +152,9 @@ export default {
                 }
                 );
         },
-        loadClientId(clientId) {
-            this.selectedClientId = clientId;
+        loadClientInformations(clientInformations) {
+            this.selectedClientId = clientInformations[0];
+            this.selectedClientIsBlacklisted = clientInformations[1];
         },
         submitNewReservation() {
             this.dialogOKReservation = false;
@@ -166,7 +168,7 @@ export default {
             createReservation(this.reservation).then(result => {
                 if (result) {
                     this.dialogOKReservation = true;
-                    if(this.dialogOKReservation){
+                    if (this.dialogOKReservation) {
                         this.refreshWithNewreservation([result.id]);
                     }
                     setTimeout(this.closeAllDialog, 2000);
@@ -206,20 +208,17 @@ export default {
     watch: {
         reservationFullDate() {
             this.dateValid = true;
-            // console.clear();
 
             //Date management
             const reservationDate = this.spliceDate(this.reservationFullDate);
             const month = (reservationDate.month < 10) ? "0" + reservationDate.month : reservationDate.month;
             const day = (reservationDate.day < 10) ? "0" + reservationDate.day : reservationDate.day;
             this.reservation.date = reservationDate.year + "-" + month + "-" + day;
-            // console.log("this.reservation.date  :  " + this.reservation.date);
 
             //Start time management
             const startTimeHours = (reservationDate.hour < 10) ? "0" + reservationDate.hour : reservationDate.hour;
             const startTimeMinutes = (reservationDate.minute < 10) ? "0" + reservationDate.minute : reservationDate.minute;
             this.reservation.startTime = startTimeHours + ":" + startTimeMinutes;
-            // console.log("this.reservation.startTime  :  " + this.reservation.startTime);
 
             //End time management
             let endHour = reservationDate.hour + 3;
@@ -231,7 +230,6 @@ export default {
             const endTimeHours = (endHour < 10) ? "0" + endHour : endHour.toString();
             const endTimeMinutes = (endMinute < 10) ? "0" + endMinute : endMinute.toString();
             this.reservation.endTime = endTimeHours + ":" + endTimeMinutes;
-            // console.log("this.reservation.endTime  :  " + this.reservation.endTime);
 
             //Date validation
             this.dateValid = !this.isBeforeToday(this.reservationFullDate);
@@ -241,13 +239,23 @@ export default {
 
         },
         selectedClientId() {
-            this.reservation.clientId = this.selectedClientId
-            this.clientIdValid = true;
+            if (this.selectedClientId) {
+                this.reservation.clientId = this.selectedClientId
+
+                if (this.selectedClientIsBlacklisted) {
+                    this.clientIdValid = false;
+                } else {
+                    this.clientIdValid = true;
+                }
+            }else{
+                this.clientIdValid = false;
+                this.selectedClientIsBlacklisted = false;
+            }
         }
     },
     provide() {
         return {
-            loadClientId: this.loadClientId
+            loadClientInformations: this.loadClientInformations
         };
     },
     computed: {
@@ -265,8 +273,18 @@ export default {
     mounted() {
         const today = new Date().toISOString().split("T")[0];
         const explodedNow = new Date().toLocaleTimeString().split(":")
-        const now = explodedNow[0] + ":" + (parseInt(explodedNow[1]) + 5);
-        this.reservationFullDate =  today+ "T" + now;
+        var hours = parseInt(explodedNow[0]);
+        var minutes = parseInt(explodedNow[1]) + 5;
+
+        if(minutes >= 60){
+            minutes -= 60;
+            hours += 1;
+        }
+        
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+
+        const now = hours + ":" + minutes;
+        this.reservationFullDate = today + "T" + now;
     }
 }
 </script>

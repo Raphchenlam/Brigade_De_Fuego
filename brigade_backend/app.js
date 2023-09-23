@@ -102,7 +102,7 @@ app.get('/login',
 );
 
 app.use((err, req, res, next) => {
-    console.log("error handler: ", err);
+    console.error("error handler: ", err);
     if (res.headersSent) {
         return next(err);
     }
