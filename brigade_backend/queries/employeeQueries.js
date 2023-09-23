@@ -27,6 +27,7 @@ const selectLoginByEmployeeNumber = async (employeeNumber, client) => {
 }
 exports.selectLoginByEmployeeNumber = selectLoginByEmployeeNumber;
 
+
 const selectAllEmployees = async () => {
     const result = await pool.query(
         `SELECT * from employee
@@ -44,6 +45,7 @@ const selectAllEmployees = async () => {
     });
 };
 exports.selectAllEmployees = selectAllEmployees;
+
 
 const selectAllEmployeesByRole = async (role) => {
     const result = await pool.query(
@@ -116,10 +118,29 @@ const insertEmployee = async (newEmployee, passwordSalt, passwordHash, clientPar
         client.release();
     }
 }
-
 exports.insertEmployee = insertEmployee;
 
-const selectEmployeeByEmployeeNumber = async (employeeNumber, clientParam) => {
+
+const updateEmployeeByAdmin = async (employeeToUpdate, clientParam) => {
+
+    const admin = clientParam || await pool.connect();
+
+    const result = await admin.query(
+        `UPDATE employee
+	        SET first_name=$2, last_name=$3, role=$4, color_hexcode=$5, hourly_rate=$6, barcode_number=$7, email=$8, phone_number=$9, is_admin=$10, is_active=$11, skill_points=$12
+	        WHERE employee_number = $1`,
+        [employeeToUpdate.employeeNumber, employeeToUpdate.firstName, employeeToUpdate.lastName, employeeToUpdate.role, employeeToUpdate.colorHexCode, employeeToUpdate.hourlyRate, employeeToUpdate.barcodeNumber, employeeToUpdate.email, employeeToUpdate.phoneNumber, employeeToUpdate.isAdmin, employeeToUpdate.isActive, employeeToUpdate.skillPoints]
+    );
+
+    if (result.rowCount === 0) {
+        return undefined;
+    }
+
+    return selectEmployeeByEmployeeNumber(employeeToUpdate.employeeNumber);
+};
+exports.updateEmployeeByAdmin = updateEmployeeByAdmin;
+
+const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
     const result = await pool.query(
         `SELECT *
         FROM employee
@@ -150,6 +171,7 @@ const selectEmployeeByEmployeeNumber = async (employeeNumber, clientParam) => {
 };
 exports.selectEmployeeByEmployeeNumber = selectEmployeeByEmployeeNumber;
 
+
 const selectEmployeeByBarcodeNumber = async (barcodeNumber) => {
     const result = await pool.query(
         `SELECT *
@@ -174,13 +196,10 @@ const selectEmployeeByBarcodeNumber = async (barcodeNumber) => {
 };
 exports.selectEmployeeByBarcodeNumber = selectEmployeeByBarcodeNumber;
 
-//const getLoginByEmployeeNumber (se référer à getLoginByUserAccountEmail de recettesRodrigo)
-
-//const getEmployeeNumber (verif dans employeeRouter) PAS FAIT
 
 const selectAssignedColorHexcode = async (colorHexCode) => {
     const result = await pool.query(
-        `SELECT color_hexcode
+        `SELECT first_name, last_name, color_hexcode
         FROM employee
         WHERE color_hexcode = $1`,
         [colorHexCode]
@@ -189,6 +208,8 @@ const selectAssignedColorHexcode = async (colorHexCode) => {
     const row = result.rows[0];
     if (row) {
         return {
+            firstName: row.first_name,
+            lastName: row.last_name,
             colorHexcode: row.color_hexcode
         };
     }
@@ -196,9 +217,10 @@ const selectAssignedColorHexcode = async (colorHexCode) => {
 };
 exports.selectAssignedColorHexcode = selectAssignedColorHexcode;
 
+
 const selectUsedPhoneNumber = async (phoneNumber) => {
     const result = await pool.query(
-        `SELECT phone_number
+        `SELECT first_name, last_name, phone_number
         FROM employee
         WHERE phone_number = $1`,
         [phoneNumber]
@@ -215,8 +237,8 @@ const selectUsedPhoneNumber = async (phoneNumber) => {
     }
     return undefined;
 };
-
 exports.selectUsedPhoneNumber = selectUsedPhoneNumber;
+
 
 const selectUsedEmail = async (email) => {
     const result = await pool.query(
@@ -229,6 +251,8 @@ const selectUsedEmail = async (email) => {
     const row = result.rows[0];
     if (row) {
         return {
+            firstName: row.first_name,
+            lastName: row.last_name,
             email: row.email
         }
     }

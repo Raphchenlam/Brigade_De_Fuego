@@ -46,12 +46,16 @@ export default {
             });
         }
     },
-    mounted()
-    {
-        if (userSession.employee)
+    created()
+    {   
+        if (!userSession.employeeNumber && !userSession.password)
         {
+            this.$router.push('/espace');
+        } else {
             this.$router.push('/espace/dashboard');
         }
+        
+        
     }
 }
 </script>

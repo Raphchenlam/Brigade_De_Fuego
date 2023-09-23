@@ -19,10 +19,10 @@ export default {
             userSession: userSession
         }
     },
-    mounted() {
-        if (!userSession) {
-            this.$router.push('/espace/dashboard');
+    created() {
+        if (!userSession.employeeNumber && !userSession.password) {
+            this.$router.push('/espace');
         }
-    }
+    },
 }
 </script>

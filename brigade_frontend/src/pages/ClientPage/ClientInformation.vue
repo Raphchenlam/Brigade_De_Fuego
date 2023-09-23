@@ -72,7 +72,7 @@ export default {
                         this.client = client;
                     })
                     .catch((err) => {
-                        console.log(err);
+                        console.error(err);
                         alert(err.message);
                     });
             } else {
