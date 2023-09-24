@@ -77,9 +77,10 @@ VALUES
 -- Insertion dans la table leave_status
 INSERT INTO leave_status ("name")
 VALUES 
-('En attente'),
-('Refusé'),
-('Approuvé');
+('Pending'),
+('PendingModified'),
+('Refused'),
+('Approved');
 
 -- Insertion dans la table employee
 INSERT INTO employee (employee_number, first_name, last_name, "role", color_hexcode, hourly_rate, barcode_number, email, phone_number, is_admin, is_super_admin, is_new_employee, is_active, skill_points, password_salt, password_hash)
@@ -102,8 +103,11 @@ VALUES
 -- Insertion dans la table leave
 INSERT INTO leave (employee_number, "start_date", end_date, category, reason, "status")
 VALUES 
-(1111, '2023-09-05', '2023-09-05', 'Maladie', 'Rendez-vous medecin', 'En attente'),
-(2222, '2023-09-10', '2023-09-15', 'Vacance', '1iere semaine de vacance', 'Approuvé');
+(1111, '2023-09-05', '2023-09-05', 'Maladie', 'Rendez-vous medecin', 'Pending'),
+(4444, '2023-12-12', '2023-12-12', 'Maladie', 'Rendez-vous medecin', 'Refused'),
+(4444, '2023-09-05', '2023-09-05', 'Maladie', 'Rendez-vous medecin', 'PendingModified'),
+(5555, '2023-09-05', '2023-09-05', 'Maladie', 'Rendez-vous medecin', 'Pending'),
+(2222, '2023-09-10', '2023-09-15', 'Vacance', '1iere semaine de vacance', 'Approved');
 
 -- Insertion dans la table employee+schedule
 INSERT INTO employee_schedule(employee_number, schedule_period_id, start_time, end_time)
