@@ -124,3 +124,51 @@ const selectLeavesByEmployeeNumber = async (employeeNumber) =>
     });
 };
 exports.selectLeavesByEmployeeNumber = selectLeavesByEmployeeNumber;
+
+const selectAllLeavesCategory = async () =>
+{
+    const result = await pool.query(
+        `SELECT *
+        FROM leave_category
+        ORDER BY name ASC`
+    );
+
+    return result.rows.map(row =>
+    {
+        const leaveCategory = {
+            name: row.name,
+        };
+        return leaveCategory;
+    });
+};
+exports.selectAllLeavesCategory = selectAllLeavesCategory;
+
+
+
+const insertLeave = async (newLeave) => {
+    const result = await pool.query(
+        `INSERT INTO leave
+        (employee_number, "start_date", end_date, category, reason, "status")
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING *`,
+        [newLeave.employeeNumber, newLeave.startDate, newLeave.endDate, newLeave.category, newLeave.reason, newLeave.status]);
+
+    const row = result.rows[0];
+
+    if (row) {
+
+        const reservation = {
+            employeeNumber: row.employee_number,
+            startDate: row.start_date,
+            endDate: row.end_date,
+            category: row.category,
+            reason: row.reason,
+            status: 'Pending'
+        };
+
+        return reservation;
+    }
+
+    throw new Error("L'insertion a échoué pour une raison inconnue");
+};
+exports.insertLeave = insertLeave;

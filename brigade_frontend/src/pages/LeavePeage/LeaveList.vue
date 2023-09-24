@@ -15,7 +15,6 @@
                                 <v-card-title>
                                     <span class="text-h5">Filtre Conge</span>
                                 </v-card-title>
-
                                 <v-card-text>
                                     <v-container>
                                         <v-row>
@@ -67,19 +66,33 @@
         </v-sheet>
 
         <v-sheet :class="userSession.employee.isAdmin && $route.fullPath == '/espace/leave' ? 'mx-10' : 'mx-5'">
-            <v-data-table-server no-data-text="Aucune demande de congés à afficher" v-model:expanded="expanded" height="100%"
-                fixed-header :headers="headers" :items="filteredLeaveList" :items-length="filteredLeaveList.length"
-                class="elevation-1" @update:options="loadLeaves" show-expand>
+            <v-data-table-server no-data-text="Aucune demande de congés à afficher" v-model:expanded="expanded"
+                height="100%" fixed-header :headers="headers" :items="filteredLeaveList"
+                :items-length="filteredLeaveList.length" class="elevation-1" @update:options="loadLeaves" show-expand>
 
                 <template v-slot:top>
                     <v-toolbar flat>
                         <v-toolbar-title>Listes des conges</v-toolbar-title>
                         <v-spacer></v-spacer>
+                        <v-dialog v-model="dialogNewLeave" max-width="500px">
+                            <template v-slot:activator="{ props }">
+                                <BlackButton v-bind="props" textbutton="+"> </BlackButton>
+                                
+                            </template>
+                            <v-card>
+                                <v-card-title>
+                                    <span class="text-h5">Faire une demande de congé</span>
+                                </v-card-title>
 
+
+                                    <NewLeaveForm :employeeNumberReceived="employeeNumber"></NewLeaveForm>
+
+                            </v-card>
+                        </v-dialog>
                     </v-toolbar>
                 </template>
                 <template v-slot:item.actions="{ item }">
-                    <v-dialog v-model="dialog" max-width="500px">
+                    <v-dialog v-model="dialogEditLeave" max-width="500px">
                         <v-card>
                             <v-card-title>
                                 <span class="text-h5">Modifier Conge</span>
@@ -136,15 +149,18 @@
 
 <script>
 import userSession from '../../sessions/UserSession';
-
+import BlackButton from '../../components/Reusable/BlackButton.vue'
 import EditLeaveForm from './EditLeaveForm.vue'
 
 import { getAllLeaves, getAllFilteredLeaves, getleavesByEmployeeNumber } from '../../services/LeaveService';
+import NewLeaveForm from './NewLeaveForm.vue';
 
 export default {
     components: {
-        EditLeaveForm
-    },
+    EditLeaveForm,
+    BlackButton,
+    NewLeaveForm
+},
     props: {
         height: String,
         employeeNumber: Number
@@ -156,7 +172,8 @@ export default {
             search: "",
             filterDialog: false,
             roleShowed: "Tous",
-            dialog: false,
+            dialogNewLeave: false,
+            dialogEditLeave: false,
             expanded: [],
             date: null,
             leaveList: [],
@@ -236,12 +253,12 @@ export default {
                     allLeaves.forEach(leave =>
                     {
                         leave.startDate = leave.startDate.split('T').slice(0)[0]
-                            leave.endDate = leave.endDate.split('T').slice(0)[0]
-                            if (leave.status == 'Pending') leave.status = 'En Attente'
-                            if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
-                            if (leave.status == 'Approved') leave.status = 'Accepté'
-                            if (leave.status == 'Refused') leave.status = 'Refusé'
-                            this.leaveList.push(leave)
+                        leave.endDate = leave.endDate.split('T').slice(0)[0]
+                        if (leave.status == 'Pending') leave.status = 'En Attente'
+                        if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
+                        if (leave.status == 'Approved') leave.status = 'Accepté'
+                        if (leave.status == 'Refused') leave.status = 'Refusé'
+                        this.leaveList.push(leave)
                     });
                 });
             } else
@@ -310,6 +327,10 @@ export default {
                 this.editedItem = Object.assign({}, this.defaultItem)
                 this.editedIndex = -1
             })
+        },
+        closeNewLeaveDialog()
+        {
+            this.dialogNewLeave = false;   
         },
         save()
         {
@@ -421,6 +442,13 @@ export default {
         employeeNumber()
         {
             this.loadLeaves()
+        }
+    },
+    provide()
+    {
+        return {
+            closeNewLeaveDialog: this.closeNewLeaveDialog,
+            loadLeaves: this.loadLeaves
         }
     },
     mounted()

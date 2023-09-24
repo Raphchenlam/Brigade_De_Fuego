@@ -60,11 +60,11 @@ router.get('/:employeeNumber',
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
         const employee = req.user;
-
-        if (!employee) return next(new HttpError(401, "Connexion requise"));
-        if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
-
         const employeeNumberToGet = req.params.employeeNumber;
+        
+        if (!employee) return next(new HttpError(401, "Connexion requise"));
+        if (!employee.isAdmin && employee.employeeNumber != employeeNumberToGet) return next(new HttpError(403, "Droit administrateur requis"));
+
         if (employee.employeeNumber != employeeNumberToGet && !employee.isAdmin) return next(new HttpError(403, "Vous ne pouvez pas acceder aux informations d'un autre employé"));
 
         if (isNaN(employeeNumberToGet)) { return next(new HttpError(404, `Le numero d'employé doit contenir seulement des chiffres`)); }

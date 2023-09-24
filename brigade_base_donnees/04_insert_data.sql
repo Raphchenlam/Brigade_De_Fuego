@@ -53,12 +53,6 @@ VALUES
 ('2023-09-30', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0),
 ('2023-10-01', 'Midi', '2023-W39', 110, 110, 0, 52.0, 0, 55, 0),
 ('2023-10-01', 'Soir', '2023-W39', 130, 130, 0, 60.0, 0, 65, 0);
--- Insertion dans la table schedule_event
-INSERT INTO schedule_event(schedule_period_id, event_name)
-	VALUES
-  (2, 'Game du canadien'),
-  (9, 'Fete des meres'),
-  (10, 'Fete des meres');
 
 -- Insertion dans la table role
 INSERT INTO role ("name", team)
@@ -66,6 +60,13 @@ VALUES
 ('Gestionnaire', 'Service'),
 ('Serveur', 'Service'),
 ('Hotesse', 'Service');
+
+-- Insertion dans la table schedule_event
+INSERT INTO schedule_event(schedule_period_id, event_name)
+	VALUES
+  (2, 'Game du canadien'),
+  (9, 'Fete des meres'),
+  (10, 'Fete des meres');
 
 -- Insertion dans la table leave_category
 INSERT INTO leave_category ("name")

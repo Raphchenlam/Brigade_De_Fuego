@@ -21,6 +21,25 @@ async function createServiceError(response) {
 }
 
 
+export async function createLeave(leave) {
+    const response = await fetch(`/api/leave`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            // ...session.getAuthHeaders()
+        },
+        body: JSON.stringify(leave)
+    });
+
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        console.log(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
+
 export async function getAllLeaves() {
     const response = await fetch(`/api/leave`);
 
@@ -55,6 +74,19 @@ export async function getAllFilteredLeaves(checkboxes)
 
 export async function getleavesByEmployeeNumber(employeeNumber) {
     const response = await fetch(`/api/leave/${employeeNumber}`);
+
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw await createServiceError(response);
+    }
+}
+
+
+
+export async function getAllLeavesCategory() {
+    const response = await fetch(`/api/leave/category`);
 
     if (response.ok) {
         const respJson = await response.json();

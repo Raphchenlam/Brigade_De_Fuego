@@ -29,6 +29,28 @@ router.get('/',
     });
 
 
+router.get('/category',
+    (req, res, next) =>
+    {
+        // const employee = req.employee;
+
+        // if (!employeeConnected) {
+        //     return next(new HttpError(401, "Vous devez etre connecté"));
+        // };
+        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
+        //     return next(new HttpError(403, "Droit administrateur requis"));
+        // };
+
+        leaveQueries.selectAllLeavesCategory().then(leavesCategory =>
+        {
+            res.json(leavesCategory);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
+
+
 router.get('/filter',
     (req, res, next) =>
     {
@@ -88,5 +110,59 @@ router.get('/:employeeNumber',
             return next(err);
         });
     });
+
+router.post('/',
+    (req, res, next) =>
+    {
+        // const employee = req.employee;
+
+        // if (!employeeConnected) {
+        //     return next(new HttpError(401, "Vous devez etre connecté"));
+        // };
+        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
+        //     return next(new HttpError(403, "Droit administrateur requis"));
+        // };
+        const body = req.body;
+        console.log(body)
+        if (!body.employeeNumber || body.employeeNumber == '') return next(new HttpError(400, `Un numero d'employé est requis`));
+        if (!body.category || body.category == '') return next(new HttpError(400, `Une catégorie de congé est requise`));
+        if (!body.startDate) return next(new HttpError(400, `Une date de début est requise`));
+        if (!body.endDate) return next(new HttpError(400, `Une date de fin est requise`));
+        if (!body.reason || body.reason == '') return next(new HttpError(400, `Une raison du congé est requise`));
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var futureDate = new Date(today);
+        futureDate.setDate(today.getDate() + 14);var dayOfWeek = futureDate.getDay();
+        var daysToAdd = 1 - dayOfWeek;
+        futureDate.setDate(futureDate.getDate() + daysToAdd);
+
+        const dateStr = body.startDate;
+        var dateParts = dateStr.split('-');
+        var startDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+        console.log("today", today);
+        console.log("startDate", startDate);
+        if (startDate < futureDate) return next(new HttpError(400, `La date de debut doit etre minimum 2 semaine d'avance`));
+        if (body.endDate < body.startDate) return next(new HttpError(400, `La date de fin ne peut pas etre avant la date de debut`));
+
+        const newLeave = {
+            employeeNumber: body.employeeNumber,
+            startDate: body.startDate,
+            endDate: body.endDate,
+            category: body.category,
+            reason: body.reason,
+            status: 'Pending'
+        }
+
+
+        leaveQueries.insertLeave(newLeave).then(leave =>
+        {
+            res.json(leave);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
+
 
 module.exports = router;
