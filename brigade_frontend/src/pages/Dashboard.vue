@@ -22,9 +22,9 @@ export default {
       userSession: userSession
     }
   },
-mounted()
+created()
     {
-        if (!this.userSession)
+        if (!userSession.employeeNumber && !userSession.password)
         {
             this.$router.push('/espace');
         }

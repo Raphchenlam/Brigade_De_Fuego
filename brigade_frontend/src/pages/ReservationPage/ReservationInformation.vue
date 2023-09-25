@@ -8,8 +8,9 @@
                             <h1 class="mt-5 ml-10">{{ reservation.firstName + " " + reservation.lastName }}</h1>
                         </v-col>
                         <v-col>
-                            <h1 class="mt-5 ml-10" :class="{ noTable: !reservation.tableNumber }">{{ reservation.tableNumber
-                                ? "Table #" + reservation.tableNumber : "Aucune Table" }}</h1>
+                            <h1 class="mt-5 ml-10" 
+                            :class="{ noTable: !reservation.tableNumber }">
+                            {{ reservation.tableNumber ? "Table #" + reservation.tableNumber : "Aucune Table" }}</h1>
                         </v-col>
                         <EditBlackButton class="ma-2" v-bind="props"></EditBlackButton>
                     </v-row>

@@ -916,6 +916,12 @@ export default {
             });
         }
     },
+    created() {
+        
+        if (!userSession.employeeNumber && !userSession.password) {
+            this.$router.push('/espace');
+        }
+    },
     mounted()
     {
         this.roleList.push("Tous");

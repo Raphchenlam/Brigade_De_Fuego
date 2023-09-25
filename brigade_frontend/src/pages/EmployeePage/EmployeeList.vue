@@ -122,10 +122,8 @@ export default {
                 this.loadEmployees();
             }
             this.selected = [];
-
         },
         selected() {
-            console.log("Selection changer", this.selected[0]);
             this.loadEmployeeNumber(this.selected[0]);
         }
     },

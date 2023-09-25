@@ -91,13 +91,19 @@ export default {
             if (this.startDate == "") {
                 this.resetStartDate();
             }
-            this.loadReservations(this.startDate, this.endDate);
+
+            if (this.startDate != this.endDate) {
+                this.loadReservations(this.startDate, this.endDate);
+            }
         },
         endDate() {
             if (this.endDate == "") {
                 this.resetEndDate();
             }
-            this.loadReservations(this.startDate, this.endDate);
+
+            if (this.startDate != this.endDate) {
+                this.loadReservations(this.startDate, this.endDate);
+            }
         },
         selected() {
             this.loadReservationInformations(this.selected[0]);
@@ -117,7 +123,7 @@ export default {
                     this.reservations = reservationList;
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.error(err);
                     alert(err.message);
                 });
         },
@@ -147,19 +153,23 @@ export default {
                 }
 
                 if (reservationtoKeep) {
-                    if (reservationtoKeep.clientFirstname.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                        || reservationtoKeep.clientLastname.toUpperCase().indexOf(this.search.toUpperCase()) >= 0
-                        || reservationtoKeep.clientPhoneNumber.indexOf(this.search) >= 0) {
-                        const allergies = (reservationtoKeep.clientAllergy) ? " - Allergie(s) : " + reservationtoKeep.clientAllergy : "";
-                        const reservationToAdd = {
-                            "listInformation":
-                                reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname + " (" + reservationtoKeep.clientPhoneNumber + ") - " + reservationtoKeep.peopleCount + " personnes - " + reservationtoKeep.date + " à " + reservationtoKeep.startTime + allergies,
-                            ...reservationtoKeep,
-                            props: {
-                                color: 'red',
-                            },
-                        };
+                    const explodedTime = reservationtoKeep.startTime.split(":");
+                    const hour = explodedTime[0];
+                    const min = explodedTime[1];
+                    const formattedStartTime = hour + "h" + min;
 
+                    const allergies = (reservationtoKeep.clientAllergy) ? " - Allergie(s) : " + reservationtoKeep.clientAllergy : "";
+
+                    const reservationToAdd = {
+                        "listInformation":
+                            reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname + " (" + reservationtoKeep.clientPhoneNumber + ") - " + reservationtoKeep.peopleCount + " personnes - " + reservationtoKeep.date + " à " + formattedStartTime + allergies,
+                        ...reservationtoKeep,
+                        props: {
+                            color: 'red',
+                        },
+                    };
+
+                    if (reservationToAdd.listInformation.toUpperCase().indexOf(this.search.toUpperCase()) >= 0) {
                         this.filteredReservationList.push(reservationToAdd);
                     }
 
@@ -170,14 +180,20 @@ export default {
             this.dialogNewReservation = false;
         },
         resetStartDate() {
-            this.startDate = new Date().toISOString().split('T')[0];
+            const newDate = new Date().toISOString().split('T')[0];
+            this.loadReservations(newDate, this.endDate);
+            this.startDate = newDate;
         },
         resetEndDate() {
-            this.endDate = new Date().toISOString().split('T')[0];
+            const newDate = new Date().toISOString().split('T')[0];
+            this.loadReservations(this.startDate, newDate);
+            this.endDate = newDate;
         }
     },
     mounted() {
         this.endDate = this.startDate = new Date().toISOString().split('T')[0];
+        this.loadReservations(this.startDate, this.endDate);
+
     }
 }
 </script>

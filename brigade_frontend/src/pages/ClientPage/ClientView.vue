@@ -20,17 +20,24 @@ export default {
     data() {
         return {
             operationSession: operationSession,
-            selectedClientId: null
+            selectedClientId: null,
+            selectedClientIsBlacklisted: null,
         }
     },
     methods: {
-        loadClientId(clientId) {
-            this.selectedClientId = clientId;
+        loadClientInformations(clientInformations) {
+            if(clientInformations){
+                this.selectedClientId = clientInformations[0];
+                this.selectedClientIsBlacklisted = clientInformations[1];
+            }else{
+                this.selectedClientId = this.selectedClientIsBlacklisted = null;
+            }
+
         },
     },
     provide() {
         return {
-            loadClientId: this.loadClientId
+            loadClientInformations: this.loadClientInformations
         };
     },
     mounted() {
