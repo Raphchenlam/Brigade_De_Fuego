@@ -45,6 +45,7 @@ class ServiceError extends Error {
   ///**************** AssignationS ****************///
 
   export async function fetchAssignationByDate(date) {
+    if(!date){date = new Date().toISOString().split('T')[0];}
     const response = await fetch(`/api/assignation/${date}`);
 
     if(response.ok) {
