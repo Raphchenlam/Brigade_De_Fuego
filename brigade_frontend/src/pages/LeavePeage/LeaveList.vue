@@ -1,162 +1,183 @@
 <template>
-    <v-sheet class="h-auto">
-    <v-sheet v-if="userSession.employee.isAdmin && $route.fullPath == '/espace/leave'">
-        <v-row class="ma-5 justify-space-around">
-            <v-col cols="6">
-                <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }}</h3>
-            </v-col>
-            <v-col cols="1">
-                <v-icon size="x-large" class="me-2n" @click="filterDialog = true">
-                    mdi-filter-outline
-                </v-icon>
-                <template>
-                    <v-dialog v-model="filterDialog" max-width="500px">
+    <v-sheet class="w-100">
+        <v-sheet v-if="userSession.employee.isAdmin && $route.fullPath == '/espace/leave'" class="ma-5">
+            <v-row class="ma-5 justify-space-around">
+                <v-col cols="11">
+                    <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }}</h3>
+                </v-col>
+                <v-col cols="1">
+                    <v-icon size="x-large" class="me-2n" @click="filterDialog = true">
+                        mdi-filter-outline
+                    </v-icon>
+                    <template>
+                        <v-dialog v-model="filterDialog" max-width="500px">
+                            <v-card>
+                                <v-card-title>
+                                    <span class="text-h5">Filtre Conge</span>
+                                </v-card-title>
+                                <v-card-text>
+                                    <v-container>
+                                        <v-row>
+                                            <v-col cols="12">
+                                                <v-checkbox @click="checkAllBoxes()" v-model="checkedBoxes.all"
+                                                    label="Tout selectionner"></v-checkbox>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-checkbox v-model="checkedBoxes.pending" label="En Attente"></v-checkbox>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-checkbox v-model="checkedBoxes.pendingModified"
+                                                    label="Modifié, en attente"></v-checkbox>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-checkbox v-model="checkedBoxes.accepted" label="Accepté"></v-checkbox>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-checkbox v-model="checkedBoxes.refused" label="Refusé"></v-checkbox>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-checkbox v-model="checkedBoxes.coming" label="À venir"></v-checkbox>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-checkbox v-model="checkedBoxes.passed" label="Passé"></v-checkbox>
+                                            </v-col>
+                                        </v-row>
+                                    </v-container>
+                                </v-card-text>
+
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn variant="text" @click="filterDialog = false">
+                                        Annuler
+                                    </v-btn>
+                                    <v-btn variant="text" @click="applyFilter">
+                                        Appliquer
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                    </template>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-text-field v-model="search" hide-details placeholder="Rechercher un employe"
+                    class="mx-10"></v-text-field>
+            </v-row>
+        </v-sheet>
+
+        <v-sheet :class="userSession.employee.isAdmin && $route.fullPath == '/espace/leave' ? 'mx-10' : 'mx-5'">
+            <v-data-table-server no-data-text="Aucune demande de congés à afficher" v-model:expanded="expanded"
+                height="100%" fixed-header :headers="headers" :items="filteredLeaveList"
+                :items-length="filteredLeaveList.length" class="elevation-1" @update:options="loadLeaves" show-expand>
+
+                <template v-slot:top>
+                    <v-toolbar flat>
+                        <v-toolbar-title>Listes des conges</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <v-dialog v-model="dialogNewLeave" max-width="500px">
+                            <template v-slot:activator="{ props }">
+                                <BlackButton v-bind="props" textbutton="+"> </BlackButton>
+                                
+                            </template>
+                            <v-card>
+                                <v-card-title>
+                                    <span class="text-h5">Faire une demande de congé</span>
+                                </v-card-title>
+
+
+                                    <NewLeaveForm :employeeNumberReceived="employeeNumber"></NewLeaveForm>
+
+                            </v-card>
+                        </v-dialog>
+                    </v-toolbar>
+                </template>
+                <template v-slot:item.actions="{ item }">
+                    <v-dialog v-model="dialogEditLeave" max-width="500px">
                         <v-card>
                             <v-card-title>
-                                <span class="text-h5">Filtre Conge</span>
+                                <span class="text-h5">Modifier Conge</span>
                             </v-card-title>
 
                             <v-card-text>
-                                <v-container>
-                                    <v-row>
-                                        <v-col cols="12">
-                                            <v-checkbox @click="checkAllBoxes()" v-model="checkedBoxes.all"
-                                                label="Tout selectionner"></v-checkbox>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-checkbox v-model="checkedBoxes.pending" label="En Attente"></v-checkbox>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-checkbox v-model="checkedBoxes.pendingModified"
-                                                label="Modifié, en attente"></v-checkbox>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-checkbox v-model="checkedBoxes.accepted" label="Accepté"></v-checkbox>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-checkbox v-model="checkedBoxes.refused" label="Refusé"></v-checkbox>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-checkbox v-model="checkedBoxes.coming" label="À venir"></v-checkbox>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-checkbox v-model="checkedBoxes.passed" label="Passé"></v-checkbox>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
+                                <EditLeaveForm :editedItem="editedItem"></EditLeaveForm>
                             </v-card-text>
 
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn variant="text" @click="filterDialog = false">
+                                <v-btn v-if="editedItem.status != 'Accepté'" color="green" variant="text" @click="close">
+                                    Accepter
+                                </v-btn>
+                                <v-btn v-if="editedItem.status != 'Refusé'" color="red" variant="text" @click="close">
+                                    Refuser
+                                </v-btn>
+                                <v-btn variant="text" @click="close">
                                     Annuler
                                 </v-btn>
-                                <v-btn variant="text" @click="applyFilter">
-                                    Appliquer
+                                <v-btn variant="text" @click="save">
+                                    Sauvegarder
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
+                    <v-icon v-if="item.raw.status != 'Accepté'" size="small" class="me-2 approved-icon"
+                        @click="accept(item.raw)">
+                        mdi-check
+                    </v-icon>
+                    <v-icon v-if="item.raw.status != 'Refusé'" size="small" class="me-2 refused-icon"
+                        @click="refuse(item.raw)">
+                        mdi-close
+                    </v-icon>
+                    <v-icon size="small" class="me-2" @click="editItem(item.raw)">
+                        mdi-pencil
+                    </v-icon>
                 </template>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-text-field @input="loadLeaves" v-model="search" hide-details placeholder="Rechercher un employe"
-                class="mx-10"></v-text-field>
-        </v-row>
+
+                <template v-slot:expanded-row="{ columns, item }">
+                    <tr>
+                        <td :colspan="columns.length">
+                            ******* Categorie: {{ item.raw.category }} *******
+                            <span v-if="item.raw.reason">Raison: {{ item.raw.reason }} </span>
+                            <span v-else>Aucune raison</span> *******
+                        </td>
+                    </tr>
+                </template>
+
+            </v-data-table-server>
+        </v-sheet>
     </v-sheet>
-    <v-sheet class="ma-5">
-        <v-data-table-server no-data-text="Aucune demande de congés à venir" v-model:expanded="expanded" height="250" fixed-header :headers="headers" :items="leaveList"
-            :items-length="leaveList.length" class="elevation-1" @update:options="loadLeaves" show-expand>
-            
-            <template v-slot:top>
-                <v-toolbar flat>
-                    <v-toolbar-title>Listes des conges</v-toolbar-title>
-                    <v-divider class="mx-4" inset vertical></v-divider>
-                    <v-spacer></v-spacer>
-
-                </v-toolbar>
-            </template>
-            <template v-slot:item.actions="{ item }">
-                <v-dialog v-model="dialog" max-width="500px">
-                    <v-card>
-                        <v-card-title>
-                            <span class="text-h5">Modifier Conge</span>
-                        </v-card-title>
-
-                        <v-card-text>
-                            <EditLeaveForm :editedItem="editedItem"></EditLeaveForm>
-                        </v-card-text>
-
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn v-if="editedItem.status != 'Accepté'" color="green" variant="text" @click="close">
-                                Accepter
-                            </v-btn>
-                            <v-btn v-if="editedItem.status != 'Refusé'" color="red" variant="text" @click="close">
-                                Refuser
-                            </v-btn>
-                            <v-btn variant="text" @click="close">
-                                Annuler
-                            </v-btn>
-                            <v-btn variant="text" @click="save">
-                                Sauvegarder
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-                <v-icon v-if="item.raw.status != 'Accepté'" size="small" class="me-2 approved-icon"
-                    @click="accept(item.raw)">
-                    mdi-check
-                </v-icon>
-                <v-icon v-if="item.raw.status != 'Refusé'" size="small" class="me-2 refused-icon" @click="refuse(item.raw)">
-                    mdi-close
-                </v-icon>
-                <v-icon size="small" class="me-2" @click="editItem(item.raw)">
-                    mdi-pencil
-                </v-icon>
-            </template>
-
-            <template v-slot:expanded-row="{ columns, item }">
-                <tr>
-                    <td :colspan="columns.length">
-                        ******* Categorie: {{ item.raw.category }} *******
-                        <span v-if="item.raw.reason">Raison: {{ item.raw.reason }} </span>
-                        <span v-else>Aucune raison</span> *******
-                    </td>
-                </tr>
-            </template>
-
-        </v-data-table-server>
-    </v-sheet>
-</v-sheet>
 </template>
 
 <script>
 import userSession from '../../sessions/UserSession';
-
+import BlackButton from '../../components/Reusable/BlackButton.vue'
 import EditLeaveForm from './EditLeaveForm.vue'
 
-import { getAllLeaves, getleavesByEmployeeNumber } from '../../services/LeaveService';
+import { getAllLeaves, getAllFilteredLeaves, getleavesByEmployeeNumber } from '../../services/LeaveService';
+import NewLeaveForm from './NewLeaveForm.vue';
 
 export default {
     components: {
-        EditLeaveForm
-    },
+    EditLeaveForm,
+    BlackButton,
+    NewLeaveForm
+},
     props: {
         height: String,
         employeeNumber: Number
     },
-    data() {
+    data()
+    {
         return {
             userSession: userSession,
             search: "",
             filterDialog: false,
             roleShowed: "Tous",
-            dialog: false,
+            dialogNewLeave: false,
+            dialogEditLeave: false,
             expanded: [],
             date: null,
             leaveList: [],
+            filteredLeaveList: [],
             headers: [
                 {
                     align: 'start',
@@ -221,61 +242,140 @@ export default {
         }
     },
     methods: {
-        loadLeaves() {
+        loadLeaves()
+        {
             this.leaveList = [];
             console.log("EMPLOYEENUMBER", this.employeeNumber)
-            if (this.employeeNumber) {
-                getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves => {
-                    allLeaves.forEach(leave => {
+            if (this.employeeNumber)
+            {
+                getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves =>
+                {
+                    allLeaves.forEach(leave =>
+                    {
                         leave.startDate = leave.startDate.split('T').slice(0)[0]
                         leave.endDate = leave.endDate.split('T').slice(0)[0]
-
+                        if (leave.status == 'Pending') leave.status = 'En Attente'
+                        if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
+                        if (leave.status == 'Approved') leave.status = 'Accepté'
+                        if (leave.status == 'Refused') leave.status = 'Refusé'
+                        this.leaveList.push(leave)
                     });
-                    this.leaveList = allLeaves;
                 });
-            } else {
-                getAllLeaves().then(allLeaves => {
-                    allLeaves.forEach(leave => {
-
-                        leave.startDate = leave.startDate.split('T').slice(0)[0]
-                        leave.endDate = leave.endDate.split('T').slice(0)[0]
-                        if (this.roleShowed == "Tous") {
-                            this.leaveList.push(leave);
-                        } else { }
-                        //faire une fonction qui permet de seulement ajouter les employee que son attribut role == this.roleShowsed au emplouyeeList
-
-                    });
-                }).catch(err => {
-                    console.error(err);
-                })
+            } else
+            {
+                if (this.checkedBoxes.all)
+                {
+                    getAllLeaves().then(allLeaves =>
+                    {
+                        allLeaves.forEach(leave =>
+                        {
+                            leave.startDate = leave.startDate.split('T').slice(0)[0]
+                            leave.endDate = leave.endDate.split('T').slice(0)[0]
+                            if (leave.status == 'Pending') leave.status = 'En Attente'
+                            if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
+                            if (leave.status == 'Approved') leave.status = 'Accepté'
+                            if (leave.status == 'Refused') leave.status = 'Refusé'
+                            this.leaveList.push(leave)
+                        });
+                    }).catch(err =>
+                    {
+                        console.error(err);
+                    })
+                }
+                else
+                {
+                    getAllFilteredLeaves(this.checkedBoxes).then(allLeaves =>
+                    {
+                        allLeaves.forEach(leave =>
+                        {
+                            console.log(leave)
+                            leave.startDate = leave.startDate.split('T').slice(0)[0]
+                            leave.endDate = leave.endDate.split('T').slice(0)[0]
+                            if (leave.status == 'Pending') leave.status = 'En Attente'
+                            if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
+                            if (leave.status == 'Approved') leave.status = 'Accepté'
+                            if (leave.status == 'Refused') leave.status = 'Refusé'
+                            this.leaveList.push(leave)
+                        });
+                    }).catch(err =>
+                    {
+                        console.error(err);
+                    })
+                }
             }
+            this.filteredLeaveList = this.leaveList;
         },
-        editItem(item) {
+        editItem(item)
+        {
             this.editedIndex = this.leaveList.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
         },
-        accept(item) {
+        accept(item)
+        {
             console.log("Accept", item)
         },
-        refuse(item) {
+        refuse(item)
+        {
             console.log("Refuse", item)
         },
-        close() {
+        close()
+        {
             this.dialog = false
-            this.$nextTick(() => {
+            this.$nextTick(() =>
+            {
                 this.editedItem = Object.assign({}, this.defaultItem)
                 this.editedIndex = -1
             })
         },
-        save() {
+        closeNewLeaveDialog()
+        {
+            this.dialogNewLeave = false;   
+        },
+        save()
+        {
 
         },
-        applyFilter() {
+        applyFilter()
+        {
+            this.loadLeaves();
             this.filterDialog = false;
         },
-        checkAllBoxes() {
-            if (this.checkedBoxes.all == false) {
+        loadFilteredLeaves()
+        {
+
+        },
+        /*
+        filterLeaveList(checkedBoxes, leaveList)
+        {
+            const today = new Date(); // Obtenir la date actuelle
+
+            return leaveList.filter(leave =>
+            {
+                if (checkedBoxes.all)
+                {
+                    return true; // Si "Tout" est coché, inclure tous les congés
+                }
+                if (checkedBoxes[leave.status.toLowerCase()])
+                {
+                    return true; // Si la case correspondant au statut est coché, inclure le congé
+                }
+                if (checkedBoxes.coming && new Date(leave.startDate) > today)
+                {
+                    return true; // Si "À venir" est coché et la date de début est ultérieure à aujourd'hui, inclure le congé
+                }
+                if (checkedBoxes.passed && new Date(leave.endDate) < today)
+                {
+                    return true; // Si "Passé" est coché et la date de fin est antérieure à aujourd'hui, inclure le congé
+                }
+                return false; // Sinon, exclure le congé
+            });
+        },
+        */
+        checkAllBoxes()
+        {
+            if (this.checkedBoxes.all == false)
+            {
                 this.checkedBoxes.all = true;
                 this.checkedBoxes.pending = true;
                 this.checkedBoxes.pendingModified = true;
@@ -284,7 +384,8 @@ export default {
                 this.checkedBoxes.passed = true;
                 this.checkedBoxes.coming = true;
             }
-            else {
+            else
+            {
                 this.checkedBoxes.all = false;
                 this.checkedBoxes.pending = false;
                 this.checkedBoxes.pendingModified = false;
@@ -296,18 +397,27 @@ export default {
         }
     },
     computed: {
-        calculatePendingLeaves() {
-            return 3
-            // ici faire une requete BD pour voir le nombre de demande qui ont "en attente" comme status
+        calculatePendingLeaves()
+        {
+            let nbPendingLeave = 0;
+            this.leaveList.forEach(leave =>
+            {
+                if (leave.status == 'En Attente' || leave.status == 'En Attente (modifié)') nbPendingLeave++
+
+            });
+            return nbPendingLeave
         }
     },
     watch: {
         'checkedBoxes': {
-            handler: function (checkboxList) {
-                for (var checkbox in checkboxList) {
+            handler: function (checkboxList)
+            {
+                for (var checkbox in checkboxList)
+                {
                     console.log("watch", checkbox, checkboxList[checkbox])
 
-                    if (checkboxList[checkbox] == false && checkbox != "all") {
+                    if (checkboxList[checkbox] == false && checkbox != "all")
+                    {
                         this.checkedBoxes.all = false;
                         return;
                     }
@@ -316,12 +426,35 @@ export default {
             },
             deep: true
         },
-        employeeNumber() {
+        search()
+        {
+            this.filteredLeaveList = [];
+            this.leaveList.forEach(leave =>
+            {
+                if (leave.employeeName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
+                {
+                    this.filteredLeaveList.push(leave);
+                }
+            });
+
+
+        },
+        employeeNumber()
+        {
             this.loadLeaves()
         }
     },
-    mounted() {
-        if (this.employeeName) {
+    provide()
+    {
+        return {
+            closeNewLeaveDialog: this.closeNewLeaveDialog,
+            loadLeaves: this.loadLeaves
+        }
+    },
+    mounted()
+    {
+        if (this.employeeName)
+        {
             console.log("search = employeename", this.employeeName)
             this.search = this.employeeName;
         }

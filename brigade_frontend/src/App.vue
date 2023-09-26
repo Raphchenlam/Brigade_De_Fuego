@@ -144,4 +144,8 @@ export default {
 .warning-message {
   color: red
 }
+
+.pre-wrap {
+    white-space: pre-wrap;
+}
 </style>
