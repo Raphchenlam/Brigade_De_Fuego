@@ -37,17 +37,18 @@ import brigade_table4 from '../../public/table_images/brigade_table4.svg'
 
 export default {
     props: {
-        //employeeColor: String,
         tableNumber: String,
         tableCapacity: Number,
-        //hasReservation: Boolean,
         isAssign: Boolean,
         tableIsActive: Boolean,
+        assignation: Object
+        //hasReservation: Boolean,
+
     },
-    inject: ['employeeColor', 'hasReservation','displaySelectedTable'],
+    inject: ['hasReservation','displaySelectedTable'],
     data() {
         return {
-            //employeeColor: "#9f1212",
+            employeeColor: null,
             textColor: "black", //a changer
             tableColor: "white", // a changer
             fillDarkColor: "",
@@ -70,7 +71,7 @@ export default {
         },
         setColorTones() {
             if (this.isAssign) {
-                this.fillDarkColor = this.employeeColor;
+                this.fillDarkColor = this.assignation.employeeColor;
                 this.fillLightColor = this.employeeColor + "66";
             }
         },
@@ -104,6 +105,7 @@ export default {
         isAssign(){
             this.tableSetUp();
         },
+
         // selected(){
         //     this.displaySelectedTable(this.selected);
         //     this.selected=null;

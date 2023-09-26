@@ -29,7 +29,7 @@ export default {
       spliceDate: this.spliceDate,
       isUserAuthorized: this.isUserAuthorized,
       loadReservationInformations: this.loadReservationInformations,
-      selectedReservationId: computed(()=>this.selectedReservationId),
+      // selectedReservationId: computed(()=>this.selectedReservationId),
 
     }
   },
@@ -41,13 +41,13 @@ export default {
     return {
       operationSession: operationSession,
       userSession: userSession,
-      selectedReservationId: null
+      // selectedReservationId: null
     }
   },
   methods: {
-    loadReservationInformations(receivedReservationId) {
-      this.selectedReservationId = receivedReservationId;
-    },
+    // loadReservationInformations(receivedReservationId) {
+    //   this.selectedReservationId = receivedReservationId;
+    // },
     capitalizeWords(inputString) {
       if (inputString) {
         const words = inputString

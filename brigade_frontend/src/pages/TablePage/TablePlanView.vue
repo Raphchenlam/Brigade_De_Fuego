@@ -26,7 +26,8 @@
             <v-col cols="5">
                 <v-row class="d-flex ms-2">
                     <!-- Ajouter :min="selectedDate" -->
-                    <v-text-field class="ma-2" type="date" label="Sélectionner une date" density="compact" v-model="selectedDate">
+                    <v-text-field class="ma-2" type="date" label="Sélectionner une date" density="compact"
+                        v-model="selectedDate">
                     </v-text-field>
                     <v-radio-group class="d-flex justify-start align-center" :inline=true v-model="selectedShift">
                         <v-radio label="Midi" value="Midi"></v-radio>
@@ -75,9 +76,11 @@ export default {
             selectedShift: "Midi",
             selectedTable: null,
             needUpdate: false,
-            
+            selectedReservationId: null,
+
+
             ////////////TEMPORAIRE/////////
-            employeeColor: "#8b0000",
+            //employeeColor: "#8b0000",
             hasReservation: true,
             //isAssign: false,
 
@@ -90,11 +93,13 @@ export default {
             tableWithAssignationList: computed(() => this.tableWithAssignationList),
             selectedDate: computed(() => this.selectedDate),
             selectedShift: computed(() => this.selectedShift),
-            selectedTable: computed(()=>this.selectedTable),
-            displaySelectedTable:this.displaySelectedTable,
+            selectedTable: computed(() => this.selectedTable),
+            displaySelectedTable: this.displaySelectedTable,
+            loadReservationInformations: this.loadReservationInformations,
+
             //updateTableLayout: this.updateTableLayout,
             //needUpdate: computed(()=>this.needUpdate),
-    
+
             ////////////TEMPORAIRE/////////
             hasReservation: computed(() => this.hasReservation),
             employeeColor: computed(() => this.employeeColor),
@@ -127,52 +132,63 @@ export default {
                 console.error(err);
             });
         },
-        loadAssignationList(date) {
+        //A ajouter partout ************************************************
+        loadAssignationList(date, shift) {
             console.log('Loading assignation list...');
             this.assignationList = [];
-            this.tableWithAssignationList=[];
+            this.tableWithAssignationList = [];
             fetchAssignationByDate(date).then(allAssignations => {
                 allAssignations.forEach(assignation => {
-                    this.assignationList.push(assignation);
-                    this.needUpdate=true;
+                    if (assignation.shift == shift) {
+                        this.assignationList.push(assignation);
+                    }
                 });
+                //this.needUpdate = true;
+                this.updateTableLayout();
             }).catch(err => {
                 console.error(err);
             });
             console.log("assignationList: " + this.assignationList.length)
         },
         updateTableLayout() {
-            this.tableWithAssignationList=[];
+            this.tableWithAssignationList = [];
             console.log('tableList:', this.tableList);
             console.log('tableList:', this.tableList.length);
             console.log('assignationList:', this.assignationList);
             console.log('assignationList:', this.assignationList.length);
-            if ((this.tableList.length>0) && (this.assignationList.length>0)) {
-                console.log("yeesssss")
-                this.tableWithAssignationList = this.tableList.map(table => {
-                    return {
-                        number: table.number,
-                        capacity: table.capacity,
-                        isActive: table.isActive,
-                        isAssign: false
-                    }
-                });
-                console.log("tableWithAssi..." + this.tableWithAssignationList.length)
 
+            this.tableWithAssignationList = this.tableList.map(table => {
+                return {
+                    number: table.number,
+                    capacity: table.capacity,
+                    isActive: table.isActive,
+                    isAssign: false,
+                    assignation: null,
+                }
+            });
+            console.log("tableWithAssi... : " +this.tableWithAssignationList.length);
+
+            if (this.assignationList.length > 0) {
                 this.assignationList.forEach(assignation => {
-                    
+
                     const table = this.tableWithAssignationList.find(table => {
-                    return (table.number == assignation.tableNumber) && 
-                    (assignation.shift == this.selectedShift)
+                        return (table.number == assignation.tableNumber)
                     })
-                    if (table) {
+                    if (table.isActive) {
                         table.isAssign = true;
+                        table.assignation = assignation;
+                    } else {
+                        console.error(`La table ${table.number} est inactive`);
+                        assignation.isActive = false;
                     }
-                });
-                this.needUpdate=false;
-            }else{console.log("NONONNONNOOOOO")}
+                }
+                );
+            }
+            this.needUpdate = false;
         },
-        
+        loadReservationInformations(receivedReservationId) {
+            this.selectedReservationId = receivedReservationId;
+        },
         // updateTableList() {
         //     console.log('tableList:', this.tableList);
         //     console.log('tableList:', this.tableList.length);
@@ -213,27 +229,13 @@ export default {
     watch: {
         selectedDate() {
             console.log('selectedDate changed');
-            this.loadAssignationList(this.selectedDate);
+            this.loadAssignationList(this.selectedDate, this.selectedShift);
         },
         selectedShift() {
             console.log('tableList changed');
-            this.updateTableLayout(this.selectedShift)
+            this.loadAssignationList(this.selectedDate, this.selectedShift);
         },
-        needUpdate(){
-            console.log('needUpdate changed');
-            this.updateTableLayout()
-        },
-
-        // tableList() {
-        //     console.log('tableList changed');
-        //     this.loadTableList();
-        // },
-        
-        
-        // tableWithAssignationList() {
-        //     console.log('tableWithAssignation changed');
-        //     this.updateTableLayout(this.selectedDate);
-        // }
+      
 
     },
     // updated() {
@@ -250,7 +252,7 @@ export default {
         }
         this.loadDate();
         this.loadTableList();
-        this.loadAssignationList(); 
+        this.loadAssignationList();
 
     }
 }

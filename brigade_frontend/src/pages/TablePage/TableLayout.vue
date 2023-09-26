@@ -1,17 +1,17 @@
 <template>
     <v-sheet class="ma-2 w-100">
-        <v-card v-if="tableWithAssignationList.length>0">
+        <v-card >
             <tableIcon class="d-inline" v-for="table in tableWithAssignationList" :key="table.number" :tableNumber="table.number"
-                :tableCapacity="table.capacity" :tableIsActive="table.isActive" :isAssign="table.isAssign"
+                :tableCapacity="table.capacity" :tableIsActive="table.isActive" :isAssign="table.isAssign" :assignation="table.assignation"
                 @click="displaySelectedTable(table.number)">
             </tableIcon>
         </v-card>
-        <v-card v-else>
+        <!-- <v-card v-else>
             <tableIcon class="d-inline" v-for="table in tableList" :key="table.number" :tableNumber="table.number"
                 :tableCapacity="table.capacity" :tableIsActive="table.isActive" :isAssign="table.isAssign"
                 @click="displaySelectedTable(table.number)">
             </tableIcon>
-        </v-card>
+        </v-card> -->
     </v-sheet>
 </template>
 
