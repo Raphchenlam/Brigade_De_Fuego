@@ -13,8 +13,9 @@
                     </v-select>
                 </v-col>
                 <v-col cols="5">
-                    <v-select :disabled="disableSkillPtsDropDown" :items="skillPointsRange" v-model="updatingEmployee.skillPoints" class="mx-2"
-                        label="Points de compétences" :rules="[rules.required, rules.validateSkillPoints]">
+                    <v-select :disabled="disableSkillPtsDropDown" :items="skillPointsRange"
+                        v-model="updatingEmployee.skillPoints" class="mx-2" label="Points de compétences"
+                        :rules="[rules.required, rules.validateSkillPoints]">
                     </v-select>
                 </v-col>
             </v-row>
@@ -83,20 +84,20 @@
                     <v-checkbox v-model="updatingEmployee.isActive" label="Employé(e) activé(e)"></v-checkbox>
                 </v-col>
             </v-row>
-
-            <!-- <v-row v-if path = espace/employee/{employeeNumber}>
+ 
+            <v-row v-if="$route.fullPath == `/espace/employee/${userSession.employeeNumber}` && (userSession.employee.employeeNumber == this.updatingEmployee.employeeNumber)">
                 <v-col>
-                    <v-text-field @input="validatePassword" v-model="password" label="Mot de passe" type="password"
-                        :rules="[rules.required, rules.validPassword, rules.fieldLength255]" density="compact" ref="passwordInput" clearable>
+                    <v-text-field @input="validatePassword" v-model="updatingEmployee.password" label="Mot de passe" type="password"
+                        :rules="[rules.validPassword, rules.fieldLength255]" density="compact" ref="passwordInput" clearable>
                     </v-text-field>
                 </v-col>
                 <v-col>
-                    <v-text-field @input="validatePasswordMatch" v-model="passwordConfirmation"
-                        label="Confirmer le mot de passe" :rules="[rules.required, rules.passwordsMatch, rules.fieldLength255]" type="password"
+                    <v-text-field @input="validatePasswordMatch" v-model="updatingEmployee.passwordConfirmation"
+                        label="Confirmer le mot de passe" :rules="[rules.passwordsMatch, rules.fieldLength255]" type="password"
                         density="compact" ref="passwordConfirmInput" clearable>
                     </v-text-field>
                 </v-col>
-            </v-row> -->
+            </v-row>
 
             <v-col>
                 <v-row class="justify-center">
@@ -111,7 +112,8 @@
                     </v-card-title>
                     <v-card-text>
                         <v-row class="justify-center">
-                            <p>{{ updatingEmployee.firstName }} {{ updatingEmployee.lastName }} / {{ updatingEmployee.employeeNumber }} a bien été
+                            <p>{{ updatingEmployee.firstName }} {{ updatingEmployee.lastName }} / {{
+                                updatingEmployee.employeeNumber }} a bien été
                                 modifié(e).</p>
                         </v-row>
                     </v-card-text>
@@ -123,12 +125,13 @@
 
 
 <script>
-import { updateEmployee, getEmployeeByEmployeeNumber, getAllRoles } from '../../services/EmployeeService';
+import { updateEmployeeByAdmin, updateEmployeeByNonAdmin, getEmployeeByEmployeeNumber, getAllRoles } from '../../services/EmployeeService';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import {
     validEmployeeNumber, validName, validPhoneNumber, validEmail, validRole, validColorHexCode,
     validHourlyRate, validBarcodeNumber, validSkillPoints, validPassword
 } from '../../../../REGEX/REGEX_frontend';
+import userSession from "../../sessions/UserSession"
 
 export default {
     inject: ['closeEditEmployeeDialog', 'loadEmployees', 'capitalizeWords', 'formatPhoneNumber'],
@@ -140,6 +143,7 @@ export default {
     },
     data() {
         return {
+            userSession:userSession,
             updatingEmployee: {
                 employeeNumber: 0,
                 firstName: "",
@@ -154,7 +158,7 @@ export default {
                 isActive: true,
                 skillPoints: null,
                 password: "",
-                passwordConfirmation: null,
+                passwordConfirmation: "",
             },
             selectedRole: "",
             updatedEmployee: false,
@@ -183,11 +187,11 @@ export default {
                         return validSkillPoints.test(value) || "Skill Points invalide : doit être entre 1 et 10"
                     }
                 },
-                // validPassword: value => validPassword.test(value) || "Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial",
-                // passwordsMatch: () => this.password === this.passwordConf || "Les mots de passe ne correspondent pas",
+                validPassword: value => validPassword.test(value) || "Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial",
+                passwordsMatch: () => this.updatingEmployee.password === this.updatingEmployee.passwordConf || "Les mots de passe ne correspondent pas",
             },
             roleList: [],
-            skillPointsRange: [1,2,3,4,5,6,7,8,9,10]
+            skillPointsRange: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         }
     },
     methods: {
@@ -209,22 +213,43 @@ export default {
             if (!formValid.valid) {
                 return;
             }
-            try {
-                await updateEmployee(this.updatingEmployee).then((employee) => {
-                    if (employee) {
-                        this.updatedEmployee = true;
-                        this.loadEmployees();
-                        setTimeout(this.closeDialog, 2500);
+
+            if (this.$route.fullPath == `/espace/employee` && this.updatingEmployee.isAdmin) {
+                try {
+                    await updateEmployeeByAdmin(this.updatingEmployee).then((employee) => {
+                        if (employee) {
+                            this.updatedEmployee = true;
+                            this.loadEmployees();
+                            setTimeout(this.closeDialog, 2500);
+                        }
+                    });
+                } catch (err) {
+                    console.error(err);
+                    alert(err.message);
+                    if (err.status === 409) {
+                        this.uniqueEmployee = false;
                     }
-                });
-            } catch (err) {
-                console.error(err);
-                alert(err.message);
-                if (err.status === 409) {
-                    this.uniqueEmployee = false;
+                    await this.$refs.editEmployeeForm.validate();
                 }
-                await this.$refs.editEmployeeForm.validate();
+            } else {
+                try {
+                    await updateEmployeeByNonAdmin(this.updatingEmployee, this.updatingEmployee.employeeNumber).then((employee) => {
+                        if (employee) {
+                            this.updatedEmployee = true;
+                            this.loadEmployees();
+                            setTimeout(this.closeDialog, 2500);
+                        }
+                    });
+                } catch (err) {
+                    console.error(err);
+                    alert(err.message);
+                    if (err.status === 409) {
+                        this.uniqueEmployee = false;
+                    }
+                    await this.$refs.editEmployeeForm.validate();
+                }
             }
+
         },
         closeDialog() {
             this.updatedEmployee = false;
@@ -232,17 +257,17 @@ export default {
         },
         patternedPhoneNumber() {
             this.employee.phoneNumber = this.formatPhoneNumber(this.employee.phoneNumber);
-        }
+        },
     },
     mounted() {
         this.loadEmployeeByNumber(this.employeeNumber);
         getAllRoles().then(allRoles => {
-                    allRoles.forEach(role => {
-                        this.roleList.push(role.name);
-                    });
-                }).catch(err => {
-                    console.error(err);
-                });
+            allRoles.forEach(role => {
+                this.roleList.push(role.name);
+            });
+        }).catch(err => {
+            console.error(err);
+        });
     },
     computed: {
         disableAdminCheckbox() {

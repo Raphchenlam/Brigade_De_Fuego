@@ -39,6 +39,7 @@
                                 <span v-else style='color:red'>NON</span>
                         </p>
                 </v-row>
+                
                 <!-- A FAIRE S ON A LE TEMPS -->
                 <v-card v-if="false" elevation="3" class="pa-5 my-5" height="75">
                         <v-row>
@@ -67,6 +68,7 @@ import EditEmployeeForm from './EditEmployeeForm.vue';
 import { getEmployeeByEmployeeNumber } from '../../services/EmployeeService'
 import EditBlackButton from '../../components/Reusable/EditBlackButton.vue';
 import CalendarButton from '../../components/Reusable/CalendarButton.vue';
+import userSession from "../../sessions/UserSession"
 
 export default {
         components: { LeaveList, BlackButton, EditEmployeeForm, EditBlackButton, CalendarButton },
@@ -75,6 +77,7 @@ export default {
         },
         data() {
                 return {
+                        userSession: userSession,
                         employee: {
                                 employeeNumber: null,
                                 firstName: "",
@@ -127,12 +130,17 @@ export default {
                         loadEmployeeByNumber: this.loadEmployeeByNumber
                 };
         },
+        created() {
+                if (!userSession.employeeNumber && !userSession.password) {
+                        this.$router.push('/espace/');
+                }
+        },
         mounted() {
+                
                 if (this.employeeNumber) {
                         this.loadEmployeeByNumber(this.employeeNumber);
                 }
         }
-
 }
 
 </script>
