@@ -36,3 +36,6 @@ exports.validTime = validTime;
 
 const validWeekId = /^\d{4}-W([1-9]|[1-4]\d|5[0-3])$/;
 exports.validWeekId = validWeekId;
+
+const validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+exports.validPassword = validPassword;

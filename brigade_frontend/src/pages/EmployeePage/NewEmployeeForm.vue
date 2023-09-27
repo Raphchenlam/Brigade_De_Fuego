@@ -4,7 +4,8 @@
             <v-row>
                 <v-col cols="3">
                     <v-text-field label="# Employé" v-model.trim="employee.employeeNumber" clearable
-                        :rules="[rules.required, rules.uniqueEmployee, rules.validateEmployeeNumber]" maxlength="4" :counter="4">
+                        :rules="[rules.required, rules.uniqueEmployee, rules.validateEmployeeNumber]" maxlength="4"
+                        :counter="4">
                     </v-text-field>
                 </v-col>
 
@@ -16,27 +17,30 @@
 
                 <v-col cols="5">
                     <v-select :disabled="disableSkillPtsDropDown" :items="skillPointsRange" label="Points de compétences"
-                        v-model="selectedSkillPoints" :rules="[rules.required, rules.uniqueEmployee, rules.validateSkillPoints]">
+                        v-model="selectedSkillPoints"
+                        :rules="[rules.required, rules.uniqueEmployee, rules.validateSkillPoints]">
                     </v-select>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col>
                     <v-text-field label="Code barre (Carte)" v-model.trim="employee.barcodeNumber" clearable
-                        :rules="[rules.required, rules.uniqueEmployee, rules.validateBarcodeNumber, rules.fieldLength255]" maxlength="16"
-                        :counter="16">
+                        :rules="[rules.required, rules.uniqueEmployee, rules.validateBarcodeNumber, rules.fieldLength255]"
+                        maxlength="16" :counter="16">
                     </v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col>
                     <v-text-field label="Prénom" v-model.trim="employee.firstName" @blur="capitalizeFirstName()" clearable
-                        :rules="[rules.required, rules.uniqueEmployee, rules.validateName, rules.fieldLength255]" maxlength="255">
+                        :rules="[rules.required, rules.uniqueEmployee, rules.validateName, rules.fieldLength255]"
+                        maxlength="255">
                     </v-text-field>
                 </v-col>
                 <v-col>
                     <v-text-field label="Nom de famille" v-model.trim="employee.lastName" @blur="capitalizeLastName()"
-                        clearable :rules="[rules.required, rules.uniqueEmployee, rules.validateName, rules.fieldLength255]" maxlength="255">
+                        clearable :rules="[rules.required, rules.uniqueEmployee, rules.validateName, rules.fieldLength255]"
+                        maxlength="255">
                     </v-text-field>
                 </v-col>
             </v-row>
@@ -44,12 +48,14 @@
                 <v-col>
                     <v-text-field label="Numéro de téléphone : xxx-xxx-xxxx" density="compact"
                         v-model.trim="employee.phoneNumber" @blur="patternedPhoneNumber()" clearable
-                        :rules="[rules.required, rules.uniqueEmployee, rules.validatePhoneNumber, rules.fieldLength255]" maxlength="12">
+                        :rules="[rules.required, rules.uniqueEmployee, rules.validatePhoneNumber, rules.fieldLength255]"
+                        maxlength="12">
                     </v-text-field>
                 </v-col>
                 <v-col>
                     <v-text-field label="Adresse Courriel" density="compact" v-model.trim="employee.email" clearable
-                        :rules="[rules.required, rules.uniqueEmployee, rules.validateEmail, rules.fieldLength255]" maxlength="255">
+                        :rules="[rules.required, rules.uniqueEmployee, rules.validateEmail, rules.fieldLength255]"
+                        maxlength="255">
                     </v-text-field>
                 </v-col>
             </v-row>
@@ -157,13 +163,13 @@ export default {
                 validateHourlyRate: value => validHourlyRate.test(value) || "Taux horaire invalide -> Respecter un des formats suivant : xx.xx ou xxx.xx \n 1er chiffre ne peut pas être 0",
                 validateBarcodeNumber: value => validBarcodeNumber.test(value) || "Code barre invalide : doit contenir que 16 chiffres",
                 validateSkillPoints: value => {
-                    if (this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints) {
+                    if (this.updatingEmployee.role == "Gestionnaire" && !this.updatingEmployee.skillPoints) {
                         return true;
                     } else {
                         return validSkillPoints.test(value) || "Skill Points invalide : doit être entre 1 et 10"
                     }
                 },
-                uniqueEmployee : () => this.uniqueEmployee || "Un employé ayant ces informations existe déjà. Veuillez modifier le(s) champs ou consulter l'employé associé"
+                uniqueEmployee: () => this.uniqueEmployee || "Un employé ayant ces informations existe déjà. Veuillez modifier le(s) champs ou consulter l'employé associé"
             },
             roleList: [],
             skillPointsRange: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -187,94 +193,94 @@ export default {
                     }
                     this.uniqueEmployee = true;
                 });
-            } catch (err){
+            } catch (err) {
                 console.error(err);
                 alert(err.message);
                 if (err.status === 409) {
                     this.uniqueEmployee = false;
                 }
                 await this.$refs.createClientForm.validate();
-            } 
-        },
-            closeDialog() {
-                this.dialogOKEmployee = false;
-                this.closeNewEmployeeDialog();
-            },
-            updateEmployeeNumberValue(event) {
-                const value = event.target.value;
-                if (String(value).length <= 4) {
-                    this.employee.employeeNumber = value;
-                }
-                this.$forceUpdate;
-            },
-            capitalizeFirstName() {
-                this.employee.firstName = this.capitalizeWords(this.employee.firstName);
-            },
-            capitalizeLastName() {
-                this.employee.lastName = this.capitalizeWords(this.employee.lastName);
-            },
-            patternedPhoneNumber() {
-                this.employee.phoneNumber = this.formatPhoneNumber(this.employee.phoneNumber);
             }
         },
-        watch: {
-            selectedRole() {
-                this.employee.role = this.selectedRole;
-                if (this.employee.role == "Gestionnaire") {
-                    this.selectedSkillPoints = null;
-                    this.employee.isAdmin = true;
-                }
-            },
-            selectedSkillPoints() {
-                this.employee.skillPoints = this.selectedSkillPoints;
+        closeDialog() {
+            this.dialogOKEmployee = false;
+            this.closeNewEmployeeDialog();
+        },
+        updateEmployeeNumberValue(event) {
+            const value = event.target.value;
+            if (String(value).length <= 4) {
+                this.employee.employeeNumber = value;
+            }
+            this.$forceUpdate;
+        },
+        capitalizeFirstName() {
+            this.employee.firstName = this.capitalizeWords(this.employee.firstName);
+        },
+        capitalizeLastName() {
+            this.employee.lastName = this.capitalizeWords(this.employee.lastName);
+        },
+        patternedPhoneNumber() {
+            this.employee.phoneNumber = this.formatPhoneNumber(this.employee.phoneNumber);
+        }
+    },
+    watch: {
+        selectedRole() {
+            this.employee.role = this.selectedRole;
+            if (this.employee.role == "Gestionnaire") {
+                this.selectedSkillPoints = null;
+                this.employee.isAdmin = true;
             }
         },
-        mounted() {
-            if (this.isUserAuthorized()) {
-                getAllRoles().then(allRoles => {
-                    allRoles.forEach(role => {
-                        this.roleList.push(role.name);
-                    });
-                }).catch(err => {
-                    console.error(err);
+        selectedSkillPoints() {
+            this.employee.skillPoints = this.selectedSkillPoints;
+        }
+    },
+    mounted() {
+        if (this.isUserAuthorized()) {
+            getAllRoles().then(allRoles => {
+                allRoles.forEach(role => {
+                    this.roleList.push(role.name);
                 });
+            }).catch(err => {
+                console.error(err);
+            });
+        }
+    },
+    computed: {
+        disableCreateEmployeeBtn() {
+            if (this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints) {
+                return !this.employee.employeeNumber
+                    || !this.employee.role
+                    || !this.employee.barcodeNumber
+                    || !this.employee.firstName
+                    || !this.employee.lastName
+                    || !this.employee.phoneNumber
+                    || !this.employee.email
+                    || !this.employee.hourlyRate
+                    || !this.employee.colorHexCode
+                    || !this.employee.password;
+            } else {
+                return !this.employee.employeeNumber
+                    || !this.employee.role
+                    || !this.employee.skillPoints
+                    || !this.employee.barcodeNumber
+                    || !this.employee.firstName
+                    || !this.employee.lastName
+                    || !this.employee.phoneNumber
+                    || !this.employee.email
+                    || !this.employee.hourlyRate
+                    || !this.employee.colorHexCode
+                    || !this.employee.password;
             }
         },
-        computed: {
-            disableCreateEmployeeBtn() {
-                if (this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints) {
-                    return !this.employee.employeeNumber
-                        || !this.employee.role
-                        || !this.employee.barcodeNumber
-                        || !this.employee.firstName
-                        || !this.employee.lastName
-                        || !this.employee.phoneNumber
-                        || !this.employee.email
-                        || !this.employee.hourlyRate
-                        || !this.employee.colorHexCode
-                        || !this.employee.password;
-                } else {
-                    return !this.employee.employeeNumber
-                        || !this.employee.role
-                        || !this.employee.skillPoints
-                        || !this.employee.barcodeNumber
-                        || !this.employee.firstName
-                        || !this.employee.lastName
-                        || !this.employee.phoneNumber
-                        || !this.employee.email
-                        || !this.employee.hourlyRate
-                        || !this.employee.colorHexCode
-                        || !this.employee.password;
-                }
-            },
-            disableCheckbox() {
-                return this.selectedRole == "Gestionnaire"
-            },
-            disableSkillPtsDropDown() {
-                return this.selectedRole == "Gestionnaire"
-            }
+        disableCheckbox() {
+            return this.selectedRole == "Gestionnaire"
+        },
+        disableSkillPtsDropDown() {
+            return this.selectedRole == "Gestionnaire"
         }
     }
+}
 </script>
 <style scoped>
 .warning-message {
@@ -289,5 +295,4 @@ export default {
     text-align: center;
     width: 100%;
     max-width: 80rem;
-}
-</style>
+}</style>

@@ -29,8 +29,8 @@
             </v-row>
             <v-radio-group v-model="shiftShow" v-if='$route.path == "/operation/reservation"'>
                 <v-row class="pl-5">
-                    <v-radio label="Midi" value="lunch"></v-radio>
-                    <v-radio label="Soir" value="dinner"></v-radio>
+                    <v-radio label="Midi" value="Midi"></v-radio>
+                    <v-radio label="Soir" value="Soir"></v-radio>
                     <v-radio label="Journee complete" value="all"></v-radio>
                 </v-row>
             </v-radio-group>
@@ -144,9 +144,9 @@ export default {
             this.reservations.forEach(reservation => {
                 var reservationtoKeep;
 
-                if (this.shiftShow == "lunch" && parseInt(reservation.startTime.split(':').slice(0)[0]) < 15) {
-                    reservationtoKeep = reservation;
-                } else if (this.shiftShow == "dinner" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) {
+                if (this.shiftShow == "Midi" && parseInt(reservation.startTime.split(':').slice(0)[0]) < 15) {
+                    reservationtoKeep = reservation; 
+                } else if (this.shiftShow == "Soir" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) {
                     reservationtoKeep = reservation;
                 } else if (this.shiftShow == "all") {
                     reservationtoKeep = reservation;
