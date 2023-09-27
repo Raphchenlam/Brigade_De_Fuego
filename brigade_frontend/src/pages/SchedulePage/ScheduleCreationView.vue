@@ -595,7 +595,6 @@
 </template>
 
 
-
 <script>
 import CloseRedButton from '../../components/Reusable/CloseRedButton.vue'
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue'
