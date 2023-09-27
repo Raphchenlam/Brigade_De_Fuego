@@ -1,5 +1,4 @@
 const pool = require('./DBPool');
-const HttpError = require('../HTTPError');
 
 const selectLoginByEmployeeNumber = async (employeeNumber, client) => {
     const result = await (client || pool).query(
@@ -121,24 +120,38 @@ const insertEmployee = async (newEmployee, passwordSalt, passwordHash, clientPar
 exports.insertEmployee = insertEmployee;
 
 
-const updateEmployeeByAdmin = async (employeeToUpdate, clientParam) => {
+const updateEmployee = async (employeeToUpdate, passwordSalt, passwordHash, clientParam) => {
 
-    const admin = clientParam || await pool.connect();
+    const user = clientParam || await pool.connect();
 
-    const result = await admin.query(
-        `UPDATE employee
+    if (passwordSalt == "noChange" && passwordHash == "noChange") {
+        const result = await user.query(
+            `UPDATE employee
 	        SET first_name=$2, last_name=$3, role=$4, color_hexcode=$5, hourly_rate=$6, barcode_number=$7, email=$8, phone_number=$9, is_admin=$10, is_active=$11, skill_points=$12
 	        WHERE employee_number = $1`,
-        [employeeToUpdate.employeeNumber, employeeToUpdate.firstName, employeeToUpdate.lastName, employeeToUpdate.role, employeeToUpdate.colorHexCode, employeeToUpdate.hourlyRate, employeeToUpdate.barcodeNumber, employeeToUpdate.email, employeeToUpdate.phoneNumber, employeeToUpdate.isAdmin, employeeToUpdate.isActive, employeeToUpdate.skillPoints]
-    );
+            [employeeToUpdate.employeeNumber, employeeToUpdate.firstName, employeeToUpdate.lastName, employeeToUpdate.role, employeeToUpdate.colorHexCode, employeeToUpdate.hourlyRate, employeeToUpdate.barcodeNumber, employeeToUpdate.email, employeeToUpdate.phoneNumber, employeeToUpdate.isAdmin, employeeToUpdate.isActive, employeeToUpdate.skillPoints]
+        );
 
-    if (result.rowCount === 0) {
-        return undefined;
+        if (result.rowCount === 0) {
+            return undefined;
+        }
+    } else {
+        const result = await user.query(
+            `UPDATE employee
+	        SET first_name=$2, last_name=$3, role=$4, color_hexcode=$5, hourly_rate=$6, barcode_number=$7, email=$8, phone_number=$9, is_admin=$10, is_active=$11, skill_points=$12, password_salt=$13, password_hash=$14
+	        WHERE employee_number = $1`,
+            [employeeToUpdate.employeeNumber, employeeToUpdate.firstName, employeeToUpdate.lastName, employeeToUpdate.role, employeeToUpdate.colorHexCode, employeeToUpdate.hourlyRate, employeeToUpdate.barcodeNumber, employeeToUpdate.email, employeeToUpdate.phoneNumber, employeeToUpdate.isAdmin, employeeToUpdate.isActive, employeeToUpdate.skillPoints, passwordSalt, passwordHash]
+        );
+
+        if (result.rowCount === 0) {
+            return undefined;
+        }
+
+
     }
-
     return selectEmployeeByEmployeeNumber(employeeToUpdate.employeeNumber);
 };
-exports.updateEmployeeByAdmin = updateEmployeeByAdmin;
+exports.updateEmployee = updateEmployee;
 
 const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
     const result = await pool.query(
