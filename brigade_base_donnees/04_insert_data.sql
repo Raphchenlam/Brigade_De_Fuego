@@ -63,10 +63,10 @@ VALUES
 
 -- Insertion dans la table schedule_event
 INSERT INTO schedule_event(schedule_period_id, event_name)
-	VALUES
-  (2, 'Game du canadien'),
-  (9, 'Fete des meres'),
-  (10, 'Fete des meres');
+VALUES
+(2, 'Game du canadien'),
+(9, 'Fete des meres'),
+(10, 'Fete des meres');
 
 -- Insertion dans la table leave_category
 INSERT INTO leave_category ("name")
