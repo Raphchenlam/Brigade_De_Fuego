@@ -28,7 +28,7 @@ export default {
             validPassword: true,
             rules: {
                 required: value => !!value || "Le champ est requis",
-                validPassword: () => this.passwordValid || "Numéro d'employé ou mot de passe invalide"
+                validPassword: () => this.validPassword || "Numéro d'employé ou mot de passe invalide"
             }
         };
     },
@@ -36,11 +36,11 @@ export default {
         login()
         {
             userSession.login(this.employeeNumber, this.password).then(() => {
-                this.passwordValid = true;
+                this.validPassword = true;
                 this.$refs.loginForm.validate();
                 this.$router.push('/espace/dashboard');
             }).catch(authError => {
-                this.passwordValid = false;
+                this.validPassword = false;
                 this.$refs.loginForm.validate();
                 alert(authError.message);
             });
