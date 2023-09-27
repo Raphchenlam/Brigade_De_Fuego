@@ -3,11 +3,14 @@
         <v-card-text>
             <v-container>
                 <v-row>
-                    <v-col v-if="!employeeNumber" cols="6">
+                    <v-col v-if="!employeeNumber || $route.fullPath.split('/').slice(0)[2] == 'leave'" cols="6">
                         <v-text-field disabled v-model="employeeNumber" label="Numero Employé"></v-text-field>
                     </v-col>
-                    <v-col v-if="!employeeNumber" cols="6">
-                        <BlackButton textbutton="+ employé" width="100%"></BlackButton>
+                    <v-col v-if="!employeeNumber || $route.fullPath.split('/').slice(0)[2] == 'leave'" cols="6">
+                        <BlackButton v-if="!employeeNumber" @click="dialogAddEmployeeToLeave = true" textbutton="Choisir Employé" width="100%">
+                        </BlackButton>
+                        <BlackButton v-else @click="dialogAddEmployeeToLeave = true" textbutton="Changer Employé" width="100%">
+                        </BlackButton>
                     </v-col>
                     <v-col cols="6">
                         <v-text-field type="date" v-model="startDate" label="Date debut"
@@ -51,14 +54,37 @@
             </v-card-text>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="dialogAddEmployeeToLeave" width="75%" persistent>
+        <v-card class="pa-5" height="500">
+            <v-card-title>
+                Ajouter un employé au congé en cours
+            </v-card-title>
+            <v-row class="justify-center">
+                <EmployeeList class="mr-5" height="400" width="90%"></EmployeeList>
+            </v-row>
+            <v-row class="justify-end">
+                <DarkRedButton class="mx-5" textbutton="Annuler" @click="dialogAddEmployeeToLeave = false"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Ajouter" :disabled="!selectedEmployeeNumber" @click="addEmployeeToLeave"></DarkRedButton>
+            </v-row>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
 
 import BlackButton from '../../components/Reusable/BlackButton.vue';
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue'
+
+import EmployeeList from '../EmployeePage/EmployeeList.vue'
+
 import { createLeave, getAllLeavesCategory } from '../../services/LeaveService.js'
 
 export default {
+    components: {
+        EmployeeList,
+        BlackButton,
+        DarkRedButton
+    },
     inject: ['closeNewLeaveDialog', 'spliceDate', 'loadLeaves'],
     props: {
         employeeNumberReceived: Number
@@ -76,11 +102,13 @@ export default {
             leaveCategory: [],
             rules: {
                 required: value => !!value || "Le champ est requis",
-                startDateIsValid: () => this.startDateValid || "Date non valide\n\t- Doit etre minimum dans 2 semaines",
+                startDateIsValid: () => this.startDateValid || "Date non valide\n\t- Doit etre minimum le lundi 1 semaine à l'avance",
                 endDateIsValid: () => this.endDateValid || "Date non valide\n\t- Ne doit pas être avant la date de départ",
                 fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
             },
-            dialogOKLeave: false
+            dialogOKLeave: false,
+            dialogAddEmployeeToLeave: false,
+            selectedEmployeeNumber: null,
         };
     },
     methods: {
@@ -112,11 +140,11 @@ export default {
                 console.log("result", result)
                 this.dialogOKLeave = true;
                 this.loadLeaves();
+                setTimeout(this.closeDialogs, 2000)
             }).catch(err =>
             {
                 console.error(err);
             });
-            setTimeout(this.closeDialogs, 2000)
         },
         isMinimumTwoWeeks(startDate)
         {
@@ -165,6 +193,20 @@ export default {
             this.dialogOKLeave = false;
             this.closeNewLeaveDialog();
         },
+        loadEmployeeNumber(employeeNumber) {
+            this.selectedEmployeeNumber = employeeNumber
+        },
+        addEmployeeToLeave()
+        {
+            this.employeeNumber = this.selectedEmployeeNumber;
+            this.dialogAddEmployeeToLeave = false;
+            this.selectedEmployeeNumber = null;
+        }
+    },
+    provide() {
+        return {
+            loadEmployeeNumber: this.loadEmployeeNumber,
+        };
     },
     watch: {
         startDate()
@@ -183,7 +225,6 @@ export default {
             this.employeeNumber = this.employeeNumberReceived;
         this.loadLeavesCategory();
     },
-    components: { BlackButton }
 }
 
 </script>

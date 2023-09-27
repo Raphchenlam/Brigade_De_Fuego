@@ -1,5 +1,5 @@
 const pool = require('./DBPool');
-
+/*
 const selectAllLeaves = async () =>
 {
     const result = await pool.query(
@@ -25,6 +25,7 @@ const selectAllLeaves = async () =>
     });
 };
 exports.selectAllLeaves = selectAllLeaves;
+*/
 
 const selectAllFilteredLeaves = async (checkboxes) =>
 {
@@ -80,7 +81,14 @@ const selectAllFilteredLeaves = async (checkboxes) =>
 
     if (!result) return [];
 
-    return result.rows.map(row =>
+    const resultNbPending = await pool.query(`SELECT COUNT(*) AS nb_pending
+    FROM leave
+    JOIN employee ON employee.employee_number = leave.employee_number
+    WHERE leave.status = 'Pending' OR leave.status = 'PendingModified'`)
+
+    nbPending = resultNbPending.rows[0].nb_pending;
+
+    let resultFinal = result.rows.map(row =>
     {
         const leave = {
             id: row.id,
@@ -94,6 +102,8 @@ const selectAllFilteredLeaves = async (checkboxes) =>
         };
         return leave;
     });
+    resultFinal.push({nbPending: parseInt(nbPending)});
+    return resultFinal;
 };
 exports.selectAllFilteredLeaves = selectAllFilteredLeaves;
 

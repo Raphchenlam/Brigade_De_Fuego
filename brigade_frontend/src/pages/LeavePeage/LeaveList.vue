@@ -3,7 +3,7 @@
         <v-sheet v-if="userSession.employee.isAdmin && $route.fullPath == '/espace/leave'" class="ma-5">
             <v-row class="ma-5 justify-space-around">
                 <v-col cols="11">
-                    <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }}</h3>
+                    <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }} affichées / {{ nbPendingLeave }} total</h3>
                 </v-col>
                 <v-col cols="1">
                     <v-icon size="x-large" class="me-2n" @click="filterDialog = true">
@@ -77,7 +77,7 @@
                         <v-dialog v-model="dialogNewLeave" max-width="500px">
                             <template v-slot:activator="{ props }">
                                 <BlackButton v-bind="props" textbutton="+"> </BlackButton>
-                                
+
                             </template>
                             <v-card>
                                 <v-card-title>
@@ -85,7 +85,7 @@
                                 </v-card-title>
 
 
-                                    <NewLeaveForm :employeeNumberReceived="employeeNumber"></NewLeaveForm>
+                                <NewLeaveForm :employeeNumberReceived="employeeNumber"></NewLeaveForm>
 
                             </v-card>
                         </v-dialog>
@@ -104,13 +104,13 @@
 
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn v-if="editedItem.status != 'Accepté'" color="green" variant="text" @click="close">
+                                <v-btn v-if="editedItem.status != 'Accepté'" color="green" variant="text" @click="closeEditLeaveDialog">
                                     Accepter
                                 </v-btn>
-                                <v-btn v-if="editedItem.status != 'Refusé'" color="red" variant="text" @click="close">
+                                <v-btn v-if="editedItem.status != 'Refusé'" color="red" variant="text" @click="closeEditLeaveDialog">
                                     Refuser
                                 </v-btn>
-                                <v-btn variant="text" @click="close">
+                                <v-btn variant="text" @click="closeEditLeaveDialog">
                                     Annuler
                                 </v-btn>
                                 <v-btn variant="text" @click="save">
@@ -119,12 +119,12 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-icon v-if="item.raw.status != 'Accepté'" size="small" class="me-2 approved-icon"
-                        @click="accept(item.raw)">
+                    <v-icon v-if="item.raw.status != 'Accepté' && userSession.employee.isAdmin" size="small"
+                        class="me-2 approved-icon" @click="accept(item.raw)">
                         mdi-check
                     </v-icon>
-                    <v-icon v-if="item.raw.status != 'Refusé'" size="small" class="me-2 refused-icon"
-                        @click="refuse(item.raw)">
+                    <v-icon v-if="item.raw.status != 'Refusé' && userSession.employee.isAdmin" size="small"
+                        class="me-2 refused-icon" @click="refuse(item.raw)">
                         mdi-close
                     </v-icon>
                     <v-icon size="small" class="me-2" @click="editItem(item.raw)">
@@ -141,7 +141,6 @@
                         </td>
                     </tr>
                 </template>
-
             </v-data-table-server>
         </v-sheet>
     </v-sheet>
@@ -157,10 +156,10 @@ import NewLeaveForm from './NewLeaveForm.vue';
 
 export default {
     components: {
-    EditLeaveForm,
-    BlackButton,
-    NewLeaveForm
-},
+        EditLeaveForm,
+        BlackButton,
+        NewLeaveForm
+    },
     props: {
         height: String,
         employeeNumber: Number
@@ -178,6 +177,7 @@ export default {
             date: null,
             leaveList: [],
             filteredLeaveList: [],
+            nbPendingLeave: 0,
             headers: [
                 {
                     align: 'start',
@@ -230,12 +230,12 @@ export default {
                 reason: ""
             },
             checkedBoxes: {
-                all: true,
+                all: false,
                 pending: true,
                 pendingModified: true,
                 refused: true,
                 accepted: true,
-                passed: true,
+                passed: false,
                 coming: true
             },
             checkedBoxAccepted: true
@@ -245,7 +245,6 @@ export default {
         loadLeaves()
         {
             this.leaveList = [];
-            console.log("EMPLOYEENUMBER", this.employeeNumber)
             if (this.employeeNumber)
             {
                 getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves =>
@@ -263,11 +262,11 @@ export default {
                 });
             } else
             {
-                if (this.checkedBoxes.all)
+                getAllFilteredLeaves(this.checkedBoxes).then(allLeaves =>
                 {
-                    getAllLeaves().then(allLeaves =>
+                    allLeaves.forEach(leave =>
                     {
-                        allLeaves.forEach(leave =>
+                        if (!leave.nbPending)
                         {
                             leave.startDate = leave.startDate.split('T').slice(0)[0]
                             leave.endDate = leave.endDate.split('T').slice(0)[0]
@@ -276,32 +275,16 @@ export default {
                             if (leave.status == 'Approved') leave.status = 'Accepté'
                             if (leave.status == 'Refused') leave.status = 'Refusé'
                             this.leaveList.push(leave)
-                        });
-                    }).catch(err =>
-                    {
-                        console.error(err);
-                    })
-                }
-                else
-                {
-                    getAllFilteredLeaves(this.checkedBoxes).then(allLeaves =>
-                    {
-                        allLeaves.forEach(leave =>
+                        } else
                         {
-                            console.log(leave)
-                            leave.startDate = leave.startDate.split('T').slice(0)[0]
-                            leave.endDate = leave.endDate.split('T').slice(0)[0]
-                            if (leave.status == 'Pending') leave.status = 'En Attente'
-                            if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
-                            if (leave.status == 'Approved') leave.status = 'Accepté'
-                            if (leave.status == 'Refused') leave.status = 'Refusé'
-                            this.leaveList.push(leave)
-                        });
-                    }).catch(err =>
-                    {
-                        console.error(err);
-                    })
-                }
+                            this.nbPendingLeave = leave.nbPending;
+                        }
+                    });
+                }).catch(err =>
+                {
+                    console.error(err);
+                })
+
             }
             this.filteredLeaveList = this.leaveList;
         },
@@ -309,7 +292,7 @@ export default {
         {
             this.editedIndex = this.leaveList.indexOf(item)
             this.editedItem = Object.assign({}, item)
-            this.dialog = true
+            this.dialogEditLeave = true
         },
         accept(item)
         {
@@ -319,9 +302,9 @@ export default {
         {
             console.log("Refuse", item)
         },
-        close()
+        closeEditLeaveDialog()
         {
-            this.dialog = false
+            this.dialogEditLeave = false
             this.$nextTick(() =>
             {
                 this.editedItem = Object.assign({}, this.defaultItem)
@@ -330,7 +313,7 @@ export default {
         },
         closeNewLeaveDialog()
         {
-            this.dialogNewLeave = false;   
+            this.dialogNewLeave = false;
         },
         save()
         {
