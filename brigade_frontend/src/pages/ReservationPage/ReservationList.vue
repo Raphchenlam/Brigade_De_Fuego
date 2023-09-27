@@ -1,6 +1,6 @@
 <template>
-    <v-sheet class="px-10 h-15 w-50">
-        <v-card class="h-75">
+    <v-sheet width="100%">
+        <v-card class="ma-2" >
             <v-row class="mb-0">
                 <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
                     class="ma-2"></v-text-field>
@@ -19,7 +19,7 @@
                     </v-card>
                 </v-dialog>
             </v-row>
-            <v-row>
+            <v-row v-if='$route.path == "/operation/reservation"'>
                 <v-text-field type="date" class="ma-2 pa-4" label="Date Debut" v-model="startDate"
                     @click:clear="resetStartDate" clearable hint="'Clear' réinitialise la date courante" persistent-hint>
                 </v-text-field>
@@ -27,7 +27,7 @@
                     clearable hint="'Clear' réinitialise la date courante" persistent-hint>
                 </v-text-field>
             </v-row>
-            <v-radio-group v-model="shiftShow">
+            <v-radio-group v-model="shiftShow" v-if='$route.path == "/operation/reservation"'>
                 <v-row class="pl-5">
                     <v-radio label="Midi" value="Midi"></v-radio>
                     <v-radio label="Soir" value="Soir"></v-radio>
@@ -51,7 +51,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations'],
+    inject: ['loadReservationInformations', 'selectedDate','selectedShift'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -108,6 +108,9 @@ export default {
         selected() {
             this.loadReservationInformations(this.selected[0]);
         },
+        selectedDate(){
+            this.loadTODAYreservations(this.selectedDate);
+        }
     },
     methods: {
         refreshWithNewreservation(newReservation) {
@@ -123,6 +126,17 @@ export default {
                     console.error(err);
                     alert(err.message);
                 });
+        },
+        loadTODAYreservations(selectedDate){
+            getReservationList(selectedDate, selectedDate)
+                .then((reservationList) => {
+                    this.reservations = reservationList;
+                })
+                .catch((err) => {
+                    console.log(err);
+                    alert(err.message);
+                });
+            this.selected=[];
         },
         filterReservations() {
             this.filteredReservationList = [];

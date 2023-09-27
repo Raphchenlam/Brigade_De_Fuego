@@ -13,7 +13,11 @@ router.get("/", (req, res, next) => {
   eventQueries
     .getAllEvents()
     .then((eventList) => {
-      res.json(eventList);
+      if (eventList) {
+        res.json(eventList);
+      } else {
+        return next(new HttpError(404, `Les événements sont introuvables`));
+      }
     })
     .catch((err) => {
       return next(err);

@@ -18,7 +18,7 @@ import Home from './pages/Home.vue'
 import OperationLoginForm from "./pages/OperationLoginForm.vue"
 import ClientView from './pages/ClientPage/ClientView.vue'
 import ReservationView from './pages/ReservationPage/ReservationView.vue'
-import PlanSalleView from './pages/TablePage/TablePlanView.vue'
+import TablePlanView from './pages/TablePage/TablePlanView.vue'
 import PunchView from './pages/PunchPage/PunchView.vue'
 import ScheduleView from './pages/SchedulePage/ScheduleCreationView.vue'
 
@@ -60,7 +60,7 @@ const router = createRouter({
         { path: '/operation/client', component: ClientView },
         { path: '/operation/punch', component: PunchView },
         { path: '/operation/reservation', component: ReservationView },
-        { path: '/operation/plansalle', component: PlanSalleView },
+        { path: '/operation/tablePlan', component: TablePlanView },
 
         { path: '/:pathMatch(.*)*', component: NotFoundView}
 

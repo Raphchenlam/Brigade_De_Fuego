@@ -1,7 +1,11 @@
 <template>
-  <v-row class="justify-space-between">
-    <ReservationList class="h-screen w-50"></ReservationList>
-    <ReservationInformation class="h-screen w-50" v-if="selectedReservationId" :reservationId="selectedReservationId"></ReservationInformation>
+  <v-row class="pa-2">
+    <v-col>
+      <ReservationList class="pa-2"></ReservationList>
+    </v-col>
+    <v-col>
+      <ReservationInformation class="pa-2" v-if="selectedReservationId" :reservationId="selectedReservationId"></ReservationInformation>
+    </v-col>
   </v-row>
 </template>
     
@@ -19,6 +23,7 @@ export default {
     ReservationList,
     ReservationInformation
   },
+  inject:['selectedReservationId'],
   data() {
     return {
       operationSession: operationSession,
