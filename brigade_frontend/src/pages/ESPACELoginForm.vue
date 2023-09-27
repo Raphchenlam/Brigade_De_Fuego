@@ -28,6 +28,7 @@ export default {
             validPassword: false,
             rules: {
                 required: value => !!value || "Le champ est requis",
+
                 validatePassword: () => this.validPassword || "Numéro d'employé ou mot de passe invalide"
             }
         };
