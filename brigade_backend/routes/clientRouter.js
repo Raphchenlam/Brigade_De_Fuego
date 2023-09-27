@@ -6,8 +6,21 @@ const regex = require('../../REGEX/REGEX_backend');
 
 const HttpError = require("../HttpError");
 
+
+function verifyIfUnlock(sessionData,next)
+{
+    if (sessionData && sessionData.substring(2, 10) != "employee") return next(new HttpError(400, `Tu me niaise tu tabarnak ???`));
+    let session = null;
+    if (sessionData && typeof JSON.parse(sessionData) == 'object') session = JSON.parse(sessionData);
+    if (!session) return next(new HttpError(400, `Impossible d'obtenir la liste des clients`));
+    if (!session.isAdmin) return next(new HttpError(403, `Impossible d'obtenir la liste des clients. La session n'est pas débloqué`));
+}
+
 router.get("/",
     (req, res, next) => {
+
+        const sessionData = req.query.data;
+        verifyIfUnlock(sessionData,next);
 
         clientQueries
             .getClientList()
@@ -27,7 +40,6 @@ router.get("/",
 router.get("/:id",
     (req, res, next) => {
         const id = req.params.id;
-
         clientQueries
             .getClientById(id)
             .then((client) => {

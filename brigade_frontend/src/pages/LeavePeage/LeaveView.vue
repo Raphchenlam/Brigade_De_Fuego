@@ -1,10 +1,8 @@
 <template>
     <v-sheet
-        v-if="(userSession && this.isUserAuthorized())">
-        <v-row>
-            <LeaveList
-                v-if="(this.isUserAuthorized())">
-            </LeaveList>
+        v-if="userSession">
+        <v-row v-if="this.isUserAuthorized()">
+            <LeaveList></LeaveList>
         </v-row>
     </v-sheet>
     <v-sheet v-else>
@@ -29,11 +27,11 @@ export default {
             userSession: userSession
         }
     },
-    mounted() {
-        if (!userSession) {
+    created() {
+        if (!userSession.employeeNumber && !userSession.password) {
             this.$router.push('/espace');
         }
-    }
+    },
 }
 
 

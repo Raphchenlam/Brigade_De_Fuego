@@ -1,5 +1,5 @@
 <template>
-    <v-sheet v-if="userSession && this.isUserAuthorized()">
+    <v-sheet v-if="userSession">
         <PunchList v-if="this.isUserAuthorized()"></PunchList>
     </v-sheet>
 </template>
@@ -19,10 +19,10 @@ export default {
             userSession: userSession
         }
     },
-    mounted() {
-        if (!userSession) {
-            this.$router.push('/espace/dashboard');
+    created() {
+        if (!userSession.employeeNumber && !userSession.password) {
+            this.$router.push('/espace');
         }
-    }
+    },
 }
 </script>

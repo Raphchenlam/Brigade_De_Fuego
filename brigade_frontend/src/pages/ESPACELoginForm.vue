@@ -3,7 +3,7 @@
         <v-sheet class="ma-2" max-width="40rem">
             <v-form @submit.prevent="login" validate-on="submit lazy" ref="loginForm">
                 <v-text-field v-model="employeeNumber" label="Numero d'employé" :counter="4" maxlength="4"
-                    :rules="[rules.required, rules.validPassword]" density="compact"></v-text-field>
+                    :rules="[rules.required, rules.validPassword]" density="compact" autofocus></v-text-field>
                 <v-text-field v-model="password" label="Mot de passe" type="password" 
                 :rules="[rules.required, rules.validPassword]" density="compact"></v-text-field>
                 <v-btn type="submit" :disabled="!employeeNumber || !password">Se connecter</v-btn>
@@ -46,12 +46,16 @@ export default {
             });
         }
     },
-    mounted()
-    {
-        if (userSession.employee)
+    created()
+    {   
+        if (!userSession.employeeNumber && !userSession.password)
         {
+            this.$router.push('/espace');
+        } else {
             this.$router.push('/espace/dashboard');
         }
+        
+        
     }
 }
 </script>

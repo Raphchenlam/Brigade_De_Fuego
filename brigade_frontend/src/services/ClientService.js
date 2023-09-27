@@ -1,4 +1,4 @@
-// import session from "./session";
+import session from '../sessions/OperationSession'
 
 class ServiceError extends Error {
     constructor(status, message) {
@@ -42,8 +42,12 @@ export async function getClientById(id) {
     }
 }
 
-export async function getClientList() {
-    const response = await fetch(`/api/client`);
+export async function getClientList()
+{
+
+    const queryString = `?data=${encodeURIComponent(JSON.stringify(session.employee))}`;
+    const url = '/api/client/' + queryString;
+    const response = await fetch(url);
 
     if (response.ok) {
         return await response.json();

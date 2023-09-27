@@ -305,7 +305,4 @@ export default {
     color: red
 }
 
-.pre-wrap {
-    white-space: pre-wrap;
-}
 </style>

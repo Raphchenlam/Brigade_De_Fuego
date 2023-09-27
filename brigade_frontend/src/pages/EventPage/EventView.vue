@@ -1,6 +1,6 @@
 <template>
-    <v-sheet v-if="userSession && this.isUserAuthorized()">
-        <v-row class="justify-space-between">
+    <v-sheet v-if="userSession">
+        <v-row class="justify-space-between" v-if="this.isUserAuthorized()">
             <EventList v-if="this.isUserAuthorized()" class="h-screen" width="35%"></EventList>
             <EventInformation v-if="selectedEvent" class="h-screen" width="65%"></EventInformation>
         </v-row>
@@ -56,7 +56,7 @@ export default {
     },
     beforeMount() {
         if (!this.userSession) {
-            this.$router.push('/espace/dashboard');
+            this.$router.push('/espace');
         }
     },
 }

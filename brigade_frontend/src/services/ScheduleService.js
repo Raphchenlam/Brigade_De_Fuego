@@ -1,4 +1,4 @@
-// import session from "./session";
+import session from '../sessions/UserSession'
 
 class ServiceError extends Error
 {
@@ -29,7 +29,13 @@ async function createServiceError(response)
 
 export async function getScheduleWeekInfoByID(scheduleWeekId)
 {
-    const response = await fetch(`/api/schedule/${scheduleWeekId}`);
+    const response = await fetch(`/api/schedule/${scheduleWeekId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
     if (response.ok)
     {
         const respJson = await response.json();
@@ -42,7 +48,13 @@ export async function getScheduleWeekInfoByID(scheduleWeekId)
 
 export async function getEmployeeScheduleByScheduleWeekId(scheduleWeekId)
 {
-    const response = await fetch(`/api/schedule/${scheduleWeekId}/employee`);
+    const response = await fetch(`/api/schedule/${scheduleWeekId}/employee`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
     if (response.ok)
     {
         const respJson = await response.json();
@@ -60,7 +72,7 @@ export async function updateSchedule(scheduleInformations)
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            // ...session.getAuthHeaders()
+             ...session.getAuthHeaders()
         },
         body: JSON.stringify(scheduleInformations)
     });
