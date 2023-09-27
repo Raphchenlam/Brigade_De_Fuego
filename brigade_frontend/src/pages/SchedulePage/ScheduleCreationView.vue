@@ -1,5 +1,5 @@
 <template>
-    <v-sheet class="ma-2" v-if="userSession">
+    <v-sheet class="ma-2" v-if="this.isUserAuthorized()">
         <v-sheet class="my-2 mx-10" v-if="this.isUserAuthorized()">
             <v-row class="justify-space-around">
                 <v-col cols="9">
@@ -547,6 +547,12 @@
                 </v-sheet>
             </v-card>
         </v-sheet>
+    </v-sheet>
+
+    <v-sheet v-else>
+        <v-row class="m-10 justify-center">
+            <h1>Vous devez être connecté et avoir les droits administrateurs pour avoir accès à cette page</h1>
+        </v-row>
     </v-sheet>
 
     <v-dialog v-model="dialogAddEmployee" width="75%" persistent>
