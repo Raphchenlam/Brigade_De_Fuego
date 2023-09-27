@@ -311,7 +311,6 @@ router.put('/:employeeNumber',
                 return next(new HttpError(404, 'Employé(e) introuvable'));
             }
 
-            //verif combinaison 
             if (employeeNumber != resultEmployee.employeeNumber || firstName != resultEmployee.firstName || lastName != resultEmployee.lastName) return next(new HttpError(409, `employeeNumber, firstName et/ou lastName ne correspond(ent) pas à l'employé de la base de données`));
 
             if (firstName != resultEmployee.firstName) return next(new HttpError(409, 'Le prénom de l\'employé ne peut pas être modifié'));
@@ -322,20 +321,26 @@ router.put('/:employeeNumber',
 
             if (barcodeNumber != resultEmployee.barcodeNumber) return next(new HttpError(409, 'Le code barre de l\'employé ne peut pas être modifié'));
 
-            if (resultEmployee.role != role) {
+            if (role != resultEmployee.role) {
                 const existingRole = await employeeQueries.selectRoleByName(role);
                 if (!existingRole) return next(new HttpError(400, `Le poste ${role} n'existe pas dans la base de données, contactez Brigade pour l'ajouter à votre application`));
             }
 
-            if (resultEmployee.email != email) {
+            if (email != resultEmployee.email) {
                 const usedEmail = await employeeQueries.selectUsedEmail(email);
                 if (usedEmail) return next(new HttpError(400, `${usedEmail.firstName} ${usedEmail.lastName} est associé(e) à cette adresse courriel)`));
             }
 
-            if (resultEmployee.phoneNumber != phoneNumber) {
+            if (phoneNumber != resultEmployee.phoneNumber) {
                 const usedPhoneNumber = await employeeQueries.selectUsedPhoneNumber(phoneNumber);
                 if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`));
             }
+
+            if(!employee.isAdmin && (hourlyRate != resultEmployee.hourlyRate)) return next(new HttpError(403, 'Vous n\'avez pas l\'autorisation de modifier votre salaire. Consultez votre Gestionnaire'));
+
+            if(!employee.isAdmin && (isAdmin != resultEmployee.isAdmin)) return next (new HttpError(403, 'Vous n\'avez pas l\'autorisation de vous donner un accès administrateur. Consultez votre Gestionnaire'));
+            
+            if(!employee.isActive && (isActive != resultEmployee.isActive)) return next (new HttpError(403, 'Vous n\'avez pas l\'autorisation de vous désactiver. Consultez votre Gestionnaire'));
 
             const employeeToUpdate = {
                 employeeNumber: employeeNumber,
@@ -492,7 +497,10 @@ router.put('/',
                 skillPoints: skillPoints,
             };
 
-            const updatedEmployee = await employeeQueries.updateEmployee(employeeToUpdate);
+            const passwordSalt = "noChange";
+            const passwordHash = "noChange";
+
+            const updatedEmployee = await employeeQueries.updateEmployee(employeeToUpdate, passwordSalt, passwordHash);
             res.json(updatedEmployee);
         } catch (error) {
             return next(error);

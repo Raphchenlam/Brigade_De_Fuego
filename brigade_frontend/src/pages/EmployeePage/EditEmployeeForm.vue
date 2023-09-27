@@ -8,14 +8,14 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="4">
-                    <v-select v-model="updatingEmployee.role" :items="roleList" class="mx-2" label="Poste"
-                        :rules="[rules.required, rules.validateRole]">
+                    <v-select :disabled="!this.isUserAuthorized()" v-model="selectedRole" :items="roleList" class="mx-2"
+                        label="Poste" :rules="[rules.required, rules.validateRole]">
                     </v-select>
                 </v-col>
                 <v-col cols="5">
-                    <v-select :disabled="disableSkillPtsDropDown" :items="skillPointsRange"
-                        v-model="updatingEmployee.skillPoints" class="mx-2" label="Points de compétences"
-                        :rules="[rules.required, rules.validateSkillPoints]">
+                    <v-select v-if="this.isUserAuthorized()"
+                        :disabled="disableSkillPtsDropDown" :items="skillPointsRange" v-model="updatingEmployee.skillPoints"
+                        class="mx-2" label="Points de compétences" :rules="[rules.required, rules.validateSkillPoints]">
                     </v-select>
                 </v-col>
             </v-row>
@@ -54,8 +54,9 @@
             </v-row>
             <v-row>
                 <v-col>
-                    <v-text-field v-model="updatingEmployee.hourlyRate" class="mx-2" label="Taux Horaire" density="compact"
-                        clearable :rules="[rules.required, rules.validateHourlyRate]" maxlength="6">
+                    <v-text-field :disabled="!this.isUserAuthorized()" v-model="updatingEmployee.hourlyRate" class="mx-2"
+                        label="Taux Horaire" density="compact" clearable :rules="[rules.required, rules.validateHourlyRate]"
+                        maxlength="6">
                     </v-text-field>
                 </v-col>
                 <v-col>
@@ -81,20 +82,23 @@
                         label="Accès Administrateur"></v-checkbox>
                 </v-col>
                 <v-col>
-                    <v-checkbox v-model="updatingEmployee.isActive" label="Employé(e) activé(e)"></v-checkbox>
+                    <v-checkbox :disabled="disableActiveCheckbox" v-model="updatingEmployee.isActive"
+                        label="Employé(e) activé(e)"></v-checkbox>
                 </v-col>
             </v-row>
- 
-            <v-row v-if="$route.fullPath == `/espace/employee/${userSession.employeeNumber}` && (userSession.employee.employeeNumber == this.updatingEmployee.employeeNumber)">
+
+            <v-row
+                v-if="$route.fullPath == `/espace/employee/${userSession.employeeNumber}` && (userSession.employee.employeeNumber == this.updatingEmployee.employeeNumber)">
                 <v-col>
                     <v-text-field v-model="updatingEmployee.password" label="Mot de passe" type="password"
-                        :rules="[rules.validatePassword, rules.fieldLength255]" density="compact" ref="passwordInput" clearable>
+                        :rules="[rules.validatePassword, rules.fieldLength255]" density="compact" ref="passwordInput"
+                        clearable>
                     </v-text-field>
                 </v-col>
                 <v-col>
-                    <v-text-field v-model="updatingEmployee.passwordConfirmation"
-                        label="Confirmer le mot de passe" :rules="[rules.passwordsMatch, rules.fieldLength255]" type="password"
-                        density="compact" ref="passwordConfirmInput" clearable>
+                    <v-text-field v-model="updatingEmployee.passwordConfirmation" label="Confirmer le mot de passe"
+                        :rules="[rules.passwordsMatch, rules.fieldLength255]" type="password" density="compact"
+                        ref="passwordConfirmInput" clearable>
                     </v-text-field>
                 </v-col>
             </v-row>
@@ -134,7 +138,7 @@ import {
 import userSession from "../../sessions/UserSession"
 
 export default {
-    inject: ['closeEditEmployeeDialog', 'loadEmployeeByNumber', 'capitalizeWords', 'formatPhoneNumber'],
+    inject: ['closeEditEmployeeDialog', 'loadEmployees', 'loadEmployeeByNumber', 'capitalizeWords', 'formatPhoneNumber', 'isUserAuthorized'],
     props: {
         employeeNumber: Number
     },
@@ -143,7 +147,7 @@ export default {
     },
     data() {
         return {
-            userSession:userSession,
+            userSession: userSession,
             updatingEmployee: {
                 employeeNumber: 0,
                 firstName: "",
@@ -161,10 +165,11 @@ export default {
                 passwordConfirmation: "",
             },
             selectedRole: "",
+            selectedSkillPoints: "",
             updatedEmployee: false,
             rules: {
                 required: value => {
-                    if (this.updatingEmployee.role == "Gestionnaire" && !this.updatingEmployee.skillPoints) {
+                    if (this.updatingEmployee.role == "Gestionnaire" && !this.selectedSkillPoints) {
                         return true;
                     } else {
                         return !!value || "Le champ est requis"
@@ -188,13 +193,13 @@ export default {
                     }
                 },
                 validatePassword: value => {
-                    if(!this.updatingEmployee.password && !this.updatingEmployee.passwordConfirmation){
+                    if (!this.updatingEmployee.password && !this.updatingEmployee.passwordConfirmation) {
                         return true;
                     }
                     return validPassword.test(value) || "Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial";
                 },
                 passwordsMatch: () => {
-                    if(!this.updatingEmployee.password && !this.updatingEmployee.passwordConfirmation){
+                    if (!this.updatingEmployee.password && !this.updatingEmployee.passwordConfirmation) {
                         return true;
                     }
                     return this.updatingEmployee.password === this.updatingEmployee.passwordConfirmation || "Les mots de passe ne correspondent pas";
@@ -209,6 +214,7 @@ export default {
             if (employeeNumber) {
                 getEmployeeByEmployeeNumber(employeeNumber).then(employee => {
                     this.updatingEmployee = employee;
+                    this.selectedRole = this.updatingEmployee.role;
                 }).catch(err => {
                     console.error(err);
                 })
@@ -224,12 +230,12 @@ export default {
                 return;
             }
 
-            if (this.$route.fullPath == `/espace/employee` && this.updatingEmployee.isAdmin) {
+            if (this.$route.fullPath == `/espace/employee` && this.userSession.employee.isAdmin) {
                 try {
                     await updateEmployeeByAdmin(this.updatingEmployee).then((employee) => {
                         if (employee) {
                             this.updatedEmployee = true;
-                            // this.getEmployeeByNumber(this.updatingEmployee.employeeNumber);
+                            this.loadEmployeeByNumber(this.updatingEmployee.employeeNumber);
                             setTimeout(this.closeDialog, 2000);
                         }
                     });
@@ -241,13 +247,13 @@ export default {
                     }
                     await this.$refs.editEmployeeForm.validate();
                 }
-            } 
-            if(this.$route.fullPath == `/espace/employee/${userSession.employeeNumber}` && (userSession.employee.employeeNumber == this.updatingEmployee.employeeNumber)) {
+            }
+            if (this.$route.fullPath == `/espace/employee/${userSession.employeeNumber}` && (userSession.employee.employeeNumber == this.updatingEmployee.employeeNumber)) {
                 try {
                     await updateEmployeeByEmployeeProfile(this.updatingEmployee, this.updatingEmployee.employeeNumber).then((employee) => {
                         if (employee) {
                             this.updatedEmployee = true;
-                            this.loadEmployeeByNumber(this.employeeNumber);
+                            this.loadEmployeeByNumber(this.updatingEmployee.employeeNumber);
                             setTimeout(this.closeDialog, 2500);
                         }
                     });
@@ -267,7 +273,22 @@ export default {
             this.closeEditEmployeeDialog();
         },
         patternedPhoneNumber() {
-            this.employee.phoneNumber = this.formatPhoneNumber(this.employee.phoneNumber);
+            this.updatingEmployee.phoneNumber = this.formatPhoneNumber(this.updatingEmployee.phoneNumber);
+        },
+        wrongPath() {
+            return (this.$route.fullPath == `/espace/employee/${this.userSession.employeeNumber}` && this.userSession.employee.isAdmin) ? true : false;
+        }
+    },
+    watch: {
+        selectedRole() {
+            console.log("ROLE", this.updatingEmployee.role);
+            this.updatingEmployee.role = this.selectedRole;
+            if (this.updatingEmployee.role == "Gestionnaire") {
+                this.updatingEmployee.skillPoints = null;
+                this.updatingEmployee.isAdmin = true;
+            } else {
+                this.updatingEmployee.isAdmin = false;
+            }
         },
     },
     mounted() {
@@ -282,10 +303,15 @@ export default {
     },
     computed: {
         disableAdminCheckbox() {
-            return this.updatingEmployee.role == "Gestionnaire"
+            if (this.updatingEmployee.role == "Gestionnaire" || !this.isUserAuthorized()) {
+                return true;
+            }
         },
         disableSkillPtsDropDown() {
-            return this.updatingEmployee.role == "Gestionnaire"
+            return (this.updatingEmployee.role == "Gestionnaire" || !this.isUserAuthorized()) ? true : false;
+        },
+        disableActiveCheckbox(){
+            return (!this.isUserAuthorized()) ? true : false;
         }
     }
 }
@@ -299,5 +325,4 @@ export default {
     text-align: center;
     width: 100%;
     max-width: 80rem;
-}
-</style>
+}</style>
