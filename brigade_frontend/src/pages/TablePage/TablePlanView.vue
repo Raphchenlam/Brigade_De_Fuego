@@ -1,6 +1,5 @@
 <template>
     <v-sheet width="100%" class="pa-2">
-
         <v-row>
             <v-col>
 
@@ -44,6 +43,12 @@ import ReservationInformation from '../ReservationPage/ReservationInformation.vu
 import TableLayout from './TableLayout.vue';
 import TableInformation from './TableInformation.vue';
 import { fetchAllTables, fetchAssignationByDate } from '../../services/TableService';
+
+// QUERIES TO UPDATE EMPLOYEE COLOR
+// UPDATE employee
+// 	SET color_hexcode='4C0099'
+// 	WHERE employee_number=2222;
+
 
 export default {
     name: 'TablePlanView',
