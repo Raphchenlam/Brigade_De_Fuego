@@ -8,19 +8,9 @@
                     <TableLayout class="pa-2"></TableLayout>
                 </v-row>
                 <v-row>
-                    <TableInformation class="pa-2" v-if="selectedTable"></TableInformation>
+                    <TableInformation class="pa-2" v-if="selectedTable && !selectedReservationId"></TableInformation>
                     <ReservationInformation class="pa-2" v-if="selectedReservationId"
                         :reservationId="selectedReservationId"></ReservationInformation>
-                </v-row>
-                <v-row>
-                    <v-card class="pa-2 ma-4 w-100">
-                        <BlackButton class="ma-2" textbutton="Changer le status"></BlackButton>
-                        <BlackButton class="ma-2" textbutton="Attribuer une table"></BlackButton>
-                        <BlackButton class="ma-2" textbutton="Attribuer une table"></BlackButton>
-                        <BlackButton class="ma-2" textbutton="Attribuer une table"></BlackButton>
-                        <p class="ma-2 text-red-lighten-1">Les bouttons vont changer selon ce qui a été selectionné</p>
-
-                    </v-card>
                 </v-row>
             </v-col>
             <v-col cols="5">
@@ -65,7 +55,6 @@ export default {
         TableInformation,
         BlackButton
     },
-    inject: ['selectedReservationId'],
     data() {
         return {
             operationSession: operationSession,
@@ -75,14 +64,11 @@ export default {
             selectedDate: null,
             selectedShift: "Midi",
             selectedTable: null,
-            needUpdate: false,
             selectedReservationId: null,
 
 
             ////////////TEMPORAIRE/////////
-            //employeeColor: "#8b0000",
             hasReservation: true,
-            //isAssign: false,
 
         }
     },
@@ -97,29 +83,19 @@ export default {
             displaySelectedTable: this.displaySelectedTable,
             loadReservationInformations: this.loadReservationInformations,
 
-            //updateTableLayout: this.updateTableLayout,
-            //needUpdate: computed(()=>this.needUpdate),
 
             ////////////TEMPORAIRE/////////
             hasReservation: computed(() => this.hasReservation),
-            employeeColor: computed(() => this.employeeColor),
-            //isAssign: computed(() => this.isAssign),
         }
     },
     methods: {
-        // initialLoading() {
-        //     this.loadTableList();
-        //     // this.loadAssignationList();
-        // },
+       
         loadDate() {
             //************************/
             //***A remettre en place**/
             //************************/
             const todayDate = new Date().toISOString().split('T')[0];
             this.selectedDate = todayDate;
-
-            //this.selectedDate="2023-09-19"
-
         },
         loadTableList() {
             console.log('Loading table list...');
@@ -132,7 +108,6 @@ export default {
                 console.error(err);
             });
         },
-        //A ajouter partout ************************************************
         loadAssignationList(date, shift) {
             console.log('Loading assignation list...');
             this.assignationList = [];
@@ -143,7 +118,6 @@ export default {
                         this.assignationList.push(assignation);
                     }
                 });
-                //this.needUpdate = true;
                 this.updateTableLayout();
             }).catch(err => {
                 console.error(err);
@@ -184,40 +158,11 @@ export default {
                 }
                 );
             }
-            this.needUpdate = false;
         },
         loadReservationInformations(receivedReservationId) {
             this.selectedReservationId = receivedReservationId;
         },
-        // updateTableList() {
-        //     console.log('tableList:', this.tableList);
-        //     console.log('tableList:', this.tableList.length);
-        //     // console.log('assignationList:', this.assignationList);
-        //     // console.log('assignationList:', this.assignationList.length);
-        //     this.tableWithAssignationList = this.tableList.map(table => ({
-        //         number: table.number,
-        //         capacity: table.capacity,
-        //         isActive: table.isActive,
-        //         isAssign: false
-        //     }));
-        //     console.log("tableWithAssi..." + this.tableWithAssignationList.length)
-        // },
-
-        // updateTableLayout(shift) {
-
-        //     if (this.assignationList.length > 0) {
-        //         console.log("Creating new floor plan...")
-        //         this.assignationList.forEach(assignation => {
-        //             const table = this.tableList.find(table => {
-        //                 return (table.number == assignation.tableNumber) && (assignation.shift == shift)
-        //             });
-
-        //             if (table) {
-        //                 table.isAssign = true;
-        //             }
-        //         })
-        //     }
-        // },
+        
         displaySelectedTable(number) {
             console.log("DisplaySelectedTable : " + number)
             this.selectedTable = this.tableWithAssignationList.find((table) => {
@@ -235,17 +180,8 @@ export default {
             console.log('tableList changed');
             this.loadAssignationList(this.selectedDate, this.selectedShift);
         },
-      
-
     },
-    // updated() {
-    //     // this.updateTableList();
-    //     this.loadAssignationList();
-    // },
 
-    // beforeMount() {
-    //     this.loadTableList();
-    // },
     mounted() {
         if (!operationSession.isActive) {
             this.$router.push('/operation');

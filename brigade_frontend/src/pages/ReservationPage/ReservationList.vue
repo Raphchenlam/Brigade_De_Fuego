@@ -51,7 +51,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate'],
+    inject: ['loadReservationInformations', 'selectedDate','selectedShift'],
     components: {
         VDataTable,
         NewReservationForm,
