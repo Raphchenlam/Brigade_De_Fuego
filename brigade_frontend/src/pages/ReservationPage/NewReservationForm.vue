@@ -276,15 +276,16 @@ export default {
         var hours = parseInt(explodedNow[0]);
         var minutes = parseInt(explodedNow[1]) + 5;
 
-        if(minutes >= 60){
-            minutes -= 60;
-            hours += 1;
-        }
+        if(minutes >= 60) minutes -= 60, hours += 1;
         
-        minutes = minutes < 10 ? "0" + minutes : minutes;
+        minutes = minutes > 10 ? minutes : "0" + minutes ;
+        minutes = hours < 11 ? "00" : minutes ;
+        hours = hours < 11 ? 11 : hours;
+        
+        // minutes > 10 ? minutes = minutes : hours < 11 ? (minutes = "00", hours = 11) : minutes = "0" + minutes ; // All three in one
 
         const now = hours + ":" + minutes;
-        this.reservationFullDate = today + "T" + now;
+        this.reservationFullDate = today + "T" + now;   
     }
 }
 </script>
