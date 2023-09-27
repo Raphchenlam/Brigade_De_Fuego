@@ -87,12 +87,12 @@
  
             <v-row v-if="$route.fullPath == `/espace/employee/${userSession.employeeNumber}` && (userSession.employee.employeeNumber == this.updatingEmployee.employeeNumber)">
                 <v-col>
-                    <v-text-field @input="validatePassword" v-model="updatingEmployee.password" label="Mot de passe" type="password"
-                        :rules="[rules.validPassword, rules.fieldLength255]" density="compact" ref="passwordInput" clearable>
+                    <v-text-field v-model="updatingEmployee.password" label="Mot de passe" type="password"
+                        :rules="[rules.validatePassword, rules.fieldLength255]" density="compact" ref="passwordInput" clearable>
                     </v-text-field>
                 </v-col>
                 <v-col>
-                    <v-text-field @input="validatePasswordMatch" v-model="updatingEmployee.passwordConfirmation"
+                    <v-text-field v-model="updatingEmployee.passwordConfirmation"
                         label="Confirmer le mot de passe" :rules="[rules.passwordsMatch, rules.fieldLength255]" type="password"
                         density="compact" ref="passwordConfirmInput" clearable>
                     </v-text-field>
@@ -125,7 +125,7 @@
 
 
 <script>
-import { updateEmployeeByAdmin, updateEmployeeByNonAdmin, getEmployeeByEmployeeNumber, getAllRoles } from '../../services/EmployeeService';
+import { updateEmployeeByAdmin, updateEmployeeByEmployeeProfile, getEmployeeByEmployeeNumber, getAllRoles } from '../../services/EmployeeService';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import {
     validEmployeeNumber, validName, validPhoneNumber, validEmail, validRole, validColorHexCode,
@@ -134,7 +134,7 @@ import {
 import userSession from "../../sessions/UserSession"
 
 export default {
-    inject: ['closeEditEmployeeDialog', 'loadEmployees', 'capitalizeWords', 'formatPhoneNumber'],
+    inject: ['closeEditEmployeeDialog', 'loadEmployeeByNumber', 'capitalizeWords', 'formatPhoneNumber'],
     props: {
         employeeNumber: Number
     },
@@ -181,21 +181,31 @@ export default {
                 validateHourlyRate: value => validHourlyRate.test(value) || "Taux horaire invalide -> Respecter un des formats suivant : xx.xx ou xxx.xx \n 1er chiffre ne peut pas être 0",
                 validateBarcodeNumber: value => validBarcodeNumber.test(value) || "Code barre invalide : doit contenir que 16 chiffres",
                 validateSkillPoints: value => {
-                    if (this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints) {
+                    if (this.updatingEmployee.role == "Gestionnaire" && !this.updatingEmployee.skillPoints) {
                         return true;
                     } else {
                         return validSkillPoints.test(value) || "Skill Points invalide : doit être entre 1 et 10"
                     }
                 },
-                validPassword: value => validPassword.test(value) || "Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial",
-                passwordsMatch: () => this.updatingEmployee.password === this.updatingEmployee.passwordConf || "Les mots de passe ne correspondent pas",
+                validatePassword: value => {
+                    if(!this.updatingEmployee.password && !this.updatingEmployee.passwordConfirmation){
+                        return true;
+                    }
+                    return validPassword.test(value) || "Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial";
+                },
+                passwordsMatch: () => {
+                    if(!this.updatingEmployee.password && !this.updatingEmployee.passwordConfirmation){
+                        return true;
+                    }
+                    return this.updatingEmployee.password === this.updatingEmployee.passwordConfirmation || "Les mots de passe ne correspondent pas";
+                }
             },
             roleList: [],
             skillPointsRange: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         }
     },
     methods: {
-        loadEmployeeByNumber(employeeNumber) {
+        getEmployeeByNumber(employeeNumber) {
             if (employeeNumber) {
                 getEmployeeByEmployeeNumber(employeeNumber).then(employee => {
                     this.updatingEmployee = employee;
@@ -219,8 +229,8 @@ export default {
                     await updateEmployeeByAdmin(this.updatingEmployee).then((employee) => {
                         if (employee) {
                             this.updatedEmployee = true;
-                            this.loadEmployees();
-                            setTimeout(this.closeDialog, 2500);
+                            // this.getEmployeeByNumber(this.updatingEmployee.employeeNumber);
+                            setTimeout(this.closeDialog, 2000);
                         }
                     });
                 } catch (err) {
@@ -231,12 +241,13 @@ export default {
                     }
                     await this.$refs.editEmployeeForm.validate();
                 }
-            } else {
+            } 
+            if(this.$route.fullPath == `/espace/employee/${userSession.employeeNumber}` && (userSession.employee.employeeNumber == this.updatingEmployee.employeeNumber)) {
                 try {
-                    await updateEmployeeByNonAdmin(this.updatingEmployee, this.updatingEmployee.employeeNumber).then((employee) => {
+                    await updateEmployeeByEmployeeProfile(this.updatingEmployee, this.updatingEmployee.employeeNumber).then((employee) => {
                         if (employee) {
                             this.updatedEmployee = true;
-                            this.loadEmployees();
+                            this.loadEmployeeByNumber(this.employeeNumber);
                             setTimeout(this.closeDialog, 2500);
                         }
                     });
@@ -260,7 +271,7 @@ export default {
         },
     },
     mounted() {
-        this.loadEmployeeByNumber(this.employeeNumber);
+        this.getEmployeeByNumber(this.employeeNumber);
         getAllRoles().then(allRoles => {
             allRoles.forEach(role => {
                 this.roleList.push(role.name);

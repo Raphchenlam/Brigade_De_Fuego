@@ -300,8 +300,10 @@ router.put('/:employeeNumber',
         }
         
         const password = req.body.password;
-        if (!regex.validPassword.test(password)) return next(new HttpError(400, 'Le mot de passe ne respecte pas les critères d\'acceptation'));
-
+        if(password){
+            if (!regex.validPassword.test(password)) return next(new HttpError(400, 'Le mot de passe ne respecte pas les critères d\'acceptation'));
+        }
+        
         try {
             const resultEmployee = await employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber);
 

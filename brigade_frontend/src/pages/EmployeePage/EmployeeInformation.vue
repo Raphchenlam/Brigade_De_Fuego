@@ -1,5 +1,5 @@
 <template>
-        <v-sheet v-if="employee.employeeNumber" class="px-10 py-3">
+        <v-sheet v-if="employee.employeeNumber || userSession.employeeNumber" class="px-10 py-3">
                 <v-dialog v-model="dialogEditEmployee" width="50%" persistent>
                         <template v-slot:activator="{ props }">
                                 <v-row class="justify-space-between">

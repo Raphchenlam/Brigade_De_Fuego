@@ -154,7 +154,7 @@ export async function updateEmployeeByAdmin(employee){
     }
 }
 
-export async function updateEmployeeByNonAdmin(employee, employeeNumber){
+export async function updateEmployeeByEmployeeProfile(employee, employeeNumber){
     const response = await fetch(`/api/employee/${employeeNumber}`, {
         method: "PUT",
         headers: {
