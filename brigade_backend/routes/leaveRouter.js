@@ -7,6 +7,8 @@ const HttpError = require("../HttpError");
 const leaveQueries = require('../queries/leaveQueries');
 
 // passport.authenticate('basic', { session: false }), (req,res,next)...
+
+/*
 router.get('/',
     (req, res, next) =>
     {
@@ -27,7 +29,7 @@ router.get('/',
             return next(err);
         });
     });
-
+*/
 
 router.get('/category',
     (req, res, next) =>
@@ -132,8 +134,9 @@ router.post('/',
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        var futureDate = new Date(today);
-        futureDate.setDate(today.getDate() + 14);var dayOfWeek = futureDate.getDay();
+        let futureDate = new Date(today);
+        futureDate.setDate(today.getDate() + 7);
+        var dayOfWeek = futureDate.getDay();
         var daysToAdd = 1 - dayOfWeek;
         futureDate.setDate(futureDate.getDate() + daysToAdd);
 
@@ -142,7 +145,7 @@ router.post('/',
         var startDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
         console.log("today", today);
         console.log("startDate", startDate);
-        if (startDate < futureDate) return next(new HttpError(400, `La date de debut doit etre minimum 2 semaine d'avance`));
+        if (startDate < futureDate) return next(new HttpError(400, `La date de debut doit etre minimum le lundi 1 semaine à l'avance`));
         if (body.endDate < body.startDate) return next(new HttpError(400, `La date de fin ne peut pas etre avant la date de debut`));
 
         const newLeave = {
