@@ -91,7 +91,6 @@ router.post("/",
 
         const date = req.body.date;
         if (!date || date == "") return next(new HttpError(400, "Le champ date est requis"));
-        console.log(date);
         if (!regex.validDate.test(date)) return next(new HttpError(400, "Le champ date ne respect pas les critères d'acceptation ex: '2023-09-11'"));
         if (isDateBeforeToday(date)) return next(new HttpError(400, "La date de la réservation ne peux indiquer une date antérieur à aujourd'hui"));
 

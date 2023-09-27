@@ -2,9 +2,7 @@
     <v-sheet
         v-if="userSession">
         <v-row v-if="this.isUserAuthorized()">
-            <LeaveList
-                v-if="this.isUserAuthorized()">
-            </LeaveList>
+            <LeaveList></LeaveList>
         </v-row>
     </v-sheet>
     <v-sheet v-else>
