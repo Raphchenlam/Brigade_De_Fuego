@@ -1,43 +1,78 @@
 import { reactive } from "vue";
 
-class AuthError extends Error {
-    constructor(status, message) {
+class AuthError extends Error
+{
+    constructor(status, message)
+    {
         super(message);
         this.status = status;
     }
 }
 
 const operationSession = reactive({
+    isReady: false,
     isActive: true,
+    barcodeNumber: null,
     employee: null,
 
-    initialize() {
-        if (sessionStorage.employee) {
-            this.isActive = true;
-            this.employee = sessionStorage.employee;
+    initialize()
+    {
+        this.isReady = false;
+        if (sessionStorage.barcodeNumber)
+        {
+            this.barcodeNumber = sessionStorage.barcodeNumber;
+            this.fetchEmployeeByCodebarNumber(this.barcodeNumber).then((employee) =>
+            {
+                console.log("Ici2")
+                if (employee) this.isReady = true;
+            });
         }
-        else {
+        else
+        {
             this.isActive = false;
+            this.barcodeNumber = null;
             this.employee = null;
         }
     },
-    unlock(employee) {
+    unlock(employee)
+    {
         this.setCredentials(employee);
         this.isActive = true;
+        this.barcodeNumber = employee.barcodeNumber;
         this.employee = employee;
         return employee;
     },
-    setCredentials(employee) {
-        sessionStorage.employee = employee;
+    setCredentials(employee)
+    {
+        sessionStorage.barcodeNumber = employee.barcodeNumber;
     },
-    clearCredentials() {
-        sessionStorage.removeItem('employee');
+    clearCredentials()
+    {
+        sessionStorage.removeItem('barcodeNumber');
 
     },
-    disconnect() {
+    disconnect()
+    {
         this.isActive = false;
+        this.barcodeNumber = null;
         this.employee = null;
         this.clearCredentials();
+    },
+    async fetchEmployeeByCodebarNumber(barcodeNumber)
+    {
+        const response = await fetch(`/api/employee/barcode/${barcodeNumber}`);
+        if (response.ok)
+        {
+            const employee = await response.json();
+            if (!employee.isAdmin) { throw new AuthError(response.status, "Gestionnaire seulement autorisé"); }
+            this.employee = employee;
+            console.log("Ici1")
+            this.isActive = true;
+            return employee;
+        } else
+        {
+            throw await createServiceError(response);
+        }
     },
 });
 

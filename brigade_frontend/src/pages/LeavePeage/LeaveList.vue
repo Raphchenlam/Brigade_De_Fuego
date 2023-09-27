@@ -3,7 +3,8 @@
         <v-sheet v-if="userSession.employee.isAdmin && $route.fullPath == '/espace/leave'" class="ma-5">
             <v-row class="ma-5 justify-space-around">
                 <v-col cols="11">
-                    <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }} affichées / {{ nbPendingLeave }} total</h3>
+                    <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }} affichées / {{ nbPendingLeave
+                    }} total</h3>
                 </v-col>
                 <v-col cols="1">
                     <v-icon size="x-large" class="me-2n" @click="filterDialog = true">
@@ -66,9 +67,11 @@
         </v-sheet>
 
         <v-sheet :class="userSession.employee.isAdmin && $route.fullPath == '/espace/leave' ? 'mx-10' : 'mx-5'">
-            <v-data-table-server no-data-text="Aucune demande de congés à afficher" v-model:expanded="expanded"
-                height="100%" fixed-header :headers="headers" :items="filteredLeaveList"
-                :items-length="filteredLeaveList.length" class="elevation-1" @update:options="loadLeaves" show-expand>
+            <v-data-table-server no-data-text="Aucune demande de congés à afficher" v-model:items-per-page="itemsPerPage"
+                v-model:expanded="expanded" :loading="loading" height="100%" fixed-header :headers="headers" :hide-default-footer="true"
+                :items="filteredLeaveList" :items-length="filteredLeaveList.length" class="elevation-1" hide-default-footer
+  disable-pagination
+                @update:options="loadLeaves" show-expand>
 
                 <template v-slot:top>
                     <v-toolbar flat>
@@ -104,10 +107,12 @@
 
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn v-if="editedItem.status != 'Accepté'" color="green" variant="text" @click="closeEditLeaveDialog">
+                                <v-btn v-if="editedItem.status != 'Accepté'" color="green" variant="text"
+                                    @click="closeEditLeaveDialog">
                                     Accepter
                                 </v-btn>
-                                <v-btn v-if="editedItem.status != 'Refusé'" color="red" variant="text" @click="closeEditLeaveDialog">
+                                <v-btn v-if="editedItem.status != 'Refusé'" color="red" variant="text"
+                                    @click="closeEditLeaveDialog">
                                     Refuser
                                 </v-btn>
                                 <v-btn variant="text" @click="closeEditLeaveDialog">
@@ -178,6 +183,7 @@ export default {
             leaveList: [],
             filteredLeaveList: [],
             nbPendingLeave: 0,
+            loading: true,
             headers: [
                 {
                     align: 'start',
@@ -229,6 +235,7 @@ export default {
                 category: "",
                 reason: ""
             },
+            itemsPerPage: 100,
             checkedBoxes: {
                 all: false,
                 pending: true,
@@ -257,7 +264,8 @@ export default {
                         if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
                         if (leave.status == 'Approved') leave.status = 'Accepté'
                         if (leave.status == 'Refused') leave.status = 'Refusé'
-                        this.leaveList.push(leave)
+                        this.leaveList.push(leave);
+                        this.loading = false;
                     });
                 });
             } else
@@ -279,6 +287,7 @@ export default {
                         {
                             this.nbPendingLeave = leave.nbPending;
                         }
+                        this.loading = false;
                     });
                 }).catch(err =>
                 {
