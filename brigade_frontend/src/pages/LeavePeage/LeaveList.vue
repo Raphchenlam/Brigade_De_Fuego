@@ -265,8 +265,8 @@ export default {
                         if (leave.status == 'Approved') leave.status = 'Accepté'
                         if (leave.status == 'Refused') leave.status = 'Refusé'
                         this.leaveList.push(leave);
-                        this.loading = false;
                     });
+                    this.loading = false;
                 });
             } else
             {

@@ -107,7 +107,7 @@ export default {
                 console.error(err);
             });
         },
-        closeNewEmployeeDialogAdmin() {
+        closeNewEmployeeDialog() {
             this.dialogNewEmployee = false;
         },
     },
