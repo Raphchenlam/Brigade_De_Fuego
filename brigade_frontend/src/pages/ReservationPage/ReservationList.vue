@@ -2,7 +2,7 @@
     <v-sheet width="100%">
         <v-card class="ma-2" >
             <v-row class="mb-0">
-                <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
+                <v-text-field @input="" v-model="search" hide-details placeholder="Rechercher une réservation..."
                     class="ma-2"></v-text-field>
                 <v-dialog v-model="dialogNewReservation" width="100%">
                     <template v-slot:activator="{ props }">

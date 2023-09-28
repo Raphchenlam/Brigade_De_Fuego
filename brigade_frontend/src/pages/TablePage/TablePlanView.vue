@@ -4,10 +4,11 @@
             <v-col>
 
                 <v-row>
-                    <TableLayout class="pa-2"></TableLayout>
+                    <TableLayout v-if="selectedTable==null" class="pa-2"></TableLayout>
+                    <TableInformation v-else class="pa-2"></TableInformation>
                 </v-row>
                 <v-row>
-                    <TableInformation class="pa-2" v-if="selectedTable && !selectedReservationId"></TableInformation>
+                    <WaiterList class="pa-2" v-if="!selectedReservationId"></WaiterList>
                     <ReservationInformation class="pa-2" v-if="selectedReservationId"
                         :reservationId="selectedReservationId"></ReservationInformation>
                 </v-row>
@@ -42,6 +43,7 @@ import ReservationList from '../ReservationPage/ReservationList.vue';
 import ReservationInformation from '../ReservationPage/ReservationInformation.vue';
 import TableLayout from './TableLayout.vue';
 import TableInformation from './TableInformation.vue';
+import WaiterList from "./WaiterList.vue";
 import { fetchAllTables, fetchAssignationByDate } from '../../services/TableService';
 
 // QUERIES TO UPDATE EMPLOYEE COLOR
@@ -58,6 +60,7 @@ export default {
         ReservationInformation,
         TableLayout,
         TableInformation,
+        WaiterList,
         BlackButton
     },
     data() {
@@ -85,6 +88,7 @@ export default {
             selectedDate: computed(() => this.selectedDate),
             selectedShift: computed(() => this.selectedShift),
             selectedTable: computed(() => this.selectedTable),
+            toggleSelectedTable: this.toggleSelectedTable,
             displaySelectedTable: this.displaySelectedTable,
             loadReservationInformations: this.loadReservationInformations,
 
@@ -167,7 +171,11 @@ export default {
         loadReservationInformations(receivedReservationId) {
             this.selectedReservationId = receivedReservationId;
         },
-        
+        toggleSelectedTable(){
+            if (this.selectedTable!="" || this.selectedTable != null) {
+                this.selectedTable = null;
+            }
+        },
         displaySelectedTable(number) {
             console.log("DisplaySelectedTable : " + number)
             this.selectedTable = this.tableWithAssignationList.find((table) => {

@@ -72,7 +72,7 @@ export default {
         setColorTones() {
             if (this.isAssign) {
                 this.fillDarkColor = this.assignation.employeeColor;
-                this.fillLightColor = this.employeeColor + "66";
+                this.fillLightColor = this.employeeColor + "75";
             }
         },
         setTableNumberFormatted() {
@@ -89,6 +89,7 @@ export default {
         setIsActive() {
             if (!this.tableIsActive) {
                 this.tableColor = "black";
+                this.textColor = "#373737";
             }
         },
         setTableColor() {
