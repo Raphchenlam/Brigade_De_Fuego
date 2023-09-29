@@ -60,7 +60,7 @@
                 Ajouter un employé au congé en cours
             </v-card-title>
             <v-row class="justify-center">
-                <EmployeeList class="mr-5" height="400" width="90%"></EmployeeList>
+                <EmployeeList class="mr-5" width="90%"></EmployeeList>
             </v-row>
             <v-row class="justify-end">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="dialogAddEmployeeToLeave = false"></DarkRedButton>

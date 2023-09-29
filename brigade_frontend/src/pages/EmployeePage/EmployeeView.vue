@@ -1,8 +1,8 @@
 <template>
     <v-sheet v-if="userSession">
         <v-row class="justify-space-between" v-if="this.isUserAuthorized()">
-            <EmployeeList v-if="this.isUserAuthorized()" class="h-screen" width="35%"></EmployeeList>
-            <EmployeeInformation v-if="selectedEmployeeNumber" :employeeNumber="selectedEmployeeNumber" class="h-screen"
+            <EmployeeList v-if="this.isUserAuthorized()" class="h-100" width="35%"></EmployeeList>
+            <EmployeeInformation v-if="selectedEmployeeNumber" :employeeNumber="selectedEmployeeNumber" class="h-100"
                 width="65%">
             </EmployeeInformation>
         </v-row>
