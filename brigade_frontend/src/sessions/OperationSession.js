@@ -74,6 +74,16 @@ const operationSession = reactive({
             throw await createServiceError(response);
         }
     },
+    getAuthHeaders() {
+        if (this.barcodeNumber) {
+            return {
+                "Authorization": "Basic " + btoa(this.barcodeNumber + ":" + null),
+                "X-Requested-With": "XMLHttpRequest"
+            };
+        } else {
+            return {};
+        }
+    }
 });
 
 export default operationSession;

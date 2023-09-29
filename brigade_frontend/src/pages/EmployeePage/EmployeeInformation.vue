@@ -39,7 +39,7 @@
                                 <span v-else style='color:red'>NON</span>
                         </p>
                 </v-row>
-                
+
                 <!-- A FAIRE S ON A LE TEMPS -->
                 <v-card v-if="false" elevation="3" class="pa-5 my-5" height="75">
                         <v-row>
@@ -56,7 +56,9 @@
                                 <p>Nombre d'heures prévus à l'horaire : {{ employee.scheduledHours }}</p>
                         </v-row>
                 </v-card>
-                <LeaveList :employeeNumber="employeeNumber"></LeaveList>
+                <v-row height="100">
+                        <LeaveList :employeeNumber="employeeNumber"></LeaveList>
+                </v-row>
         </v-sheet>
 </template>
 
@@ -75,7 +77,8 @@ export default {
         props: {
                 employeeNumber: Number
         },
-        data() {
+        data()
+        {
                 return {
                         userSession: userSession,
                         employee: {
@@ -96,48 +99,61 @@ export default {
                 };
         },
         computed: {
-                hoursDifference() {
+                hoursDifference()
+                {
                         return this.employee.scheduledHours - this.employee.actualWorkedHours;
                 }
         },
         methods: {
-                loadEmployeeByNumber(employeeNumber) {
-                        if (employeeNumber) {
-                                getEmployeeByEmployeeNumber(employeeNumber).then(employee => {
+                loadEmployeeByNumber(employeeNumber)
+                {
+                        if (employeeNumber)
+                        {
+                                getEmployeeByEmployeeNumber(employeeNumber).then(employee =>
+                                {
                                         employee.scheduledHours = 0,
                                                 employee.actualWorkedHours = 0;
                                         this.employee = employee
-                                }).catch(err => {
+                                }).catch(err =>
+                                {
                                         console.error(err);
                                 })
                         }
-                        else {
+                        else
+                        {
                                 this.employee = {};
                         }
                 },
-                closeEditEmployeeDialog() {
+                closeEditEmployeeDialog()
+                {
                         this.dialogEditEmployee = false;
                 }
         },
         watch: {
-                employeeNumber() {
+                employeeNumber()
+                {
                         this.loadEmployeeByNumber(this.employeeNumber);
                 }
         },
-        provide() {
+        provide()
+        {
                 return {
                         closeEditEmployeeDialog: this.closeEditEmployeeDialog,
                         loadEmployeeByNumber: this.loadEmployeeByNumber
                 };
         },
-        created() {
-                if (!userSession.employeeNumber && !userSession.password) {
+        created()
+        {
+                if (!userSession.employeeNumber && !userSession.password)
+                {
                         this.$router.push('/espace/');
                 }
         },
-        mounted() {
-                
-                if (this.employeeNumber) {
+        mounted()
+        {
+
+                if (this.employeeNumber)
+                {
                         this.loadEmployeeByNumber(this.employeeNumber);
                 }
         }

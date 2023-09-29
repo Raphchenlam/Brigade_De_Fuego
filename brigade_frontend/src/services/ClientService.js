@@ -41,7 +41,13 @@ const convertToClient = jsonClient =>
 
 export async function getClientById(id)
 {
-    const response = await fetch(`/api/client/${id}`);
+    const response = await fetch(`/api/client/${id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        }
+    });
     if (response.ok)
     {
         return await response.json();
@@ -54,30 +60,23 @@ export async function getClientById(id)
 
 export async function getClientList()
 {
-    console.log("session.employee", session.employee)
-    do
-    {
-        console.log("session.employee00", session.employee)
-        if (session.employee)
-        {
-            console.log("session.employee2", session.employee)
-
-            const queryString = `?data=${encodeURIComponent(JSON.stringify(session.employee))}`;
-            const url = '/api/client/' + queryString;
-            const response = await fetch(url);
-
-            if (response.ok)
-            {
-                console.log("session.employee3", session.employee);
-                return await response.json();
-            } else
-            {
-                console.log(JSON.stringify(response));
-                throw await createServiceError(response);
-            }
+    const response = await fetch(`/api/client`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
         }
-        await new Promise(resolve => setTimeout(resolve, 2000));
-    } while (!session.employee)
+    });
+
+    if (response.ok)
+    {
+        return await response.json();
+    } else
+    {
+        console.log(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+
 }
 
 export async function createClient(client)
@@ -86,7 +85,7 @@ export async function createClient(client)
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            // ...session.getAuthHeaders()
+             ...session.getAuthHeaders()
         },
         body: JSON.stringify(client)
     });
