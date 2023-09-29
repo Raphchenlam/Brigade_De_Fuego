@@ -105,6 +105,9 @@ export default {
                 console.error(err);
             });
         },
+        closeNewEmployeeDialog() {
+            this.dialogNewEmployee = false;
+        },
     },
     watch: {
         roleShowed()

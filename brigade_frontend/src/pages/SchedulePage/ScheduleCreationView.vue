@@ -1,5 +1,5 @@
 <template>
-    <v-sheet class="ma-2 h-50" v-if="userSession">
+    <v-sheet class="ma-2 h-50" v-if="this.isUserAuthorized()">
         <v-sheet class="my-5 mx-10" v-if="this.isUserAuthorized()">
 
             <v-row class="justify-center">
@@ -614,7 +614,13 @@
 
     </v-sheet>
 
-    <v-dialog v-model="dialogAddEmployee" height="100%" width="75%" persistent>
+    <v-sheet v-else>
+        <v-row class="m-10 justify-center">
+            <h1>Vous devez être connecté et avoir les droits administrateurs pour avoir accès à cette page</h1>
+        </v-row>
+    </v-sheet>
+
+    <v-dialog v-model="dialogAddEmployee" width="75%" persistent>
         <v-card class="pa-5">
             <v-card-title>
                 Ajouter un employé a la liste

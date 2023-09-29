@@ -163,7 +163,7 @@ export default {
                 validateHourlyRate: value => validHourlyRate.test(value) || "Taux horaire invalide -> Respecter un des formats suivant : xx.xx ou xxx.xx \n 1er chiffre ne peut pas être 0",
                 validateBarcodeNumber: value => validBarcodeNumber.test(value) || "Code barre invalide : doit contenir que 16 chiffres",
                 validateSkillPoints: value => {
-                    if (this.updatingEmployee.role == "Gestionnaire" && !this.updatingEmployee.skillPoints) {
+                    if (this.selectedRole == "Gestionnaire" && !this.selectedSkillPoints) {
                         return true;
                     } else {
                         return validSkillPoints.test(value) || "Skill Points invalide : doit être entre 1 et 10"

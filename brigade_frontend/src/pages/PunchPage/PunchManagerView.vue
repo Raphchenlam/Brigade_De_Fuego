@@ -1,6 +1,11 @@
 <template>
-    <v-sheet v-if="userSession">
+    <v-sheet v-if="this.isUserAuthorized()">
         <PunchList v-if="this.isUserAuthorized()"></PunchList>
+    </v-sheet>
+    <v-sheet v-else>
+        <v-row class="m-10 justify-center">
+            <h1>Vous devez être connecté et avoir les droits administrateurs pour avoir accès à cette page</h1>
+        </v-row>
     </v-sheet>
 </template>
 
