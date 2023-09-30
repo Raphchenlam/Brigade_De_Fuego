@@ -1,6 +1,8 @@
 <template>
     <v-sheet class="w-100">
-        <v-sheet v-if="userSession.employee.isAdmin && $route.fullPath == '/espace/leave'" class="ma-5">
+        <v-sheet
+            v-if="(userSession.employee.isAdmin || userSession.employeeNumber == employeeNumber) && $route.fullPath.split('/').slice(1)[1] == 'leave'"
+            class="ma-5">
             <v-row class="ma-5 justify-space-around">
                 <v-col cols="11">
                     <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }} affichées / {{ nbPendingLeave
@@ -68,10 +70,9 @@
 
         <v-sheet :class="userSession.employee.isAdmin && $route.fullPath == '/espace/leave' ? 'mx-10' : 'mx-5'">
             <v-data-table-server no-data-text="Aucune demande de congés à afficher" v-model:items-per-page="itemsPerPage"
-                v-model:expanded="expanded" :loading="loading" height="100%" fixed-header :headers="headers" :hide-default-footer="true"
-                :items="filteredLeaveList" :items-length="filteredLeaveList.length" class="elevation-1" hide-default-footer
-  disable-pagination
-                @update:options="loadLeaves" show-expand>
+                v-model:expanded="expanded" :loading="loading" height="100%" fixed-header :headers="headers"
+                :hide-default-footer="true" :items="filteredLeaveList" :items-length="filteredLeaveList.length"
+                class="elevation-1" hide-default-footer disable-pagination @update:options="loadLeaves" show-expand>
 
                 <template v-slot:top>
                     <v-toolbar flat>
@@ -254,17 +255,23 @@ export default {
             this.leaveList = [];
             if (this.employeeNumber)
             {
-                getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves =>
+                getleavesByEmployeeNumber(this.employeeNumber, this.checkedBoxes).then(allLeaves =>
                 {
                     allLeaves.forEach(leave =>
                     {
-                        leave.startDate = leave.startDate.split('T').slice(0)[0]
-                        leave.endDate = leave.endDate.split('T').slice(0)[0]
-                        if (leave.status == 'Pending') leave.status = 'En Attente'
-                        if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
-                        if (leave.status == 'Approved') leave.status = 'Accepté'
-                        if (leave.status == 'Refused') leave.status = 'Refusé'
-                        this.leaveList.push(leave);
+                        if (!leave.nbPending)
+                        {
+                            leave.startDate = leave.startDate.split('T').slice(0)[0]
+                            leave.endDate = leave.endDate.split('T').slice(0)[0]
+                            if (leave.status == 'Pending') leave.status = 'En Attente'
+                            if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
+                            if (leave.status == 'Approved') leave.status = 'Accepté'
+                            if (leave.status == 'Refused') leave.status = 'Refusé'
+                            this.leaveList.push(leave);
+                        } else
+                        {
+                            this.nbPendingLeave = leave.nbPending;
+                        }
                     });
                     this.loading = false;
                 });
