@@ -30,6 +30,8 @@ export default {
       isUserAuthorized: this.isUserAuthorized,
       loadReservationInformations: this.loadReservationInformations,
       // selectedReservationId: computed(()=>this.selectedReservationId),
+      test: this.test,
+      toLocale: this.toLocale
 
     }
   },
@@ -107,7 +109,133 @@ export default {
         }
       }
     },
+    test() {
+      console.clear();
+      console.log("test() START");
 
+      // const testStr = new Date().toISOString();
+      // const testStr = new Date().toLocaleString();
+      // const testStr = new Date().toLocaleDateString();
+      const testStr = new Date().toLocaleTimeString();
+
+      console.log(" ");
+      console.log("testStr : ");
+      console.log(testStr);
+
+      const result = this.toLocale(testStr);
+
+      console.log(" ");
+      console.log("result : ");
+      console.log(result);
+      console.log(" ");
+      console.log("test() END");
+      console.log(" ");
+
+    },
+    toLocale(str) {
+      // console.clear();
+      // console.log("toLocale(str) START");
+      // console.log("str 1rst : ");
+      // console.log(str);
+
+      const dateAnd_OrTime = this.replaceAndSplitDateFromTime(str);
+      // console.log("dateAnd_OrTime : ");
+      // console.log(dateAnd_OrTime);
+
+      const dateAndTimeObject = this.dateOrTimeObjectifier(dateAnd_OrTime);
+      // console.log("dateAndTimeObject : ");
+      // console.log(dateAndTimeObject);
+
+      // console.log("toLocale(str) END");
+
+      return {
+        date: dateAndTimeObject.dateObject,
+        time: dateAndTimeObject.timeObject
+      }
+
+    },
+    replaceAndSplitDateFromTime(str) {
+      // console.log(" ");
+      // console.log("replaceAndSplitDateFromTime(str)");
+
+      const indexOfSlash = str.indexOf("/");
+      if (indexOfSlash != -1) str = str.replace(/\//g, "-");
+
+      const indexOfT = str.indexOf("T");
+      if (indexOfT != -1) str = str.replace(/T/g, " ").split(".")[0];
+
+      const indexOfSpace = str.indexOf(" ");
+      var strSplitted;
+
+      if (indexOfSpace != -1) {
+        strSplitted = str.split(" ");
+        return {
+          dateString: strSplitted[0],
+          timeString: strSplitted[1]
+        }
+      } else {
+        var dateIsPresent = str.indexOf("-");
+        var timeIsPresent = str.indexOf(":");
+
+        return {
+          dateString: (dateIsPresent != -1) ? str : null,
+          timeString: (timeIsPresent != -1) ? str : null
+        }
+
+      }
+
+    },
+    dateOrTimeObjectifier(object) {
+      // console.log(" ");
+      // console.log("dateOrTimeObjectifier(object)");
+      // console.log("object : ");
+      // console.log(object);
+
+      // console.log("object.dateString : ");
+      // console.log(object.dateString);
+      // console.log(" ");
+
+      if (object.dateString) var dateIsPresent = object.dateString.indexOf("-");
+      if (object.timeString) var timeIsPresent = object.timeString.indexOf(":");
+      var dateParts;
+      var timeParts;
+
+      // console.log("!!dateIsPresent : ");
+      // console.log(!!dateIsPresent);
+      // console.log("!!timeIsPresent : ");
+      // console.log(!!timeIsPresent);
+      // console.log(" ");
+
+      if (!!dateIsPresent) {
+        dateParts = object.dateString.split("-");
+        var date = {
+          year: (dateParts[0] > 31) ? dateParts[0] : dateParts[2],
+          month: dateParts[1],
+          day: (dateParts[0] > 31) ? dateParts[2] : dateParts[0],
+        }
+      }
+
+      // console.log("date : ");
+      // console.log(date);
+
+      if (!!timeIsPresent) {
+        timeParts = object.timeString.split(":");
+        var time = {
+          hours: timeParts[0],
+          minutes: timeParts[1],
+          secondes: timeParts[2],
+        }
+      }
+      // console.log("time : ");
+      // console.log(time);
+      // console.log(" ");
+
+      return {
+        dateObject: date,
+        timeObject: time
+      }
+
+    },
     spliceDate(fullDate) {
       const date = fullDate.split('T').slice(0)[0];
       const fulltime = fullDate.split('T').slice(0)[1];
@@ -154,6 +282,6 @@ export default {
 }
 
 .pre-wrap {
-    white-space: pre-wrap;
+  white-space: pre-wrap;
 }
 </style>

@@ -51,7 +51,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate','selectedShift'],
+    inject: ['loadReservationInformations', 'selectedDate','selectedShift', 'test', 'toLocale'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -193,7 +193,7 @@ export default {
     mounted() {
         this.endDate = this.startDate = new Date().toISOString().split('T')[0];
         this.loadReservations(this.startDate, this.endDate);
-
+        this.test();
     }
 }
 </script>
