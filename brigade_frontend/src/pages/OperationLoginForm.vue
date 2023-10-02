@@ -7,7 +7,7 @@
         <p v-if="warningLenghtMessage" class="warning-message">Le numéro doit avoir 16 chiffres pour être valide</p>
         <p v-if="warningNumberMessage" class="warning-message">Le numéro ne peut pas comporter de lettre(s)</p>
         <v-row class="my-5">
-          <v-text-field autofocus :counter="16" v-model="loginNumber"
+          <v-text-field autofocus :counter="16" v-model.trim="loginNumber"
             label="Scanner votre carte gestionnaire"></v-text-field>
         </v-row>
         <DarkRedButton type="submit" class="ml-5" height="4rem" textbutton="DÉBLOQUER ESPACE OPÉRATION"
@@ -51,6 +51,7 @@ export default {
         }
       }).catch(err => {
         this.warningLoginMessage = true;
+        this.loginNumber = "";
       });
     }
   },

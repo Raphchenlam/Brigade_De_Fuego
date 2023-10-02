@@ -333,37 +333,6 @@ export default {
             this.loadLeaves();
             this.filterDialog = false;
         },
-        loadFilteredLeaves()
-        {
-
-        },
-        /*
-        filterLeaveList(checkedBoxes, leaveList)
-        {
-            const today = new Date(); // Obtenir la date actuelle
-
-            return leaveList.filter(leave =>
-            {
-                if (checkedBoxes.all)
-                {
-                    return true; // Si "Tout" est coché, inclure tous les congés
-                }
-                if (checkedBoxes[leave.status.toLowerCase()])
-                {
-                    return true; // Si la case correspondant au statut est coché, inclure le congé
-                }
-                if (checkedBoxes.coming && new Date(leave.startDate) > today)
-                {
-                    return true; // Si "À venir" est coché et la date de début est ultérieure à aujourd'hui, inclure le congé
-                }
-                if (checkedBoxes.passed && new Date(leave.endDate) < today)
-                {
-                    return true; // Si "Passé" est coché et la date de fin est antérieure à aujourd'hui, inclure le congé
-                }
-                return false; // Sinon, exclure le congé
-            });
-        },
-        */
         checkAllBoxes()
         {
             if (this.checkedBoxes.all == false)
@@ -428,8 +397,6 @@ export default {
                     this.filteredLeaveList.push(leave);
                 }
             });
-
-
         },
         employeeNumber()
         {
