@@ -1,6 +1,6 @@
 <template>
     <v-sheet width="100%">
-        <v-card class="ma-2" >
+        <v-card class="ma-2">
             <v-row class="mb-0">
                 <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
                     class="ma-2"></v-text-field>
@@ -51,7 +51,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate','selectedShift', 'test', 'toLocale'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'test', 'toLocale'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -108,7 +108,7 @@ export default {
         selected() {
             this.loadReservationInformations(this.selected[0]);
         },
-        selectedDate(){
+        selectedDate() {
             this.loadTODAYreservations(this.selectedDate);
         }
     },
@@ -127,7 +127,7 @@ export default {
                     alert(err.message);
                 });
         },
-        loadTODAYreservations(selectedDate){
+        loadTODAYreservations(selectedDate) {
             getReservationList(selectedDate, selectedDate)
                 .then((reservationList) => {
                     this.reservations = reservationList;
@@ -136,7 +136,7 @@ export default {
                     console.log(err);
                     alert(err.message);
                 });
-            this.selected=[];
+            this.selected = [];
         },
         filterReservations() {
             this.filteredReservationList = [];
@@ -145,7 +145,7 @@ export default {
                 var reservationtoKeep;
 
                 if (this.shiftShow == "Midi" && parseInt(reservation.startTime.split(':').slice(0)[0]) < 15) {
-                    reservationtoKeep = reservation; 
+                    reservationtoKeep = reservation;
                 } else if (this.shiftShow == "Soir" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) {
                     reservationtoKeep = reservation;
                 } else if (this.shiftShow == "all") {
@@ -194,6 +194,7 @@ export default {
         this.endDate = this.startDate = new Date().toISOString().split('T')[0];
         this.loadReservations(this.startDate, this.endDate);
         this.test();
+        // start here, start to implement the toLocale() and change toISOString to toLocaleString()/toLocaleTimeString()/toLocaleDateString()
     }
 }
 </script>
