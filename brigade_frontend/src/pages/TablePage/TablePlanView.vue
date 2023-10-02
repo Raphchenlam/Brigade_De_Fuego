@@ -4,7 +4,7 @@
             <v-col>
 
                 <v-row>
-                    <TableLayout v-if="selectedTable==null" class="pa-2"></TableLayout>
+                    <TableLayout v-if="selectedTable == null" class="pa-2"></TableLayout>
                     <TableInformation v-else class="pa-2"></TableInformation>
                 </v-row>
                 <v-row>
@@ -68,11 +68,17 @@ export default {
             operationSession: operationSession,
             tableList: [],
             assignationList: [],
+            localAssignations: [],
+            tempAssignationList: [],
             tableWithAssignationList: [],
             selectedDate: null,
             selectedShift: "Midi",
             selectedTable: null,
             selectedReservationId: null,
+            tableInSection: null,
+            selectedWaiter: null,
+            inEditionMode: false,
+
 
 
             ////////////TEMPORAIRE/////////
@@ -88,17 +94,25 @@ export default {
             selectedDate: computed(() => this.selectedDate),
             selectedShift: computed(() => this.selectedShift),
             selectedTable: computed(() => this.selectedTable),
+            selectedWaiter: computed(() => this.selectedWaiter),
+            tableInSection: computed(() => this.tableInSection),
+            inEditionMode: computed(() => this.inEditionMode),
+            localAssignations: computed(() => this.localAssignations),
+
+            toggleEditionMode: this.toggleEditionMode,
             toggleSelectedTable: this.toggleSelectedTable,
             displaySelectedTable: this.displaySelectedTable,
+            selectTableInSection: this.selectTableInSection,
             loadReservationInformations: this.loadReservationInformations,
-
+            buildAssignations: this.buildAssignations,
+            selectWaiter: this.selectWaiter,
 
             ////////////TEMPORAIRE/////////
             hasReservation: computed(() => this.hasReservation),
         }
     },
     methods: {
-       
+
         loadDate() {
             //************************/
             //***A remettre en place**/
@@ -149,7 +163,7 @@ export default {
                     assignation: null,
                 }
             });
-            console.log("tableWithAssi... : " +this.tableWithAssignationList.length);
+            console.log("tableWithAssi... : " + this.tableWithAssignationList.length);
 
             if (this.assignationList.length > 0) {
                 this.assignationList.forEach(assignation => {
@@ -157,7 +171,7 @@ export default {
                     const table = this.tableWithAssignationList.find(table => {
                         return (table.number == assignation.tableNumber)
                     })
-                    if (table.isActive) {
+                    if (table.isActive && assignation.isActive) {
                         table.isAssign = true;
                         table.assignation = assignation;
                     } else {
@@ -168,11 +182,48 @@ export default {
                 );
             }
         },
+        selectWaiter(waiterNumber, employeeColor) {
+            this.selectedWaiter = {
+                waiterNumber: waiterNumber,
+                employeeColor: employeeColor
+            }
+        },
+        createLocalAssignations() {
+            this.localAssignations = [];
+            this.localAssignations = this.tableList.map(table => {
+                return {
+                    number: table.number,
+                    capacity: table.capacity,
+                    isActive: table.isActive,
+                    isAssign: false,
+                    assignation: null,
+                }
+            });
+            if (this.tempAssignationList.length > 0) {
+                this.tempAssignationList.forEach(assignation => {
+
+                    const table = this.localAssignations.find(table => {
+                        return (table.number == assignation.tableNumber)
+                    })
+                    if (table.isActive && !assignation.isActive) {
+                        table.isAssign = false;
+                    } else if(!table.isActive) {
+                        console.error(`La table ${table.number} est inactive.... veuillez retirer l'assignation`);
+                        table.isAssign = false;
+                        assignation.isActive = false;
+                    }else{
+                        table.isAssign = true;
+                    }
+                    table.assignation = assignation;
+                }
+                );
+            }
+        },
         loadReservationInformations(receivedReservationId) {
             this.selectedReservationId = receivedReservationId;
         },
-        toggleSelectedTable(){
-            if (this.selectedTable!="" || this.selectedTable != null) {
+        toggleSelectedTable() {
+            if (this.selectedTable != "" || this.selectedTable != null) {
                 this.selectedTable = null;
             }
         },
@@ -182,6 +233,35 @@ export default {
                 return table.number == number;
             })
             console.log("DisplaySelectedTable : " + this.selectedTable)
+        },
+        selectTableInSection(tableNumber) {
+            //this.tableInSection = tableNumber
+            console.log('tableInSection : ' + tableNumber)
+
+            if (this.selectedWaiter != null) {
+                const assignationFound = this.tempAssignationList.find((assignation) => {
+                    return (
+                        assignation.waiterNumber == this.selectedWaiter.waiterNumber &&
+                        assignation.tableNumber == tableNumber
+                        );
+                })
+                if (assignationFound) {
+                    assignationFound.isActive = !assignationFound.isActive;
+                }
+                else{
+                    const newAssignation = {
+                        tableNumber: tableNumber,
+                        waiterNumber: this.selectedWaiter.waiterNumber,
+                        employeeColor: this.selectedWaiter.employeeColor,
+                        isActive: true
+                    }
+                    this.tempAssignationList.push(newAssignation);
+                }
+                this.createLocalAssignations();
+            }
+        },
+        toggleEditionMode() {
+            this.inEditionMode = !this.inEditionMode;
         },
     },
     watch: {
@@ -193,8 +273,34 @@ export default {
             console.log('tableList changed');
             this.loadAssignationList(this.selectedDate, this.selectedShift);
         },
-    },
+        // tableInSection() {
+        //     console.log('tableInSection : ' + this.tableInSection)
+        //     if (this.selectedWaiter != null) {
+        //         const assignationIndex = this.tempAssignationList.indexOf((assignation) => {
+        //             return (assignation.tableNumber == this.tableInSection) && (assignation.waiterNumber == this.selectWaiter.waiterNumber)
+        //         })
+        //         if (assignationIndex != -1) {
+        //             this.tempAssignationList.splice(assignationIndex, 1);
+        //         }
+        //         else {
+        //             const newAssignation = {
+        //                 tableNumber: this.tableInSection,
+        //                 waiterNumber: this.selectedWaiter.waiterNumber,
+        //                 employeeColor: this.selectedWaiter.employeeColor,
+        //                 isActive: true
+        //             }
+        //             this.tempAssignationList.push(newAssignation);
+        //             this.createLocalAssignations();
+        //         }
+        //     }
+        // },
 
+        inEditionMode() {
+            if (this.inEditionMode) {
+                this.createLocalAssignations();
+            }
+        }
+    },
     mounted() {
         if (!operationSession.isActive) {
             this.$router.push('/operation');
@@ -202,7 +308,6 @@ export default {
         this.loadDate();
         this.loadTableList();
         this.loadAssignationList();
-
     }
 }
 </script>

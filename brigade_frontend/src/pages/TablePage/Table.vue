@@ -16,7 +16,8 @@
                 <path id="seat5"
                     d="M64.5 66.5C64.5 68.0818 63.5633 69.5695 61.9352 70.6835C60.3094 71.7959 58.0358 72.5 55.5 72.5C52.9642 72.5 50.6906 71.7959 49.0648 70.6835C47.4367 69.5695 46.5 68.0818 46.5 66.5C46.5 64.9182 47.4367 63.4305 49.0648 62.3165C50.6906 61.2041 52.9642 60.5 55.5 60.5C58.0358 60.5 60.3094 61.2041 61.9352 62.3165C63.5633 63.4305 64.5 64.9182 64.5 66.5Z"
                     fill="#D9D9D9" stroke="black" />
-                <rect id="table" @click="selectTable" x="10.5" y="18.5" width="61" height="44" :fill="tableColor" stroke="black" />
+                <rect id="table" @click="selectTable" x="10.5" y="18.5" width="61" height="44" :fill="tableColor"
+                    stroke="black" />
                 <text id="table_number" :fill="textColor" xml:space="preserve" style="white-space: pre" font-family="Inter"
                     font-size="24" letter-spacing="0em">
                     <tspan x="20.9219" y="41.2273">{{ tableNumberFormatted }}</tspan>
@@ -27,7 +28,7 @@
                 </text>
             </g>
         </svg>
-    <!-- </v-btn> -->
+        <!-- </v-btn> -->
     </div>
 </template>
 
@@ -45,7 +46,7 @@ export default {
         //hasReservation: Boolean,
 
     },
-    inject: ['hasReservation','displaySelectedTable'],
+    inject: ['hasReservation', 'displaySelectedTable', 'selectTableInSection', 'inEditionMode'],
     data() {
         return {
             employeeColor: null,
@@ -60,10 +61,14 @@ export default {
         }
     },
     methods: {
-        selectTable(){
-            this.displaySelectedTable(this.tableNumber);
+        selectTable() {
+            if (this.inEditionMode) {
+                this.selectTableInSection(this.tableNumber);
+            } else {
+                this.displaySelectedTable(this.tableNumber);
+            }
         },
-        tableSetUp(){
+        tableSetUp() {
             this.setColorTones();
             this.setTableNumberFormatted();
             this.setIsActive();
@@ -102,15 +107,10 @@ export default {
             }
         }
     },
-    watch:{
-        isAssign(){
+    watch: {
+        isAssign() {
             this.tableSetUp();
         },
-
-        // selected(){
-        //     this.displaySelectedTable(this.selected);
-        //     this.selected=null;
-        // }
     },
     mounted() {
         this.tableSetUp();
@@ -119,7 +119,7 @@ export default {
 </script>
 
 <style scoped>
-.tableIcon{
+.tableIcon {
     height: 80px;
     width: 80px;
     margin: 2px;
