@@ -111,42 +111,35 @@ export default {
     },
     test() {
       console.clear();
-      console.log("test() START");
+      var testStr;
+      var result;
 
-      // const testStr = new Date().toISOString();
-      // const testStr = new Date().toLocaleString();
-      // const testStr = new Date().toLocaleDateString();
-      const testStr = new Date().toLocaleTimeString();
-
-      console.log(" ");
-      console.log("testStr : ");
-      console.log(testStr);
-
-      const result = this.toLocale(testStr);
-
-      console.log(" ");
-      console.log("result : ");
+      console.log("toISOString() : ");
+      testStr = new Date().toISOString();
+      result = this.toLocale(testStr);
       console.log(result);
       console.log(" ");
-      console.log("test() END");
+      
+      console.log("toLocaleString() : ");
+      testStr = new Date().toLocaleString();
+      result = this.toLocale(testStr);
+      console.log(result);
       console.log(" ");
-
+      
+      console.log("toLocaleDateString() : ");
+      testStr = new Date().toLocaleDateString();
+      result = this.toLocale(testStr);
+      console.log(result);
+      console.log(" ");
+      
+      console.log("toLocaleTimeString() : ");
+      testStr = new Date().toLocaleTimeString();
+      result = this.toLocale(testStr);
+      console.log(result);
     },
     toLocale(str) {
-      // console.clear();
-      // console.log("toLocale(str) START");
-      // console.log("str 1rst : ");
-      // console.log(str);
-
-      const dateAnd_OrTime = this.replaceAndSplitDateFromTime(str);
-      // console.log("dateAnd_OrTime : ");
-      // console.log(dateAnd_OrTime);
-
-      const dateAndTimeObject = this.dateOrTimeObjectifier(dateAnd_OrTime);
-      // console.log("dateAndTimeObject : ");
-      // console.log(dateAndTimeObject);
-
-      // console.log("toLocale(str) END");
+      const dateAndTimeString = this.replaceAndSplitDateFromTime(str);
+      const dateAndTimeObject = this.dateOrTimeObjectifier(dateAndTimeString);
 
       return {
         date: dateAndTimeObject.dateObject,
@@ -155,9 +148,6 @@ export default {
 
     },
     replaceAndSplitDateFromTime(str) {
-      // console.log(" ");
-      // console.log("replaceAndSplitDateFromTime(str)");
-
       const indexOfSlash = str.indexOf("/");
       if (indexOfSlash != -1) str = str.replace(/\//g, "-");
 
@@ -181,33 +171,16 @@ export default {
           dateString: (dateIsPresent != -1) ? str : null,
           timeString: (timeIsPresent != -1) ? str : null
         }
-
       }
-
     },
-    dateOrTimeObjectifier(object) {
-      // console.log(" ");
-      // console.log("dateOrTimeObjectifier(object)");
-      // console.log("object : ");
-      // console.log(object);
-
-      // console.log("object.dateString : ");
-      // console.log(object.dateString);
-      // console.log(" ");
-
-      if (object.dateString) var dateIsPresent = object.dateString.indexOf("-");
-      if (object.timeString) var timeIsPresent = object.timeString.indexOf(":");
+    dateOrTimeObjectifier(strObject) {
+      if (strObject.dateString) var dateIsPresent = strObject.dateString.indexOf("-");
+      if (strObject.timeString) var timeIsPresent = strObject.timeString.indexOf(":");
       var dateParts;
       var timeParts;
 
-      // console.log("!!dateIsPresent : ");
-      // console.log(!!dateIsPresent);
-      // console.log("!!timeIsPresent : ");
-      // console.log(!!timeIsPresent);
-      // console.log(" ");
-
       if (!!dateIsPresent) {
-        dateParts = object.dateString.split("-");
+        dateParts = strObject.dateString.split("-");
         var date = {
           year: (dateParts[0] > 31) ? dateParts[0] : dateParts[2],
           month: dateParts[1],
@@ -215,26 +188,19 @@ export default {
         }
       }
 
-      // console.log("date : ");
-      // console.log(date);
-
       if (!!timeIsPresent) {
-        timeParts = object.timeString.split(":");
+        timeParts = strObject.timeString.split(":");
         var time = {
           hours: timeParts[0],
           minutes: timeParts[1],
           secondes: timeParts[2],
         }
       }
-      // console.log("time : ");
-      // console.log(time);
-      // console.log(" ");
 
       return {
         dateObject: date,
         timeObject: time
       }
-
     },
     spliceDate(fullDate) {
       const date = fullDate.split('T').slice(0)[0];
