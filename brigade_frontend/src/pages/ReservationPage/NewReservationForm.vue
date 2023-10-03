@@ -102,6 +102,7 @@ export default {
         return {
             dateValid: false,
             clientIdValid: false,
+            clientFirstName: null,
             takenByNumberValid: false,
             dialogConfirmReservation: false,
             dialogOKReservation: false,
@@ -156,6 +157,7 @@ export default {
         loadClientInformations(clientInformations) {
             this.selectedClientId = clientInformations[0];
             this.selectedClientIsBlacklisted = clientInformations[1];
+            this.clientFirstName = clientInformations[2];
         },
         submitNewReservation() {
             this.dialogOKReservation = false;
@@ -170,7 +172,7 @@ export default {
                 if (result) {
                     this.dialogOKReservation = true;
                     if (this.dialogOKReservation) {
-                        this.refreshWithNewreservation([result.id]);
+                        this.refreshWithNewreservation([result.id, this.clientFirstName, this.reservation.date]);
                     }
                     setTimeout(this.closeAllDialog, 2000);
                 }
@@ -289,7 +291,7 @@ export default {
 
         today.time.fullTime = hoursStr + ":" + minutesStr + ":" + secondesStr;
 
-        this.reservationFullDate = today.date.fullDate + "T" + today.time.fullTime;
+        this.reservationFullDate = today.date.fullDate + "T" + hoursStr + ":" + minutesStr;
 
     }
 }

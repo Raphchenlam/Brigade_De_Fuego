@@ -104,8 +104,8 @@ export default {
     watch: {
         selected() {
             if (this.selected.length !== 0) {
-                const isBlacklisted = this.clients.find(client => client.id == this.selected[0]).is_blacklisted;
-                this.loadClientInformations([this.selected[0], isBlacklisted]);
+                const clientFound = this.clients.find(client => client.id == this.selected[0]);
+                this.loadClientInformations([this.selected[0], clientFound.is_blacklisted, clientFound.first_name]);
             } else if (this.selected.length === 0) {
                 this.loadClientInformations([]);
 

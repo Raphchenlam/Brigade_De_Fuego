@@ -89,12 +89,14 @@ export default {
             this.filterReservations();
         },
         startDate() {
-            if (this.startDate == "") {
-                this.resetStartDate();
-            }
+            if (this.startDate == "") this.resetStartDate();
+            if (this.startDate != this.endDate) this.loadReservations(this.startDate, this.endDate);
 
-            if (this.startDate != this.endDate) {
-                this.loadReservations(this.startDate, this.endDate);
+            const startDateObject = this.toLocale(this.startDate).date;
+            const endDateObject = this.toLocale(this.endDate).date;
+
+            if (startDateObject.year >= endDateObject.year || startDateObject.month >= endDateObject.month ||startDateObject.day >= endDateObject.day) {
+                this.endDate = this.startDate;
             }
         },
         endDate() {
@@ -106,17 +108,23 @@ export default {
                 this.loadReservations(this.startDate, this.endDate);
             }
         },
-        selected() {
-            this.loadReservationInformations(this.selected[0]);
+        'selected': {
+            handler: function () {
+                this.loadReservationInformations(this.selected[0]);
+            },
+            deep: true
         },
         selectedDate() {
             this.loadTODAYreservations(this.selectedDate);
-        }
+        },
     },
     methods: {
         refreshWithNewreservation(newReservation) {
             this.loadReservations(this.startDate, this.endDate);
-            this.selected = newReservation;
+            this.selected[0] = newReservation[0];
+            this.search = newReservation[1];
+            this.startDate = newReservation[2];
+            this.endDate = this.startDate;
         },
         loadReservations(startDate, endDate) {
             getReservationList(startDate, endDate)
@@ -192,6 +200,7 @@ export default {
         }
     },
     mounted() {
+        console.clear();
         this.todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
         this.endDate = this.startDate = this.todayDate;
         this.loadReservations(this.startDate, this.endDate);
