@@ -110,36 +110,41 @@ export default {
       }
     },
     test() {
-      console.clear();
       var testStr;
       var result;
 
-      console.log("toISOString() : ");
       testStr = new Date().toISOString();
+      console.log("toISOString() : " + testStr);
       result = this.toLocale(testStr);
       console.log(result);
       console.log(" ");
-      
-      console.log("toLocaleString() : ");
+
       testStr = new Date().toLocaleString();
+      console.log("toLocaleString() : " + testStr);
       result = this.toLocale(testStr);
       console.log(result);
       console.log(" ");
-      
-      console.log("toLocaleDateString() : ");
+
       testStr = new Date().toLocaleDateString();
+      console.log("toLocaleDateString() : " + testStr);
       result = this.toLocale(testStr);
       console.log(result);
       console.log(" ");
-      
-      console.log("toLocaleTimeString() : ");
+
       testStr = new Date().toLocaleTimeString();
+      console.log("toLocaleTimeString() : " + testStr);
       result = this.toLocale(testStr);
       console.log(result);
     },
     toLocale(str) {
+      // console.clear();
+
       const dateAndTimeString = this.replaceAndSplitDateFromTime(str);
       const dateAndTimeObject = this.dateOrTimeObjectifier(dateAndTimeString);
+
+      
+
+
 
       return {
         date: dateAndTimeObject.dateObject,
@@ -148,60 +153,84 @@ export default {
 
     },
     replaceAndSplitDateFromTime(str) {
-      const indexOfSlash = str.indexOf("/");
-      if (indexOfSlash != -1) str = str.replace(/\//g, "-");
+      if (str) {
+        const indexOfSlash = str.indexOf("/");
+        if (indexOfSlash != -1) str = str.replace(/\//g, "-");
 
-      const indexOfT = str.indexOf("T");
-      if (indexOfT != -1) str = str.replace(/T/g, " ").split(".")[0];
+        const indexOfT = str.indexOf("T");
+        if (indexOfT != -1) str = str.replace(/T/g, " ").split(".")[0];
 
-      const indexOfSpace = str.indexOf(" ");
-      var strSplitted;
+        const indexOfSpace = str.indexOf(" ");
+        var strSplitted;
 
-      if (indexOfSpace != -1) {
-        strSplitted = str.split(" ");
-        return {
-          dateString: strSplitted[0],
-          timeString: strSplitted[1]
-        }
-      } else {
-        var dateIsPresent = str.indexOf("-");
-        var timeIsPresent = str.indexOf(":");
+        if (indexOfSpace != -1) {
+          strSplitted = str.split(" ");
+          return {
+            dateString: strSplitted[0],
+            timeString: strSplitted[1]
+          }
+        } else {
+          var dateIsPresent = str.indexOf("-");
+          var timeIsPresent = str.indexOf(":");
 
-        return {
-          dateString: (dateIsPresent != -1) ? str : null,
-          timeString: (timeIsPresent != -1) ? str : null
+          return {
+            dateString: (dateIsPresent != -1) ? str : null,
+            timeString: (timeIsPresent != -1) ? str : null
+          }
         }
       }
     },
     dateOrTimeObjectifier(strObject) {
-      if (strObject.dateString) var dateIsPresent = strObject.dateString.indexOf("-");
-      if (strObject.timeString) var timeIsPresent = strObject.timeString.indexOf(":");
-      var dateParts;
-      var timeParts;
+      if (strObject) {
+        if (strObject.dateString) var dateIsPresent = strObject.dateString.indexOf("-");
+        if (strObject.timeString) var timeIsPresent = strObject.timeString.indexOf(":");
+        var dateParts;
+        var timeParts;
 
-      if (!!dateIsPresent) {
-        dateParts = strObject.dateString.split("-");
-        var date = {
-          year: (dateParts[0] > 31) ? dateParts[0] : dateParts[2],
-          month: dateParts[1],
-          day: (dateParts[0] > 31) ? dateParts[2] : dateParts[0],
+        if (!!dateIsPresent) {
+          dateParts = strObject.dateString.split("-");
+
+          const year = (dateParts[0] > 31) ? dateParts[0] : dateParts[2];
+          const month = dateParts[1];
+          const day = (dateParts[0] > 31) ? dateParts[2] : dateParts[0];
+          const fullDate = year + "-" + month + "-" + day
+
+          var date = {
+            year: parseInt(year),
+            month: parseInt(month),
+            day: parseInt(day),
+            fullDate: fullDate,
+            weekNumber: this.getWeekNumber(fullDate)
+          }
         }
-      }
 
-      if (!!timeIsPresent) {
-        timeParts = strObject.timeString.split(":");
-        var time = {
-          hours: timeParts[0],
-          minutes: timeParts[1],
-          secondes: timeParts[2],
+        if (!!timeIsPresent) {
+          timeParts = strObject.timeString.split(":");
+          var time = {
+            hours: parseInt(timeParts[0]),
+            minutes: parseInt(timeParts[1]),
+            secondes: parseInt(timeParts[2]),
+            fullTime: strObject.timeString
+          }
         }
-      }
 
-      return {
-        dateObject: date,
-        timeObject: time
+        return {
+          dateObject: date,
+          timeObject: time
+        }
       }
     },
+    getWeekNumber(date) {
+      date = new Date(date);
+      date.setHours(0, 0, 0, 0);
+      date.setDate(date.getDate() + 1);
+      date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+
+      const weekNumber = Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 4).getTime()) / 86400000 / 7) + 1;
+
+      return weekNumber;
+    },
+
     spliceDate(fullDate) {
       const date = fullDate.split('T').slice(0)[0];
       const fulltime = fullDate.split('T').slice(0)[1];

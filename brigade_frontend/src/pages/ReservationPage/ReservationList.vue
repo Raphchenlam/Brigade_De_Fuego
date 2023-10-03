@@ -51,7 +51,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'test', 'toLocale'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -60,6 +60,7 @@ export default {
     },
     data() {
         return {
+            todayDate: null,
             startDate: null,
             endDate: null,
             search: "",
@@ -180,21 +181,20 @@ export default {
             this.dialogNewReservation = false;
         },
         resetStartDate() {
-            const newDate = new Date().toISOString().split('T')[0];
+            const newDate = this.todayDate;
             this.loadReservations(newDate, this.endDate);
             this.startDate = newDate;
         },
         resetEndDate() {
-            const newDate = new Date().toISOString().split('T')[0];
+            const newDate = this.todayDate;
             this.loadReservations(this.startDate, newDate);
             this.endDate = newDate;
         }
     },
     mounted() {
-        this.endDate = this.startDate = new Date().toISOString().split('T')[0];
+        this.todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
+        this.endDate = this.startDate = this.todayDate;
         this.loadReservations(this.startDate, this.endDate);
-        this.test();
-        // start here, start to implement the toLocale() and change toISOString to toLocaleString()/toLocaleTimeString()/toLocaleDateString()
     }
 }
 </script>
@@ -210,3 +210,4 @@ export default {
     overflow-y: auto;
 }
 </style>
+
