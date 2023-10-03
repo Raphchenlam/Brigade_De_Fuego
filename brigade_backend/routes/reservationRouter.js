@@ -7,6 +7,7 @@ const regex = require('../../REGEX/REGEX_backend');
 
 const HttpError = require("../HttpError");
 
+// DATES OKAY HERE 
 function isDateBeforeToday(dateString) {
     const parts = dateString.split('-');
     const year = parseInt(parts[0], 10);
@@ -80,8 +81,6 @@ router.get("/:startDate/:endDate",
             });
     }
 );
-
-
 
 router.post("/",
     (req, res, next) => {

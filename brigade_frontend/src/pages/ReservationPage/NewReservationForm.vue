@@ -92,7 +92,7 @@ import ClientList from '../ClientPage/ClientList.vue';
 import { createReservation } from '../../services/ReservationService'
 
 export default {
-    inject: ['closeNewReservationDialog', 'spliceDate', 'refreshWithNewreservation'],
+    inject: ['closeNewReservationDialog', 'spliceDate', 'refreshWithNewreservation', 'toLocale'],
     components: {
         DarkRedButton,
         ClientList,
@@ -123,8 +123,8 @@ export default {
             rules: {
                 required: value => !!value || "Le champ est requis",
                 dateIsValid: () => this.dateValid || "Date non valide\n\t- Ne doit pas etre avant la date d'aujourd'hui\n\t- Ni avant 11h ou apres 23h",
-                reservationMaximum: value => (value >= 1) || "Le nombre de personnes minimum est de 1 pour une seule réservation.",
-                reservationMinimum: value => (value <= 30) || "Le nombre de personnes maximum est de 30 pour une seule réservation.",
+                reservationMinimum: value => (value >= 1) || "Le nombre de personnes minimum est de 1 pour une seule réservation.",
+                reservationMaximum: value => (value <= 30) || "Le nombre de personnes maximum est de 30 pour une seule réservation.",
                 fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
             },
             formValid: true
@@ -147,6 +147,7 @@ export default {
             await this.$refs.createReservationForm
                 .validate().then(formValid => {
                     if (!formValid.valid || !this.clientIdValid) {
+                        this.formValid = false;
                         this.dialogConfirmReservation = false;
                     }
                 }
@@ -180,24 +181,24 @@ export default {
             });
         },
         isBeforeToday(fullDate) {
-            const date = this.spliceDate(fullDate)
-            var today = new Date();
+            const dateToVerify = this.toLocale(fullDate)
+            var today = this.toLocale(new Date().toLocaleString());
 
-            if (date.year < today.getFullYear()) {
+            if (dateToVerify.date.year < today.date.year) {
                 return true;
             }
-            else if (date.year == today.getFullYear() && date.month < today.getMonth() + 1) {
+            else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month < today.date.month) {
                 return true;
             }
-            else if (date.year == today.getFullYear() && date.month == today.getMonth() + 1) {
-                if (date.day < today.getDate()) {
+            else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month == today.date.month) {
+                if (dateToVerify.date.day < today.date.day) {
                     return true;
                 }
-                else if (date.day == today.getDate()) {
-                    if (date.hour < today.getHours()) {
+                else if (dateToVerify.date.day == today.date.day) {
+                    if (dateToVerify.time.hours < today.time.hours) {
                         return true;
                     }
-                    else if (date.hour == today.getHours() && date.minute <= today.getMinutes()) {
+                    else if (dateToVerify.time.hours == today.time.hours && dateToVerify.date.minutes <= today.date.minutes) {
                         return true;
                     }
                 }
@@ -210,30 +211,26 @@ export default {
             this.dateValid = true;
 
             //Date management
-            const reservationDate = this.spliceDate(this.reservationFullDate);
-            const month = (reservationDate.month < 10) ? "0" + reservationDate.month : reservationDate.month;
-            const day = (reservationDate.day < 10) ? "0" + reservationDate.day : reservationDate.day;
-            this.reservation.date = reservationDate.year + "-" + month + "-" + day;
+            const reservationDateObject = this.toLocale(this.reservationFullDate);
+            this.reservation.date = reservationDateObject.date.fullDate;
 
-            //Start time management
-            const startTimeHours = (reservationDate.hour < 10) ? "0" + reservationDate.hour : reservationDate.hour;
-            const startTimeMinutes = (reservationDate.minute < 10) ? "0" + reservationDate.minute : reservationDate.minute;
-            this.reservation.startTime = startTimeHours + ":" + startTimeMinutes;
+            // //Start time management
+            this.reservation.startTime = reservationDateObject.time.fullTime;
 
-            //End time management
-            let endHour = reservationDate.hour + 3;
-            let endMinute = reservationDate.minute;
+            // //End time management
+            let endHour = reservationDateObject.time.hours + 3;
+            let endMinute = reservationDateObject.time.minutes;
             if (endHour >= 24) {
                 endHour = 23;
                 endMinute = 59;
             }
-            const endTimeHours = (endHour < 10) ? "0" + endHour : endHour.toString();
-            const endTimeMinutes = (endMinute < 10) ? "0" + endMinute : endMinute.toString();
+            const endTimeHours = (endHour < 10) ? "0" + endHour : "" + endHour;
+            const endTimeMinutes = (endMinute < 10) ? "0" + endMinute : "" + endMinute;
             this.reservation.endTime = endTimeHours + ":" + endTimeMinutes;
 
             //Date validation
             this.dateValid = !this.isBeforeToday(this.reservationFullDate);
-            if (reservationDate.hour < 11 || reservationDate.hour >= 23) {
+            if (reservationDateObject.time.hour < 11 || reservationDateObject.time.hour >= 23) {
                 this.dateValid = false;
             }
 
@@ -247,7 +244,7 @@ export default {
                 } else {
                     this.clientIdValid = true;
                 }
-            }else{
+            } else {
                 this.clientIdValid = false;
                 this.selectedClientIsBlacklisted = false;
             }
@@ -260,32 +257,40 @@ export default {
     },
     computed: {
         createButtonDisabled() {
+            var peopleCountValid = true;
+            if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 30) {
+                peopleCountValid = false;
+            }
+
             return !(this.dateValid
                 && this.clientIdValid
                 && !!this.reservationFullDate
                 && !!this.reservation.clientId
                 && !!this.reservation.peopleCount
+                && peopleCountValid
                 && !!this.reservation.date
                 && !!this.reservation.startTime
                 && !!this.reservation.endTime);
         }
     },
     mounted() {
-        const today = new Date().toISOString().split("T")[0];
-        const explodedNow = new Date().toLocaleTimeString().split(":")
-        var hours = parseInt(explodedNow[0]);
-        var minutes = parseInt(explodedNow[1]) + 5;
+        const today = this.toLocale(new Date().toLocaleString());
+        today.time.minutes += 5;
 
-        if(minutes >= 60) minutes -= 60, hours += 1;
-        
-        minutes = minutes > 10 ? minutes : "0" + minutes ;
-        minutes = hours < 11 ? "00" : minutes ;
-        hours = hours < 11 ? 11 : hours;
-        
-        // minutes > 10 ? minutes = minutes : hours < 11 ? (minutes = "00", hours = 11) : minutes = "0" + minutes ; // All three in one
+        if (today.time.minutes >= 60) today.time.minutes -= 60, today.time.hours += 1;
 
-        const now = hours + ":" + minutes;
-        this.reservationFullDate = today + "T" + now;   
+        // set time to 11:00
+        today.time.minutes = (today.time.hours < 11) ? 0 : today.time.minutes;
+        today.time.hours = (today.time.hours < 11) ? 11 : today.time.hours;
+
+        const secondesStr = (today.time.secondes > 10) ? "" + today.time.secondes : "0" + today.time.secondes;
+        const minutesStr = (today.time.minutes > 10) ? "" + today.time.minutes : "0" + today.time.minutes;
+        const hoursStr = (today.time.hours > 10) ? "" + today.time.hours : "0" + today.time.hours;
+
+        today.time.fullTime = hoursStr + ":" + minutesStr + ":" + secondesStr;
+
+        this.reservationFullDate = today.date.fullDate + "T" + today.time.fullTime;
+
     }
 }
 </script>
@@ -304,5 +309,4 @@ export default {
 .error-message {
     color: red
 }
-
 </style>
