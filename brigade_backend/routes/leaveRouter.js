@@ -32,16 +32,18 @@ router.get('/',
 */
 
 router.get('/category',
+    passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
-        // const employee = req.employee;
-
-        // if (!employeeConnected) {
-        //     return next(new HttpError(401, "Vous devez etre connecté"));
-        // };
-        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
-        //     return next(new HttpError(403, "Droit administrateur requis"));
-        // };
+        const user = req.user;
+        if (!user)
+        {
+            return next(new HttpError(401, "Vous devez etre connecté"));
+        };
+        if (!user.isAdmin)
+        {
+            return next(new HttpError(403, "Droit administrateur requis"));
+        };
 
         leaveQueries.selectAllLeavesCategory().then(leavesCategory =>
         {
@@ -54,16 +56,19 @@ router.get('/category',
 
 
 router.get('/filter',
+    passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
-        // const employee = req.employee;
+        const user = req.user;
+        if (!user)
+        {
+            return next(new HttpError(401, "Vous devez etre connecté"));
+        };
+        if (!user.isAdmin)
+        {
+            return next(new HttpError(403, "Droit administrateur requis"));
+        };
 
-        // if (!employeeConnected) {
-        //     return next(new HttpError(401, "Vous devez etre connecté"));
-        // };
-        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
-        //     return next(new HttpError(403, "Droit administrateur requis"));
-        // };
         const checkboxesData = req.query.data;
         if (!checkboxesData) return next(new HttpError(400, `Un data de checkboces doit etre fournis`));
         console.log("checkboxesData", checkboxesData)
@@ -90,19 +95,34 @@ router.get('/filter',
     });
 
 router.get('/:employeeNumber',
+    passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
-        // const employee = req.employee;
         const employeeNumberToGet = req.params.employeeNumber;
-        // if (!employeeConnected) {
-        //     return next(new HttpError(401, "Vous devez etre connecté"));
-        // };
-        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
-        //     return next(new HttpError(403, "Droit administrateur requis"));
-        // };
-        // if (employeeConnected.employeeNumber != employeeNumberToGet) {
-        //     return next(new HttpError(403, "Vous ne pouvez pas acceder aux informations d'un autre employé"));
-        // };
+        const user = req.user;
+        if (!user)
+        {
+            return next(new HttpError(401, "Vous devez etre connecté"));
+        };
+        if (user.employeeNumber != employeeNumberToGet)
+        {
+            if (!user.isAdmin) return next(new HttpError(403, "Vous ne pouvez pas obtenir les congés d'un autre employé"));
+        };
+
+        const checkboxesData = req.query.data;
+        if (!checkboxesData) return next(new HttpError(400, `Un data de checkboces doit etre fournis`));
+        console.log("checkboxesData", checkboxesData)
+        const checkboxes = JSON.parse(checkboxesData);
+        console.log("checkboxes", checkboxes)
+
+        if (!checkboxes.accepted && !checkboxes.refused && !checkboxes.pending && !checkboxes.pendingModified) 
+        {
+            res.json([]);
+        }
+        if (!checkboxes.coming && !checkboxes.passed) 
+        {
+            res.json([]);
+        }
 
         leaveQueries.selectLeavesByEmployeeNumber(employeeNumberToGet).then(leaves =>
         {
@@ -114,23 +134,29 @@ router.get('/:employeeNumber',
     });
 
 router.post('/',
+    passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
-        // const employee = req.employee;
+        const employeeNumberToGet = req.params.employeeNumber;
+        const user = req.user;
+        if (!user)
+        {
+            return next(new HttpError(401, "Vous devez etre connecté"));
+        };
 
-        // if (!employeeConnected) {
-        //     return next(new HttpError(401, "Vous devez etre connecté"));
-        // };
-        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
-        //     return next(new HttpError(403, "Droit administrateur requis"));
-        // };
         const body = req.body;
-        console.log(body)
+        console.log("body", body)
+        console.log("user", user)
         if (!body.employeeNumber || body.employeeNumber == '') return next(new HttpError(400, `Un numero d'employé est requis`));
         if (!body.category || body.category == '') return next(new HttpError(400, `Une catégorie de congé est requise`));
         if (!body.startDate) return next(new HttpError(400, `Une date de début est requise`));
         if (!body.endDate) return next(new HttpError(400, `Une date de fin est requise`));
         if (!body.reason || body.reason == '') return next(new HttpError(400, `Une raison du congé est requise`));
+
+        if (user.employeeNumber != body.employeeNumber)
+        {
+            if (!user.isAdmin) return next(new HttpError(403, "Vous ne pouvez pas demander un congé pour un autre employé"));
+        };
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -156,7 +182,6 @@ router.post('/',
             reason: body.reason,
             status: 'Pending'
         }
-
 
         leaveQueries.insertLeave(newLeave).then(leave =>
         {
