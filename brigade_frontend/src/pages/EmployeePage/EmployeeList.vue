@@ -85,8 +85,11 @@ export default {
             this.filteredEmployeeList = [];
             getAllEmployees().then(allEmployees =>
             {
+                console.log("allEmployees",allEmployees)
                 allEmployees.forEach(employee =>
                 {
+                    if ((this.$route.fullPath.split('/').slice(1)[1] == 'schedule' && employee.isActive) || (this.$route.fullPath.split('/').slice(1)[1] == 'employee'))
+                    {
                         const newEmployee = {
                             "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName + " (" + employee.role + ")",
                             "employeeNumber": employee.employeeNumber,
@@ -98,6 +101,7 @@ export default {
                             },
                         };
                         this.employeeList.push(newEmployee);
+                    }
                 });
                 this.filteredEmployeeList = this.employeeList;
             }).catch(err =>

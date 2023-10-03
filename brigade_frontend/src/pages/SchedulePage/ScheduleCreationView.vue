@@ -1016,8 +1016,6 @@ export default {
         weekInformations: {
             handler(newArray, oldArray)
             {
-                console.log("allo")
-
                 // Cette fonction sera appelée à chaque modification de myArray
                 for (let i = 0; i < newArray.length; i++)
                 {
@@ -1062,6 +1060,7 @@ export default {
     },
     mounted()
     {
+        console.log("route",this.$route.fullPath.split('/').slice(1)[1])
         this.roleList.push("Tous");
         getAllRoles().then(allRoles =>
         {
