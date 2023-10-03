@@ -1,6 +1,6 @@
 <template>
     <v-sheet class="w-100">
-        <v-sheet v-if="this.isUserAuthorized() && $route.fullPath == '/espace/leave'" class="ma-5">
+        <v-sheet v-if="(this.isUserAuthorized() || userSession.employeeNumber == employeeNumber) && $route.fullPath == '/espace/leave'" class="ma-5">
             <v-row class="ma-5 justify-space-around">
                 <v-col cols="11">
                     <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }} affichées / {{ nbPendingLeave
