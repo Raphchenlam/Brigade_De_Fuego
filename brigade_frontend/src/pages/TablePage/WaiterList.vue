@@ -11,18 +11,26 @@
                     <v-icon color="warning" icon="mdi-alert" size="large"></v-icon>
                     <strong>Veuillez choisir le serveur et ensuite les tables</strong>
                 </p>
+                <p v-if="inColorMode">
+                    <v-icon color="warning" icon="mdi-alert" size="large"></v-icon>
+                    <strong>Veuillez appuyer sur la pastille de couleur</strong>
+                </p>
             </v-row>
             <v-row>
                 <v-list class="w-100 pa-2 ma-2">
                     <v-list-item v-for="waiter in waitersList" :key="waiter.employeeNumber" :title="waiter.listInformations"
-                        :value="waiter.employeeNumber" :color="waiter.waiterColor">
+                        :value="waiter.employeeNumber" :color="waiter.waiterColor" @click="selectWaiter(waiter.employeeNumber, waiter.waiterColor)">
                         <template v-slot:prepend>
-                            <v-avatar :color="waiter.waiterColor"></v-avatar>
+                            <v-avatar :color="waiter.waiterColor" @click="openColorPicker(waiter)">
+                            </v-avatar>
                         </template>
+                        <v-dialog v-model="waiter.dialogVisible">
+                            <v-color-picker v-model="waiter.waiterColor" hide-canvas hide-inputs hide-sliders
+                                show-swatches></v-color-picker>
+                        </v-dialog>
                         <template v-slot:subtitle>
                             <v-btn v-if="(inEditionMode)" prepend-icon="mdi-plus" variant="tonal" density="compact"
-                                rounded="0" @click="selectWaiter(waiter.employeeNumber, waiter.waiterColor)">Assigner la
-                                section</v-btn>
+                                rounded="0" >Assigner la section</v-btn>
                         </template>
 
                     </v-list-item>
@@ -31,13 +39,17 @@
             </v-row>
 
             <v-row>
-                <v-col>
+                <v-col v-if="!inColorMode">
                     <BlackButton @click="toggleEditionMode" class="ma-6"
                         :textbutton='inEditionMode ? "Annuler" : "Assigner les sections"'></BlackButton>
+                </v-col>  
+                <v-col v-if="!inEditionMode"> 
+                        <BlackButton @click="toggleColorMode" class="ma-6"
+                        :textbutton='inColorMode ? "Annuler" : "Changer les couleurs"'></BlackButton>
                 </v-col>
-                <v-col v-if="inEditionMode">
-                    <BlackButton @click="" class="ma-6"
-                        :textbutton='"Enregistrer les sections"'></BlackButton>
+                <v-col>
+                    <BlackButton v-if="inEditionMode" @click="" class="ma-6" :textbutton='"Enregistrer les sections"'></BlackButton>
+                    <BlackButton v-if="inColorMode" @click="updatecolor()" class="ma-6" :textbutton='"Enregistrer les couleurs"'></BlackButton>
                 </v-col>
 
             </v-row>
@@ -48,7 +60,7 @@
 
 <script>
 
-import { getAllEmployeesByRole } from '../../services/EmployeeService';
+import { updateEmployeeColor } from '../../services/EmployeeService';
 import { getAllWaitersByDateAndShift } from '../../services/ScheduleService';
 import BlackButton from "../../components/Reusable/BlackButton.vue";
 
@@ -62,6 +74,9 @@ export default {
     data() {
         return {
             waitersList: [],
+            newColor: null,
+            inColorMode: false,
+
         }
     },
 
@@ -83,6 +98,31 @@ export default {
                 });
             })
         },
+        updatecolor(){
+            const employeeList = [];
+            this.waitersList.forEach((employee) => {
+                const newWaiter={
+                employeeNumber: employee.employeeNumber,
+                employeeColor: employee.waiterColor
+                }
+                employeeList.push(newWaiter);
+            }
+            )
+            updateEmployeeColor(employeeList).then(
+                this.getWaitersList()
+            )
+        },
+        openColorPicker(waiter) {
+            if (this.inColorMode) {
+                waiter.dialogVisible = !waiter.dialogVisible;
+            }
+        },
+        toggleColorMode(){
+            this.inColorMode=!this.inColorMode;
+            if (!this.inColorMode) {
+                this.getWaitersList();
+            }
+        }
 
     },
     watch: {
@@ -91,7 +131,8 @@ export default {
         },
         selectedShift() {
             this.getWaitersList();
-        }
+        },
+
     },
 
     mounted() {

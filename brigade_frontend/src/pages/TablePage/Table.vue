@@ -18,11 +18,11 @@
                     fill="#D9D9D9" stroke="black" />
                 <rect id="table" @click="selectTable" x="10.5" y="18.5" width="61" height="44" :fill="tableColor"
                     stroke="black" />
-                <text id="table_number" :fill="textColor" xml:space="preserve" style="white-space: pre" font-family="Inter"
+                <text @click="selectTable" id="table_number" :fill="textColor" xml:space="preserve" style="white-space: pre" font-family="Inter"
                     font-size="24" letter-spacing="0em">
                     <tspan x="20.9219" y="41.2273">{{ tableNumberFormatted }}</tspan>
                 </text>
-                <text id="table_capacity" :fill="textColor" xml:space="preserve" style="white-space: pre"
+                <text @click="selectTable" id="table_capacity" :fill="textColor" xml:space="preserve" style="white-space: pre"
                     font-family="Inter" font-size="13" letter-spacing="0em">
                     <tspan x="31.6196" y="57.7273">({{ tableCapacity }})</tspan>
                 </text>
@@ -103,6 +103,9 @@ export default {
                 this.textColor = "white";
             } else if (!this.hasReservation && this.isAssign) {
                 this.tableColor = this.fillLightColor;
+                this.textColor = "black"
+            } else if(this.tableIsActive && !this.isAssign){
+                this.tableColor = "white";
                 this.textColor = "black"
             }
         }

@@ -183,12 +183,18 @@ export default {
             }
         },
         selectWaiter(waiterNumber, employeeColor) {
-            this.selectedWaiter = {
-                waiterNumber: waiterNumber,
-                employeeColor: employeeColor
+            if (this.selectedWaiter == null || this.selectedWaiter.waiterNumber != waiterNumber) {
+                this.selectedWaiter = {
+                    waiterNumber: waiterNumber,
+                    employeeColor: employeeColor
+                }
+            }else{
+                this.selectedWaiter = null;
             }
+
         },
         createLocalAssignations() {
+            console.log("Create the new localAssignations with :" + this.tempAssignationList.length)
             this.localAssignations = [];
             this.localAssignations = this.tableList.map(table => {
                 return {
@@ -207,11 +213,11 @@ export default {
                     })
                     if (table.isActive && !assignation.isActive) {
                         table.isAssign = false;
-                    } else if(!table.isActive) {
+                    } else if (!table.isActive) {
                         console.error(`La table ${table.number} est inactive.... veuillez retirer l'assignation`);
                         table.isAssign = false;
                         assignation.isActive = false;
-                    }else{
+                    } else {
                         table.isAssign = true;
                     }
                     table.assignation = assignation;
@@ -243,12 +249,22 @@ export default {
                     return (
                         assignation.waiterNumber == this.selectedWaiter.waiterNumber &&
                         assignation.tableNumber == tableNumber
-                        );
+                    );
                 })
-                if (assignationFound) {
+                const assignedToWaiter = this.tempAssignationList.find((assignation) => {
+                    return assignation.waiterNumber != this.selectedWaiter.waiterNumber &&
+                        assignation.tableNumber == tableNumber && assignation.isActive
+                })
+                console.log("AssignationFound : " + assignationFound);
+                console.log("AssignedToWaiter : " + assignedToWaiter);
+
+                if ((assignationFound && assignedToWaiter) || assignedToWaiter) {
+                    alert("La table est déjà assignée à quelqu'un d'autre! Vous devez retirer la table de sa section actuelle avant de pouvoir la réassigner dans une autre section.")
+                }
+                else if (assignationFound && !assignedToWaiter) {
                     assignationFound.isActive = !assignationFound.isActive;
                 }
-                else{
+                else {
                     const newAssignation = {
                         tableNumber: tableNumber,
                         waiterNumber: this.selectedWaiter.waiterNumber,
@@ -257,11 +273,18 @@ export default {
                     }
                     this.tempAssignationList.push(newAssignation);
                 }
+                this.tempAssignationList = this.tempAssignationList.filter((assignation) => {
+                    return assignation.isActive;
+                })
                 this.createLocalAssignations();
             }
         },
         toggleEditionMode() {
             this.inEditionMode = !this.inEditionMode;
+            if (!this.inEditionMode) {
+                // this.selectedWaiter = null;
+                this.tempAssignationList = [];
+            }
         },
     },
     watch: {
@@ -273,6 +296,7 @@ export default {
             console.log('tableList changed');
             this.loadAssignationList(this.selectedDate, this.selectedShift);
         },
+
         // tableInSection() {
         //     console.log('tableInSection : ' + this.tableInSection)
         //     if (this.selectedWaiter != null) {
@@ -301,11 +325,14 @@ export default {
             }
         }
     },
+    created() {
+        this.loadDate();
+    },
     mounted() {
         if (!operationSession.isActive) {
             this.$router.push('/operation');
         }
-        this.loadDate();
+        // this.loadDate();
         this.loadTableList();
         this.loadAssignationList();
     }

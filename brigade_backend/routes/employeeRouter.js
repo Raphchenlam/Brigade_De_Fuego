@@ -61,7 +61,7 @@ router.get('/:employeeNumber',
     (req, res, next) => {
         const employee = req.user;
         const employeeNumberToGet = req.params.employeeNumber;
-        
+
         if (!employee) return next(new HttpError(401, "Connexion requise"));
         if (!employee.isAdmin && employee.employeeNumber != employeeNumberToGet) return next(new HttpError(403, "Droit administrateur requis"));
 
@@ -235,6 +235,42 @@ router.post('/',
         });
     });
 
+router.put('/employeeColor/',
+    //passport.authenticate('basic', { session: false }),
+    (req, res, next) => {
+        // const employee = req.user;
+
+        // if (!employee) return next(new HttpError(401, "Connection nécessaire"));
+        const employeeList = req.body;
+        console.log("body", req.body)
+        employeeList.forEach((employee) => {
+            const employeeNumber = employee.employeeNumber;
+            const employeeColor = employee.employeeColor;
+
+            if (!employeeNumber || employeeNumber == '') return next(new HttpError(400, 'Le champ employeeNumber est requis'));
+            if (!employeeColor || employeeColor == '') return next(new HttpError(400, 'Le champ employeeColor est requis'));
+            if (!regex.validColorHexCode.test(employeeColor)) return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
+
+            const resultEmployee = employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber);
+
+            if (!resultEmployee) {
+                return next(new HttpError(404, 'Employé(e) introuvable'));
+            }
+        })
+        employeeQueries.updateEmployeeColorByEmployeeNumber(employeeList).then(result => {
+            if (!result) {
+                return next(new HttpError(404, 'Employé(e) introuvable'));
+            }
+            res.json(result);
+        }).catch(err => {
+            return next(err);
+        })
+
+    });
+
+
+
+
 router.put('/:employeeNumber',
     passport.authenticate('basic', { session: false }),
     async (req, res, next) => {
@@ -298,12 +334,12 @@ router.put('/:employeeNumber',
             if (!regex.validSkillPoints.test(skillPoints)) return next(new HttpError(400, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
             // skillPoints = parseInt(skillPoints);
         }
-        
+
         const password = req.body.password;
-        if(password){
+        if (password) {
             if (!regex.validPassword.test(password)) return next(new HttpError(400, 'Le mot de passe ne respecte pas les critères d\'acceptation'));
         }
-        
+
         try {
             const resultEmployee = await employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber);
 
@@ -336,11 +372,11 @@ router.put('/:employeeNumber',
                 if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`));
             }
 
-            if(!employee.isAdmin && (hourlyRate != resultEmployee.hourlyRate)) return next(new HttpError(403, 'Vous n\'avez pas l\'autorisation de modifier votre salaire. Consultez votre Gestionnaire'));
+            if (!employee.isAdmin && (hourlyRate != resultEmployee.hourlyRate)) return next(new HttpError(403, 'Vous n\'avez pas l\'autorisation de modifier votre salaire. Consultez votre Gestionnaire'));
 
-            if(!employee.isAdmin && (isAdmin != resultEmployee.isAdmin)) return next (new HttpError(403, 'Vous n\'avez pas l\'autorisation de vous donner un accès administrateur. Consultez votre Gestionnaire'));
-            
-            if(!employee.isActive && (isActive != resultEmployee.isActive)) return next (new HttpError(403, 'Vous n\'avez pas l\'autorisation de vous désactiver. Consultez votre Gestionnaire'));
+            if (!employee.isAdmin && (isAdmin != resultEmployee.isAdmin)) return next(new HttpError(403, 'Vous n\'avez pas l\'autorisation de vous donner un accès administrateur. Consultez votre Gestionnaire'));
+
+            if (!employee.isActive && (isActive != resultEmployee.isActive)) return next(new HttpError(403, 'Vous n\'avez pas l\'autorisation de vous désactiver. Consultez votre Gestionnaire'));
 
             const employeeToUpdate = {
                 employeeNumber: employeeNumber,
@@ -357,7 +393,7 @@ router.put('/:employeeNumber',
                 skillPoints: skillPoints,
             };
 
-            if(!password){
+            if (!password) {
                 const passwordSalt = "noChange";
                 const passwordHash = "noChange";
                 const updatedEmployee = await employeeQueries.updateEmployee(employeeToUpdate, passwordSalt, passwordHash);
@@ -379,7 +415,7 @@ router.put('/:employeeNumber',
                     return next(err);
                 }
             });
-        }catch (error) {
+        } catch (error) {
             return next(error);
         }
     });
