@@ -61,7 +61,7 @@ export async function getAllFilteredLeaves(checkboxes)
 {
     const queryString = `?data=${encodeURIComponent(JSON.stringify(checkboxes))}`;
     const url = '/api/leave/filter/' + queryString;
-    
+    console.log("url2",url)
     const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -78,14 +78,10 @@ export async function getAllFilteredLeaves(checkboxes)
     }
 }
 
-export async function getleavesByEmployeeNumber(employeeNumber,checkboxes)
+export async function getleavesByEmployeeNumber(employeeNumber)
 {
-    console.log("checkboxes",checkboxes)
-    const queryString = `?data=${encodeURIComponent(JSON.stringify(checkboxes))}`;
-    console.log("queryString",queryString)
-    const url = 'api/leave/' + employeeNumber + queryString;
-    console.log("url",url)
-    const response = await fetch(url, {
+
+    const response = await fetch(`/api/leave/employee/${employeeNumber}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -94,7 +90,8 @@ export async function getleavesByEmployeeNumber(employeeNumber,checkboxes)
     });
 
     if (response.ok) {
-        const respJson = await response.json();
+        
+       const respJson = await response.json();
         return respJson;
     } else {
         throw await createServiceError(response);

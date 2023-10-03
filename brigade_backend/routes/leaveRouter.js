@@ -94,10 +94,11 @@ router.get('/filter',
         });
     });
 
-router.get('/:employeeNumber',
+router.get('/employee/:employeeNumber',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
+        console.log("ark")
         const employeeNumberToGet = req.params.employeeNumber;
         const user = req.user;
         if (!user)
@@ -108,7 +109,7 @@ router.get('/:employeeNumber',
         {
             if (!user.isAdmin) return next(new HttpError(403, "Vous ne pouvez pas obtenir les congés d'un autre employé"));
         };
-
+/*
         const checkboxesData = req.query.data;
         if (!checkboxesData) return next(new HttpError(400, `Un data de checkboces doit etre fournis`));
         console.log("checkboxesData", checkboxesData)
@@ -123,9 +124,10 @@ router.get('/:employeeNumber',
         {
             res.json([]);
         }
-
+*/
         leaveQueries.selectLeavesByEmployeeNumber(employeeNumberToGet).then(leaves =>
         {
+            console.log("leaves",leaves)
             res.json(leaves);
         }).catch(err =>
         {
