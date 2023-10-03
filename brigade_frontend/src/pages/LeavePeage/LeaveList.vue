@@ -1,6 +1,6 @@
 <template>
     <v-sheet class="w-100">
-        <v-sheet v-if="userSession.employee.isAdmin && $route.fullPath == '/espace/leave'" class="ma-5">
+        <v-sheet v-if="(this.isUserAuthorized() || userSession.employeeNumber == employeeNumber) && $route.fullPath == '/espace/leave'" class="ma-5">
             <v-row class="ma-5 justify-space-around">
                 <v-col cols="11">
                     <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }} affichées / {{ nbPendingLeave
@@ -66,12 +66,11 @@
             </v-row>
         </v-sheet>
 
-        <v-sheet :class="userSession.employee.isAdmin && $route.fullPath == '/espace/leave' ? 'mx-10' : 'mx-5'">
+        <v-sheet :class="this.isUserAuthorized() && $route.fullPath == '/espace/leave' ? 'mx-10' : 'mx-5'">
             <v-data-table-server no-data-text="Aucune demande de congés à afficher" v-model:items-per-page="itemsPerPage"
-                v-model:expanded="expanded" :loading="loading" height="100%" fixed-header :headers="headers" :hide-default-footer="true"
-                :items="filteredLeaveList" :items-length="filteredLeaveList.length" class="elevation-1" hide-default-footer
-  disable-pagination
-                @update:options="loadLeaves" show-expand>
+                v-model:expanded="expanded" :loading="loading" height="100%" fixed-header :headers="headers"
+                :hide-default-footer="true" :items="filteredLeaveList" :items-length="filteredLeaveList.length"
+                class="elevation-1" hide-default-footer disable-pagination @update:options="loadLeaves" show-expand>
 
                 <template v-slot:top>
                     <v-toolbar flat>
@@ -124,11 +123,11 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-icon v-if="item.raw.status != 'Accepté' && userSession.employee.isAdmin" size="small"
+                    <v-icon v-if="item.raw.status != 'Accepté' && this.isUserAuthorized()" size="small"
                         class="me-2 approved-icon" @click="accept(item.raw)">
                         mdi-check
                     </v-icon>
-                    <v-icon v-if="item.raw.status != 'Refusé' && userSession.employee.isAdmin" size="small"
+                    <v-icon v-if="item.raw.status != 'Refusé' && this.isUserAuthorized()" size="small"
                         class="me-2 refused-icon" @click="refuse(item.raw)">
                         mdi-close
                     </v-icon>
@@ -160,6 +159,7 @@ import { getAllLeaves, getAllFilteredLeaves, getleavesByEmployeeNumber } from '.
 import NewLeaveForm from './NewLeaveForm.vue';
 
 export default {
+    inject: ['isUserAuthorized'],
     components: {
         EditLeaveForm,
         BlackButton,
@@ -169,8 +169,7 @@ export default {
         height: String,
         employeeNumber: Number
     },
-    data()
-    {
+    data() {
         return {
             userSession: userSession,
             search: "",
@@ -249,15 +248,11 @@ export default {
         }
     },
     methods: {
-        loadLeaves()
-        {
+        loadLeaves() {
             this.leaveList = [];
-            if (this.employeeNumber)
-            {
-                getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves =>
-                {
-                    allLeaves.forEach(leave =>
-                    {
+            if (this.employeeNumber) {
+                getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves => {
+                    allLeaves.forEach(leave => {
                         leave.startDate = leave.startDate.split('T').slice(0)[0]
                         leave.endDate = leave.endDate.split('T').slice(0)[0]
                         if (leave.status == 'Pending') leave.status = 'En Attente'
@@ -268,14 +263,10 @@ export default {
                     });
                     this.loading = false;
                 });
-            } else
-            {
-                getAllFilteredLeaves(this.checkedBoxes).then(allLeaves =>
-                {
-                    allLeaves.forEach(leave =>
-                    {
-                        if (!leave.nbPending)
-                        {
+            } else {
+                getAllFilteredLeaves(this.checkedBoxes).then(allLeaves => {
+                    allLeaves.forEach(leave => {
+                        if (!leave.nbPending) {
                             leave.startDate = leave.startDate.split('T').slice(0)[0]
                             leave.endDate = leave.endDate.split('T').slice(0)[0]
                             if (leave.status == 'Pending') leave.status = 'En Attente'
@@ -283,60 +274,48 @@ export default {
                             if (leave.status == 'Approved') leave.status = 'Accepté'
                             if (leave.status == 'Refused') leave.status = 'Refusé'
                             this.leaveList.push(leave)
-                        } else
-                        {
+                        } else {
                             this.nbPendingLeave = leave.nbPending;
                         }
                         this.loading = false;
                     });
-                }).catch(err =>
-                {
+                }).catch(err => {
                     console.error(err);
                 })
 
             }
             this.filteredLeaveList = this.leaveList;
         },
-        editItem(item)
-        {
+        editItem(item) {
             this.editedIndex = this.leaveList.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialogEditLeave = true
         },
-        accept(item)
-        {
+        accept(item) {
             console.log("Accept", item)
         },
-        refuse(item)
-        {
+        refuse(item) {
             console.log("Refuse", item)
         },
-        closeEditLeaveDialog()
-        {
+        closeEditLeaveDialog() {
             this.dialogEditLeave = false
-            this.$nextTick(() =>
-            {
+            this.$nextTick(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
                 this.editedIndex = -1
             })
         },
-        closeNewLeaveDialog()
-        {
+        closeNewLeaveDialog() {
             this.dialogNewLeave = false;
         },
-        save()
-        {
+        save() {
 
         },
-        applyFilter()
-        {
+        applyFilter() {
             this.loadLeaves();
             this.filterDialog = false;
         },
-        checkAllBoxes()
-        {
-            if (this.checkedBoxes.all == false)
-            {
+        checkAllBoxes() {
+            if (this.checkedBoxes.all == false) {
                 this.checkedBoxes.all = true;
                 this.checkedBoxes.pending = true;
                 this.checkedBoxes.pendingModified = true;
@@ -345,8 +324,7 @@ export default {
                 this.checkedBoxes.passed = true;
                 this.checkedBoxes.coming = true;
             }
-            else
-            {
+            else {
                 this.checkedBoxes.all = false;
                 this.checkedBoxes.pending = false;
                 this.checkedBoxes.pendingModified = false;
@@ -355,14 +333,12 @@ export default {
                 this.checkedBoxes.passed = false;
                 this.checkedBoxes.coming = false;
             }
-        }
+        },
     },
     computed: {
-        calculatePendingLeaves()
-        {
+        calculatePendingLeaves() {
             let nbPendingLeave = 0;
-            this.leaveList.forEach(leave =>
-            {
+            this.leaveList.forEach(leave => {
                 if (leave.status == 'En Attente' || leave.status == 'En Attente (modifié)') nbPendingLeave++
 
             });
@@ -371,14 +347,11 @@ export default {
     },
     watch: {
         'checkedBoxes': {
-            handler: function (checkboxList)
-            {
-                for (var checkbox in checkboxList)
-                {
+            handler: function (checkboxList) {
+                for (var checkbox in checkboxList) {
                     console.log("watch", checkbox, checkboxList[checkbox])
 
-                    if (checkboxList[checkbox] == false && checkbox != "all")
-                    {
+                    if (checkboxList[checkbox] == false && checkbox != "all") {
                         this.checkedBoxes.all = false;
                         return;
                     }
@@ -387,33 +360,31 @@ export default {
             },
             deep: true
         },
-        search()
-        {
+        search() {
             this.filteredLeaveList = [];
-            this.leaveList.forEach(leave =>
-            {
-                if (leave.employeeName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
-                {
+            this.leaveList.forEach(leave => {
+                if (leave.employeeName.toUpperCase().indexOf(this.search.toUpperCase()) >= 0) {
                     this.filteredLeaveList.push(leave);
                 }
             });
         },
-        employeeNumber()
-        {
+        employeeNumber() {
             this.loadLeaves()
         }
     },
-    provide()
-    {
+    provide() {
         return {
             closeNewLeaveDialog: this.closeNewLeaveDialog,
             loadLeaves: this.loadLeaves
         }
     },
-    mounted()
-    {
-        if (this.employeeName)
-        {
+    created() {
+        if (!userSession.employeeNumber && !userSession.password) {
+            this.$router.push('/espace');
+        }
+    },
+    mounted() {
+        if (this.employeeName) {
             console.log("search = employeename", this.employeeName)
             this.search = this.employeeName;
         }
