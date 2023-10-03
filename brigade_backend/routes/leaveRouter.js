@@ -71,9 +71,8 @@ router.get('/filter',
 
         const checkboxesData = req.query.data;
         if (!checkboxesData) return next(new HttpError(400, `Un data de checkboces doit etre fournis`));
-        console.log("checkboxesData", checkboxesData)
         const checkboxes = JSON.parse(checkboxesData);
-        console.log("checkboxes", checkboxes)
+
 
         if (!checkboxes.accepted && !checkboxes.refused && !checkboxes.pending && !checkboxes.pendingModified) 
         {
@@ -86,7 +85,6 @@ router.get('/filter',
 
         leaveQueries.selectAllFilteredLeaves(checkboxes).then(leaves =>
         {
-            console.log("leaves qui senvoie du backend au frontend", leaves)
             res.json(leaves);
         }).catch(err =>
         {
@@ -98,7 +96,6 @@ router.get('/employee/:employeeNumber',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
-        console.log("ark")
         const employeeNumberToGet = req.params.employeeNumber;
         const user = req.user;
         if (!user)
@@ -109,25 +106,8 @@ router.get('/employee/:employeeNumber',
         {
             if (!user.isAdmin) return next(new HttpError(403, "Vous ne pouvez pas obtenir les congés d'un autre employé"));
         };
-/*
-        const checkboxesData = req.query.data;
-        if (!checkboxesData) return next(new HttpError(400, `Un data de checkboces doit etre fournis`));
-        console.log("checkboxesData", checkboxesData)
-        const checkboxes = JSON.parse(checkboxesData);
-        console.log("checkboxes", checkboxes)
-
-        if (!checkboxes.accepted && !checkboxes.refused && !checkboxes.pending && !checkboxes.pendingModified) 
-        {
-            res.json([]);
-        }
-        if (!checkboxes.coming && !checkboxes.passed) 
-        {
-            res.json([]);
-        }
-*/
         leaveQueries.selectLeavesByEmployeeNumber(employeeNumberToGet).then(leaves =>
         {
-            console.log("leaves",leaves)
             res.json(leaves);
         }).catch(err =>
         {
@@ -147,8 +127,6 @@ router.post('/',
         };
 
         const body = req.body;
-        console.log("body", body)
-        console.log("user", user)
         if (!body.employeeNumber || body.employeeNumber == '') return next(new HttpError(400, `Un numero d'employé est requis`));
         if (!body.category || body.category == '') return next(new HttpError(400, `Une catégorie de congé est requise`));
         if (!body.startDate) return next(new HttpError(400, `Une date de début est requise`));
@@ -171,8 +149,6 @@ router.post('/',
         const dateStr = body.startDate;
         var dateParts = dateStr.split('-');
         var startDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-        console.log("today", today);
-        console.log("startDate", startDate);
         if (startDate < futureDate) return next(new HttpError(400, `La date de debut doit etre minimum le lundi 1 semaine à l'avance`));
         if (body.endDate < body.startDate) return next(new HttpError(400, `La date de fin ne peut pas etre avant la date de debut`));
 
