@@ -13,9 +13,9 @@
                     </v-select>
                 </v-col>
                 <v-col cols="5">
-                    <v-select v-if="this.isUserAuthorized()"
-                        :disabled="disableSkillPtsDropDown" :items="skillPointsRange" v-model="updatingEmployee.skillPoints"
-                        class="mx-2" label="Points de compétences" :rules="[rules.required, rules.validateSkillPoints]">
+                    <v-select v-if="this.isUserAuthorized()" :disabled="disableSkillPtsDropDown" :items="skillPointsRange"
+                        v-model="updatingEmployee.skillPoints" class="mx-2" label="Points de compétences"
+                        :rules="[rules.required, rules.validateSkillPoints]">
                     </v-select>
                 </v-col>
             </v-row>
@@ -253,6 +253,13 @@ export default {
                     await updateEmployeeByEmployeeProfile(this.updatingEmployee, this.updatingEmployee.employeeNumber).then((employee) => {
                         if (employee) {
                             this.updatedEmployee = true;
+                            try {
+                                userSession.clearCredentials();
+                                userSession.setCredentials(this.updatingEmployee.employeeNumber, this.updatingEmployee.password);
+                            } catch (error) {
+                                console.error(err);
+                                alert(err.message);
+                            }
                             this.loadEmployeeByNumber(this.updatingEmployee.employeeNumber);
                             setTimeout(this.closeDialog, 2500);
                         }
@@ -310,7 +317,7 @@ export default {
         disableSkillPtsDropDown() {
             return (this.updatingEmployee.role == "Gestionnaire" || !this.isUserAuthorized()) ? true : false;
         },
-        disableActiveCheckbox(){
+        disableActiveCheckbox() {
             return (!this.isUserAuthorized()) ? true : false;
         }
     }
@@ -325,4 +332,5 @@ export default {
     text-align: center;
     width: 100%;
     max-width: 80rem;
-}</style>
+}
+</style>
