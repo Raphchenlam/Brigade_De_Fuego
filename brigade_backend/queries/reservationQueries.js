@@ -1,8 +1,11 @@
 const pool = require('./DBPool');
 
+// DATES OKAY HERE 
+
 const truncateDate = dateTime => {
     return new Date(dateTime).toLocaleDateString();
 };
+
 
 const explodingTime = time => {
     return {
@@ -11,6 +14,7 @@ const explodingTime = time => {
     }
 }
 exports.explodingTime = explodingTime;
+
 
 const explodingDate = date => {
     return {
@@ -136,10 +140,8 @@ exports.insertReservation = insertReservation;
 
 
 const getReservationListByDates = async (startDate, endDate) => {
-
-    const queryStartDate = !!startDate ? startDate : new Date().toISOString().split('T')[0];
-    const queryEndDate = !!endDate ? endDate : new Date().toISOString().split('T')[0];
-
+    const queryStartDate = !!startDate ? startDate : new Date().toLocaleDateString();
+    const queryEndDate = !!endDate ? endDate : new Date().toLocaleDateString();
 
     results = await pool.query(
         `SELECT 
@@ -176,7 +178,7 @@ const getReservationListByDates = async (startDate, endDate) => {
             employeeFirstname: row.employee_first_name,
             employeeLastname: row.employee_last_name,
             employeeRole: row.employee_role,
-            
+
         };
 
         return reservation;
