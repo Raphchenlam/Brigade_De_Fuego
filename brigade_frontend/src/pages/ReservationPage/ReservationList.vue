@@ -1,6 +1,6 @@
 <template>
     <v-sheet width="100%">
-        <v-card class="ma-2" >
+        <v-card class="ma-2">
             <v-row class="mb-0">
                 <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
                     class="ma-2"></v-text-field>
@@ -51,7 +51,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate','selectedShift'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -60,6 +60,7 @@ export default {
     },
     data() {
         return {
+            todayDate: null,
             startDate: null,
             endDate: null,
             search: "",
@@ -108,7 +109,7 @@ export default {
         selected() {
             this.loadReservationInformations(this.selected[0]);
         },
-        selectedDate(){
+        selectedDate() {
             this.loadTODAYreservations(this.selectedDate);
         }
     },
@@ -127,7 +128,7 @@ export default {
                     alert(err.message);
                 });
         },
-        loadTODAYreservations(selectedDate){
+        loadTODAYreservations(selectedDate) {
             getReservationList(selectedDate, selectedDate)
                 .then((reservationList) => {
                     this.reservations = reservationList;
@@ -136,7 +137,7 @@ export default {
                     console.log(err);
                     alert(err.message);
                 });
-            this.selected=[];
+            this.selected = [];
         },
         filterReservations() {
             this.filteredReservationList = [];
@@ -145,7 +146,7 @@ export default {
                 var reservationtoKeep;
 
                 if (this.shiftShow == "Midi" && parseInt(reservation.startTime.split(':').slice(0)[0]) < 15) {
-                    reservationtoKeep = reservation; 
+                    reservationtoKeep = reservation;
                 } else if (this.shiftShow == "Soir" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) {
                     reservationtoKeep = reservation;
                 } else if (this.shiftShow == "all") {
@@ -180,20 +181,20 @@ export default {
             this.dialogNewReservation = false;
         },
         resetStartDate() {
-            const newDate = new Date().toISOString().split('T')[0];
+            const newDate = this.todayDate;
             this.loadReservations(newDate, this.endDate);
             this.startDate = newDate;
         },
         resetEndDate() {
-            const newDate = new Date().toISOString().split('T')[0];
+            const newDate = this.todayDate;
             this.loadReservations(this.startDate, newDate);
             this.endDate = newDate;
         }
     },
     mounted() {
-        this.endDate = this.startDate = new Date().toISOString().split('T')[0];
+        this.todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
+        this.endDate = this.startDate = this.todayDate;
         this.loadReservations(this.startDate, this.endDate);
-
     }
 }
 </script>
@@ -209,3 +210,4 @@ export default {
     overflow-y: auto;
 }
 </style>
+
