@@ -114,7 +114,8 @@ const selectLeavesByEmployeeNumber = async (employeeNumber) =>
         `SELECT leave.*, employee.first_name, employee.last_name
         FROM leave
         JOIN employee ON employee.employee_number = leave.employee_number
-        WHERE leave.employee_number = $1`,
+        WHERE leave.employee_number = $1
+        AND leave.start_date >= CURRENT_DATE`,
         [employeeNumber]
     );
 

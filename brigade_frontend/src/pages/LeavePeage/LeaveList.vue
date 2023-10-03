@@ -1,6 +1,8 @@
 <template>
     <v-sheet class="w-100">
-        <v-sheet v-if="userSession.employee.isAdmin && $route.fullPath == '/espace/leave'" class="ma-5">
+        <v-sheet
+            v-if="(this.isUserAuthorized() && $route.fullPath == '/espace/leave')"
+            class="ma-5">
             <v-row class="ma-5 justify-space-around">
                 <v-col cols="11">
                     <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }} affichées / {{ nbPendingLeave
@@ -65,13 +67,11 @@
                     class="mx-10"></v-text-field>
             </v-row>
         </v-sheet>
-
-        <v-sheet :class="userSession.employee.isAdmin && $route.fullPath == '/espace/leave' ? 'mx-10' : 'mx-5'">
+        <v-sheet :class="this.isUserAuthorized() && $route.fullPath == '/espace/leave' ? 'mx-10' : 'mx-5'">
             <v-data-table-server no-data-text="Aucune demande de congés à afficher" v-model:items-per-page="itemsPerPage"
-                v-model:expanded="expanded" :loading="loading" height="100%" fixed-header :headers="headers" :hide-default-footer="true"
-                :items="filteredLeaveList" :items-length="filteredLeaveList.length" class="elevation-1" hide-default-footer
-  disable-pagination
-                @update:options="loadLeaves" show-expand>
+                v-model:expanded="expanded" :loading="loading" height="100%" fixed-header :headers="headers"
+                :hide-default-footer="true" :items="filteredLeaveList" :items-length="filteredLeaveList.length"
+                class="elevation-1" hide-default-footer disable-pagination @update:options="loadLeaves" show-expand>
 
                 <template v-slot:top>
                     <v-toolbar flat>
@@ -124,11 +124,11 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-icon v-if="item.raw.status != 'Accepté' && userSession.employee.isAdmin" size="small"
+                    <v-icon v-if="item.raw.status != 'Accepté' && this.isUserAuthorized()" size="small"
                         class="me-2 approved-icon" @click="accept(item.raw)">
                         mdi-check
                     </v-icon>
-                    <v-icon v-if="item.raw.status != 'Refusé' && userSession.employee.isAdmin" size="small"
+                    <v-icon v-if="item.raw.status != 'Refusé' && this.isUserAuthorized()" size="small"
                         class="me-2 refused-icon" @click="refuse(item.raw)">
                         mdi-close
                     </v-icon>
@@ -156,10 +156,11 @@ import userSession from '../../sessions/UserSession';
 import BlackButton from '../../components/Reusable/BlackButton.vue'
 import EditLeaveForm from './EditLeaveForm.vue'
 
-import { getAllLeaves, getAllFilteredLeaves, getleavesByEmployeeNumber } from '../../services/LeaveService';
+import { getAllFilteredLeaves, getleavesByEmployeeNumber } from '../../services/LeaveService';
 import NewLeaveForm from './NewLeaveForm.vue';
 
 export default {
+    inject: ['isUserAuthorized'],
     components: {
         EditLeaveForm,
         BlackButton,
@@ -179,7 +180,6 @@ export default {
             dialogNewLeave: false,
             dialogEditLeave: false,
             expanded: [],
-            date: null,
             leaveList: [],
             filteredLeaveList: [],
             nbPendingLeave: 0,
@@ -256,8 +256,11 @@ export default {
             {
                 getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves =>
                 {
+                    console.log("allLeaves",allLeaves)
                     allLeaves.forEach(leave =>
                     {
+                        //if (!leave.nbPending)
+                        //{
                         leave.startDate = leave.startDate.split('T').slice(0)[0]
                         leave.endDate = leave.endDate.split('T').slice(0)[0]
                         if (leave.status == 'Pending') leave.status = 'En Attente'
@@ -265,8 +268,15 @@ export default {
                         if (leave.status == 'Approved') leave.status = 'Accepté'
                         if (leave.status == 'Refused') leave.status = 'Refusé'
                         this.leaveList.push(leave);
+                        //} else
+                        //{
+                        //this.nbPendingLeave = leave.nbPending;
+                        //}
                     });
                     this.loading = false;
+                }).catch(err =>
+                {
+                    console.error(err);
                 });
             } else
             {
@@ -355,7 +365,7 @@ export default {
                 this.checkedBoxes.passed = false;
                 this.checkedBoxes.coming = false;
             }
-        }
+        },
     },
     computed: {
         calculatePendingLeaves()
@@ -410,15 +420,19 @@ export default {
             loadLeaves: this.loadLeaves
         }
     },
+    created()
+    {
+        if (!userSession.employeeNumber && !userSession.password)
+        {
+            this.$router.push('/espace');
+        }
+    },
     mounted()
     {
         if (this.employeeName)
         {
-            console.log("search = employeename", this.employeeName)
             this.search = this.employeeName;
         }
-        //this.loadLeaves();
-        this.date = "2023-09-05"; //aller chercher la date de aujourdhui
     }
 }
 

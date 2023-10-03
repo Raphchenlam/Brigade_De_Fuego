@@ -82,7 +82,7 @@ export default {
                 return {
                         userSession: userSession,
                         employee: {
-                                employeeNumber: null,
+                                employeeNumber: this.employeeNumber,
                                 firstName: "",
                                 lastName: "",
                                 role: "",

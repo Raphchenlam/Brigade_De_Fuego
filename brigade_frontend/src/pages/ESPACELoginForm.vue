@@ -29,15 +29,15 @@ export default {
             rules: {
                 required: value => !!value || "Le champ est requis",
 
-                validatePassword: () => this.validPassword || "Numéro d'employé ou mot de passe invalide"
+                validatePassword: () => this.validPassword === false ? "Numéro d'employé ou mot de passe invalide" : true
             }
         };
     },
     methods: {
         login()
         {
+            this.validPassword = true;
             userSession.login(this.employeeNumber, this.password).then(() => {
-                this.validPassword = true;
                 this.$refs.loginForm.validate();
                 this.$router.push('/espace/dashboard');
             }).catch(authError => {
