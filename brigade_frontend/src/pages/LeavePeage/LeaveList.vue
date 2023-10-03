@@ -1,8 +1,6 @@
 <template>
     <v-sheet class="w-100">
-
         <v-sheet v-if="(this.isUserAuthorized() || userSession.employeeNumber == employeeNumber) && $route.fullPath == '/espace/leave'" class="ma-5">
-
             <v-row class="ma-5 justify-space-around">
                 <v-col cols="11">
                     <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }} affichées / {{ nbPendingLeave
@@ -252,25 +250,16 @@ export default {
     methods: {
         loadLeaves() {
             this.leaveList = [];
-            if (this.employeeNumber)
-            {
-                getleavesByEmployeeNumber(this.employeeNumber, this.checkedBoxes).then(allLeaves =>
-                {
-                    allLeaves.forEach(leave =>
-                    {
-                        if (!leave.nbPending)
-                        {
-                            leave.startDate = leave.startDate.split('T').slice(0)[0]
-                            leave.endDate = leave.endDate.split('T').slice(0)[0]
-                            if (leave.status == 'Pending') leave.status = 'En Attente'
-                            if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
-                            if (leave.status == 'Approved') leave.status = 'Accepté'
-                            if (leave.status == 'Refused') leave.status = 'Refusé'
-                            this.leaveList.push(leave);
-                        } else
-                        {
-                            this.nbPendingLeave = leave.nbPending;
-                        }
+            if (this.employeeNumber) {
+                getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves => {
+                    allLeaves.forEach(leave => {
+                        leave.startDate = leave.startDate.split('T').slice(0)[0]
+                        leave.endDate = leave.endDate.split('T').slice(0)[0]
+                        if (leave.status == 'Pending') leave.status = 'En Attente'
+                        if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
+                        if (leave.status == 'Approved') leave.status = 'Accepté'
+                        if (leave.status == 'Refused') leave.status = 'Refusé'
+                        this.leaveList.push(leave);
                     });
                     this.loading = false;
                 });

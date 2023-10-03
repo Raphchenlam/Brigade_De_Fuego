@@ -26,7 +26,7 @@ export async function createLeave(leave) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-             ...session.getAuthHeaders()
+            // ...session.getAuthHeaders()
         },
         body: JSON.stringify(leave)
     });
@@ -41,13 +41,7 @@ export async function createLeave(leave) {
 }
 
 export async function getAllLeaves() {
-    const response = await fetch(`/api/leave`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...session.getAuthHeaders()
-        }
-    });
+    const response = await fetch(`/api/leave`);
 
     if (response.ok) {
         const respJson = await response.json();
@@ -66,7 +60,7 @@ export async function getAllFilteredLeaves(checkboxes)
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            ...session.getAuthHeaders()
+            //...session.getAuthHeaders()
         }
     });
 
@@ -78,20 +72,8 @@ export async function getAllFilteredLeaves(checkboxes)
     }
 }
 
-export async function getleavesByEmployeeNumber(employeeNumber,checkboxes)
-{
-    console.log("checkboxes",checkboxes)
-    const queryString = `?data=${encodeURIComponent(JSON.stringify(checkboxes))}`;
-    console.log("queryString",queryString)
-    const url = 'api/leave/' + employeeNumber + queryString;
-    console.log("url",url)
-    const response = await fetch(url, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...session.getAuthHeaders()
-        }
-    });
+export async function getleavesByEmployeeNumber(employeeNumber) {
+    const response = await fetch(`/api/leave/${employeeNumber}`);
 
     if (response.ok) {
         const respJson = await response.json();
@@ -104,13 +86,7 @@ export async function getleavesByEmployeeNumber(employeeNumber,checkboxes)
 
 
 export async function getAllLeavesCategory() {
-    const response = await fetch(`/api/leave/category`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...session.getAuthHeaders()
-        }
-    });
+    const response = await fetch(`/api/leave/category`);
 
     if (response.ok) {
         const respJson = await response.json();
