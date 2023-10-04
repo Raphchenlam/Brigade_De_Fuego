@@ -56,7 +56,7 @@ const getReservationById = async (id) => {
             takenBy: row.taken_by,
             firstName: row.client_first_name,
             lastName: row.client_last_name,
-            phoneNumber: row.phone_number,
+            phoneNumber: row.client_phone_number,
             allergy: row.allergy,
             isFavorite: row.is_favorite,
             isBlacklisted: row.is_blacklisted
