@@ -87,6 +87,7 @@ export default {
             selectedTable: computed(() => this.selectedTable),
             displaySelectedTable: this.displaySelectedTable,
             loadReservationInformations: this.loadReservationInformations,
+            loadDate: this.loadDate,
             
             
             ////////////TEMPORAIRE/////////
@@ -96,14 +97,17 @@ export default {
     methods: {
         
         loadReservationInformations(receivedReservationId) {
+            console.log("receivedReservationId : ");
+            console.log(receivedReservationId);
             this.selectedReservationId = receivedReservationId;
         },
-        loadDate() {
+        loadDate(newReservationDate) {
             //************************/
             //***A remettre en place**/
             //************************/
             const todayDate = new Date().toISOString().split('T')[0];
-            this.selectedDate = todayDate;
+            // this.selectedDate = todayDate;
+            this.selectedDate = (newReservationDate) ? newReservationDate : todayDate;
         },
         loadTableList() {
             console.log('Loading table list...');

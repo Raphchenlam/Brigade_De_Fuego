@@ -51,7 +51,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale', 'loadDate'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -132,7 +132,9 @@ export default {
         },
         'selected': {
             handler: function () {
-                this.loadReservationInformations(this.selected[0]);
+                    console.log("this.selected[0] : ");
+                    console.log(this.selected[0]);
+                    this.loadReservationInformations(this.selected[0]);
             },
             deep: true
         },
@@ -142,11 +144,17 @@ export default {
     },
     methods: {
         refreshWithNewreservation(newReservation) {
+            console.log("newReservation[0] : ");
+            console.log(newReservation[0]);
             this.selected[0] = newReservation[0];
+            console.log("this.selected[0] : ");
+            console.log(this.selected[0]);
+
             const dateOnlyOfNewReservation = newReservation[1].split("T")[0];
             this.startDate = dateOnlyOfNewReservation;
             this.endDate = this.startDate;
-            this.loadReservations(this.startDate, this.endDate);
+            (this.selectedDate) ? this.loadDate(dateOnlyOfNewReservation) : this.loadReservations(this.startDate, this.endDate);
+            // this.loadReservations(this.startDate, this.endDate);
             this.search = newReservation[2];
         },
         loadReservations(startDate, endDate) {

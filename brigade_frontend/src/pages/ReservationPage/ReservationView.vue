@@ -23,7 +23,6 @@ export default {
     ReservationList,
     ReservationInformation
   },
-  inject:['selectedReservationId'],
   data() {
     return {
       operationSession: operationSession,
