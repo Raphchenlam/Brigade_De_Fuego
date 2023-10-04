@@ -87,14 +87,17 @@ export default {
             selectedTable: computed(() => this.selectedTable),
             displaySelectedTable: this.displaySelectedTable,
             loadReservationInformations: this.loadReservationInformations,
-
-
+            
+            
             ////////////TEMPORAIRE/////////
             hasReservation: computed(() => this.hasReservation),
         }
     },
     methods: {
-       
+        
+        loadReservationInformations(receivedReservationId) {
+            this.selectedReservationId = receivedReservationId;
+        },
         loadDate() {
             //************************/
             //***A remettre en place**/
@@ -164,10 +167,6 @@ export default {
                 );
             }
         },
-        loadReservationInformations(receivedReservationId) {
-            this.selectedReservationId = receivedReservationId;
-        },
-        
         displaySelectedTable(number) {
             console.log("DisplaySelectedTable : " + number)
             this.selectedTable = this.tableWithAssignationList.find((table) => {

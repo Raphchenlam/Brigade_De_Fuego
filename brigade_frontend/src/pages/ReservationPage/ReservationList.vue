@@ -115,7 +115,7 @@ export default {
 
             const startDateObj = this.toLocale(this.startDate);
             const endDateObj = this.toLocale(this.endDate);
-            
+
             if (startDateObj.date.year > endDateObj.date.year) {
                 this.startDate = this.endDate;
 
@@ -130,8 +130,11 @@ export default {
 
             }
         },
-        selected() {
-            this.loadReservationInformations(this.selected[0]);
+        'selected': {
+            handler: function () {
+                this.loadReservationInformations(this.selected[0]);
+            },
+            deep: true
         },
         selectedDate() {
             this.loadTODAYreservations(this.selectedDate);
@@ -139,8 +142,12 @@ export default {
     },
     methods: {
         refreshWithNewreservation(newReservation) {
+            this.selected[0] = newReservation[0];
+            const dateOnlyOfNewReservation = newReservation[1].split("T")[0];
+            this.startDate = dateOnlyOfNewReservation;
+            this.endDate = this.startDate;
             this.loadReservations(this.startDate, this.endDate);
-            this.selected = newReservation;
+            this.search = newReservation[2];
         },
         loadReservations(startDate, endDate) {
             getReservationList(startDate, endDate)
@@ -216,7 +223,7 @@ export default {
         }
     },
     mounted() {
-        console.clear(); // TODO: Comment or remove this line
+        // console.clear(); // TODO: Comment or remove this line
         this.todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
         this.endDate = this.startDate = this.todayDate;
         this.loadReservations(this.startDate, this.endDate);

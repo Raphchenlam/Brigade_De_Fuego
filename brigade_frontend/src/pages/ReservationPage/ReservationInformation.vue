@@ -78,6 +78,7 @@ export default {
             if (selectedReservationId) {
                 getReservationById(selectedReservationId)
                 .then(reservation => {
+                    console.log(reservation);
                     this.reservation = reservation;
                 }).catch(err => {
                     console.error(err);
