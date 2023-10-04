@@ -89,21 +89,45 @@ export default {
             this.filterReservations();
         },
         startDate() {
-            if (this.startDate == "") {
-                this.resetStartDate();
-            }
+            if (this.startDate == "") this.resetStartDate();
+            if (this.startDate != this.endDate) this.loadReservations(this.startDate, this.endDate);
 
-            if (this.startDate != this.endDate) {
-                this.loadReservations(this.startDate, this.endDate);
+            const startDateObj = this.toLocale(this.startDate);
+            const endDateObj = this.toLocale(this.endDate);
+
+            if (startDateObj.date.year > endDateObj.date.year) {
+                this.endDate = this.startDate;
+
+            } else if (startDateObj.date.year >= endDateObj.date.year
+                && startDateObj.date.month > endDateObj.date.month) {
+                this.endDate = this.startDate;
+
+            } else if (startDateObj.date.year >= endDateObj.date.year
+                && startDateObj.date.month >= endDateObj.date.month
+                && startDateObj.date.day >= endDateObj.date.day) {
+                this.endDate = this.startDate;
+
             }
         },
         endDate() {
-            if (this.endDate == "") {
-                this.resetEndDate();
-            }
+            if (this.endDate == "") this.resetEndDate();
+            if (this.startDate != this.endDate) this.loadReservations(this.startDate, this.endDate);
 
-            if (this.startDate != this.endDate) {
-                this.loadReservations(this.startDate, this.endDate);
+            const startDateObj = this.toLocale(this.startDate);
+            const endDateObj = this.toLocale(this.endDate);
+            
+            if (startDateObj.date.year > endDateObj.date.year) {
+                this.startDate = this.endDate;
+
+            } else if (startDateObj.date.year >= endDateObj.date.year
+                && startDateObj.date.month > endDateObj.date.month) {
+                this.startDate = this.endDate;
+
+            } else if (startDateObj.date.year >= endDateObj.date.year
+                && startDateObj.date.month >= endDateObj.date.month
+                && startDateObj.date.day >= endDateObj.date.day) {
+                this.startDate = this.endDate;
+
             }
         },
         selected() {
@@ -192,6 +216,7 @@ export default {
         }
     },
     mounted() {
+        console.clear(); // TODO: Comment or remove this line
         this.todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
         this.endDate = this.startDate = this.todayDate;
         this.loadReservations(this.startDate, this.endDate);
