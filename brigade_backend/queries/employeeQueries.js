@@ -156,15 +156,16 @@ const updateEmployee = async (employeeToUpdate, passwordSalt, passwordHash, clie
 exports.updateEmployee = updateEmployee;
 
 const updateEmployeeColorByEmployeeNumber = async (employeeNumber, employeeColor) =>{
+    
     const result = await pool.query(
         `UPDATE employee SET color_hexcode = $2
-            WHERE employee_number = $1 RETURNING employee_number`,
+            WHERE employee_number = $1`,
             [employeeNumber, employeeColor]
     );
     if (result.rowCount === 0) {
         return undefined
     }
-    return result.rows[0];
+    return employeeNumber + employeeColor;
 }
 exports.updateEmployeeColorByEmployeeNumber = updateEmployeeColorByEmployeeNumber;
 

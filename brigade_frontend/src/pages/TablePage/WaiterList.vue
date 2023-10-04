@@ -19,7 +19,8 @@
             <v-row>
                 <v-list class="w-100 pa-2 ma-2">
                     <v-list-item v-for="waiter in waitersList" :key="waiter.employeeNumber" :title="waiter.listInformations"
-                        :value="waiter.employeeNumber" :color="waiter.waiterColor" @click="selectWaiter(waiter.employeeNumber, waiter.waiterColor)">
+                        :value="waiter.employeeNumber" :color="waiter.waiterColor"
+                        @click="selectWaiter(waiter.employeeNumber, waiter.waiterColor)">
                         <template v-slot:prepend>
                             <v-avatar :color="waiter.waiterColor" @click="openColorPicker(waiter)">
                             </v-avatar>
@@ -30,7 +31,7 @@
                         </v-dialog>
                         <template v-slot:subtitle>
                             <v-btn v-if="(inEditionMode)" prepend-icon="mdi-plus" variant="tonal" density="compact"
-                                rounded="0" >Assigner la section</v-btn>
+                                rounded="0">Assigner la section</v-btn>
                         </template>
 
                     </v-list-item>
@@ -42,14 +43,16 @@
                 <v-col v-if="!inColorMode">
                     <BlackButton @click="toggleEditionMode" class="ma-6"
                         :textbutton='inEditionMode ? "Annuler" : "Assigner les sections"'></BlackButton>
-                </v-col>  
-                <v-col v-if="!inEditionMode"> 
-                        <BlackButton @click="toggleColorMode" class="ma-6"
+                </v-col>
+                <v-col v-if="!inEditionMode">
+                    <BlackButton @click="toggleColorMode" class="ma-6"
                         :textbutton='inColorMode ? "Annuler" : "Changer les couleurs"'></BlackButton>
                 </v-col>
                 <v-col>
-                    <BlackButton v-if="inEditionMode" @click="" class="ma-6" :textbutton='"Enregistrer les sections"'></BlackButton>
-                    <BlackButton v-if="inColorMode" @click="updatecolor()" class="ma-6" :textbutton='"Enregistrer les couleurs"'></BlackButton>
+                    <BlackButton v-if="inEditionMode" @click="" class="ma-6" :textbutton='"Enregistrer les sections"'>
+                    </BlackButton>
+                    <BlackButton v-if="inColorMode" @click="updatecolor()" class="ma-6"
+                        :textbutton='"Enregistrer les couleurs"'></BlackButton>
                 </v-col>
 
             </v-row>
@@ -98,27 +101,20 @@ export default {
                 });
             })
         },
-        updatecolor(){
-            const employeeList = [];
+        updatecolor() {
             this.waitersList.forEach((employee) => {
-                const newWaiter={
-                employeeNumber: employee.employeeNumber,
-                employeeColor: employee.waiterColor
-                }
-                employeeList.push(newWaiter);
-            }
-            )
-            updateEmployeeColor(employeeList).then(
-                this.getWaitersList()
-            )
+                updateEmployeeColor(employee.employeeNumber, employee.waiterColor)
+            })
+            this.getWaitersList();
+            this.inColorMode = false;
         },
         openColorPicker(waiter) {
             if (this.inColorMode) {
                 waiter.dialogVisible = !waiter.dialogVisible;
             }
         },
-        toggleColorMode(){
-            this.inColorMode=!this.inColorMode;
+        toggleColorMode() {
+            this.inColorMode = !this.inColorMode;
             if (!this.inColorMode) {
                 this.getWaitersList();
             }

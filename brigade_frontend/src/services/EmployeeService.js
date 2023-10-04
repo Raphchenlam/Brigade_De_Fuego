@@ -155,6 +155,24 @@ export async function updateEmployeeByAdmin(employee){
     }
 }
 
+export async function updateEmployeeColor(employeeNumber, employeeColor) {
+    const response = await fetch(`/api/employee/employeeColor/${employeeNumber}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          //...session.getAuthHeaders(),
+        },
+        body: JSON.stringify({employeeColor:employeeColor}),
+      });
+    if (response.ok) {
+      const respJson = await response.json();
+      return respJson;
+  } else {
+      console.log(JSON.stringify(response));
+      throw await createServiceError(response);
+  }
+  }
+
 export async function updateEmployeeByEmployeeProfile(employee, employeeNumber){
     const response = await fetch(`/api/employee/${employeeNumber}`, {
         method: "PUT",
@@ -173,20 +191,3 @@ export async function updateEmployeeByEmployeeProfile(employee, employeeNumber){
     }
 }
 
-export async function updateEmployeeColor(employeeList) {
-    const response = await fetch(`/api/employee/employeeColor`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        //...OpSession.getAuthHeaders()
-      },
-      body: JSON.stringify(employeeList)
-    })
-    if (response.ok) {
-      const respJson = await response.json();
-      return respJson;
-  } else {
-      console.log(JSON.stringify(response));
-      throw await createServiceError(response);
-  }
-  }

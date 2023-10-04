@@ -62,4 +62,6 @@ assignationQueries.insertAssignation(newAssignation)
 })
 })
 
+
+
 module.exports = router;

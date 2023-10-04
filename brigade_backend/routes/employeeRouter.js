@@ -235,29 +235,29 @@ router.post('/',
         });
     });
 
-router.put('/employeeColor/',
+router.put('/employeeColor/:employeeNumber',
     //passport.authenticate('basic', { session: false }),
     (req, res, next) => {
         // const employee = req.user;
 
         // if (!employee) return next(new HttpError(401, "Connection nécessaire"));
-        const employeeList = req.body;
+        const employeeNumber = req.params.employeeNumber;
+        const employeeColor = req.body.employeeColor;
+        console.log("employeeNumber", employeeNumber);
+        console.log("employeeColor", employeeColor);
         console.log("body", req.body)
-        employeeList.forEach((employee) => {
-            const employeeNumber = employee.employeeNumber;
-            const employeeColor = employee.employeeColor;
 
-            if (!employeeNumber || employeeNumber == '') return next(new HttpError(400, 'Le champ employeeNumber est requis'));
-            if (!employeeColor || employeeColor == '') return next(new HttpError(400, 'Le champ employeeColor est requis'));
-            if (!regex.validColorHexCode.test(employeeColor)) return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
+        if (!employeeNumber || employeeNumber == '') return next(new HttpError(400, 'Le champ employeeNumber est requis'));
+        if (!employeeColor || employeeColor == '') return next(new HttpError(400, 'Le champ employeeColor est requis'));
+       // if (!regex.validColorHexCode.test(employeeColor)) return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
 
-            const resultEmployee = employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber);
+        const resultEmployee = employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber);
 
-            if (!resultEmployee) {
-                return next(new HttpError(404, 'Employé(e) introuvable'));
-            }
-        })
-        employeeQueries.updateEmployeeColorByEmployeeNumber(employeeList).then(result => {
+        if (!resultEmployee) {
+            return next(new HttpError(404, 'Employé(e) introuvable'));
+        }
+
+        employeeQueries.updateEmployeeColorByEmployeeNumber(employeeNumber, employeeColor).then(result => {
             if (!result) {
                 return next(new HttpError(404, 'Employé(e) introuvable'));
             }
@@ -267,9 +267,6 @@ router.put('/employeeColor/',
         })
 
     });
-
-
-
 
 router.put('/:employeeNumber',
     passport.authenticate('basic', { session: false }),
