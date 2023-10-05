@@ -52,6 +52,7 @@ import { fetchAllTables, fetchAssignationByDate } from '../../services/TableServ
 
 
 export default {
+    inject: [ 'toLocale' ],
     name: 'TablePlanView',
     components: {
         OperationMenu,
@@ -67,7 +68,7 @@ export default {
             tableList: [],
             assignationList: [],
             tableWithAssignationList: [],
-            selectedDate: new Date().toISOString().split('T')[0],
+            selectedDate: this.loadDate(),
             selectedShift: "Midi",
             selectedTable: null,
             selectedReservationId: null,
@@ -103,10 +104,13 @@ export default {
             //************************/
             //***A remettre en place**/
             //************************/
-            const todayDate = new Date().toISOString().split('T')[0];
+            // const todayDate = new Date().toISOString().split('T')[0];
+            const todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
+            
             // this.selectedDate = todayDate;
             this.selectedDate = (newReservationDate) ? newReservationDate : todayDate;
             this.selectedShift = newReservationShift;
+            return todayDate;
         },
         loadTableList() {
             // console.log('Loading table list...');
