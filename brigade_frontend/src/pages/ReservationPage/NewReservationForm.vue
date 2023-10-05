@@ -172,7 +172,23 @@ export default {
                 if (result) {
                     this.dialogOKReservation = true;
                     if (this.dialogOKReservation) {
-                        this.refreshWithNewreservation([result.id, this.reservationFullDate, this.clientFirstName]);
+
+                        const startTimeObj = this.toLocale(this.reservation.startTime);
+                        console.log("startTimeObj : ");
+                        console.log(startTimeObj);
+                        console.log("startTimeObj.time.hours : ");
+                        console.log(startTimeObj.time.hours);
+                        console.log("startTimeObj.time.hours < 15: ");
+                        console.log(startTimeObj.time.hours < 15);
+                        var newReservationShift;
+                        if (startTimeObj.time.hours < 15){
+                            newReservationShift = "Midi";
+                        }else{
+                            newReservationShift = "Soir";
+                        }
+
+
+                        this.refreshWithNewreservation([result.id, this.reservationFullDate, this.clientFirstName, newReservationShift]);
                     }
                     setTimeout(this.closeAllDialog, 2000);
                 }

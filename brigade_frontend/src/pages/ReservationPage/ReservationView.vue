@@ -4,11 +4,11 @@
       <ReservationList class="pa-2"></ReservationList>
     </v-col>
     <v-col>
-      <ReservationInformation class="pa-2" v-if="selectedReservationId" :reservationId="selectedReservationId"></ReservationInformation>
+      <ReservationInformation class="pa-2" v-if="selectedReservationId" 
+      :reservationId="selectedReservationId"></ReservationInformation>
     </v-col>
   </v-row>
 </template>
-    
     
 <script>
 import OperationMenu from '../../components/OperationMenu.vue';
