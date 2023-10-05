@@ -18,23 +18,17 @@
 <script>
 
 import tableIcon from "../tablepage/Table.vue";
-import { fetchAssignationByDate } from '../../services/TableService';
 
 export default {
     components: {
         tableIcon
     },
-    inject: ['tableWithAssignationList', 'selectedDate', 'selectedShift','inEditionMode', 'localAssignations'],
+    inject: ['tableWithAssignationList', 'inEditionMode', 'localAssignations'],
     data() {
         return {
 
         }
     },
-
-
-    methods: {
-
-    }
 
 }
 </script>

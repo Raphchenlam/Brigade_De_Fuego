@@ -69,17 +69,14 @@ import BlackButton from "../../components/Reusable/BlackButton.vue";
 
 
 export default {
-    inject: ['tableWithAssignation', 'selectedDate', 'selectedShift', 'inEditionMode', 'toggleEditionMode',
-        'selectedTable', 'selectTableInSection', 'tableInSection', 'selectWaiter', 'localAssignations', 'selectedWaiter'],
+    inject: ['selectedDate', 'selectedShift', 'inEditionMode', 'toggleEditionMode', 'selectWaiter'],
     components: {
         BlackButton
     },
     data() {
         return {
             waitersList: [],
-            newColor: null,
-            inColorMode: false,
-
+            inColorMode: false
         }
     },
 
