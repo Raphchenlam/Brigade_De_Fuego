@@ -174,12 +174,6 @@ export default {
                     if (this.dialogOKReservation) {
 
                         const startTimeObj = this.toLocale(this.reservation.startTime);
-                        console.log("startTimeObj : ");
-                        console.log(startTimeObj);
-                        console.log("startTimeObj.time.hours : ");
-                        console.log(startTimeObj.time.hours);
-                        console.log("startTimeObj.time.hours < 15: ");
-                        console.log(startTimeObj.time.hours < 15);
                         var newReservationShift;
                         if (startTimeObj.time.hours < 15){
                             newReservationShift = "Midi";
