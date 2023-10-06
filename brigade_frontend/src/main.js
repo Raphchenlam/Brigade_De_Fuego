@@ -21,6 +21,7 @@ import ReservationView from './pages/ReservationPage/ReservationView.vue'
 import TablePlanView from './pages/TablePage/TablePlanView.vue'
 import PunchView from './pages/PunchPage/PunchView.vue'
 import ScheduleView from './pages/SchedulePage/ScheduleCreationView.vue'
+import PersonalScheduleView from './pages/SchedulePage/PersonalScheduleView.vue'
 
 //Route pour l espace employee
 import EspaceLoginForm from './pages/EspaceLoginForm.vue'
@@ -54,7 +55,8 @@ const router = createRouter({
         { path: '/espace/employee', component: EmployeeView },
         { path: '/espace/employee/:employeeNumber', component: EmployeeInformationView, props: true },
         { path: '/espace/punch', component: PunchManagerView },
-        { path: '/espace/schedule', component : ScheduleView },
+        { path: '/espace/schedule', component: ScheduleView },
+        { path: '/espace/schedule/:employeeNumber', component : PersonalScheduleView, props: true },
 
         { path: '/operation', component: OperationLoginForm },
         { path: '/operation/client', component: ClientView },

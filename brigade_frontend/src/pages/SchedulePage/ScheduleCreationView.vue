@@ -671,7 +671,7 @@ import CloseRedButton from '../../components/Reusable/CloseRedButton.vue'
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue'
 import EmployeeList from '../EmployeePage/EmployeeList.vue'
 import { getAllRoles, getEmployeeByEmployeeNumber } from '../../services/EmployeeService'
-import { getScheduleWeekInfoByID, getEmployeeScheduleByScheduleWeekId, updateSchedule } from '../../services/ScheduleService'
+import { getScheduleWeekInfoByID, getAllEmployeeScheduleByScheduleWeekId, updateSchedule } from '../../services/ScheduleService'
 import userSession from '../../sessions/UserSession'
 import { watch } from 'vue'
 
@@ -758,7 +758,6 @@ export default {
             this.weekDate[11] = saturday;
             this.weekDate[12] = sunday;
             this.weekDate[13] = sunday;
-
         },
         loadScheduleWeekInfo()
         {
@@ -786,7 +785,7 @@ export default {
         },
         loadEmployee()
         {
-            getEmployeeScheduleByScheduleWeekId(this.scheduleWeek).then(employeeInSchedule =>
+            getAllEmployeeScheduleByScheduleWeekId(this.scheduleWeek).then(employeeInSchedule =>
             {
                 this.scheduledEmployees = [];
                 employeeInSchedule.forEach(employee =>
@@ -1060,7 +1059,6 @@ export default {
     },
     mounted()
     {
-        console.log("route",this.$route.fullPath.split('/').slice(1)[1])
         this.roleList.push("Tous");
         getAllRoles().then(allRoles =>
         {

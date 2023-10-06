@@ -7,6 +7,47 @@ const regex = require('../../REGEX/REGEX_backend');
 
 const HttpError = require("../HttpError");
 
+
+
+router.get('/employee/:employeeNumber/:scheduleWeekId',
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) =>
+    {
+        console.log("params", req.params);
+        const employee = req.user;
+        const employeeNumberToGet = req.params.employeeNumber;
+        if (!employee) return next(new HttpError(401, "Connexion requise"));
+        if (employee.employeeNumber != employeeNumberToGet) return next(new HttpError(403, "Vous ne pouvez pas obtenir l'horaire d'un autre employé"));
+
+        const scheduleWeekId = req.params.scheduleWeekId;
+        if (!scheduleWeekId || scheduleWeekId == "") { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
+        if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
+
+        scheduleQueries.selectEmployeeScheduleByWeekId(employeeNumberToGet,scheduleWeekId).then(result =>
+        {
+            let employeeSchedule = [];
+            result.forEach(element =>
+            {
+                const schedule = {
+                    id: element.id,
+                    employeeNumber: element.employeeNumber,
+                    date: element.date,
+                    shiftName: element.shiftName,
+                    startTime: element.startTime,
+                    endTime: element.endTime,
+                    time: element.time
+                }
+                employeeSchedule.push(schedule);
+            });
+
+            res.json(employeeSchedule);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
+
+
 router.get("/:scheduleweekid",
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
@@ -73,7 +114,7 @@ router.get('/:scheduleweekid/employee',
 
         scheduleQueries.selectAllEmployeesScheduleByScheduleWeekId(scheduleWeekId).then(result =>
         {
-            employeeList = [];
+            let employeeList = [];
             result.forEach(element =>
             {
                 let found = employeeList.find(({ employeeNumber }) => employeeNumber == element.employeeNumber);
