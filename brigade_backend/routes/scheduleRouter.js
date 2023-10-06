@@ -115,6 +115,10 @@ router.put("/",
     {
         console.log("REQ.EMPLOYEE", req.user);
 
+        // Rergarder si je recois un TRUE dans la valeur de Published et aussi TRUE dans Modified... SI oui, changer dans le BD et aussi envoyer le courriel a toute
+        // les employés sur l'horaire
+
+
         const employee = req.user;
 
         if (!employee) return next(new HttpError(401, "Connexion requise"));

@@ -29,7 +29,6 @@ exports.selectAllLeaves = selectAllLeaves;
 
 const selectAllFilteredLeaves = async (checkboxes) =>
 {
-    console.log("checkboxes recu", checkboxes)
     const today = new Date().toISOString();
 
     let query = `SELECT leave.*, employee.first_name, employee.last_name
@@ -74,7 +73,6 @@ const selectAllFilteredLeaves = async (checkboxes) =>
 
     query += ` ORDER BY leave.start_date`;
 
-    console.log("query", query)
     let result;
 
     result = await pool.query(query);
@@ -102,11 +100,10 @@ const selectAllFilteredLeaves = async (checkboxes) =>
         };
         return leave;
     });
-    resultFinal.push({nbPending: parseInt(nbPending)});
+    resultFinal.push({ nbPending: parseInt(nbPending) });
     return resultFinal;
 };
 exports.selectAllFilteredLeaves = selectAllFilteredLeaves;
-
 
 const selectLeavesByEmployeeNumber = async (employeeNumber) =>
 {
@@ -115,7 +112,8 @@ const selectLeavesByEmployeeNumber = async (employeeNumber) =>
         FROM leave
         JOIN employee ON employee.employee_number = leave.employee_number
         WHERE leave.employee_number = $1
-        AND leave.start_date >= CURRENT_DATE`,
+        AND leave.start_date >= CURRENT_DATE
+        ORDER BY leave.start_date`,
         [employeeNumber]
     );
 
@@ -135,6 +133,34 @@ const selectLeavesByEmployeeNumber = async (employeeNumber) =>
     });
 };
 exports.selectLeavesByEmployeeNumber = selectLeavesByEmployeeNumber;
+
+const selectLeaveByID = async (leaveID) =>
+{
+    const result = await pool.query(
+        `SELECT *
+        FROM leave
+        WHERE id = $1`,
+        [leaveID]
+    );
+    const row = result.rows[0];
+    if (row)
+    {
+        const leave = {
+            id: row.id,
+            employeeNumber: row.employee_number,
+            startDate: row.start_date,
+            endDate: row.end_date,
+            category: row.category,
+            reason: row.reason,
+            status: row.status
+        };
+        return leave;
+    }
+    return undefined
+    
+};
+exports.selectLeaveByID = selectLeaveByID;
+
 
 const selectAllLeavesCategory = async () =>
 {
@@ -156,7 +182,8 @@ exports.selectAllLeavesCategory = selectAllLeavesCategory;
 
 
 
-const insertLeave = async (newLeave) => {
+const insertLeave = async (newLeave) =>
+{
     const result = await pool.query(
         `INSERT INTO leave
         (employee_number, "start_date", end_date, category, reason, "status")
@@ -166,7 +193,8 @@ const insertLeave = async (newLeave) => {
 
     const row = result.rows[0];
 
-    if (row) {
+    if (row)
+    {
 
         const reservation = {
             employeeNumber: row.employee_number,
@@ -183,3 +211,22 @@ const insertLeave = async (newLeave) => {
     throw new Error("L'insertion a échoué pour une raison inconnue");
 };
 exports.insertLeave = insertLeave;
+
+
+const updateLeave = async (leave) =>
+{
+    const result = await pool.query(
+        `UPDATE leave
+	        SET start_date=$2, end_date=$3, category=$4, reason=$5, status=$6 
+	        WHERE id = $1
+            RETURNING *`,
+        [leave.id, leave.startDate, leave.endDate, leave.category, leave.reason, leave.status]
+    );
+
+    if (result.rowCount === 0)
+    {
+        return undefined;
+    }
+    return result.rows[0];
+};
+exports.updateLeave = updateLeave;

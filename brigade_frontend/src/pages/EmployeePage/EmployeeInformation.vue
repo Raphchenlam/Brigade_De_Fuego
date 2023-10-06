@@ -56,7 +56,7 @@
                                 <p>Nombre d'heures prévus à l'horaire : {{ employee.scheduledHours }}</p>
                         </v-row>
                 </v-card>
-                <v-row height="100">
+                <v-row v-if="!this.$route.fullPath.split('/').slice(1)[2]" height="100">
                         <LeaveList :employeeNumber="employeeNumber"></LeaveList>
                 </v-row>
         </v-sheet>
