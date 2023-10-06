@@ -7,6 +7,20 @@ const regex = require('../../REGEX/REGEX_backend');
 
 const HttpError = require("../HttpError");
 
+const { envoyerEmail } = require("../emailManagement");
+
+
+router.post('/sendemailtest',
+    (req, res, next) =>
+    {
+        const destinataires = ["m.marchand22@hotmail.com"];
+        const sujet = "Nouvel horaire disponible";
+        const texte = "Bonjour Maxime, un nouvel horaire a été publier pour le Restaurant Del Fuego. Vous pouvez la consulter en vous connectant sur l'application";
+
+        envoyerEmail(destinataires, sujet, texte);
+        console.log("test")
+        res.json("test")
+    });
 
 
 router.get('/employee/:employeeNumber/:scheduleWeekId',
@@ -23,7 +37,7 @@ router.get('/employee/:employeeNumber/:scheduleWeekId',
         if (!scheduleWeekId || scheduleWeekId == "") { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
         if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
 
-        scheduleQueries.selectEmployeeScheduleByWeekId(employeeNumberToGet,scheduleWeekId).then(result =>
+        scheduleQueries.selectEmployeeScheduleByWeekId(employeeNumberToGet, scheduleWeekId).then(result =>
         {
             let employeeSchedule = [];
             result.forEach(element =>
@@ -35,7 +49,8 @@ router.get('/employee/:employeeNumber/:scheduleWeekId',
                     shiftName: element.shiftName,
                     startTime: element.startTime,
                     endTime: element.endTime,
-                    time: element.time
+                    time: element.time,
+                    isPublished: element.isPublished
                 }
                 employeeSchedule.push(schedule);
             });
@@ -69,8 +84,11 @@ router.get("/:scheduleweekid",
             {
                 if (scheduleWeek)
                 {
+                    const isPublished = scheduleWeek.published;
+                    console.log("isPublished", isPublished);
                     scheduleQueries.selectAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(allScheduledPeriod =>
                     {
+                        allScheduledPeriod.push({ isPublished: isPublished });
                         res.json(allScheduledPeriod);
                     })
 
@@ -154,8 +172,12 @@ router.put("/",
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
-        console.log("REQ.EMPLOYEE", req.user);
-
+        const isPublished = req.body.isPublished;
+        const isModified = req.body.isModified;
+        const savingMode = req.body.savingMode;
+        console.log("isPublished", isPublished)
+        console.log("isModified", isModified)
+        console.log("savingMode", savingMode)
         // Rergarder si je recois un TRUE dans la valeur de Published et aussi TRUE dans Modified... SI oui, changer dans le BD et aussi envoyer le courriel a toute
         // les employés sur l'horaire
 
@@ -189,7 +211,7 @@ router.put("/",
             const highest = Math.max(...periodIdList);
             if (lowest != body.weekInformations[0].id) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Elle ne correspondent pas a la semaine dans la demande`));
             if (highest != body.weekInformations[13].id) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Elle ne correspondent pas a la semaine dans la demande`));
-            
+
             scheduleQueries.deleteEmployeeFromSchedule(periodIdList).then(() =>
             {
                 const scheduledEmployeeList = req.body.scheduledEmployees;
@@ -200,6 +222,8 @@ router.put("/",
                         const weekInformationsList = req.body.weekInformations;
                         scheduleQueries.updateSchedulePeriodsInformations(weekInformationsList).then(() =>
                         {
+                            scheduleQueries.updateScheduleWeekStatus(scheduleWeekId, isPublished)
+
                             res.status(200).json("Mise a jour reussi");
                         }).catch(err =>
                         {

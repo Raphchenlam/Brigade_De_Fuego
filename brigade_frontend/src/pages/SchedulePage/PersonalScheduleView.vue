@@ -162,6 +162,7 @@ export default {
                 this.personalSchedule = [];
                 result.forEach(element =>
                 {
+                    if (element.isPublished) {
                     const dateString = element.date;
                     const dateObject = new Date(dateString);
                     const newShift = {
@@ -172,9 +173,10 @@ export default {
                         shiftName: element.shiftName,
                         startTime: element.startTime,
                         endTime: element.endTime,
-                        time: element.tim
+                        time: element.time
                     }
-                    this.personalSchedule.push(newShift);
+                        this.personalSchedule.push(newShift);
+                    }
                 });
             }).catch(err =>
             {

@@ -13,6 +13,11 @@
                     </v-text-field>
                 </v-col>
             </v-row>
+            <v-row class="justify-center">
+                <span v-if="!isPublished">Cette horaire n'est pas encore publier</span>
+                <span v-else>Cette horaire est déja publier. Vous pouvez la modifier</span>
+
+            </v-row>
             <div>
                 <v-row class="justify-space-around">
                     <v-col cols="12">
@@ -340,10 +345,13 @@
                 </v-row>
             </div>
         </v-sheet>
-        <v-sheet class="mx-15 my-5" v-if="this.isUserAuthorized()">
-            <v-row class="justify-space-between">
-                <v-btn @click="dialogAddEmployee = true">Ajouter un employe</v-btn>
-                <v-btn @click="saveSchedule()">Sauvegarger</v-btn>
+        <v-sheet class="mx-15 my-7" v-if="this.isUserAuthorized()">
+            <v-row class="justify-space-around">
+                    <v-btn @click="dialogAddEmployee = true">Ajouter un employe</v-btn>
+                    <v-btn @click="saveSchedule()">Sauvegarger</v-btn>
+                    <v-btn v-if="!isPublished" @click="publishSchedule()" style="background:lightgreen">Publier un nouvel l'horaire</v-btn>
+                    <v-btn v-else @click="publishSchedule()" style="background:lightgreen">Publier la modification de l'horaire</v-btn>
+
             </v-row>
         </v-sheet>
         <v-sheet class="mx-10" v-if="this.isUserAuthorized()">
@@ -688,6 +696,8 @@ export default {
             roleList: [],
             roleShowed: "Tous",
             scheduleWeek: null,
+            isPublished: false,
+            isModified: false,
             showedShift: "Lunch",
             weekDate: [
             ],
@@ -763,19 +773,34 @@ export default {
         {
             getScheduleWeekInfoByID(this.scheduleWeek).then(result =>
             {
+                console.log("result", result)
                 result.forEach(element =>
                 {
-                    const dateKey = element.date;
-                    const shiftName = element.shiftName;
-                    const mapping = this.datePropertyMapping[dateKey];
-
-                    if (mapping && mapping[shiftName])
+                    console.log("element", element)
+                    if (element.isPublished != null)
                     {
-                        const properties = mapping[shiftName];
-                        const shiftIndex = properties.index;
-                        this.weekInformations[shiftIndex].id = element.id;
-                        this.weekInformations[shiftIndex].traffic = element.averageTraffic;
-                        this.weekInformations[shiftIndex].averageCostByClient = element.averageCostByClient;
+                        if (element.isPublished)
+                        {
+                            this.isPublished = true;
+                        } else
+                        {
+                            this.isPublished = false;
+                        }
+                    }
+                    else
+                    {
+                        const dateKey = element.date;
+                        const shiftName = element.shiftName;
+                        const mapping = this.datePropertyMapping[dateKey];
+
+                        if (mapping && mapping[shiftName])
+                        {
+                            const properties = mapping[shiftName];
+                            const shiftIndex = properties.index;
+                            this.weekInformations[shiftIndex].id = element.id;
+                            this.weekInformations[shiftIndex].traffic = element.averageTraffic;
+                            this.weekInformations[shiftIndex].averageCostByClient = element.averageCostByClient;
+                        }
                     }
                 });
             }).catch(err =>
@@ -938,12 +963,41 @@ export default {
             const weekInformations = {
                 scheduleWeekId: this.scheduleWeek,
                 weekInformations: this.weekInformations,
-                scheduledEmployees: this.scheduledEmployees
+                scheduledEmployees: this.scheduledEmployees,
+                isPublished: this.isPublished,
+                isModified: this.isModified,
+                savingMode: true
             }
             updateSchedule(weekInformations).then((result) =>
             {
                 if (result)
                 {
+                    this.dialogSaved = true;
+                    setTimeout(this.closeDialogSaved, 2000);
+                }
+            }).catch(err =>
+            {
+                console.error(err);
+            });
+        },
+        publishSchedule()
+        {
+            let willBeModified = false;
+            if (this.isPublished) willBeModified = true;
+
+            const weekInformations = {
+                scheduleWeekId: this.scheduleWeek,
+                weekInformations: this.weekInformations,
+                scheduledEmployees: this.scheduledEmployees,
+                isPublished: true,
+                isModified: willBeModified,
+                savingMode: false
+            }
+            updateSchedule(weekInformations).then((result) =>
+            {
+                if (result)
+                {
+                    this.isPublished = true;
                     this.dialogSaved = true;
                     setTimeout(this.closeDialogSaved, 2000);
                 }

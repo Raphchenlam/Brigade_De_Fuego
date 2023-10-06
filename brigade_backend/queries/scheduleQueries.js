@@ -14,7 +14,8 @@ const selectScheduleWeekInfoByID = async (scheduleWeekId) =>
         const scheduleWeek = {
             id: row.id,
             starDate: row.start_date,
-            endDate: row.end_date
+            endDate: row.end_date,
+            published: row.published
         };
         return scheduleWeek;
     }
@@ -88,11 +89,12 @@ exports.selectAllEmployeesScheduleByScheduleWeekId = selectAllEmployeesScheduleB
 const selectEmployeeScheduleByWeekId = async (employeeId, scheduleWeekId) =>
 {
     const result = await pool.query(
-        `SELECT es.*, sp.date, sp.shift_name
+        `SELECT es.*, sp.date, sp.shift_name, sw.published
         FROM employee_schedule as es
         JOIN schedule_period as sp ON sp.id = es.schedule_period_id
+        JOIN schedule_week as sw ON sw.id = sp.schedule_week_id
         WHERE es.employee_number = $1 AND sp.schedule_week_id = $2
-        ORDER BY id`,
+        ORDER BY sp.id`,
         [employeeId, scheduleWeekId]
     );
 
@@ -105,7 +107,8 @@ const selectEmployeeScheduleByWeekId = async (employeeId, scheduleWeekId) =>
             shiftName: row.shift_name,
             startTime: row.start_time,
             endTime: row.end_time,
-            time: row.start_time + "-" + row.end_time
+            time: row.start_time + "-" + row.end_time,
+            isPublished: row.published
         };
         return employeeSchedule;
     });
@@ -235,6 +238,16 @@ const updateSchedulePeriodsInformations = async (weekInformationsList) =>
 };
 exports.updateSchedulePeriodsInformations = updateSchedulePeriodsInformations;
 
+const updateScheduleWeekStatus = async (scheduleWeekId, isPublished) =>
+{
+        const result = await pool.query(
+            `UPDATE schedule_week
+            SET published = $2
+                WHERE id = $1`,
+            [scheduleWeekId, isPublished]
+        );
+};
+exports.updateScheduleWeekStatus = updateScheduleWeekStatus;
 
 const deleteEmployeeFromSchedule = async (periodIdList) =>
 {
@@ -251,3 +264,4 @@ const deleteEmployeeFromSchedule = async (periodIdList) =>
 };
 
 exports.deleteEmployeeFromSchedule = deleteEmployeeFromSchedule;
+
