@@ -348,9 +348,9 @@
         <v-sheet class="mx-15 my-7" v-if="this.isUserAuthorized()">
             <v-row class="justify-space-around">
                     <v-btn @click="dialogAddEmployee = true">Ajouter un employe</v-btn>
-                    <v-btn @click="saveSchedule()">Sauvegarger</v-btn>
+                    <v-btn v-if="!isPublished" @click="saveSchedule()">Sauvegarger</v-btn>
                     <v-btn v-if="!isPublished" @click="publishSchedule()" style="background:lightgreen">Publier un nouvel l'horaire</v-btn>
-                    <v-btn v-else @click="publishSchedule()" style="background:lightgreen">Publier la modification de l'horaire</v-btn>
+                    <v-btn v-else @click="publishSchedule()" style="background:lightgreen">Publier les modifications de l'horaire</v-btn>
 
             </v-row>
         </v-sheet>
@@ -773,10 +773,8 @@ export default {
         {
             getScheduleWeekInfoByID(this.scheduleWeek).then(result =>
             {
-                console.log("result", result)
                 result.forEach(element =>
                 {
-                    console.log("element", element)
                     if (element.isPublished != null)
                     {
                         if (element.isPublished)
@@ -963,10 +961,11 @@ export default {
             const weekInformations = {
                 scheduleWeekId: this.scheduleWeek,
                 weekInformations: this.weekInformations,
+                weekMonday: this.weekDate[0],
+                weekSunday : this.weekDate[13],
                 scheduledEmployees: this.scheduledEmployees,
                 isPublished: this.isPublished,
                 isModified: this.isModified,
-                savingMode: true
             }
             updateSchedule(weekInformations).then((result) =>
             {
@@ -982,24 +981,29 @@ export default {
         },
         publishSchedule()
         {
-            let willBeModified = false;
-            if (this.isPublished) willBeModified = true;
+            this.isModified = false;
+            if (this.isPublished) this.isModified = true;
 
             const weekInformations = {
                 scheduleWeekId: this.scheduleWeek,
                 weekInformations: this.weekInformations,
+                weekMonday: this.weekDate[0],
+                weekSunday : this.weekDate[13],
                 scheduledEmployees: this.scheduledEmployees,
                 isPublished: true,
-                isModified: willBeModified,
-                savingMode: false
+                isModified: this.isModified,
             }
             updateSchedule(weekInformations).then((result) =>
             {
-                if (result)
+                if (result == "Mise a jour reussi")
                 {
                     this.isPublished = true;
                     this.dialogSaved = true;
                     setTimeout(this.closeDialogSaved, 2000);
+                }
+                else
+                {
+                    console.error(result)
                 }
             }).catch(err =>
             {

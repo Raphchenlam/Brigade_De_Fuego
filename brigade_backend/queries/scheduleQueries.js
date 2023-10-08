@@ -115,6 +115,19 @@ const selectEmployeeScheduleByWeekId = async (employeeId, scheduleWeekId) =>
 };
 exports.selectEmployeeScheduleByWeekId = selectEmployeeScheduleByWeekId;
 
+const selectEmailFromEmployeeNumber = async (employeeNumber) =>
+{
+    const result = await pool.query(
+        `SELECT email
+        FROM employee
+        WHERE employee_number = $1`,
+        [employeeNumber]
+    );
+    let row = result.rows[0];
+    if (row) return row
+    return undefined
+};
+exports.selectEmailFromEmployeeNumber = selectEmailFromEmployeeNumber
 
 const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
 {
@@ -240,22 +253,22 @@ exports.updateSchedulePeriodsInformations = updateSchedulePeriodsInformations;
 
 const updateScheduleWeekStatus = async (scheduleWeekId, isPublished) =>
 {
-        const result = await pool.query(
-            `UPDATE schedule_week
+    const result = await pool.query(
+        `UPDATE schedule_week
             SET published = $2
                 WHERE id = $1`,
-            [scheduleWeekId, isPublished]
-        );
+        [scheduleWeekId, isPublished]
+    );
 };
 exports.updateScheduleWeekStatus = updateScheduleWeekStatus;
 
 const deleteEmployeeFromSchedule = async (periodIdList) =>
 {
-    console.log("periodIdList",periodIdList)
+    console.log("periodIdList", periodIdList)
     const lowest = Math.min(...periodIdList);
     const highest = Math.max(...periodIdList);
-    console.log("lowest",lowest)
-    console.log("highest",highest)
+    console.log("lowest", lowest)
+    console.log("highest", highest)
     const result = await pool.query(
         `DELETE FROM employee_schedule
         WHERE schedule_period_id >= $1 AND schedule_period_id <= $2`,

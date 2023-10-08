@@ -12,20 +12,21 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-function envoyerEmail(destinataires, sujet, texte, html)
+function sendEmail(recipients, subjet, text, html)
 {
     const mailOptions = {
-        from: "Restaurant Del Fuego",
-        to: destinataires.join(", "), // Joindre les destinataires en tant que chaîne séparée par des virgules
-        subject: sujet,
-        text: texte, // Corps du courriel en texte brut
+        from: "brigade@eimemanagement.com",
+        to: "brigade@eimemanagement.com",
+        bcc: recipients.join(", "),
+        subject: subjet,
+        text: text, // Corps du courriel en texte brut
         html: html, // Corps du courriel au format HTML (optionnel)
     };
-    transporter.sendMail(mailOptions, function (erreur, info)
+    transporter.sendMail(mailOptions, function (error, info)
     {
         if (erreur)
         {
-            console.error("Erreur lors de l'envoi du courriel : " + erreur);
+            console.error("Erreur lors de l'envoi du courriel : " + error);
         } else
         {
             console.log("Courriel envoyé avec succès : " + info.response);
@@ -33,4 +34,6 @@ function envoyerEmail(destinataires, sujet, texte, html)
     });
 }
 
-module.exports = { envoyerEmail };
+module.exports = { sendEmail };
+
+//

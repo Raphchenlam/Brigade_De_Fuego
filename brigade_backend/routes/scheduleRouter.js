@@ -7,27 +7,12 @@ const regex = require('../../REGEX/REGEX_backend');
 
 const HttpError = require("../HttpError");
 
-const { envoyerEmail } = require("../emailManagement");
-
-
-router.post('/sendemailtest',
-    (req, res, next) =>
-    {
-        const destinataires = ["m.marchand22@hotmail.com"];
-        const sujet = "Nouvel horaire disponible";
-        const texte = "Bonjour Maxime, un nouvel horaire a été publier pour le Restaurant Del Fuego. Vous pouvez la consulter en vous connectant sur l'application";
-
-        envoyerEmail(destinataires, sujet, texte);
-        console.log("test")
-        res.json("test")
-    });
-
+const { sendEmail } = require("../emailManagement");
 
 router.get('/employee/:employeeNumber/:scheduleWeekId',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
-        console.log("params", req.params);
         const employee = req.user;
         const employeeNumberToGet = req.params.employeeNumber;
         if (!employee) return next(new HttpError(401, "Connexion requise"));
@@ -64,14 +49,8 @@ router.get('/employee/:employeeNumber/:scheduleWeekId',
 
 
 router.get("/:scheduleweekid",
-    passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
-        const employee = req.user;
-
-        if (!employee) return next(new HttpError(401, "Connexion requise"));
-        if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
-
         const scheduleWeekId = req.params.scheduleweekid;
         if (!scheduleWeekId || scheduleWeekId === "")
         {
@@ -85,7 +64,6 @@ router.get("/:scheduleweekid",
                 if (scheduleWeek)
                 {
                     const isPublished = scheduleWeek.published;
-                    console.log("isPublished", isPublished);
                     scheduleQueries.selectAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(allScheduledPeriod =>
                     {
                         allScheduledPeriod.push({ isPublished: isPublished });
@@ -99,7 +77,6 @@ router.get("/:scheduleweekid",
                     {
                         if (result)
                         {
-                            console.log("result", result)
                             res.json(result);
                         }
                         else
@@ -167,23 +144,15 @@ router.get('/:scheduleweekid/employee',
         });
     });
 
-
 router.put("/",
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
         const isPublished = req.body.isPublished;
         const isModified = req.body.isModified;
-        const savingMode = req.body.savingMode;
-        console.log("isPublished", isPublished)
-        console.log("isModified", isModified)
-        console.log("savingMode", savingMode)
-        // Rergarder si je recois un TRUE dans la valeur de Published et aussi TRUE dans Modified... SI oui, changer dans le BD et aussi envoyer le courriel a toute
-        // les employés sur l'horaire
-
+        const weekInformationsList = req.body.weekInformations;
 
         const employee = req.user;
-
         if (!employee) return next(new HttpError(401, "Connexion requise"));
         if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
 
@@ -196,11 +165,10 @@ router.put("/",
         if (!body.weekInformations) return next(new HttpError(400, `Des weekInformations doivent etre fournis`));
         if (body.weekInformations.length != 14) return next(new HttpError(400, `weekInformation est invalide`));
         if (!body.scheduledEmployees) return next(new HttpError(400, `Un array d'employés est manquant`));
+        let scheduledEmployees = body.scheduledEmployees;
 
         scheduleQueries.selectAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(result =>
         {
-            console.log("result", result)
-
             let periodIdList = [];
             result.forEach(element =>
             {
@@ -215,16 +183,47 @@ router.put("/",
             scheduleQueries.deleteEmployeeFromSchedule(periodIdList).then(() =>
             {
                 const scheduledEmployeeList = req.body.scheduledEmployees;
-                console.log("scheduledEmployeeList.length", scheduledEmployeeList.length)
                 {
-                    scheduleQueries.insertNewEmployeeSchedule(scheduledEmployeeList).then(() =>
+                    scheduleQueries.insertNewEmployeeSchedule(scheduledEmployeeList).then((employeeList) =>
                     {
-                        const weekInformationsList = req.body.weekInformations;
                         scheduleQueries.updateSchedulePeriodsInformations(weekInformationsList).then(() =>
                         {
-                            scheduleQueries.updateScheduleWeekStatus(scheduleWeekId, isPublished)
+                            scheduleQueries.updateScheduleWeekStatus(scheduleWeekId, isPublished).then(() =>
+                            {
+                                let employeeList = [];
+                                scheduledEmployees.forEach(element =>
+                                {
+                                    let found = employeeList.find(({ employeeNumber }) => employeeNumber == element.employeeNumber);
 
-                            res.status(200).json("Mise a jour reussi");
+                                    if (!found)
+                                    {
+                                        employeeList.push(element.employeeNumber);
+                                    }
+                                });
+                                let mondayDate = new Date(req.body.weekMonday)
+                                let mondayString = mondayDate.getDate() + " " + mondayDate.toLocaleString('fr-FR', { month: 'long' }) + " " + mondayDate.getFullYear();
+                                let sundayDate = new Date(req.body.weekSunday)
+                                let sundayString = sundayDate.getDate() + " " + sundayDate.toLocaleString('fr-FR', { month: 'long' }) + " " + sundayDate.getFullYear();
+                                let dateString = mondayString + " au " + sundayString;
+
+                                //envoie des emails avant le retour au front end
+                                const emailPromises = employeeList.map(async (element) => {
+                                    const result = await scheduleQueries.selectEmailFromEmployeeNumber(element);
+                                    return result.email;
+                                });
+                                Promise.all(emailPromises)
+                                .then((emailList) => {
+                                    console.log("emailList", emailList);
+                                    emailList = ["m.marchand22@hotmail.com"] // A ENLEVER POUR LENVOYER EN PRODDUCTION!!!!
+                                    //let emailDone = sendEmailSchedule(emailList, isModified, dateString);
+                                    let emailDone = true;
+                                    if (emailDone) { res.status(200).json("Mise a jour reussi") };
+                                })
+                                .catch((error) => {
+                                    console.error("Erreur lors de la récupération des e-mails :", error);
+                                });
+
+                            })
                         }).catch(err =>
                         {
                             return next(err);
@@ -244,6 +243,24 @@ router.put("/",
         })
     }
 );
+
+
+function sendEmailSchedule(emailList, isModified, date)
+{
+    const recipients = emailList;
+    let subject = "Nouvel horaire disponible";
+    if (isModified) subject = "Horaire mis a jour"
+    const text = "Bonjour, un nouvel horaire a été publier pour la semaine du " + date + ".Vous pouvez la consulter en vous connectant sur l'application";
+    const html = `
+        <h1>Nouvel horaire</h1>
+        <p>Bonjour,</p>
+        <p>Un nouvel horaire a été publiépour la semaine du ` + date + `.</p>
+        <p>Veuillez vous connecter à l'application afin d'y avoir accès.</p>`
+    sendEmail(recipients, subject, text, html);
+    console.log("emails envoyes")
+    return true
+};
+
 
 function findAllDayOfAWeek(yearWeek)
 {

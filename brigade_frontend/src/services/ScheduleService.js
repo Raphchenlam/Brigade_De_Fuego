@@ -32,8 +32,7 @@ export async function getScheduleWeekInfoByID(scheduleWeekId)
     const response = await fetch(`/api/schedule/${scheduleWeekId}`, {
         method: "GET",
         headers: {
-            "Content-Type": "application/json",
-            ...session.getAuthHeaders()
+            "Content-Type": "application/json"
         },
     });
     if (response.ok)
