@@ -142,10 +142,6 @@ export default {
       const dateAndTimeString = this.replaceAndSplitDateFromTime(str);
       const dateAndTimeObject = this.dateOrTimeObjectifier(dateAndTimeString);
 
-      
-
-
-
       return {
         date: dateAndTimeObject.dateObject,
         time: dateAndTimeObject.timeObject
