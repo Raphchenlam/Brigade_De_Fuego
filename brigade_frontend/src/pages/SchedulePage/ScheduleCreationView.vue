@@ -1,5 +1,10 @@
 <template>
-    <v-sheet class="ma-2 h-50" v-if="this.isUserAuthorized()">
+    <v-sheet class="ma-2 h-50 hidden-md-and-up" v-if="this.isUserAuthorized()">
+        <v-row class="justify-center mx-10 my-2">
+            <h2>Cette section est seulement disponible sur un ordinateur</h2>
+        </v-row>
+    </v-sheet>
+    <v-sheet class="ma-2 h-50 hidden-sm-and-down" v-if="this.isUserAuthorized()">
         <v-sheet class="my-5 mx-10" v-if="this.isUserAuthorized()">
 
             <v-row class="justify-center">
@@ -23,19 +28,47 @@
                     <v-col cols="12">
                         <v-card v-if="showedShift == 'Lunch'" class="pa-1">
                             <v-row class="justify-left ma-0 pa-0" no-gutters>
-                                <v-col class="ma-1" cols="3">
+                                <v-col class="ma-1" cols="4">
                                     <p align="right" class="text-caption">Ajouter un evenement</p>
                                 </v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[0].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(0)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[0].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(0)" class="elevation-0" style="font-size:8px">{{
+                                        weekInformations[0].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[2].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(2)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[2].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(2)" class="elevation-0" style="font-size:8px">{{
+                                        weekInformations[2].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[4].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(4)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[4].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(4)" class="elevation-0" style="font-size:8px">{{
+                                        weekInformations[4].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[6].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(6)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[6].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(6)" class="elevation-0" style="font-size:8px">{{
+                                        weekInformations[6].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[8].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(8)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[8].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(8)" class="elevation-0" style="font-size:8px">{{
+                                        weekInformations[8].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[10].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(10)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[10].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(10)" class="elevation-0"
+                                        style="font-size:8px">{{ weekInformations[10].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[12].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(12)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[12].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(12)" class="elevation-0"
+                                        style="font-size:8px">{{ weekInformations[12].events[0] }}</v-btn></v-col>
                             </v-row>
                             <v-row class="justify-left ma-0 pa-0" no-gutters>
-                                <v-col class="ma-1" cols="3">
+                                <v-col class="ma-1" cols="4">
                                     <p align="right" class="text-caption"></p>
                                 </v-col>
                                 <v-col class="ml-2" cols="1">
@@ -77,7 +110,7 @@
                                 </v-col>
                             </v-row>
                             <v-row class="justify-left" no-gutters>
-                                <v-col class="ma-1" cols="3">
+                                <v-col class="ma-1" cols="4">
                                     <p align="right">Achalendage Moyen (nombre de clients)</p>
                                 </v-col>
                                 <v-col class="ml-2" cols="1"><v-text-field type="number"
@@ -103,7 +136,7 @@
                                         hide-spin-buttons></v-text-field></v-col>
                             </v-row>
                             <v-row class="justify-left" no-gutters>
-                                <v-col class="ml-2" cols="3">
+                                <v-col class="ml-2" cols="4">
                                     <p align="right">Facture moyenne par client</p>
                                 </v-col>
                                 <v-col class="ml-2" cols="1">
@@ -146,7 +179,7 @@
                                         </template></v-text-field></v-col>
                             </v-row>
                             <v-row class="justify-left" no-gutters>
-                                <v-col class="ml-2" cols="3">
+                                <v-col class="ml-2" cols="4">
                                     <p class="text-caption" align="right">Prévision pour le shift :</p>
                                 </v-col>
                                 <v-col class="ml-2" cols="1">
@@ -185,19 +218,47 @@
                         </v-card>
                         <v-card v-else class="pa-1">
                             <v-row class="justify-left ma-0 pa-0" no-gutters>
-                                <v-col class="ma-1" cols="3">
+                                <v-col class="ma-1" cols="4">
                                     <p align="right" class="text-caption">Ajouter un evenement</p>
                                 </v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
-                                <v-col align="center" class="ma-1" cols="1"><v-btn class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[1].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(1)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[1].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(1)" class="elevation-0" style="font-size:8px">{{
+                                        weekInformations[1].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[3].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(3)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[3].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(3)" class="elevation-0" style="font-size:8px">{{
+                                        weekInformations[3].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[5].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(5)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[5].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(5)" class="elevation-0" style="font-size:8px">{{
+                                        weekInformations[5].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[7].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(7)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[7].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(7)" class="elevation-0" style="font-size:8px">{{
+                                        weekInformations[7].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[9].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(9)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[9].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(9)" class="elevation-0" style="font-size:8px">{{
+                                        weekInformations[9].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[11].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(11)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[11].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(11)" class="elevation-0"
+                                        style="font-size:8px">{{ weekInformations[11].events[0] }}</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[13].events.length < 1" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(13)" class="elevation-0">+</v-btn></v-col>
+                                <v-col v-if="loaded && weekInformations[13].events.length > 0" align="center" class="ma-1"
+                                    cols="1"><v-btn @click="addEventToShift(13)" class="elevation-0"
+                                        style="font-size:8px">{{ weekInformations[13].events[0] }}</v-btn></v-col>
                             </v-row>
                             <v-row class="justify-left ma-0 pa-0" no-gutters>
-                                <v-col class="ma-1" cols="3">
+                                <v-col class="ma-1" cols="4">
                                     <p></p>
                                 </v-col>
                                 <v-col class="ml-2" cols="1">
@@ -238,7 +299,7 @@
                                 </v-col>
                             </v-row>
                             <v-row class="justify-left" no-gutters>
-                                <v-col class="ma-1" cols="3">
+                                <v-col class="ma-1" cols="4">
                                     <p align="right">Achalendage Moyen (nombre de clients)</p>
                                 </v-col>
                                 <v-col class="ml-2" cols="1"><v-text-field type="number"
@@ -264,7 +325,7 @@
                                         hide-spin-buttons></v-text-field></v-col>
                             </v-row>
                             <v-row class="justify-left" no-gutters>
-                                <v-col class="ml-2" cols="3">
+                                <v-col class="ml-2" cols="4">
                                     <p align="right">Facture moyenne par client</p>
                                 </v-col>
                                 <v-col class="ml-2" cols="1"><v-text-field type="number"
@@ -304,7 +365,7 @@
                                         </template></v-text-field></v-col>
                             </v-row>
                             <v-row class="justify-left" no-gutters>
-                                <v-col class="ml-2" cols="3">
+                                <v-col class="ml-2" cols="4">
                                     <p class="text-caption" align="right">Prévision pour le shift :</p>
                                 </v-col>
                                 <v-col class="ml-2" cols="1">
@@ -347,10 +408,12 @@
         </v-sheet>
         <v-sheet class="mx-15 my-7" v-if="this.isUserAuthorized()">
             <v-row class="justify-space-around">
-                    <v-btn @click="dialogAddEmployee = true">Ajouter un employe</v-btn>
-                    <v-btn v-if="!isPublished" @click="saveSchedule()">Sauvegarger</v-btn>
-                    <v-btn v-if="!isPublished" @click="publishSchedule()" style="background:lightgreen">Publier un nouvel l'horaire</v-btn>
-                    <v-btn v-else @click="publishSchedule()" style="background:lightgreen">Publier les modifications de l'horaire</v-btn>
+                <v-btn @click="dialogAddEmployee = true">Ajouter un employe</v-btn>
+                <v-btn v-if="!isPublished" @click="saveSchedule()">Sauvegarger (sans la publier)</v-btn>
+                <v-btn v-if="!isPublished" @click="publishSchedule()" style="background:lightgreen">Publier un nouvel
+                    l'horaire</v-btn>
+                <v-btn v-else @click="publishSchedule()" style="background:lightgreen">Publier les modifications de
+                    l'horaire</v-btn>
 
             </v-row>
         </v-sheet>
@@ -373,17 +436,25 @@
                         <p align="center" class="text-caption">{{ weekDate[0].getDate() + "/" +
                             (weekDate[0].getMonth() + 1) + "/" +
                             weekDate[0].getFullYear() }}</p>
-                        <p align="center" class="text-caption">PC requis : 45</p>
-                        <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
-                                style="color:red">35</span></p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
+                            requiredSkillPoints(0) }}</p>
+                        <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(1) }}</p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : <span
+                                v-if="56 - 35 >= 5" style="color:red">35</span></p>
+                        <p v-else align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
+                                style="color:red">45</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Mardi</p>
                         <p align="center" class="text-caption">{{ weekDate[2].getDate() + "/" +
                             (weekDate[2].getMonth() + 1) + "/" +
                             weekDate[2].getFullYear() }}</p>
-                        <p align="center" class="text-caption">PC requis : 0</p>
-                        <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
+                            requiredSkillPoints(2) }}</p>
+                        <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(3) }}</p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : <span
+                                v-if="56 - 35 >= 5" style="color:green">3</span></p>
+                        <p v-else align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
                                 style="color:green">3</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
@@ -391,8 +462,12 @@
                         <p align="center" class="text-caption">{{ weekDate[4].getDate() + "/" +
                             (weekDate[4].getMonth() + 1) + "/" +
                             weekDate[4].getFullYear() }}</p>
-                        <p align="center" class="text-caption">PC requis : 0</p>
-                        <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
+                            requiredSkillPoints(4) }}</p>
+                        <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(5) }}</p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : <span
+                                v-if="56 - 35 >= 5" style="color:green">3</span></p>
+                        <p v-else align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
                                 style="color:green">3</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
@@ -400,36 +475,52 @@
                         <p align="center" class="text-caption">{{ weekDate[6].getDate() + "/" +
                             (weekDate[6].getMonth() + 1) + "/" +
                             weekDate[6].getFullYear() }}</p>
-                        <p align="center" class="text-caption">PC requis : 0</p>
-                        <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
-                                style="color:green">0</span></p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
+                            requiredSkillPoints(6) }}</p>
+                        <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(7) }}</p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : <span
+                                v-if="56 - 35 >= 5" style="color:green">0</span></p>
+                        <p v-else align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
+                                style="color:green">3</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Vendredi</p>
                         <p align="center" class="text-caption">{{ weekDate[8].getDate() + "/" +
                             (weekDate[8].getMonth() + 1) + "/" +
                             weekDate[8].getFullYear() }}</p>
-                        <p align="center" class="text-caption">PC requis : 0</p>
-                        <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
-                                style="color:green">0</span></p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
+                            requiredSkillPoints(8) }}</p>
+                        <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(9) }}</p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : <span
+                                v-if="56 - 35 >= 5" style="color:green">0</span></p>
+                        <p v-else align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
+                                style="color:green">3</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Samedi</p>
                         <p align="center" class="text-caption">{{ weekDate[10].getDate() + "/" +
                             (weekDate[10].getMonth() + 1) + "/" +
                             weekDate[10].getFullYear() }}</p>
-                        <p align="center" class="text-caption">PC requis : 0</p>
-                        <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
-                                style="color:green">0</span></p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
+                            requiredSkillPoints(10) }}</p>
+                        <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(11) }}</p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : <span
+                                v-if="56 - 35 >= 5" style="color:green">0</span></p>
+                        <p v-else align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
+                                style="color:green">3</span></p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Dimanche</p>
-                        <p align="center" class="text-caption">{{ weekDate[12].getDate() + "/" +
+                        <p align="center" class="text-caption">{{ weekDate[12].getDate(12) + "/" +
                             (weekDate[12].getMonth() + 1) + "/" +
                             weekDate[12].getFullYear() }}</p>
-                        <p align="center" class="text-caption">PC requis : 0</p>
-                        <p align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
-                                style="color:green">0</span></p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
+                            requiredSkillPoints(12) }}</p>
+                        <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(13) }}</p>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : <span
+                                v-if="56 - 35 >= 5" style="color:green">0</span></p>
+                        <p v-else align="center" class="text-caption">PC actuel : <span v-if="56 - 35 >= 5"
+                                style="color:green">3</span></p>
                     </v-col>
                 </v-row>
                 <v-divider class="border-opacity-50 mt-2"></v-divider>
@@ -617,9 +708,7 @@
                     </v-row>
                 </v-sheet>
             </v-card>
-
         </v-sheet>
-
     </v-sheet>
 
     <v-sheet v-else>
@@ -671,6 +760,30 @@
             </v-row>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="dialogAddEvent" width="75%" persistent>
+        <v-sheet class="pa-5">
+            <v-card-title>
+                Ajouter un evenement a la liste
+            </v-card-title>
+            <v-row class="justify-center">
+                <p v-if="warningEventAlreadyInScheduleMessage" align="center" class="warning-message">L'evenement est déjà
+                    dans ce shift</p>
+            </v-row>
+            <v-row>
+                <EventList width="100%" height="100%" :scheduledEvent="selectedEvent"></EventList>
+            </v-row>
+            <v-row class="justify-end">
+                <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialogAddEvent"></DarkRedButton>
+                <DarkRedButton v-if="selectedEvent" class="mx-5" textbutton="Ajouter" :disabled="!selectedEvent"
+                    @click="addNewEventToShift()">
+                </DarkRedButton>.
+                <DarkRedButton v-if="!selectedEvent" class="mx-5" textbutton="Ne pas ajouter d'evénement à ce shift"
+                    @click="removeNewEventToShift()">
+                </DarkRedButton>
+
+            </v-row>
+        </v-sheet>
+    </v-dialog>
 </template>
 
 
@@ -678,8 +791,10 @@
 import CloseRedButton from '../../components/Reusable/CloseRedButton.vue'
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue'
 import EmployeeList from '../EmployeePage/EmployeeList.vue'
+import EventList from '../EventPage/EventList.vue'
 import { getAllRoles, getEmployeeByEmployeeNumber } from '../../services/EmployeeService'
-import { getScheduleWeekInfoByID, getAllEmployeeScheduleByScheduleWeekId, updateSchedule } from '../../services/ScheduleService'
+import { fetchEventByName } from '../../services/EventService'
+import { getScheduleWeekInfoByID, getAllEmployeeScheduleByScheduleWeekId, getAllEventByScheduleWeekId, updateSchedule } from '../../services/ScheduleService'
 import userSession from '../../sessions/UserSession'
 import { watch } from 'vue'
 
@@ -687,6 +802,7 @@ export default {
     inject: ['isUserAuthorized'],
     components: {
         EmployeeList,
+        EventList,
         DarkRedButton,
         CloseRedButton
     },
@@ -702,11 +818,13 @@ export default {
             weekDate: [
             ],
             weekInformations: [
+
             ],
             scheduledEmployees: [
             ],
             scheduledEmployeesShow: [
             ],
+            dialogAddEvent: false,
             dialogNewShift: false,
             dialogAddEmployee: false,
             dialogSaved: false,
@@ -717,13 +835,19 @@ export default {
             datePropertyMapping: null,
             selectedEmployeeNumberToAdd: null,
             warningEmployeeAlreadyInScheduleMessage: false,
-            userSession: userSession
+            warningEventAlreadyInScheduleMessage: false,
+            selectedEvent: "",
+            tempSelectedEvent: "",
+            shiftToAddEvent: "",
+            userSession: userSession,
+            loaded: false
         }
     },
     provide()
     {
         return {
             loadEmployeeNumber: this.loadSelectedEmployeeNumberToAdd,
+            loadEvent: this.loadEvent
         }
     },
     methods: {
@@ -798,9 +922,11 @@ export default {
                             this.weekInformations[shiftIndex].id = element.id;
                             this.weekInformations[shiftIndex].traffic = element.averageTraffic;
                             this.weekInformations[shiftIndex].averageCostByClient = element.averageCostByClient;
+                            this.weekInformations[shiftIndex].events = [];
                         }
                     }
                 });
+                this.loaded = true;
             }).catch(err =>
             {
                 console.log(err)
@@ -870,6 +996,37 @@ export default {
                 }
             });
             this.scheduledEmployeesShow = newEmployeeList;
+        },
+        loadEvents()
+        {
+            getAllEventByScheduleWeekId(this.scheduleWeek).then(result =>
+            {
+
+                for (let i = 0; i < 14; i++)
+                {
+                    this.weekInformations[i].events = [];
+                }
+                result.forEach(element =>
+                {
+                    if (element.isActive)
+                    {
+                        const dateKey = element.date;
+                        const shiftName = element.shiftName;
+                        const mapping = this.datePropertyMapping[dateKey];
+
+                        if (mapping && mapping[shiftName])
+                        {
+                            const properties = mapping[shiftName];
+                            const shiftIndex = properties.index;
+                            this.weekInformations[shiftIndex].events.push(element.eventName);
+                            this.weekInformations[shiftIndex].eventImpact = element.impact;
+                        }
+                    }
+                });
+            }).catch(err =>
+            {
+                console.error(err);
+            })
         },
         addShiftToEmployee(employee, dayIndex)
         {
@@ -962,7 +1119,7 @@ export default {
                 scheduleWeekId: this.scheduleWeek,
                 weekInformations: this.weekInformations,
                 weekMonday: this.weekDate[0],
-                weekSunday : this.weekDate[13],
+                weekSunday: this.weekDate[13],
                 scheduledEmployees: this.scheduledEmployees,
                 isPublished: this.isPublished,
                 isModified: this.isModified,
@@ -988,7 +1145,7 @@ export default {
                 scheduleWeekId: this.scheduleWeek,
                 weekInformations: this.weekInformations,
                 weekMonday: this.weekDate[0],
-                weekSunday : this.weekDate[13],
+                weekSunday: this.weekDate[13],
                 scheduledEmployees: this.scheduledEmployees,
                 isPublished: true,
                 isModified: this.isModified,
@@ -1013,6 +1170,43 @@ export default {
         closeDialogSaved()
         {
             this.dialogSaved = false;
+        },
+        addEventToShift(shift)
+        {
+            this.shiftToAddEvent = shift;
+            this.dialogAddEvent = true;
+        },
+        loadEvent(selectedEvent)
+        {
+            this.selectedEvent = selectedEvent;
+        },
+        closeDialogAddEvent()
+        {
+            this.dialogAddEvent = false;
+        },
+        addNewEventToShift()
+        {
+            this.weekInformations[this.shiftToAddEvent].events[0] = this.selectedEvent; // A Enlever lorsque que plusieurs event pourront se mettre sur le meme shift
+            //this.weekInformations[this.shiftToAddEvent].events.push(this.selectedEvent); // Sera utile pour eventuellement mettre plusieurs event sur un meme shift
+            fetchEventByName(this.selectedEvent).then(result =>
+            {
+                if (result)
+                {
+                    this.weekInformations[this.shiftToAddEvent].eventImpact = result.impact;
+                }
+            }).catch(err =>
+            {
+                console.error(err);
+            })
+            this.selectedEvent = "";
+            this.dialogAddEvent = false;
+        },
+        removeNewEventToShift()
+        {
+            this.weekInformations[this.shiftToAddEvent].events = [];
+            this.weekInformations[this.shiftToAddEvent].eventImpact = 100;
+            this.selectedEvent = "";
+            this.dialogAddEvent = false;
         },
         setDatePropertyMappingateMap()
         {
@@ -1046,6 +1240,17 @@ export default {
                     Soir: { index: 13 }
                 }
             }
+        },
+        requiredSkillPoints(shiftIndex)
+        {
+            let result1 = this.weekInformations[shiftIndex].traffic / 4;
+            console.log("impact1", this.weekInformations[shiftIndex].eventImpact);
+
+            if (!this.weekInformations[shiftIndex].eventImpact) this.weekInformations[shiftIndex].eventImpact = 100;
+            let result2 = result1 * (this.weekInformations[shiftIndex].eventImpact / 100);
+            console.log("impact2", this.weekInformations[shiftIndex].eventImpact);
+
+            return parseInt(result2);
         }
     },
     computed: {
@@ -1053,17 +1258,19 @@ export default {
         {
             if (this.showedShift == "Lunch") return "Midi"
             else return "Souper"
-        }
+        },
     },
     watch: {
         scheduleWeek()
         {
+            this.loaded = false;
             this.showedShift = "Lunch";
             this.roleShowed = "Tous";
             this.setWeekDayDate();
             this.setDatePropertyMappingateMap();
             this.loadScheduleWeekInfo()
             this.loadEmployee();
+            this.loadEvents();
 
         },
         roleShowed()
@@ -1106,6 +1313,7 @@ export default {
                 averageCostByClient: 0
             });
         }
+        this.loadScheduleWeekInfo();
     },
     created()
     {
@@ -1126,8 +1334,8 @@ export default {
             });
         })
         this.loadEmployee();
+        this.loadEvents();
         this.setDatePropertyMappingateMap();
-        this.loadScheduleWeekInfo();
     }
 }
 </script>

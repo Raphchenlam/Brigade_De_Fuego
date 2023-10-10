@@ -64,7 +64,27 @@ export async function getAllEmployeeScheduleByScheduleWeekId(scheduleWeekId)
     }
 }
 
-export async function getScheduleForOneEmployeeByEmployeeNumberAndScheduleWeekId(employeeNumber,scheduleWeekId)
+
+export async function getAllEventByScheduleWeekId(scheduleWeekId)
+{
+    const response = await fetch(`/api/schedule/${scheduleWeekId}/event`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
+    if (response.ok)
+    {
+        const respJson = await response.json();
+        return respJson;
+    } else
+    {
+        throw await createServiceError(response);
+    }
+}
+
+export async function getScheduleForOneEmployeeByEmployeeNumberAndScheduleWeekId(employeeNumber, scheduleWeekId)
 {
     const response = await fetch(`/api/schedule/employee/${employeeNumber}/${scheduleWeekId}`, {
         method: "GET",
@@ -89,14 +109,16 @@ export async function updateSchedule(scheduleInformations)
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-             ...session.getAuthHeaders()
+            ...session.getAuthHeaders()
         },
         body: JSON.stringify(scheduleInformations)
     });
 
-    if (response.ok) {
+    if (response.ok)
+    {
         return await response.json();
-    } else {
+    } else
+    {
         throw await createServiceError(response);
     }
 }

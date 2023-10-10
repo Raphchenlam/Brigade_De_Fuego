@@ -144,6 +144,37 @@ router.get('/:scheduleweekid/employee',
         });
     });
 
+
+    router.get('/:scheduleweekid/event',
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) =>
+    {
+        const employee = req.user;
+
+        if (!employee) return next(new HttpError(401, "Connexion requise"));
+        if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
+        const scheduleWeekId = req.params.scheduleweekid;
+
+        if (!scheduleWeekId || scheduleWeekId == "") { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
+        if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
+
+        scheduleQueries.selectAllEventScheduleByWeekId(scheduleWeekId).then(result =>
+        {
+            let eventList = [];
+            result.forEach(element =>
+            {
+                eventList.push(element)
+            });
+
+            res.json(eventList);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
+
+
+
 router.put("/",
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
@@ -158,6 +189,7 @@ router.put("/",
 
         let body = req.body;
         console.log("body", body)
+        console.log("body event", body.weekInformations[0].events)
 
         const scheduleWeekId = body.scheduleWeekId;
         if (!scheduleWeekId || scheduleWeekId == "") return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`));
@@ -166,6 +198,20 @@ router.put("/",
         if (body.weekInformations.length != 14) return next(new HttpError(400, `weekInformation est invalide`));
         if (!body.scheduledEmployees) return next(new HttpError(400, `Un array d'employés est manquant`));
         let scheduledEmployees = body.scheduledEmployees;
+
+        let eventList = []
+        weekInformationsList.forEach(element =>
+        {
+            if (element.events.length > 0)
+            {
+                const newEvent = {
+                    idSchedulePeriod: element.id,
+                    events: element.events
+                }
+                eventList.push(newEvent);
+            }
+        })
+        console.log("eventList", eventList)
 
         scheduleQueries.selectAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(result =>
         {
@@ -190,44 +236,57 @@ router.put("/",
                         {
                             scheduleQueries.updateScheduleWeekStatus(scheduleWeekId, isPublished).then(() =>
                             {
-                                let employeeList = [];
-                                scheduledEmployees.forEach(element =>
+                                scheduleQueries.updateEventForScheduleWeek(periodIdList, eventList).then(() =>
                                 {
-                                    let found = employeeList.find(({ employeeNumber }) => employeeNumber == element.employeeNumber);
-
-                                    if (!found)
+                                    let employeeList = [];
+                                    scheduledEmployees.forEach(element =>
                                     {
-                                        employeeList.push(element.employeeNumber);
-                                    }
+                                        let found = employeeList.find(({ employeeNumber }) => employeeNumber == element.employeeNumber);
+    
+                                        if (!found)
+                                        {
+                                            employeeList.push(element.employeeNumber);
+                                        }
+                                    });
+                                    let mondayDate = new Date(req.body.weekMonday)
+                                    let mondayString = mondayDate.getDate() + " " + mondayDate.toLocaleString('fr-FR', { month: 'long' }) + " " + mondayDate.getFullYear();
+                                    let sundayDate = new Date(req.body.weekSunday)
+                                    let sundayString = sundayDate.getDate() + " " + sundayDate.toLocaleString('fr-FR', { month: 'long' }) + " " + sundayDate.getFullYear();
+                                    let dateString = mondayString + " au " + sundayString;
+    
+                                    //envoie des emails avant le retour au front end
+                                    const emailPromises = employeeList.map(async (element) =>
+                                    {
+                                        const result = await scheduleQueries.selectEmailFromEmployeeNumber(element);
+                                        return result.email;
+                                    });
+                                    Promise.all(emailPromises)
+                                        .then((emailList) =>
+                                        {
+                                            console.log("emailList", emailList);
+                                            console.log("dateString", dateString);
+                                            emailList = ["m.marchand22@hotmail.com"] // A ENLEVER POUR LENVOYER EN PRODDUCTION!!!!
+                                            //let emailDone = sendEmailSchedule(emailList, isModified, dateString);
+                                            let emailDone = true;
+                                            if (emailDone) { res.status(200).json("Mise a jour reussi") };
+                                        })
+                                        .catch((error) =>
+                                        {
+                                            console.error("Erreur lors de la récupération des e-mails :", error);
+                                        });
+                                }).catch(err =>
+                                {
+                                    return next(err);
                                 });
-                                let mondayDate = new Date(req.body.weekMonday)
-                                let mondayString = mondayDate.getDate() + " " + mondayDate.toLocaleString('fr-FR', { month: 'long' }) + " " + mondayDate.getFullYear();
-                                let sundayDate = new Date(req.body.weekSunday)
-                                let sundayString = sundayDate.getDate() + " " + sundayDate.toLocaleString('fr-FR', { month: 'long' }) + " " + sundayDate.getFullYear();
-                                let dateString = mondayString + " au " + sundayString;
-
-                                //envoie des emails avant le retour au front end
-                                const emailPromises = employeeList.map(async (element) => {
-                                    const result = await scheduleQueries.selectEmailFromEmployeeNumber(element);
-                                    return result.email;
-                                });
-                                Promise.all(emailPromises)
-                                .then((emailList) => {
-                                    console.log("emailList", emailList);
-                                    emailList = ["m.marchand22@hotmail.com"] // A ENLEVER POUR LENVOYER EN PRODDUCTION!!!!
-                                    //let emailDone = sendEmailSchedule(emailList, isModified, dateString);
-                                    let emailDone = true;
-                                    if (emailDone) { res.status(200).json("Mise a jour reussi") };
-                                })
-                                .catch((error) => {
-                                    console.error("Erreur lors de la récupération des e-mails :", error);
-                                });
-
+                            }).catch(err =>
+                            {
+                            return next(err);
+                                
                             })
                         }).catch(err =>
                         {
                             return next(err);
-                        })
+                        });
                     }).catch(err =>
                     {
                         return next(err);

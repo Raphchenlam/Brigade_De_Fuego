@@ -115,6 +115,39 @@ const selectEmployeeScheduleByWeekId = async (employeeId, scheduleWeekId) =>
 };
 exports.selectEmployeeScheduleByWeekId = selectEmployeeScheduleByWeekId;
 
+const selectAllEventScheduleByWeekId = async (scheduleWeekId) =>
+{
+    const result = await pool.query(
+        `SELECT se.*, e.*, sp.date, sp.shift_name, sw.published
+        FROM schedule_event as se
+		JOIN event as e ON e.name = se.event_name
+        JOIN schedule_period as sp ON sp.id = se.schedule_period_id
+        JOIN schedule_week as sw ON sw.id = sp.schedule_week_id
+        WHERE sp.schedule_week_id = $1
+        ORDER BY sp.id`,
+        [scheduleWeekId]
+    );
+    const row = result.rows[0];
+    if (row)
+    {
+        return result.rows.map(row =>
+        {
+            const event = {
+                eventName: row.event_name,
+                schedulePeriodId: row.schedule_period_id,
+                impact: row.impact,
+                isActive: row.is_active,
+                date: row.date,
+                shiftName: row.shift_name,
+            };
+            return event;
+        });
+    }
+    return [];
+};
+exports.selectAllEventScheduleByWeekId = selectAllEventScheduleByWeekId;
+
+
 const selectEmailFromEmployeeNumber = async (employeeNumber) =>
 {
     const result = await pool.query(
@@ -262,13 +295,63 @@ const updateScheduleWeekStatus = async (scheduleWeekId, isPublished) =>
 };
 exports.updateScheduleWeekStatus = updateScheduleWeekStatus;
 
-const deleteEmployeeFromSchedule = async (periodIdList) =>
+
+const updateEventForScheduleWeek = async (periodIdList, eventList, clientParam) =>
 {
-    console.log("periodIdList", periodIdList)
     const lowest = Math.min(...periodIdList);
     const highest = Math.max(...periodIdList);
-    console.log("lowest", lowest)
-    console.log("highest", highest)
+    const client = clientParam || await pool.connect();
+    try
+    {
+        await client.query('BEGIN');
+
+        await pool.query(
+            `DELETE FROM schedule_event
+            WHERE schedule_period_id >= $1 AND schedule_period_id <= $2`,
+            [lowest, highest]
+        );
+
+        if (eventList.length > 0)
+        {
+            for (i = 0; i < eventList.length; i++)
+            {
+                if (eventList[i].events.length > 0)
+                {
+                    for (j = 0; j < eventList[i].events.length; j++)
+                    {
+                        if (eventList[i] &&
+                            eventList[i].events[j] &&
+                            eventList[i].events[j] != null)
+                        {
+                            console.log("eventList[i].idSchedulePeriod", eventList[i].idSchedulePeriod)
+                            console.log("eventList[i].events[j]", eventList[i].events[j])
+                            const result = await pool.query(
+                                `INSERT INTO schedule_event (schedule_period_id, event_name)
+                                VALUES ($1,$2)`,
+                                [eventList[i].idSchedulePeriod, eventList[i].events[j]]
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        client.query('COMMIT');
+    } catch (error)
+    {
+        await client.query("ROLLBACK");
+        throw Error;
+    } finally
+    {
+        client.release();
+    }
+};
+exports.updateEventForScheduleWeek = updateEventForScheduleWeek;
+
+
+const deleteEmployeeFromSchedule = async (periodIdList) =>
+{
+    const lowest = Math.min(...periodIdList);
+    const highest = Math.max(...periodIdList);
     const result = await pool.query(
         `DELETE FROM employee_schedule
         WHERE schedule_period_id >= $1 AND schedule_period_id <= $2`,

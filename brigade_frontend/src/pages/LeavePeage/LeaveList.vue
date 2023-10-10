@@ -80,16 +80,12 @@
                         <v-dialog v-model="dialogNewLeave" max-width="500px">
                             <template v-slot:activator="{ props }">
                                 <BlackButton v-bind="props" textbutton="+"> </BlackButton>
-
                             </template>
                             <v-card>
                                 <v-card-title>
                                     <span class="text-h5">Faire une demande de congé</span>
                                 </v-card-title>
-
-
                                 <NewLeaveForm :employeeNumberReceived="employeeNumber"></NewLeaveForm>
-
                             </v-card>
                         </v-dialog>
                     </v-toolbar>
@@ -100,11 +96,9 @@
                             <v-card-title>
                                 <span class="text-h5">Modifier Conge</span>
                             </v-card-title>
-
                             <v-card-text>
                                 <EditLeaveForm :editedItem="editedItem"></EditLeaveForm>
                             </v-card-text>
-
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn v-if="editedItem.status != 'Accepté'" color="green" variant="text"
@@ -320,7 +314,7 @@ export default {
             item.statusShow = "Accepté"
             updateLeave(item).then(result =>
             {
-                
+                this.nbPendingLeave -= 1;
             }).catch(err =>
             {
                 item.status = oldStatus;
@@ -337,7 +331,7 @@ export default {
             item.statusShow = "Refusé"
             updateLeave(item).then(result =>
             {
-                
+                this.nbPendingLeave -= 1;
             }).catch(err =>
             {
                 item.status = oldStatus;
@@ -398,7 +392,7 @@ export default {
             let nbPendingLeave = 0;
             this.leaveList.forEach(leave =>
             {
-                if (leave.status == 'En Attente' || leave.status == 'En Attente (modifié)') nbPendingLeave++
+                if (leave.status == 'Pending' || leave.status == 'PendingModified') nbPendingLeave++
 
             });
             return nbPendingLeave

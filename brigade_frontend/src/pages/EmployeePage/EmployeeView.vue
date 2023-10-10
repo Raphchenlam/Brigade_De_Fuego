@@ -1,10 +1,13 @@
 <template>
     <v-sheet v-if="userSession">
         <v-row class="justify-space-between" v-if="this.isUserAuthorized()">
-            <EmployeeList v-if="this.isUserAuthorized()" class="h-100" width="35%"></EmployeeList>
-            <EmployeeInformation v-if="selectedEmployeeNumber" :employeeNumber="selectedEmployeeNumber" class="h-100"
-                width="65%">
+            <v-col cols="12" md="6" lg="4">
+                <EmployeeList v-if="this.isUserAuthorized()" class="h-100 mr-5"></EmployeeList>
+            </v-col>
+            <v-col cols="12" md="6" lg="8">
+                <EmployeeInformation v-if="selectedEmployeeNumber" :employeeNumber="selectedEmployeeNumber" class="h-100">
             </EmployeeInformation>
+            </v-col>
         </v-row>
     </v-sheet>
     <v-sheet v-else>
