@@ -360,4 +360,3 @@ const deleteEmployeeFromSchedule = async (periodIdList) =>
 };
 
 exports.deleteEmployeeFromSchedule = deleteEmployeeFromSchedule;
-

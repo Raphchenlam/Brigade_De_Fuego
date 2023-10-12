@@ -410,10 +410,10 @@
             <v-row class="justify-space-around">
                 <v-btn @click="dialogAddEmployee = true">Ajouter un employe</v-btn>
                 <v-btn v-if="!isPublished" @click="saveSchedule()">Sauvegarger (sans la publier)</v-btn>
-                <v-btn v-if="!isPublished" @click="publishSchedule()" style="background:lightgreen">Publier un nouvel
-                    l'horaire</v-btn>
-                <v-btn v-else @click="publishSchedule()" style="background:lightgreen">Publier les modifications de
-                    l'horaire</v-btn>
+                <DarkRedButton v-if="!isPublished" @click="publishSchedule()" textbutton="Publier un nouvel
+                    l'horaire"></DarkRedButton>
+                <DarkRedButton v-else @click="publishSchedule()" textbutton="Publier les modifications de
+                    l'horaire"></DarkRedButton>
 
             </v-row>
         </v-sheet>
@@ -542,8 +542,9 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[0].time != null">
-                                <v-btn :color="employee.schedules[1].time ? '#dcdcdc' : ''" align="center"
-                                    class="text-caption" height="25" width="100">{{
+                                <v-btn @click="editShiftToEmployee(employee, 0)"
+                                    :color="employee.schedules[1].time ? '#dcdcdc' : ''" align="center" class="text-caption"
+                                    height="25" width="100">{{
                                         employee.schedules[0].time }}</v-btn>
                             </div>
                             <div v-else>
@@ -554,8 +555,9 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[2].time != null">
-                                <v-btn :color="employee.schedules[3].time ? '#dcdcdc' : ''" align="center"
-                                    class="text-caption" height="25" width="100">{{
+                                <v-btn @click="editShiftToEmployee(employee, 2)"
+                                    :color="employee.schedules[3].time ? '#dcdcdc' : ''" align="center" class="text-caption"
+                                    height="25" width="100">{{
                                         employee.schedules[2].time }}</v-btn>
                             </div>
                             <div v-else><v-btn @click="addShiftToEmployee(employee, 2)"
@@ -564,8 +566,9 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[4].time != null">
-                                <v-btn :color="employee.schedules[5].time ? '#dcdcdc' : ''" align="center"
-                                    class="text-caption" height="25" width="100">{{
+                                <v-btn @click="editShiftToEmployee(employee, 4)"
+                                    :color="employee.schedules[5].time ? '#dcdcdc' : ''" align="center" class="text-caption"
+                                    height="25" width="100">{{
                                         employee.schedules[4].time }}</v-btn>
                             </div>
                             <div v-else><v-btn @click="addShiftToEmployee(employee, 4)"
@@ -574,8 +577,9 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[6].time != null">
-                                <v-btn :color="employee.schedules[7].time ? '#dcdcdc' : ''" align="center"
-                                    class="text-caption" height="25" width="100">{{
+                                <v-btn @click="editShiftToEmployee(employee, 6)"
+                                    :color="employee.schedules[7].time ? '#dcdcdc' : ''" align="center" class="text-caption"
+                                    height="25" width="100">{{
                                         employee.schedules[6].time }}</v-btn>
                             </div>
                             <div v-else><v-btn @click="addShiftToEmployee(employee, 6)"
@@ -584,8 +588,9 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[8].time != null">
-                                <v-btn :color="employee.schedules[9].time ? '#dcdcdc' : ''" align="center"
-                                    class="text-caption" height="25" width="100">{{
+                                <v-btn @click="editShiftToEmployee(employee, 8)"
+                                    :color="employee.schedules[9].time ? '#dcdcdc' : ''" align="center" class="text-caption"
+                                    height="25" width="100">{{
                                         employee.schedules[8].time }}</v-btn>
                             </div>
                             <div v-else><v-btn @click="addShiftToEmployee(employee, 8)"
@@ -594,7 +599,8 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[10].time != null">
-                                <v-btn :color="employee.schedules[11].time ? '#dcdcdc' : ''" align="center"
+                                <v-btn @click="editShiftToEmployee(employee, 10)"
+                                    :color="employee.schedules[11].time ? '#dcdcdc' : ''" align="center"
                                     class="text-caption" height="25" width="100">{{
                                         employee.schedules[10].time }}</v-btn>
                             </div>
@@ -604,7 +610,8 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[12].time != null">
-                                <v-btn :color="employee.schedules[13].time ? '#dcdcdc' : ''" align="center"
+                                <v-btn @click="editShiftToEmployee(employee, 12)"
+                                    :color="employee.schedules[13].time ? '#dcdcdc' : ''" align="center"
                                     class="text-caption" height="25" width="100">{{
                                         employee.schedules[12].time }}</v-btn>
                             </div>
@@ -634,8 +641,9 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[1].time != null">
-                                <v-btn :color="employee.schedules[0].time ? '#dcdcdc' : ''" align="center"
-                                    class="text-caption" height="25" width="100">{{
+                                <v-btn @click="editShiftToEmployee(employee, 1)"
+                                    :color="employee.schedules[0].time ? '#dcdcdc' : ''" align="center" class="text-caption"
+                                    height="25" width="100">{{
                                         employee.schedules[1].time }}</v-btn>
                             </div>
                             <div v-else>
@@ -646,8 +654,9 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[3].time != null">
-                                <v-btn :color="employee.schedules[2].time ? '#dcdcdc' : ''" align="center"
-                                    class="text-caption" height="25" width="100">{{
+                                <v-btn @click="editShiftToEmployee(employee, 3)"
+                                    :color="employee.schedules[2].time ? '#dcdcdc' : ''" align="center" class="text-caption"
+                                    height="25" width="100">{{
                                         employee.schedules[3].time }}</v-btn>
                             </div>
                             <div v-else><v-btn @click="addShiftToEmployee(employee, 3)"
@@ -656,8 +665,9 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[5].time != null">
-                                <v-btn :color="employee.schedules[4].time ? '#dcdcdc' : ''" align="center"
-                                    class="text-caption" height="25" width="100">{{
+                                <v-btn @click="editShiftToEmployee(employee, 5)"
+                                    :color="employee.schedules[4].time ? '#dcdcdc' : ''" align="center" class="text-caption"
+                                    height="25" width="100">{{
                                         employee.schedules[5].time }}</v-btn>
                             </div>
                             <div v-else><v-btn @click="addShiftToEmployee(employee, 5)"
@@ -666,8 +676,9 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[7].time != null">
-                                <v-btn :color="employee.schedules[6].time ? '#dcdcdc' : ''" align="center"
-                                    class="text-caption" height="25" width="100">{{
+                                <v-btn @click="editShiftToEmployee(employee, 7)"
+                                    :color="employee.schedules[6].time ? '#dcdcdc' : ''" align="center" class="text-caption"
+                                    height="25" width="100">{{
                                         employee.schedules[7].time }}</v-btn>
                             </div>
                             <div v-else><v-btn @click="addShiftToEmployee(employee, 7)"
@@ -676,8 +687,9 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[9].time != null">
-                                <v-btn :color="employee.schedules[8].time ? '#dcdcdc' : ''" align="center"
-                                    class="text-caption" height="25" width="100">{{
+                                <v-btn @click="editShiftToEmployee(employee, 9)"
+                                    :color="employee.schedules[8].time ? '#dcdcdc' : ''" align="center" class="text-caption"
+                                    height="25" width="100">{{
                                         employee.schedules[9].time }}</v-btn>
                             </div>
                             <div v-else><v-btn @click="addShiftToEmployee(employee, 9)"
@@ -686,7 +698,8 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[11].time != null">
-                                <v-btn :color="employee.schedules[10].time ? '#dcdcdc' : ''" align="center"
+                                <v-btn @click="editShiftToEmployee(employee, 11)"
+                                    :color="employee.schedules[10].time ? '#dcdcdc' : ''" align="center"
                                     class="text-caption" height="25" width="100">{{
                                         employee.schedules[11].time }}</v-btn>
                             </div>
@@ -696,7 +709,8 @@
                         </v-col>
                         <v-col class="ml-2" cols="1">
                             <div v-if="employee.schedules[13].time != null">
-                                <v-btn :color="employee.schedules[12].time ? '#dcdcdc' : ''" align="center"
+                                <v-btn @click="editShiftToEmployee(employee, 13)"
+                                    :color="employee.schedules[12].time ? '#dcdcdc' : ''" align="center"
                                     class="text-caption" height="25" width="100">{{
                                         employee.schedules[13].time }}</v-btn>
                             </div>
@@ -738,14 +752,72 @@
         </v-card>
     </v-dialog>
 
-    <v-dialog v-model="dialogNewShift" width="75%" persistent>
+    <v-dialog v-model="dialogNewShift" width="50%" persistent>
         <v-card class="pa-5">
             <v-card-title>
-                Ajouter un nouveau shift a {{ employeeNewShift.name }} pour le {{ this.weekDate[dayNewShift] }}
+                Ajouter un nouveau shift a {{ employeeNewShift.name }} pour le {{ this.weekDate[dayNewShift].getDate() }}
+                {{ this.weekDate[dayNewShift].toLocaleString('fr-FR', { month: 'long' }) }}
             </v-card-title>
+            <v-card-text>
+                    <v-row class="justify-center">
+                        <p v-if="warningNewShiftEndTimeMessage" align="center" class="warning-message">L'heure de fin doit
+                            être après l'heure de début</p>
+                        <p v-if="warningNewShiftEmptyMessage" align="center" class="warning-message">Les champs pour les
+                            heures ne peuvent
+                            pas être vide</p>
+                    </v-row>
+                    <v-row class="justify-center">
+                    <v-col cols="12" sm="6" md="6">
+                        <v-text-field type="time" v-model="startTimeNewShift" label="Heure Debut"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                        <v-text-field type="time" v-model="endTimeNewShift" label="Heure Fin"></v-text-field>
+                    </v-col>
+                </v-row>
+            </v-card-text>
             <v-row class="justify-end">
-                <DarkRedButton class="mx-5" textbutton="Annuler" @click="dialogNewShift = false"></DarkRedButton>
-                <DarkRedButton class="mx-5" textbutton="Sauvegarder" @click="confirmShiftToEmployee()"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeNewShiftDialog()"></DarkRedButton>
+                <DarkRedButton class="mx-5" textbutton="Sauvegarder" @click="confirmShiftToEmployee()"
+                    :disabled="!startTimeNewShift || !endTimeNewShift"></DarkRedButton>
+            </v-row>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogEditShift" width="50%" persistent>
+        <v-card class="pa-5">
+            <v-card-title>
+                Modifier le shift de {{ employeeNewShift.name }} pour le {{ this.weekDate[dayNewShift].getDate() }}
+                {{ this.weekDate[dayNewShift].toLocaleString('fr-FR', { month: 'long' }) }}
+            </v-card-title>
+            <v-card-text>
+                    <v-row class="justify-center">
+                        <p v-if="warningNewShiftEndTimeMessage" align="center" class="warning-message">L'heure de fin doit
+                            être après l'heure de début</p>
+                        <p v-if="warningNewShiftEmptyMessage" align="center" class="warning-message">Les champs pour les
+                            heures ne peuvent
+                            pas être vide</p>
+                    </v-row>
+                    <v-row class="justify-center">
+                    <v-col cols="6" sm="6" md="6">
+                        <v-text-field type="time" v-model="startTimeNewShift" label="Heure Debut"></v-text-field>
+                    </v-col>
+                    <v-col cols="6" sm="6" md="6">
+                        <v-text-field type="time" v-model="endTimeNewShift" label="Heure Fin"></v-text-field>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+            <v-row class="justify-center">
+                <v-col cols="2">
+                    <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeEditShiftDialog()"></DarkRedButton>
+                </v-col>
+                <v-col cols="4">
+                    <DarkRedButton class="mx-5" textbutton="Supprimer le shift" @click="removeShiftToEmployee()">
+                    </DarkRedButton>
+                </v-col>
+                <v-col cols="6">
+                    <DarkRedButton class="mx-5" textbutton="Sauvegarder les modifications" @click="confirmShiftToEmployee()"
+                        :disabled="!startTimeNewShift || !endTimeNewShift"></DarkRedButton>
+                </v-col>
             </v-row>
         </v-card>
     </v-dialog>
@@ -770,11 +842,11 @@
                     dans ce shift</p>
             </v-row>
             <v-row>
-                <EventList width="100%" height="100%" :scheduledEvent="selectedEvent"></EventList>
+                <EventList width="100%" height="100%" :activeEvent=true :scheduledEvent="selectedEvent"></EventList>
             </v-row>
             <v-row class="justify-end">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialogAddEvent"></DarkRedButton>
-                <DarkRedButton v-if="selectedEvent" class="mx-5" textbutton="Ajouter" :disabled="!selectedEvent"
+                <DarkRedButton v-if="selectedEvent" class="mx-5" textbutton="Ajouter l'événement à ce shift" :disabled="!selectedEvent"
                     @click="addNewEventToShift()">
                 </DarkRedButton>.
                 <DarkRedButton v-if="!selectedEvent" class="mx-5" textbutton="Ne pas ajouter d'evénement à ce shift"
@@ -826,6 +898,7 @@ export default {
             ],
             dialogAddEvent: false,
             dialogNewShift: false,
+            dialogEditShift: false,
             dialogAddEmployee: false,
             dialogSaved: false,
             employeeNewShift: null,
@@ -836,6 +909,8 @@ export default {
             selectedEmployeeNumberToAdd: null,
             warningEmployeeAlreadyInScheduleMessage: false,
             warningEventAlreadyInScheduleMessage: false,
+            warningNewShiftEndTimeMessage: false,
+            warningNewShiftEmptyMessage: false,
             selectedEvent: "",
             tempSelectedEvent: "",
             shiftToAddEvent: "",
@@ -1034,29 +1109,63 @@ export default {
             this.dayNewShift = dayIndex;
             this.dialogNewShift = true;
         },
+        editShiftToEmployee(employee, dayIndex)
+        {
+            this.employeeNewShift = employee;
+            this.dayNewShift = dayIndex;
+            this.startTimeNewShift = this.employeeNewShift.schedules[this.dayNewShift].startTime;
+            this.endTimeNewShift = this.employeeNewShift.schedules[this.dayNewShift].endTime;
+            this.dialogEditShift = true;
+        },
+        removeShiftToEmployee(employee, dayIndex)
+        {
+            this.employeeNewShift.schedules[this.dayNewShift].startTime = null;
+            this.employeeNewShift.schedules[this.dayNewShift].endTime = null;
+            this.employeeNewShift.schedules[this.dayNewShift].time = null;
+            this.employeeNewShift.schedules[this.dayNewShift].shiftName = null;
+            this.closeEditShiftDialog();
+        },
         confirmShiftToEmployee()
         {
-            let shiftId = this.employeeNewShift.schedules[this.dayNewShift].id;
-            if (this.dayNewShift % 2 == 0)
+            if (!this.startTimeNewShift || !this.endTimeNewShift)
             {
-                this.employeeNewShift.schedules[this.dayNewShift] =
-                {
-                    id: shiftId,
-                    startTime: "10:00",
-                    endTime: "16:00",
-                    time: "10:00 - 16:00"
-                }
+                this.warningNewShiftEmptyMessage = true;
+                return;
             } else
             {
-                this.employeeNewShift.schedules[this.dayNewShift] =
-                {
-                    id: shiftId,
-                    startTime: "16:00",
-                    endTime: "23:00",
-                    time: "16:00 - 23:00"
-                }
+                this.warningNewShiftEmptyMessage = false;
             }
+            if (this.endTimeNewShift <= this.startTimeNewShift)
+            {
+                this.warningNewShiftEndTimeMessage = true;
+                return;
+            }
+            let shiftId = this.employeeNewShift.schedules[this.dayNewShift].id;
+            this.employeeNewShift.schedules[this.dayNewShift] =
+            {
+                id: shiftId,
+                startTime: this.startTimeNewShift,
+                endTime: this.endTimeNewShift,
+                time: this.startTimeNewShift + " - " + this.endTimeNewShift
+            }
+            this.closeNewShiftDialog();
+            this.closeEditShiftDialog();
+        },
+        closeNewShiftDialog()
+        {
             this.dialogNewShift = false;
+            this.warningNewShiftEndTimeMessage = false;
+            this.warningNewShiftEmptyMessage = false;
+            this.startTimeNewShift = null;
+            this.endTimeNewShift = null;
+        },
+        closeEditShiftDialog()
+        {
+            this.dialogEditShift = false;
+            this.warningNewShiftEndTimeMessage = false;
+            this.warningNewShiftEmptyMessage = false;
+            this.startTimeNewShift = null;
+            this.endTimeNewShift = null;
         },
         addNewEmployeeToSchedule()
         {
@@ -1340,8 +1449,7 @@ export default {
 }
 </script>
 
-<style scoped>
-:deep(input)::-webkit-outer-spin-button,
+<style scoped>:deep(input)::-webkit-outer-spin-button,
 :deep(input)::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
@@ -1349,11 +1457,4 @@ export default {
 
 .slds-form-element__control .slds-radio {
     display: inline !important;
-}
-
-:deep(.v-text-field input) {
-    font-size: .8rem;
-    height: 10px !important;
-    padding: 5px;
-}
-</style>
+}</style>
