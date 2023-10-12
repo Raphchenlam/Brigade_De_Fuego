@@ -70,6 +70,7 @@ export default {
             reservations: [],
             filteredReservationList: [],
             dialogNewReservation: false,
+            hasNewReservation: false,
         };
     },
     provide() {
@@ -142,15 +143,30 @@ export default {
             deep: true
         },
         selectedDate() {
+            console.log("selectedDate TRIGGERED");
             this.loadReservations(this.selectedDate, this.selectedDate);
+        },
+        selectedShift() {
+            this.shiftShow = this.selectedShift;
+        },
+        hasNewReservation() {
+            if (this.hasNewReservation) {
+                console.log("hasNewReservation TRIGGERED");
+                (this.selectedDate) ? this.loadReservations(this.selectedDate, this.selectedDate) : this.loadReservations(this.startDate, this.endDate);
+                this.hasNewReservation = false;
+            }
         }
     },
     methods: {
         refreshWithNewreservation(newReservation) {
+            console.log("refreshWithNewreservation TRIGGERED");
+            this.hasNewReservation = true;
+            console.log("this.hasNewReservation : ");
+            console.log(this.hasNewReservation);
 
             const newReservationShift = newReservation[3];
             this.shiftShow = newReservationShift;
-            
+
             const dateOnlyOfNewReservation = newReservation[1].split("T")[0];
             this.startDate = dateOnlyOfNewReservation;
             this.endDate = this.startDate;
@@ -193,7 +209,7 @@ export default {
 
                     const reservationToAdd = {
                         "listInformation":
-                            reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname + " (" + reservationtoKeep.clientPhoneNumber + ") - " + reservationtoKeep.peopleCount + " personnes - " + reservationtoKeep.date + " à " + formattedStartTime + allergies,
+                        (reservationtoKeep.tableNumber ? "#" + reservationtoKeep.tableNumber: "NO TABLE") + " - " + reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname + " (" + reservationtoKeep.clientPhoneNumber + ") - " + reservationtoKeep.peopleCount + " personnes - " + reservationtoKeep.date + " à " + formattedStartTime + allergies,
                         ...reservationtoKeep,
                         props: {
                             color: 'red',
@@ -222,11 +238,12 @@ export default {
         }
     },
     mounted() {
-        if(!(!!this.selectedDate)) {
+        // console.clear();
+        if (!(!!this.selectedDate)) {
             this.todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
             this.endDate = this.startDate = this.todayDate;
             this.loadReservations(this.startDate, this.endDate);
-        }else{
+        } else {
             this.loadReservations(this.selectedDate, this.selectedDate);
         }
     }

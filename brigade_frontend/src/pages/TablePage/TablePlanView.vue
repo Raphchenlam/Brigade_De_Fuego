@@ -73,7 +73,6 @@ export default {
             selectedTable: null,
             selectedReservationId: null,
 
-
             ////////////TEMPORAIRE/////////
             hasReservation: true,
 
@@ -106,7 +105,7 @@ export default {
             //************************/
             // const todayDate = new Date().toISOString().split('T')[0];
             const todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
-            
+
             // this.selectedDate = todayDate;
             this.selectedDate = (newReservationDate) ? newReservationDate : todayDate;
             this.selectedShift = newReservationShift;
@@ -184,7 +183,7 @@ export default {
     },
     watch: {
         selectedDate() {
-            console.log('selectedDate changed');
+            // console.log('selectedDate changed');
             this.loadAssignationList(this.selectedDate, this.selectedShift);
         },
         selectedShift() {
@@ -194,6 +193,7 @@ export default {
     },
 
     mounted() {
+        // console.clear();
         if (!operationSession.isActive) {
             this.$router.push('/operation');
         }

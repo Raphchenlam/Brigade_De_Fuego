@@ -182,7 +182,7 @@ export default {
                         }
 
 
-                        this.refreshWithNewreservation([result.id, this.reservationFullDate, this.clientFirstName, newReservationShift]);
+                        this.refreshWithNewreservation([ result.id, this.reservationFullDate, this.clientFirstName, newReservationShift ]);
                     }
                     setTimeout(this.closeAllDialog, 2000);
                 }
