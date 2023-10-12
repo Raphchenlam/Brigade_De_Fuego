@@ -51,7 +51,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale', 'loadDate'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -89,24 +89,51 @@ export default {
             this.filterReservations();
         },
         startDate() {
-            if (this.startDate == "") this.resetStartDate();
-            if (this.startDate != this.endDate) this.loadReservations(this.startDate, this.endDate);
+            if (this.startDate != this.endDate) {
+                if (this.startDate == "") this.resetStartDate();
 
-            const startDateObject = this.toLocale(this.startDate).date;
-            const endDateObject = this.toLocale(this.endDate).date;
+                const startDateObj = this.toLocale(this.startDate);
+                const endDateObj = this.toLocale(this.endDate);
 
-            if (startDateObject.year >= endDateObject.year || startDateObject.month >= endDateObject.month ||startDateObject.day >= endDateObject.day) {
-                this.endDate = this.startDate;
+                if (startDateObj.date.year > endDateObj.date.year) {
+                    this.endDate = this.startDate;
+
+                } else if (startDateObj.date.year >= endDateObj.date.year
+                    && startDateObj.date.month > endDateObj.date.month) {
+                    this.endDate = this.startDate;
+
+                } else if (startDateObj.date.year >= endDateObj.date.year
+                    && startDateObj.date.month >= endDateObj.date.month
+                    && startDateObj.date.day >= endDateObj.date.day) {
+                    this.endDate = this.startDate;
+                }
+
+                this.loadReservations(this.startDate, this.endDate);
             }
         },
         endDate() {
-            if (this.endDate == "") {
-                this.resetEndDate();
-            }
-
             if (this.startDate != this.endDate) {
+                if (this.endDate == "") this.resetEndDate();
+
+                const startDateObj = this.toLocale(this.startDate);
+                const endDateObj = this.toLocale(this.endDate);
+
+                if (startDateObj.date.year > endDateObj.date.year) {
+                    this.startDate = this.endDate;
+
+                } else if (startDateObj.date.year >= endDateObj.date.year
+                    && startDateObj.date.month > endDateObj.date.month) {
+                    this.startDate = this.endDate;
+
+                } else if (startDateObj.date.year >= endDateObj.date.year
+                    && startDateObj.date.month >= endDateObj.date.month
+                    && startDateObj.date.day >= endDateObj.date.day) {
+                    this.startDate = this.endDate;
+                }
+
                 this.loadReservations(this.startDate, this.endDate);
             }
+
         },
         'selected': {
             handler: function () {
@@ -115,16 +142,22 @@ export default {
             deep: true
         },
         selectedDate() {
-            this.loadTODAYreservations(this.selectedDate);
-        },
+            this.loadReservations(this.selectedDate, this.selectedDate);
+        }
     },
     methods: {
         refreshWithNewreservation(newReservation) {
-            this.loadReservations(this.startDate, this.endDate);
-            this.selected[0] = newReservation[0];
-            this.search = newReservation[1];
-            this.startDate = newReservation[2];
+
+            const newReservationShift = newReservation[3];
+            this.shiftShow = newReservationShift;
+            
+            const dateOnlyOfNewReservation = newReservation[1].split("T")[0];
+            this.startDate = dateOnlyOfNewReservation;
             this.endDate = this.startDate;
+            (this.selectedDate) ? this.loadDate(dateOnlyOfNewReservation, newReservationShift) : this.loadReservations(this.startDate, this.endDate);
+
+            this.selected[0] = newReservation[0];
+            this.search = newReservation[2];
         },
         loadReservations(startDate, endDate) {
             getReservationList(startDate, endDate)
@@ -135,17 +168,6 @@ export default {
                     console.error(err);
                     alert(err.message);
                 });
-        },
-        loadTODAYreservations(selectedDate) {
-            getReservationList(selectedDate, selectedDate)
-                .then((reservationList) => {
-                    this.reservations = reservationList;
-                })
-                .catch((err) => {
-                    console.log(err);
-                    alert(err.message);
-                });
-            this.selected = [];
         },
         filterReservations() {
             this.filteredReservationList = [];
@@ -200,10 +222,13 @@ export default {
         }
     },
     mounted() {
-        console.clear();
-        this.todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
-        this.endDate = this.startDate = this.todayDate;
-        this.loadReservations(this.startDate, this.endDate);
+        if(!(!!this.selectedDate)) {
+            this.todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
+            this.endDate = this.startDate = this.todayDate;
+            this.loadReservations(this.startDate, this.endDate);
+        }else{
+            this.loadReservations(this.selectedDate, this.selectedDate);
+        }
     }
 }
 </script>

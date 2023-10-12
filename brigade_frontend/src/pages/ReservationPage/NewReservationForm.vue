@@ -172,7 +172,17 @@ export default {
                 if (result) {
                     this.dialogOKReservation = true;
                     if (this.dialogOKReservation) {
-                        this.refreshWithNewreservation([result.id, this.clientFirstName, this.reservation.date]);
+
+                        const startTimeObj = this.toLocale(this.reservation.startTime);
+                        var newReservationShift;
+                        if (startTimeObj.time.hours < 15){
+                            newReservationShift = "Midi";
+                        }else{
+                            newReservationShift = "Soir";
+                        }
+
+
+                        this.refreshWithNewreservation([result.id, this.reservationFullDate, this.clientFirstName, newReservationShift]);
                     }
                     setTimeout(this.closeAllDialog, 2000);
                 }
