@@ -21,20 +21,30 @@ async function createServiceError(response) {
     return new ServiceError(response.status, await getResponseMessage(response));
 }
 
+const convertToPunch = jsonPunch => {
+    return {
+        id: jsonPunch.id,
+        employeeNumber: jsonPunch.employeeNumber,
+        dateIn: jsonPunch.dateIn,
+        startTime: jsonPunch.startTime,
+        dateOut: jsonPunch.dateOut,
+        endTime: jsonPunch.endTime
+    };
+}
+
 
 export async function punchInEmployee(punch) {
     const response = await fetch(`/api/punch`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            ...operationSession.getAuthHeaders()
+            // ...operationSession.getAuthHeaders()
         },
         body: JSON.stringify(punch)
     });
 
     if (response.ok) {
-        const respJson = await response.json();
-        return respJson;
+        return convertToPunch(await response.json());
     } else {
         console.log(JSON.stringify(response));
         throw await createServiceError(response);
@@ -46,16 +56,32 @@ export async function punchOutEmployee(punch) {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            ...operationSession.getAuthHeaders()
+            // ...operationSession.getAuthHeaders()
         },
-        body: JSON.stringify(leave)
+        body: JSON.stringify(punch)
     });
 
     if (response.ok) {
+        return convertToPunch(await response.json());
+    } else {
+        console.log(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
+
+export async function getLastPunchFromEmployee(barcodeNumber) {
+    const response = await fetch(`/api/punch/${barcodeNumber}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            // ...operationSession.getAuthHeaders()
+        }
+    });
+
+    if(response.ok){
         const respJson = await response.json();
         return respJson;
     } else {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
@@ -99,7 +125,7 @@ export async function getPunchListByEmployeeNumber(employeeNumber) {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            ...userSession.getAuthHeaders()
+            ...operationSession.getAuthHeaders()
         }
     });
 

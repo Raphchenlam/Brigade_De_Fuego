@@ -39,7 +39,8 @@ app.use('/leave', leaveRouter);
 app.use('/reservation', reservationRouter);
 app.use('/schedule', scheduleRouter);
 app.use('/table', tableRouter);
-app.use('/assignation', assignationRouter)
+app.use('/assignation', assignationRouter);
+app.use('/punch', punchRouter);
 
 class BasicStrategyModified extends BasicStrategy {
   constructor(options, verify) {

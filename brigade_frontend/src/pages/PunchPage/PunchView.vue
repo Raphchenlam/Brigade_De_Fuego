@@ -3,7 +3,7 @@
         <v-sheet width="70%" class="pa-16">
             <v-form @submit.prevent="punchEmployee" class="pa-10" validate-on="submit lazy" ref="punchForm">
                 <v-text-field label="Scanner votre carte employe" v-model.trim="punch.employeeBarcodeNumber" autofocus
-                    clearable :rules="[rules.required, rules.validateEmployeeNumber]" maxlength="16" :counter="16"
+                    clearable :rules="[rules.required, rules.validateBarcodeNumber]" maxlength="16" :counter="16"
                     height="20px" class="mb-16">
                 </v-text-field>
                 <v-row class="justify-space-around">
@@ -26,7 +26,7 @@
                         <v-card-title>Confirmation Punch-In</v-card-title>
                         <v-card-text>
                             <v-row class="justify-center">
-                                <p>{{ this.punch.employeeBarcodeNumber }} - Merci de ton travail !</p>
+                                <p>{{ this.punch.barcodeNumber }} - Merci de ton travail !</p>
                             </v-row>
                         </v-card-text>
                     </v-card>
@@ -42,7 +42,7 @@ import OperationMenu from '../../components/OperationMenu.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import operationSession from "../../sessions/OperationSession";
 import { validBarcodeNumber } from "../../../../REGEX/REGEX_frontend";
-import { punchInEmployee, punchOutEmployee, getEmployeePunch } from '../../services/PunchService';
+import { punchInEmployee, punchOutEmployee, getLastPunchFromEmployee } from '../../services/PunchService';
 
 
 export default {
@@ -56,18 +56,19 @@ export default {
         return {
             operationSession: operationSession,
             punch: {
-                employeeBarcodeNumber: null,
-                currentDate: null,
+                employeeNumber: null,
+                barcodeNumber: null,
                 dateIn: null,
                 dateOut: null,
                 startTime: null,
                 endTime: null
             },
+            currentDate: null,
             dialogPunchIn: false,
             dialogPunchOut: false,
             rules: {
                 required: value => !!value || 'Le champ est requis',
-                validateEmployeeNumber: value => validBarcodeNumber.test(value) || "Code barre invalide : doit être composé de 16 chiffres uniquement"
+                validateBarcodeNumber: value => validBarcodeNumber.test(value) || "Code barre invalide : doit être composé de 16 chiffres uniquement"
             }
         }
     },
@@ -80,11 +81,13 @@ export default {
                 return;
             }
 
-            getEmployeePunch(this.punch).then(result => {
-                if (!result.punchIn) {
+            getLastPunchFromEmployee(this.punch.barcodeNumber).then(result => {
+                if (result.noShift || (result.startTime && result.endTime)) {
 
-                    const dateInObject = this.punch.dateIn;
-                    this.punch.dateIn = dateInObject.time.fullTime;
+                    const punchInObject = this.toLocale(new Date().toLocaleDateString());
+                    let startHour = punchInObject.time.hours;
+                    let startMinute = punchInObject.time.minutes;
+                    this.punch.startTime = startHour + ":" + startMinute;
 
                     punchInEmployee(this.punch).then(result => {
                         if (result) {
@@ -95,22 +98,15 @@ export default {
                         console.error(err);
                         alert(err.message);
                     });
-                } else {
+                } 
+                if (result.startTime && !result.endTime) {
 
-                    //TROUVER UN MOYEN DE PUNCH-OUT LA JOURNEE MEME OU VERIFIER QUE LA dateOut EST LA MEME que dateIn
+                    const punchOutObject = this.toLocale(new Date().toLocaleDateString());
+                    this.punch.dateOut = this.currentDate;
 
-                    this.punch.dateOut = this.toLocale(new Date().toLocaleDateString()).date.fulldate;
-                    const dateOutObject = this.punch.dateOut;
-
-                    let endHour = dateOutObject.time.hours + 3;
-                    let endMinute = dateOutObject.time.minutes;
-                    if (endHour >= 24) {
-                        endHour = 23;
-                        endMinute = 59;
-                    }
-                    const endTimeHours = (endHour < 10) ? "0" + endHour : "" + endHour;
-                    const endTimeMinutes = (endMinute < 10) ? "0" + endMinute : "" + endMinute;
-                    this.punch.endTime = endTimeHours + ":" + endTimeMinutes;
+                    let endHour = punchOutObject.time.hours;
+                    let endMinute = punchOutObject.time.minutes;
+                    this.punch.endTime = endHour + ":" + endMinute;
 
                     punchOutEmployee(this.punch).then(result => {
                         if (result) {
@@ -136,12 +132,12 @@ export default {
         if (!operationSession.isActive) {
             this.$router.push('/operation');
         }
-        this.punch.currentDate = this.toLocale(new Date().toLocaleDateString()).date.fulldate;
-        this.punch.dateIn = this.punch.currentDate;
+        this.currentDate = this.toLocale(new Date().toLocaleDateString()).date.fulldate;
+        this.punch.dateIn = this.currentDate;
     },
     computed: {
         disablePunchButton() {
-            return this.punch.employeeBarcodeNumber;
+            return this.punch.employeeNumber;
         }
     }
 }
