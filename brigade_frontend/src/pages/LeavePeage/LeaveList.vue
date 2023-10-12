@@ -124,17 +124,16 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-icon v-if="item.raw.status != 'Accepté' && this.isUserAuthorized()" size="small"
+                    <v-icon v-if="item.raw.status != 'Approved' && this.isUserAuthorized()" size="small"
                         class="me-2 approved-icon" @click="accept(item.raw)">
                         mdi-check
                     </v-icon>
-                    <v-icon v-if="item.raw.status != 'Refusé' && this.isUserAuthorized()" size="small"
+                    <v-icon v-if="item.raw.status != 'Refused' && this.isUserAuthorized()" size="small"
                         class="me-2 refused-icon" @click="refuse(item.raw)">
                         mdi-close
                     </v-icon>
-                    <v-icon size="small" class="me-2" @click="editItem(item.raw)">
-                        mdi-pencil
-                    </v-icon>
+                    <!-- Ligne a decommenter au sprint 4 lors de la modification d'un congé -->
+                    <!-- <v-icon size="small" class="me-2" @click="editItem(item.raw)"> mdi-pencil </v-icon> -->
                 </template>
 
                 <template v-slot:expanded-row="{ columns, item }">
@@ -156,7 +155,7 @@ import userSession from '../../sessions/UserSession';
 import BlackButton from '../../components/Reusable/BlackButton.vue'
 import EditLeaveForm from './EditLeaveForm.vue'
 
-import { getAllFilteredLeaves, getleavesByEmployeeNumber } from '../../services/LeaveService';
+import { getAllFilteredLeaves, getleavesByEmployeeNumber, updateLeave } from '../../services/LeaveService';
 import NewLeaveForm from './NewLeaveForm.vue';
 
 export default {
@@ -202,7 +201,7 @@ export default {
                     title: 'Date Fin',
                 },
                 {
-                    key: 'status',
+                    key: 'statusShow',
                     sortable: false,
                     title: 'Status',
                 },
@@ -263,10 +262,10 @@ export default {
                         //{
                         leave.startDate = leave.startDate.split('T').slice(0)[0]
                         leave.endDate = leave.endDate.split('T').slice(0)[0]
-                        if (leave.status == 'Pending') leave.status = 'En Attente'
-                        if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
-                        if (leave.status == 'Approved') leave.status = 'Accepté'
-                        if (leave.status == 'Refused') leave.status = 'Refusé'
+                        if (leave.status == 'Pending') leave.statusShow = 'En Attente'
+                        if (leave.status == 'PendingModified') leave.statusShow = 'En Attente (modifié)'
+                        if (leave.status == 'Approved') leave.statusShow = 'Accepté'
+                        if (leave.status == 'Refused') leave.statusShow = 'Refusé'
                         this.leaveList.push(leave);
                         //} else
                         //{
@@ -288,10 +287,10 @@ export default {
                         {
                             leave.startDate = leave.startDate.split('T').slice(0)[0]
                             leave.endDate = leave.endDate.split('T').slice(0)[0]
-                            if (leave.status == 'Pending') leave.status = 'En Attente'
-                            if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
-                            if (leave.status == 'Approved') leave.status = 'Accepté'
-                            if (leave.status == 'Refused') leave.status = 'Refusé'
+                            if (leave.status == 'Pending') leave.statusShow = 'En Attente'
+                            if (leave.status == 'PendingModified') leave.statusShow = 'En Attente (modifié)'
+                            if (leave.status == 'Approved') leave.statusShow = 'Accepté'
+                            if (leave.status == 'Refused') leave.statusShow = 'Refusé'
                             this.leaveList.push(leave)
                         } else
                         {
@@ -315,11 +314,37 @@ export default {
         },
         accept(item)
         {
-            console.log("Accept", item)
+            const oldStatus = item.status;
+            const oldStatusShow = item.statusShow;
+            item.status = "Approved"
+            item.statusShow = "Accepté"
+            updateLeave(item).then(result =>
+            {
+                
+            }).catch(err =>
+            {
+                item.status = oldStatus;
+                item.statusShow = oldStatusShow;
+                console.error(err);
+                alert(err);
+            })
         },
         refuse(item)
         {
-            console.log("Refuse", item)
+            const oldStatus = item.status;
+            const oldStatusShow = item.statusShow;
+            item.status = "Refused"
+            item.statusShow = "Refusé"
+            updateLeave(item).then(result =>
+            {
+                
+            }).catch(err =>
+            {
+                item.status = oldStatus;
+                item.statusShow = oldStatusShow;
+                console.error(err);
+                alert(err);
+            })
         },
         closeEditLeaveDialog()
         {

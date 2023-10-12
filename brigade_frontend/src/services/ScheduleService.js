@@ -46,7 +46,7 @@ export async function getScheduleWeekInfoByID(scheduleWeekId)
     }
 }
 
-export async function getEmployeeScheduleByScheduleWeekId(scheduleWeekId)
+export async function getAllEmployeeScheduleByScheduleWeekId(scheduleWeekId)
 {
     const response = await fetch(`/api/schedule/${scheduleWeekId}/employee`, {
         method: "GET",
@@ -65,6 +65,24 @@ export async function getEmployeeScheduleByScheduleWeekId(scheduleWeekId)
     }
 }
 
+export async function getScheduleForOneEmployeeByEmployeeNumberAndScheduleWeekId(employeeNumber,scheduleWeekId)
+{
+    const response = await fetch(`/api/schedule/employee/${employeeNumber}/${scheduleWeekId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
+    if (response.ok)
+    {
+        const respJson = await response.json();
+        return respJson;
+    } else
+    {
+        throw await createServiceError(response);
+    }
+}
 
 export async function updateSchedule(scheduleInformations)
 {

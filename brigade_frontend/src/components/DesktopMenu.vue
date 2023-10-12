@@ -37,12 +37,16 @@
       <router-link to="/espace/report" style="text-decoration: none; color: inherit;"><v-list-item
           prepend-icon="mdi-chart-bar" title="Rapports" value="report"></v-list-item></router-link>
 
-      <v-divider :thickness="5" class="border-opacity-100 ma-5"></v-divider>
-
-
+      <v-divider :thickness="2" class="border-opacity-100 ma-5"></v-divider>
       <router-link to="/operation" style="text-decoration: none; color: inherit;"><v-list-item
           prepend-icon="mdi-arrow-left-bold-hexagon-outline" title="OPERATION"
           value="operation"></v-list-item></router-link>
+      <v-divider :thickness="2" class="border-opacity-100 ma-5"></v-divider>
+
+      <router-link :to="employeeDetailUrlSchedule" style="text-decoration: none; color: inherit;"><v-list-item
+          prepend-icon="mdi-clock-outline" title="Mon horaire" value="Mon horaire"></v-list-item></router-link>
+      <router-link :to="employeeDetailUrlLeave" style="text-decoration: none; color: inherit;"><v-list-item
+          prepend-icon="mdi-timer-off-outline" title="Mes congés" value="Mes conges"></v-list-item></router-link>
       <router-link :to="employeeDetailUrl" @click="displayDrawer = false"
         style="text-decoration: none; color: inherit;"><v-list-item prepend-icon="mdi-account-circle-outline"
           title="Mon profil" value="profil"></v-list-item></router-link>
@@ -53,7 +57,7 @@
       <router-link to="/espace/dashboard" style="text-decoration: none; color: inherit;"><v-list-item
           prepend-icon="mdi-view-dashboard" title="Dashboard" value="Dashboard"></v-list-item></router-link>
 
-      <router-link to="/espace/schedule" style="text-decoration: none; color: inherit;"><v-list-item
+      <router-link :to="employeeDetailUrlSchedule" style="text-decoration: none; color: inherit;"><v-list-item
           prepend-icon="mdi-clock-outline" title="Mon horaire" value="Mon horaire"></v-list-item></router-link>
 
       <router-link :to="employeeDetailUrlLeave" style="text-decoration: none; color: inherit;"><v-list-item
@@ -79,32 +83,42 @@
 import userSession from "../sessions/UserSession"
 
 export default {
-  inject:['isUserAuthorized'],
+  inject: ['isUserAuthorized'],
   props: {
     username: String,
   },
-  data() {
+  data()
+  {
     return {
       userSession: userSession,
       displayDrawer: false
     }
   },
   methods: {
-    disconnect() {
+    disconnect()
+    {
       userSession.disconnect()
       this.$router.push('/espace');
     }
   },
   computed: {
-    employeeDetailUrl() {
+    employeeDetailUrl()
+    {
       return "/espace/employee/" + userSession.employee.employeeNumber;
     },
-    employeeDetailUrlLeave() {
+    employeeDetailUrlLeave()
+    {
       return "/espace/leave/" + userSession.employee.employeeNumber;
     },
+    employeeDetailUrlSchedule()
+    {
+      return "/espace/schedule/" + userSession.employee.employeeNumber;
+    },
   },
-  mounted() {
-    if (!userSession) {
+  mounted()
+  {
+    if (!userSession)
+    {
       this.$router.push('/espace');
     }
   }
@@ -115,4 +129,5 @@ export default {
 .routerlink {
   display: block;
   color: rgb(240, 20, 20)
-}</style>
+}
+</style>

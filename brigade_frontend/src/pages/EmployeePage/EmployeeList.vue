@@ -88,7 +88,9 @@ export default {
                 console.log("allEmployees",allEmployees)
                 allEmployees.forEach(employee =>
                 {
-                    if ((this.$route.fullPath.split('/').slice(1)[1] == 'schedule' && employee.isActive) || (this.$route.fullPath.split('/').slice(1)[1] == 'employee'))
+                    if ((this.$route.fullPath.split('/').slice(1)[1] == 'schedule' && employee.isActive)
+                    || (this.$route.fullPath.split('/').slice(1)[1] == 'leave' && employee.isActive)
+                        || (this.$route.fullPath.split('/').slice(1)[1] == 'employee'))
                     {
                         const newEmployee = {
                             "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName + " (" + employee.role + ")",

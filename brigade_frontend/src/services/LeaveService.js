@@ -61,7 +61,6 @@ export async function getAllFilteredLeaves(checkboxes)
 {
     const queryString = `?data=${encodeURIComponent(JSON.stringify(checkboxes))}`;
     const url = '/api/leave/filter/' + queryString;
-    console.log("url2",url)
     const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -99,7 +98,6 @@ export async function getleavesByEmployeeNumber(employeeNumber)
 }
 
 
-
 export async function getAllLeavesCategory() {
     const response = await fetch(`/api/leave/category`, {
         method: "GET",
@@ -113,6 +111,25 @@ export async function getAllLeavesCategory() {
         const respJson = await response.json();
         return respJson;
     } else {
+        throw await createServiceError(response);
+    }
+}
+
+export async function updateLeave(leave) {
+    const response = await fetch(`/api/leave`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+             ...session.getAuthHeaders()
+        },
+        body: JSON.stringify(leave)
+    });
+
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
