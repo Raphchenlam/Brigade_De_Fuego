@@ -30,7 +30,7 @@ export default {
       isUserAuthorized: this.isUserAuthorized,
       loadReservationInformations: this.loadReservationInformations,
       // selectedReservationId: computed(()=>this.selectedReservationId),
-      test: this.test,
+      // test: this.test,
       toLocale: this.toLocale
 
     }
@@ -109,33 +109,33 @@ export default {
         }
       }
     },
-    test() {
-      var testStr;
-      var result;
+    // test() {
+    //   var testStr;
+    //   var result;
 
-      testStr = new Date().toISOString();
-      console.log("toISOString() : " + testStr);
-      result = this.toLocale(testStr);
-      console.log(result);
-      console.log(" ");
+    //   testStr = new Date().toISOString();
+    //   console.log("toISOString() : " + testStr);
+    //   result = this.toLocale(testStr);
+    //   console.log(result);
+    //   console.log(" ");
 
-      testStr = new Date().toLocaleString();
-      console.log("toLocaleString() : " + testStr);
-      result = this.toLocale(testStr);
-      console.log(result);
-      console.log(" ");
+    //   testStr = new Date().toLocaleString();
+    //   console.log("toLocaleString() : " + testStr);
+    //   result = this.toLocale(testStr);
+    //   console.log(result);
+    //   console.log(" ");
 
-      testStr = new Date().toLocaleDateString();
-      console.log("toLocaleDateString() : " + testStr);
-      result = this.toLocale(testStr);
-      console.log(result);
-      console.log(" ");
+    //   testStr = new Date().toLocaleDateString();
+    //   console.log("toLocaleDateString() : " + testStr);
+    //   result = this.toLocale(testStr);
+    //   console.log(result);
+    //   console.log(" ");
 
-      testStr = new Date().toLocaleTimeString();
-      console.log("toLocaleTimeString() : " + testStr);
-      result = this.toLocale(testStr);
-      console.log(result);
-    },
+    //   testStr = new Date().toLocaleTimeString();
+    //   console.log("toLocaleTimeString() : " + testStr);
+    //   result = this.toLocale(testStr);
+    //   console.log(result);
+    // },
     toLocale(str) {
       // console.clear();
 
