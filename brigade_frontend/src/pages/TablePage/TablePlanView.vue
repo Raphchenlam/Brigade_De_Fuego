@@ -44,6 +44,7 @@ import TableLayout from './TableLayout.vue';
 import TableInformation from './TableInformation.vue';
 import { fetchAllTables, fetchAssignationByDate } from '../../services/TableService';
 
+
 // QUERIES TO UPDATE EMPLOYEE COLOR
 // UPDATE employee
 // 	SET color_hexcode='4C0099'
@@ -51,6 +52,7 @@ import { fetchAllTables, fetchAssignationByDate } from '../../services/TableServ
 
 
 export default {
+    inject: [ 'toLocale' ],
     name: 'TablePlanView',
     components: {
         OperationMenu,
@@ -66,11 +68,10 @@ export default {
             tableList: [],
             assignationList: [],
             tableWithAssignationList: [],
-            selectedDate: null,
+            selectedDate: this.loadDate(),
             selectedShift: "Midi",
             selectedTable: null,
             selectedReservationId: null,
-
 
             ////////////TEMPORAIRE/////////
             hasReservation: true,
@@ -87,23 +88,31 @@ export default {
             selectedTable: computed(() => this.selectedTable),
             displaySelectedTable: this.displaySelectedTable,
             loadReservationInformations: this.loadReservationInformations,
-
-
+            loadDate: this.loadDate,
+            
+            
             ////////////TEMPORAIRE/////////
             hasReservation: computed(() => this.hasReservation),
         }
     },
     methods: {
-       
-        loadDate() {
+        loadReservationInformations(receivedReservationId) {
+            this.selectedReservationId = receivedReservationId;
+        },
+        loadDate(newReservationDate, newReservationShift) {
             //************************/
             //***A remettre en place**/
             //************************/
-            const todayDate = new Date().toISOString().split('T')[0];
-            this.selectedDate = todayDate;
+            // const todayDate = new Date().toISOString().split('T')[0];
+            const todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
+
+            // this.selectedDate = todayDate;
+            this.selectedDate = (newReservationDate) ? newReservationDate : todayDate;
+            this.selectedShift = newReservationShift;
+            return todayDate;
         },
         loadTableList() {
-            console.log('Loading table list...');
+            // console.log('Loading table list...');
             this.tableList = [];
             fetchAllTables().then(allTables => {
                 allTables.forEach(table => {
@@ -114,7 +123,7 @@ export default {
             });
         },
         loadAssignationList(date, shift) {
-            console.log('Loading assignation list...');
+            // console.log('Loading assignation list...');
             this.assignationList = [];
             this.tableWithAssignationList = [];
             fetchAssignationByDate(date).then(allAssignations => {
@@ -127,14 +136,14 @@ export default {
             }).catch(err => {
                 console.error(err);
             });
-            console.log("assignationList: " + this.assignationList.length)
+            // console.log("assignationList: " + this.assignationList.length)
         },
         updateTableLayout() {
             this.tableWithAssignationList = [];
-            console.log('tableList:', this.tableList);
-            console.log('tableList:', this.tableList.length);
-            console.log('assignationList:', this.assignationList);
-            console.log('assignationList:', this.assignationList.length);
+            // console.log('tableList:', this.tableList);
+            // console.log('tableList:', this.tableList.length);
+            // console.log('assignationList:', this.assignationList);
+            // console.log('assignationList:', this.assignationList.length);
 
             this.tableWithAssignationList = this.tableList.map(table => {
                 return {
@@ -145,7 +154,7 @@ export default {
                     assignation: null,
                 }
             });
-            console.log("tableWithAssi... : " +this.tableWithAssignationList.length);
+            // console.log("tableWithAssi... : " +this.tableWithAssignationList.length);
 
             if (this.assignationList.length > 0) {
                 this.assignationList.forEach(assignation => {
@@ -164,34 +173,31 @@ export default {
                 );
             }
         },
-        loadReservationInformations(receivedReservationId) {
-            this.selectedReservationId = receivedReservationId;
-        },
-        
         displaySelectedTable(number) {
-            console.log("DisplaySelectedTable : " + number)
+            // console.log("DisplaySelectedTable : " + number)
             this.selectedTable = this.tableWithAssignationList.find((table) => {
                 return table.number == number;
             })
-            console.log("DisplaySelectedTable : " + this.selectedTable)
+            // console.log("DisplaySelectedTable : " + this.selectedTable)
         },
     },
     watch: {
         selectedDate() {
-            console.log('selectedDate changed');
+            // console.log('selectedDate changed');
             this.loadAssignationList(this.selectedDate, this.selectedShift);
         },
         selectedShift() {
-            console.log('tableList changed');
+            // console.log('tableList changed');
             this.loadAssignationList(this.selectedDate, this.selectedShift);
         },
     },
 
     mounted() {
+        // console.clear();
         if (!operationSession.isActive) {
             this.$router.push('/operation');
         }
-        this.loadDate();
+        // this.loadDate();
         this.loadTableList();
         this.loadAssignationList();
 
