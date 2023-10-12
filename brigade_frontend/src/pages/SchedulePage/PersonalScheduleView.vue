@@ -1,6 +1,6 @@
 <template>
-    <v-sheet class="ma-2 h-50" v-if="this.isUserAuthorized()">
-        <v-sheet class="my-5 mx-10" v-if="this.isUserAuthorized()">
+    <v-sheet class="ma-2 h-50">
+        <v-sheet class="my-5 mx-10">
             <v-row class="justify-center">
                 <v-col cols="12" md="6" lg="4">
                     Selection de la semaine pour l'horaire
@@ -162,6 +162,7 @@ export default {
                 this.personalSchedule = [];
                 result.forEach(element =>
                 {
+                    if (element.isPublished) {
                     const dateString = element.date;
                     const dateObject = new Date(dateString);
                     const newShift = {
@@ -172,9 +173,10 @@ export default {
                         shiftName: element.shiftName,
                         startTime: element.startTime,
                         endTime: element.endTime,
-                        time: element.tim
+                        time: element.time
                     }
-                    this.personalSchedule.push(newShift);
+                        this.personalSchedule.push(newShift);
+                    }
                 });
             }).catch(err =>
             {
