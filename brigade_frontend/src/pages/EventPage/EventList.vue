@@ -6,7 +6,7 @@
           placeholder="Rechercher un événement..." clearable @click:clear="clearSearchInput"></v-text-field>
         <v-dialog persistent v-model="dialogNewEvent" width="70%">
           <template v-slot:activator="{ props }">
-            <div class="ma-2 text-center">
+            <div v-if="$route.fullPath == '/espace/event'" class="ma-2 text-center">
               <BlackButton class="h-100 w-100" v-bind="props" textbutton="+"> </BlackButton>
             </div>
           </template>
@@ -22,7 +22,7 @@
         <v-col>
           <v-select v-model="eventTypeShowed" label="Type d'événement" :items="eventTypeList"></v-select>
         </v-col>
-        <v-col cols="auto" class="ma-2 pa-2">
+        <v-col v-if="$route.fullPath == '/espace/event'" cols="auto" class="ma-2 pa-2">
           <v-field-label>Affichage:</v-field-label>
           <v-switch :label="`${activeEventFilter}`" v-model="activeEventFilter" true-value="Actif" false-value="Tous"
             inline></v-switch>
@@ -47,6 +47,9 @@ import { fetchAllEvents, fetchAllEventType } from '../../services/EventService';
 import BlackButton from "../../components/Reusable/BlackButton.vue";
 
 export default {
+  props: {
+    activeEvent: Boolean
+  },
   components: {
     NewEventForm,
     BlackButton
@@ -63,31 +66,33 @@ export default {
       eventTypeShowed: "Tous",
       dialogNewEvent: false,
       activeEventFilter: "Tous",
+
     };
   },
-
-
-  provide() {
+  provide()
+  {
     return {
       closeNewEventDialog: this.closeNewEventDialog,
       updateEventTypeShowed: this.updateEventTypeShowed,
       updateEventList: this.updateEventList
     };
   },
-
   methods: {
     clearSearchInput() {
       this.search = "";
     },
     updateEventTypeList() {
       this.eventTypeList = [];
-      fetchAllEventType().then(allEventType => {
+      fetchAllEventType().then(allEventType =>
+      {
         this.eventTypeList.push("Tous");
-        allEventType.forEach((eventType) => {
+        allEventType.forEach((eventType) =>
+        {
           this.eventTypeList.push(eventType);
         })
       })
-        .catch(err => {
+        .catch(err =>
+        {
           console.error(err);
         });
     },
@@ -106,12 +111,16 @@ export default {
           }
       })
     },
-
-    updateEventList() {
+    updateEventList()
+    {
       this.eventList = [];
-      fetchAllEvents().then(allEventList => {
-        allEventList.forEach((event) => {
-          if (this.eventTypeShowed == "Tous" || this.eventTypeShowed == event.eventType) {
+      fetchAllEvents().then(allEventList =>
+      {
+        this.eventList = [];  
+        allEventList.forEach((event) =>
+        {
+          if (this.eventTypeShowed == "Tous" || this.eventTypeShowed == event.eventType)
+          {
             const newEvent = {
               information: event.name + "  -- (" + event.impact + " %)", 
               name: event.name,
@@ -121,54 +130,62 @@ export default {
                 color: 'red'
               }
             }
-            if (this.activeEventFilter == "Actif") {
-              if (event.isActive) {
+            if (this.activeEventFilter == "Actif")
+            {
+              if (event.isActive)
+              {
                 this.eventList.push(newEvent);
               }
-            } else {
+            } else
+            {
               this.eventList.push(newEvent);
             }
           }
 
         })
       })
-        .catch(err => {
+        .catch(err =>
+        {
           console.error(err);
         })
     },
-
-    updateEventTypeShowed(newEventType) {
+    updateEventTypeShowed(newEventType)
+    {
       this.eventTypeShowed = newEventType;
       this.updateEventList();
     },
-    closeNewEventDialog() {
+    closeNewEventDialog()
+    {
       this.dialogNewEvent = false;
     },
 
   },
-
-
   watch: {
-    eventTypeShowed() {
-      if (!!this.search) {
+    eventTypeShowed()
+    {
+      if (!!this.search)
+      {
         this.updateSearchedEvent()
       } else {
         this.updateEventList();
       }
       this.selection[0] = "";
     },
-    selection() {
-      console.log("Selection changer", this.selection[0]);
+    selection()
+    {
       this.loadEvent(this.selection[0]);
     },
-    activeEventFilter() {
-      if (!!this.search) {
+    activeEventFilter()
+    {
+      if (!!this.search)
+      {
         this.updateSearchedEvent()
       } else {
         this.updateEventList();
       }
     },
-    needUpdateEventList() {
+    needUpdateEventList()
+    {
       this.updateEventList();
       //setTimeout(this.toggleUpdateEventList,500);
     },
@@ -181,18 +198,22 @@ export default {
 
   },
 
-  mounted() {
+  mounted()
+  {
+   
     this.eventTypeShowed = "Tous"
     this.updateEventTypeList();
     this.updateEventList();
+    if (this.activeEvent)
+    {
+      this.activeEventFilter = "Actif";
+    }
   }
 }
 </script>
 
 
-<style scoped>
-.v-list {
+<style scoped>.v-list {
   height: 400px;
   overflow-y: auto
-}
-</style>
+}</style>

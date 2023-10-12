@@ -49,8 +49,7 @@ export async function getScheduleWeekInfoByID(scheduleWeekId)
     const response = await fetch(`/api/schedule/${scheduleWeekId}`, {
         method: "GET",
         headers: {
-            "Content-Type": "application/json",
-            ...session.getAuthHeaders()
+            "Content-Type": "application/json"
         },
     });
     if (response.ok)
@@ -63,7 +62,7 @@ export async function getScheduleWeekInfoByID(scheduleWeekId)
     }
 }
 
-export async function getEmployeeScheduleByScheduleWeekId(scheduleWeekId)
+export async function getAllEmployeeScheduleByScheduleWeekId(scheduleWeekId)
 {
     const response = await fetch(`/api/schedule/${scheduleWeekId}/employee`, {
         method: "GET",
@@ -83,20 +82,60 @@ export async function getEmployeeScheduleByScheduleWeekId(scheduleWeekId)
 }
 
 
+export async function getAllEventByScheduleWeekId(scheduleWeekId)
+{
+    const response = await fetch(`/api/schedule/${scheduleWeekId}/event`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
+    if (response.ok)
+    {
+        const respJson = await response.json();
+        return respJson;
+    } else
+    {
+        throw await createServiceError(response);
+    }
+}
+
+export async function getScheduleForOneEmployeeByEmployeeNumberAndScheduleWeekId(employeeNumber, scheduleWeekId)
+{
+    const response = await fetch(`/api/schedule/employee/${employeeNumber}/${scheduleWeekId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
+    if (response.ok)
+    {
+        const respJson = await response.json();
+        return respJson;
+    } else
+    {
+        throw await createServiceError(response);
+    }
+}
+
 export async function updateSchedule(scheduleInformations)
 {
     const response = await fetch(`/api/schedule`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-             ...session.getAuthHeaders()
+            ...session.getAuthHeaders()
         },
         body: JSON.stringify(scheduleInformations)
     });
 
-    if (response.ok) {
+    if (response.ok)
+    {
         return await response.json();
-    } else {
+    } else
+    {
         throw await createServiceError(response);
     }
 }

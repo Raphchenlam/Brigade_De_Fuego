@@ -38,7 +38,8 @@ const selectAllEmployees = async () => {
             employeeNumber: row.employee_number,
             firstName: row.first_name,
             lastName: row.last_name,
-            role: row.role
+            role: row.role,
+            isActive : row.is_active
         };
         return employee;
     });

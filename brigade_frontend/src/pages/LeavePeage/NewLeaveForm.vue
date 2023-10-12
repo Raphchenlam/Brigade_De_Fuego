@@ -60,7 +60,7 @@
                 Ajouter un employé au congé en cours
             </v-card-title>
             <v-row class="justify-center">
-                <EmployeeList class="mr-5" height="400" width="90%"></EmployeeList>
+                <EmployeeList class="mr-5" width="90%"></EmployeeList>
             </v-row>
             <v-row class="justify-end">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="dialogAddEmployeeToLeave = false"></DarkRedButton>
@@ -146,14 +146,14 @@ export default {
                 console.error(err);
             });
         },
-        isMinimumTwoWeeks(startDate)
+        isMinimumOneWeek(startDate)
         {
             const dateStr = startDate;
             var dateParts = dateStr.split('-');
             var date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
             var today = new Date();
             var futureDate = new Date(today);
-            futureDate.setDate(today.getDate() + 14);
+            futureDate.setDate(today.getDate() + 7);
             var dayOfWeek = futureDate.getDay();
             var daysToAdd = 1 - dayOfWeek;
             futureDate.setDate(futureDate.getDate() + daysToAdd);
@@ -211,7 +211,7 @@ export default {
     watch: {
         startDate()
         {
-            this.startDateValid = !this.isMinimumTwoWeeks(this.startDate);
+            this.startDateValid = !this.isMinimumOneWeek(this.startDate);
             this.endDateValid = !(this.endDate < this.startDate);
         },
         endDate()

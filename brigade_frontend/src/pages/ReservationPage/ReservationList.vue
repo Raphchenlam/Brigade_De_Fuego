@@ -1,6 +1,6 @@
 <template>
     <v-sheet width="100%">
-        <v-card class="ma-2" >
+        <v-card class="ma-2">
             <v-row class="mb-0">
                 <v-text-field @input="" v-model="search" hide-details placeholder="Rechercher une réservation..."
                     class="ma-2"></v-text-field>
@@ -51,7 +51,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate','selectedShift'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale', 'loadDate'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -60,6 +60,7 @@ export default {
     },
     data() {
         return {
+            todayDate: null,
             startDate: null,
             endDate: null,
             search: "",
@@ -69,6 +70,7 @@ export default {
             reservations: [],
             filteredReservationList: [],
             dialogNewReservation: false,
+            hasNewReservation: false,
         };
     },
     provide() {
@@ -88,34 +90,90 @@ export default {
             this.filterReservations();
         },
         startDate() {
-            if (this.startDate == "") {
-                this.resetStartDate();
-            }
-
             if (this.startDate != this.endDate) {
+                if (this.startDate == "") this.resetStartDate();
+
+                const startDateObj = this.toLocale(this.startDate);
+                const endDateObj = this.toLocale(this.endDate);
+
+                if (startDateObj.date.year > endDateObj.date.year) {
+                    this.endDate = this.startDate;
+
+                } else if (startDateObj.date.year >= endDateObj.date.year
+                    && startDateObj.date.month > endDateObj.date.month) {
+                    this.endDate = this.startDate;
+
+                } else if (startDateObj.date.year >= endDateObj.date.year
+                    && startDateObj.date.month >= endDateObj.date.month
+                    && startDateObj.date.day >= endDateObj.date.day) {
+                    this.endDate = this.startDate;
+                }
+
                 this.loadReservations(this.startDate, this.endDate);
             }
         },
         endDate() {
-            if (this.endDate == "") {
-                this.resetEndDate();
-            }
-
             if (this.startDate != this.endDate) {
+                if (this.endDate == "") this.resetEndDate();
+
+                const startDateObj = this.toLocale(this.startDate);
+                const endDateObj = this.toLocale(this.endDate);
+
+                if (startDateObj.date.year > endDateObj.date.year) {
+                    this.startDate = this.endDate;
+
+                } else if (startDateObj.date.year >= endDateObj.date.year
+                    && startDateObj.date.month > endDateObj.date.month) {
+                    this.startDate = this.endDate;
+
+                } else if (startDateObj.date.year >= endDateObj.date.year
+                    && startDateObj.date.month >= endDateObj.date.month
+                    && startDateObj.date.day >= endDateObj.date.day) {
+                    this.startDate = this.endDate;
+                }
+
                 this.loadReservations(this.startDate, this.endDate);
             }
+
         },
-        selected() {
-            this.loadReservationInformations(this.selected[0]);
+        'selected': {
+            handler: function () {
+                this.loadReservationInformations(this.selected[0]);
+            },
+            deep: true
         },
-        selectedDate(){
-            this.loadTODAYreservations(this.selectedDate);
+        selectedDate() {
+            console.log("selectedDate TRIGGERED");
+            this.loadReservations(this.selectedDate, this.selectedDate);
+        },
+        selectedShift() {
+            this.shiftShow = this.selectedShift;
+        },
+        hasNewReservation() {
+            if (this.hasNewReservation) {
+                console.log("hasNewReservation TRIGGERED");
+                (this.selectedDate) ? this.loadReservations(this.selectedDate, this.selectedDate) : this.loadReservations(this.startDate, this.endDate);
+                this.hasNewReservation = false;
+            }
         }
     },
     methods: {
         refreshWithNewreservation(newReservation) {
-            this.loadReservations(this.startDate, this.endDate);
-            this.selected = newReservation;
+            console.log("refreshWithNewreservation TRIGGERED");
+            this.hasNewReservation = true;
+            console.log("this.hasNewReservation : ");
+            console.log(this.hasNewReservation);
+
+            const newReservationShift = newReservation[3];
+            this.shiftShow = newReservationShift;
+
+            const dateOnlyOfNewReservation = newReservation[1].split("T")[0];
+            this.startDate = dateOnlyOfNewReservation;
+            this.endDate = this.startDate;
+            (this.selectedDate) ? this.loadDate(dateOnlyOfNewReservation, newReservationShift) : this.loadReservations(this.startDate, this.endDate);
+
+            this.selected[0] = newReservation[0];
+            this.search = newReservation[2];
         },
         loadReservations(startDate, endDate) {
             getReservationList(startDate, endDate)
@@ -127,17 +185,6 @@ export default {
                     alert(err.message);
                 });
         },
-        loadTODAYreservations(selectedDate){
-            getReservationList(selectedDate, selectedDate)
-                .then((reservationList) => {
-                    this.reservations = reservationList;
-                })
-                .catch((err) => {
-                    console.log(err);
-                    alert(err.message);
-                });
-            this.selected=[];
-        },
         filterReservations() {
             this.filteredReservationList = [];
 
@@ -145,7 +192,7 @@ export default {
                 var reservationtoKeep;
 
                 if (this.shiftShow == "Midi" && parseInt(reservation.startTime.split(':').slice(0)[0]) < 15) {
-                    reservationtoKeep = reservation; 
+                    reservationtoKeep = reservation;
                 } else if (this.shiftShow == "Soir" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) {
                     reservationtoKeep = reservation;
                 } else if (this.shiftShow == "all") {
@@ -162,7 +209,7 @@ export default {
 
                     const reservationToAdd = {
                         "listInformation":
-                            reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname + " (" + reservationtoKeep.clientPhoneNumber + ") - " + reservationtoKeep.peopleCount + " personnes - " + reservationtoKeep.date + " à " + formattedStartTime + allergies,
+                        (reservationtoKeep.tableNumber ? "#" + reservationtoKeep.tableNumber: "NO TABLE") + " - " + reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname + " (" + reservationtoKeep.clientPhoneNumber + ") - " + reservationtoKeep.peopleCount + " personnes - " + reservationtoKeep.date + " à " + formattedStartTime + allergies,
                         ...reservationtoKeep,
                         props: {
                             color: 'red',
@@ -180,20 +227,25 @@ export default {
             this.dialogNewReservation = false;
         },
         resetStartDate() {
-            const newDate = new Date().toISOString().split('T')[0];
+            const newDate = this.todayDate;
             this.loadReservations(newDate, this.endDate);
             this.startDate = newDate;
         },
         resetEndDate() {
-            const newDate = new Date().toISOString().split('T')[0];
+            const newDate = this.todayDate;
             this.loadReservations(this.startDate, newDate);
             this.endDate = newDate;
         }
     },
     mounted() {
-        this.endDate = this.startDate = new Date().toISOString().split('T')[0];
-        this.loadReservations(this.startDate, this.endDate);
-
+        // console.clear();
+        if (!(!!this.selectedDate)) {
+            this.todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
+            this.endDate = this.startDate = this.todayDate;
+            this.loadReservations(this.startDate, this.endDate);
+        } else {
+            this.loadReservations(this.selectedDate, this.selectedDate);
+        }
     }
 }
 </script>
@@ -209,3 +261,4 @@ export default {
     overflow-y: auto;
 }
 </style>
+

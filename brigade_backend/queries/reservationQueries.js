@@ -1,8 +1,11 @@
 const pool = require('./DBPool');
 
+// DATES OKAY HERE 
+
 const truncateDate = dateTime => {
     return new Date(dateTime).toLocaleDateString();
 };
+
 
 const explodingTime = time => {
     return {
@@ -11,6 +14,7 @@ const explodingTime = time => {
     }
 }
 exports.explodingTime = explodingTime;
+
 
 const explodingDate = date => {
     return {
@@ -24,21 +28,25 @@ exports.explodingDate = explodingDate;
 
 const getReservationById = async (id) => {
     const result = await pool.query(
-        `SELECT * FROM reservation AS r
-            JOIN client ON client.id = r.client_id
-            JOIN reservation_status AS rs ON rs.code = r.status_code
-            WHERE r.id = $1`,
+        `SELECT 
+            r.id AS res_id, r.table_number, r.client_id, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by,
+            c.first_name AS client_first_name, c.last_name AS client_last_name, c.phone_number AS client_phone_number, c.allergy, c.is_favorite, c.is_blacklisted,
+            rs.name 
+                FROM reservation AS r
+                    JOIN client AS c ON c.id = r.client_id
+                    JOIN reservation_status AS rs ON rs.code = r.status_code
+                        WHERE r.id = $1`,
         [id]);
 
     const row = result.rows[0];
+    console.log(row);
 
     if (row) {
 
         const reservation = {
-            id: row.id,
+            id: row.res_id,
             tableNumber: row.table_number,
             clientId: row.client_id,
-            status: row.name,
             peopleCount: row.people_count,
             date: truncateDate(row.date),
             startTime: row.start_time,
@@ -46,12 +54,13 @@ const getReservationById = async (id) => {
             mention: row.mention,
             hasMinor: row.has_minor,
             takenBy: row.taken_by,
-            firstName: row.first_name,
-            lastName: row.last_name,
-            phoneNumber: row.phone_number,
+            firstName: row.client_first_name,
+            lastName: row.client_last_name,
+            phoneNumber: row.client_phone_number,
             allergy: row.allergy,
             isFavorite: row.is_favorite,
-            isBlacklisted: row.is_blacklisted
+            isBlacklisted: row.is_blacklisted,
+            status: row.name
         };
 
         return reservation;
@@ -136,14 +145,12 @@ exports.insertReservation = insertReservation;
 
 
 const getReservationListByDates = async (startDate, endDate) => {
-
-    const queryStartDate = !!startDate ? startDate : new Date().toISOString().split('T')[0];
-    const queryEndDate = !!endDate ? endDate : new Date().toISOString().split('T')[0];
-
+    const queryStartDate = !!startDate ? startDate : new Date().toLocaleDateString();
+    const queryEndDate = !!endDate ? endDate : new Date().toLocaleDateString();
 
     results = await pool.query(
         `SELECT 
-            r.id, r.table_number, r.client_id, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by,
+            r.id AS res_id, r.table_number, r.client_id, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by,
             c.first_name AS client_first_name, c.last_name AS client_last_name, c.phone_number AS client_phone_number, c.allergy, c.is_favorite, c.is_blacklisted,
             e.barcode_number AS employee_barcode_number, e.first_name AS employee_first_name, e.last_name AS employee_last_name, e.role AS employee_role
             FROM reservation AS r
@@ -156,7 +163,7 @@ const getReservationListByDates = async (startDate, endDate) => {
 
     return results.rows.map((row) => {
         const reservation = {
-            id: row.id,
+            id: row.res_id,
             tableNumber: row.table_number,
             clientId: row.client_id,
             peopleCount: row.people_count,
@@ -176,7 +183,7 @@ const getReservationListByDates = async (startDate, endDate) => {
             employeeFirstname: row.employee_first_name,
             employeeLastname: row.employee_last_name,
             employeeRole: row.employee_role,
-            
+
         };
 
         return reservation;

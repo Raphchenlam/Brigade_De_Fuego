@@ -139,7 +139,7 @@ router.post('/',
         const hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') return next(new HttpError(400, 'Le champ hourlyRate est requis'));
         if (!regex.validHourlyRate.test(hourlyRate)) return next(new HttpError(400, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
-        hourlyRate = parseFloat(hourlyRate);
+        // hourlyRate = parseFloat(hourlyRate);
 
         const barcodeNumber = req.body.barcodeNumber;
         if (!barcodeNumber || barcodeNumber == '') return next(new HttpError(400, 'Le champ barcodeNumber est requis'));
@@ -160,13 +160,13 @@ router.post('/',
         if (role != "Gestionnaire") {
             if (!skillPoints || skillPoints == '') return next(new HttpError(400, 'Le champ skillPoints est requis'));
             if (!regex.validSkillPoints.test(skillPoints)) return next(new HttpError(400, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
-            skillPoints = parseInt(skillPoints);
+            // skillPoints = parseInt(skillPoints);
         }
 
         employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber).then(employee => {
             if (employee) throw new HttpError(400, `${employee.firstName} ${employee.lastName} est associé(e) à ce numéro d'employé`);
-        },
-            employeeNumber = parseInt(employeeNumber)
+        }
+            // employeeNumber = parseInt(employeeNumber)
         ).catch(err => {
             next(err)
         });

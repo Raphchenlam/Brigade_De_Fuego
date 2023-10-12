@@ -1,6 +1,8 @@
 <template>
     <v-sheet class="w-100">
-        <v-sheet v-if="userSession.employee.isAdmin && $route.fullPath == '/espace/leave'" class="ma-5">
+        <v-sheet
+            v-if="(this.isUserAuthorized() && $route.fullPath == '/espace/leave')"
+            class="ma-5">
             <v-row class="ma-5 justify-space-around">
                 <v-col cols="11">
                     <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }} affichées / {{ nbPendingLeave
@@ -65,13 +67,11 @@
                     class="mx-10"></v-text-field>
             </v-row>
         </v-sheet>
-
-        <v-sheet :class="userSession.employee.isAdmin && $route.fullPath == '/espace/leave' ? 'mx-10' : 'mx-5'">
+        <v-sheet :class="this.isUserAuthorized() && $route.fullPath == '/espace/leave' ? 'mx-10' : 'mx-5'">
             <v-data-table-server no-data-text="Aucune demande de congés à afficher" v-model:items-per-page="itemsPerPage"
-                v-model:expanded="expanded" :loading="loading" height="100%" fixed-header :headers="headers" :hide-default-footer="true"
-                :items="filteredLeaveList" :items-length="filteredLeaveList.length" class="elevation-1" hide-default-footer
-  disable-pagination
-                @update:options="loadLeaves" show-expand>
+                v-model:expanded="expanded" :loading="loading" height="100%" fixed-header :headers="headers"
+                :hide-default-footer="true" :items="filteredLeaveList" :items-length="filteredLeaveList.length"
+                class="elevation-1" hide-default-footer disable-pagination @update:options="loadLeaves" show-expand>
 
                 <template v-slot:top>
                     <v-toolbar flat>
@@ -80,16 +80,12 @@
                         <v-dialog v-model="dialogNewLeave" max-width="500px">
                             <template v-slot:activator="{ props }">
                                 <BlackButton v-bind="props" textbutton="+"> </BlackButton>
-
                             </template>
                             <v-card>
                                 <v-card-title>
                                     <span class="text-h5">Faire une demande de congé</span>
                                 </v-card-title>
-
-
                                 <NewLeaveForm :employeeNumberReceived="employeeNumber"></NewLeaveForm>
-
                             </v-card>
                         </v-dialog>
                     </v-toolbar>
@@ -100,11 +96,9 @@
                             <v-card-title>
                                 <span class="text-h5">Modifier Conge</span>
                             </v-card-title>
-
                             <v-card-text>
                                 <EditLeaveForm :editedItem="editedItem"></EditLeaveForm>
                             </v-card-text>
-
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn v-if="editedItem.status != 'Accepté'" color="green" variant="text"
@@ -124,17 +118,16 @@
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-icon v-if="item.raw.status != 'Accepté' && userSession.employee.isAdmin" size="small"
+                    <v-icon v-if="item.raw.status != 'Approved' && this.isUserAuthorized()" size="small"
                         class="me-2 approved-icon" @click="accept(item.raw)">
                         mdi-check
                     </v-icon>
-                    <v-icon v-if="item.raw.status != 'Refusé' && userSession.employee.isAdmin" size="small"
+                    <v-icon v-if="item.raw.status != 'Refused' && this.isUserAuthorized()" size="small"
                         class="me-2 refused-icon" @click="refuse(item.raw)">
                         mdi-close
                     </v-icon>
-                    <v-icon size="small" class="me-2" @click="editItem(item.raw)">
-                        mdi-pencil
-                    </v-icon>
+                    <!-- Ligne a decommenter au sprint 4 lors de la modification d'un congé -->
+                    <!-- <v-icon size="small" class="me-2" @click="editItem(item.raw)"> mdi-pencil </v-icon> -->
                 </template>
 
                 <template v-slot:expanded-row="{ columns, item }">
@@ -156,10 +149,11 @@ import userSession from '../../sessions/UserSession';
 import BlackButton from '../../components/Reusable/BlackButton.vue'
 import EditLeaveForm from './EditLeaveForm.vue'
 
-import { getAllLeaves, getAllFilteredLeaves, getleavesByEmployeeNumber } from '../../services/LeaveService';
+import { getAllFilteredLeaves, getleavesByEmployeeNumber, updateLeave } from '../../services/LeaveService';
 import NewLeaveForm from './NewLeaveForm.vue';
 
 export default {
+    inject: ['isUserAuthorized'],
     components: {
         EditLeaveForm,
         BlackButton,
@@ -179,7 +173,6 @@ export default {
             dialogNewLeave: false,
             dialogEditLeave: false,
             expanded: [],
-            date: null,
             leaveList: [],
             filteredLeaveList: [],
             nbPendingLeave: 0,
@@ -202,7 +195,7 @@ export default {
                     title: 'Date Fin',
                 },
                 {
-                    key: 'status',
+                    key: 'statusShow',
                     sortable: false,
                     title: 'Status',
                 },
@@ -256,17 +249,27 @@ export default {
             {
                 getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves =>
                 {
+                    console.log("allLeaves",allLeaves)
                     allLeaves.forEach(leave =>
                     {
+                        //if (!leave.nbPending)
+                        //{
                         leave.startDate = leave.startDate.split('T').slice(0)[0]
                         leave.endDate = leave.endDate.split('T').slice(0)[0]
-                        if (leave.status == 'Pending') leave.status = 'En Attente'
-                        if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
-                        if (leave.status == 'Approved') leave.status = 'Accepté'
-                        if (leave.status == 'Refused') leave.status = 'Refusé'
+                        if (leave.status == 'Pending') leave.statusShow = 'En Attente'
+                        if (leave.status == 'PendingModified') leave.statusShow = 'En Attente (modifié)'
+                        if (leave.status == 'Approved') leave.statusShow = 'Accepté'
+                        if (leave.status == 'Refused') leave.statusShow = 'Refusé'
                         this.leaveList.push(leave);
-                        this.loading = false;
+                        //} else
+                        //{
+                        //this.nbPendingLeave = leave.nbPending;
+                        //}
                     });
+                    this.loading = false;
+                }).catch(err =>
+                {
+                    console.error(err);
                 });
             } else
             {
@@ -278,10 +281,10 @@ export default {
                         {
                             leave.startDate = leave.startDate.split('T').slice(0)[0]
                             leave.endDate = leave.endDate.split('T').slice(0)[0]
-                            if (leave.status == 'Pending') leave.status = 'En Attente'
-                            if (leave.status == 'PendingModified') leave.status = 'En Attente (modifié)'
-                            if (leave.status == 'Approved') leave.status = 'Accepté'
-                            if (leave.status == 'Refused') leave.status = 'Refusé'
+                            if (leave.status == 'Pending') leave.statusShow = 'En Attente'
+                            if (leave.status == 'PendingModified') leave.statusShow = 'En Attente (modifié)'
+                            if (leave.status == 'Approved') leave.statusShow = 'Accepté'
+                            if (leave.status == 'Refused') leave.statusShow = 'Refusé'
                             this.leaveList.push(leave)
                         } else
                         {
@@ -305,11 +308,37 @@ export default {
         },
         accept(item)
         {
-            console.log("Accept", item)
+            const oldStatus = item.status;
+            const oldStatusShow = item.statusShow;
+            item.status = "Approved"
+            item.statusShow = "Accepté"
+            updateLeave(item).then(result =>
+            {
+                this.nbPendingLeave -= 1;
+            }).catch(err =>
+            {
+                item.status = oldStatus;
+                item.statusShow = oldStatusShow;
+                console.error(err);
+                alert(err);
+            })
         },
         refuse(item)
         {
-            console.log("Refuse", item)
+            const oldStatus = item.status;
+            const oldStatusShow = item.statusShow;
+            item.status = "Refused"
+            item.statusShow = "Refusé"
+            updateLeave(item).then(result =>
+            {
+                this.nbPendingLeave -= 1;
+            }).catch(err =>
+            {
+                item.status = oldStatus;
+                item.statusShow = oldStatusShow;
+                console.error(err);
+                alert(err);
+            })
         },
         closeEditLeaveDialog()
         {
@@ -333,37 +362,6 @@ export default {
             this.loadLeaves();
             this.filterDialog = false;
         },
-        loadFilteredLeaves()
-        {
-
-        },
-        /*
-        filterLeaveList(checkedBoxes, leaveList)
-        {
-            const today = new Date(); // Obtenir la date actuelle
-
-            return leaveList.filter(leave =>
-            {
-                if (checkedBoxes.all)
-                {
-                    return true; // Si "Tout" est coché, inclure tous les congés
-                }
-                if (checkedBoxes[leave.status.toLowerCase()])
-                {
-                    return true; // Si la case correspondant au statut est coché, inclure le congé
-                }
-                if (checkedBoxes.coming && new Date(leave.startDate) > today)
-                {
-                    return true; // Si "À venir" est coché et la date de début est ultérieure à aujourd'hui, inclure le congé
-                }
-                if (checkedBoxes.passed && new Date(leave.endDate) < today)
-                {
-                    return true; // Si "Passé" est coché et la date de fin est antérieure à aujourd'hui, inclure le congé
-                }
-                return false; // Sinon, exclure le congé
-            });
-        },
-        */
         checkAllBoxes()
         {
             if (this.checkedBoxes.all == false)
@@ -386,7 +384,7 @@ export default {
                 this.checkedBoxes.passed = false;
                 this.checkedBoxes.coming = false;
             }
-        }
+        },
     },
     computed: {
         calculatePendingLeaves()
@@ -394,7 +392,7 @@ export default {
             let nbPendingLeave = 0;
             this.leaveList.forEach(leave =>
             {
-                if (leave.status == 'En Attente' || leave.status == 'En Attente (modifié)') nbPendingLeave++
+                if (leave.status == 'Pending' || leave.status == 'PendingModified') nbPendingLeave++
 
             });
             return nbPendingLeave
@@ -428,8 +426,6 @@ export default {
                     this.filteredLeaveList.push(leave);
                 }
             });
-
-
         },
         employeeNumber()
         {
@@ -443,15 +439,19 @@ export default {
             loadLeaves: this.loadLeaves
         }
     },
+    created()
+    {
+        if (!userSession.employeeNumber && !userSession.password)
+        {
+            this.$router.push('/espace');
+        }
+    },
     mounted()
     {
         if (this.employeeName)
         {
-            console.log("search = employeename", this.employeeName)
             this.search = this.employeeName;
         }
-        //this.loadLeaves();
-        this.date = "2023-09-05"; //aller chercher la date de aujourdhui
     }
 }
 
