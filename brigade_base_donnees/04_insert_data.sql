@@ -150,7 +150,13 @@ VALUES
 INSERT INTO reservation_status ("name")
 VALUES 
 ('Confirmé'),
-('No Show');
+('En cours'),
+('En retard'),
+('Terminé'),
+('Délai échu'),
+('No Show'),
+('Annulé'),
+('Blacklisted');
 
 -- Insertion dans la table table_state
 INSERT INTO table_state ("name")
