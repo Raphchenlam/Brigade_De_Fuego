@@ -83,11 +83,11 @@ export default {
             getLastPunchFromEmployee(this.punch.barcodeNumber).then(result => {
                 if (result.noShift || (result.startTime && result.endTime)) {
 
-                    this.punch.dateIn = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
-                    console.log("this.punch.dateIn", this.punch.dateIn);
+                    this.punch.dateIn = this.toLocale(new Date().toLocaleDateString('en-GB')).date.fullDate;
+                    console.log(this.punch.dateIn);
 
-                    this.punch.startTime = this.convertToTimeObject(new Date().toLocaleTimeString()).fullTime;
-                    console.log("this.punch.startTime", this.punch.startTime);
+                    this.punch.startTime = new Date().toLocaleTimeString('en-GB');
+                    console.log('this.punch.startTime', this.punch.startTime);
 
                     punchInEmployee(this.punch).then(result => {
                         if (result) {
@@ -104,8 +104,8 @@ export default {
                     this.punch.dateIn = this.toLocale(result.dateIn).date.fullDate;
                     console.log (this.punch.dateIn);
                     this.punch.startTime = result.startTime;
-                    this.punch.dateOut = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
-                    this.punch.endTime = this.convertToTimeObject(new Date().toLocaleTimeString()).fullTime;
+                    this.punch.dateOut = this.toLocale(new Date().toLocaleDateString('en-GB')).date.fullDate;
+                    this.punch.endTime = new Date().toLocaleTimeString('en-GB');
 
                     punchOutEmployee(this.punch).then(result => {
                         if (result) {
@@ -122,20 +122,20 @@ export default {
                 alert(err.message);
             });
         },
-        convertToTimeObject(timeStr) {
-            const match = timeStr.match(/(\d+)\sh\s(\d+)\smin\s(\d+)\ss/);
+        // convertToTimeObject(timeStr) {
+        //     const match = timeStr.match(/(\d+)\sh\s(\d+)\smin\s(\d+)\ss/);
 
-            if (match) {
-                return {
-                    hours: parseInt(match[1], 10),
-                    minutes: parseInt(match[2], 10),
-                    seconds: parseInt(match[3], 10),
-                    fullTime: match[1] + ":" + match[2] + ":" + match[3]
-                }
-            } else {
-                console.error("Invalid time string format.");
-            }
-        },
+        //     if (match) {
+        //         return {
+        //             hours: parseInt(match[1], 10),
+        //             minutes: parseInt(match[2], 10),
+        //             seconds: parseInt(match[3], 10),
+        //             fullTime: match[1] + ":" + match[2] + ":" + match[3]
+        //         }
+        //     } else {
+        //         console.error("Invalid time string format.");
+        //     }
+        // },
         closeAllDialog() {
             this.dialogPunchIn = false;
             this.dialogPunchOut = false;
