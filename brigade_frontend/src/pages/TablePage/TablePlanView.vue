@@ -47,12 +47,6 @@ import WaiterList from "./WaiterList.vue";
 import { fetchAllTables, fetchAssignationByDate } from '../../services/TableService';
 
 
-// QUERIES TO UPDATE EMPLOYEE COLOR
-// UPDATE employee
-// 	SET color_hexcode='4C0099'
-// 	WHERE employee_number=2222;
-
-
 export default {
     inject: [ 'toLocale' ],
     name: 'TablePlanView',
@@ -125,13 +119,11 @@ export default {
             // const todayDate = new Date().toISOString().split('T')[0];
             const todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
 
-            // this.selectedDate = todayDate;
             this.selectedDate = (newReservationDate) ? newReservationDate : todayDate;
-            this.selectedShift = newReservationShift;
+            this.selectedShift = (newReservationShift) ? newReservationShift : "Midi" ;
             return todayDate;
         },
         loadTableList() {
-            // console.log('Loading table list...');
             this.tableList = [];
             fetchAllTables().then(allTables => {
                 allTables.forEach(table => {
@@ -142,7 +134,6 @@ export default {
             });
         },
         loadAssignationList(date, shift) {
-            // console.log('Loading assignation list...');
             this.assignationList = [];
             this.tableWithAssignationList = [];
             fetchAssignationByDate(date).then(allAssignations => {
@@ -155,14 +146,9 @@ export default {
             }).catch(err => {
                 console.error(err);
             });
-            // console.log("assignationList: " + this.assignationList.length)
         },
         updateTableLayout() {
             this.tableWithAssignationList = [];
-            // console.log('tableList:', this.tableList);
-            // console.log('tableList:', this.tableList.length);
-            // console.log('assignationList:', this.assignationList);
-            // console.log('assignationList:', this.assignationList.length);
 
             this.tableWithAssignationList = this.tableList.map(table => {
                 return {
@@ -173,7 +159,6 @@ export default {
                     assignation: null,
                 }
             });
-            // console.log("tableWithAssi... : " +this.tableWithAssignationList.length);
 
             if (this.assignationList.length > 0) {
                 this.assignationList.forEach(assignation => {
@@ -193,11 +178,16 @@ export default {
             }
         },
         selectWaiter(waiterNumber, employeeColor) {
+                        
             if (this.selectedWaiter == null || this.selectedWaiter.waiterNumber != waiterNumber) {
+                if (waiterNumber == 0 && employeeColor == 0) {
+                    this.selectedWaiter = null;
+                }else{
                 this.selectedWaiter = {
                     waiterNumber: waiterNumber,
                     employeeColor: employeeColor
                 }
+            }
             }else{
                 this.selectedWaiter = null;
             }
@@ -244,14 +234,11 @@ export default {
             }
         },
         displaySelectedTable(number) {
-            // console.log("DisplaySelectedTable : " + number)
             this.selectedTable = this.tableWithAssignationList.find((table) => {
                 return table.number == number;
             })
-            // console.log("DisplaySelectedTable : " + this.selectedTable)
         },
         selectTableInSection(tableNumber) {
-            //this.tableInSection = tableNumber
             console.log('tableInSection : ' + tableNumber)
 
             if (this.selectedWaiter != null) {
@@ -292,18 +279,15 @@ export default {
         toggleEditionMode() {
             this.inEditionMode = !this.inEditionMode;
             if (!this.inEditionMode) {
-                // this.selectedWaiter = null;
                 this.tempAssignationList = [];
             }
         },
     },
     watch: {
         selectedDate() {
-            // console.log('selectedDate changed');
             this.loadAssignationList(this.selectedDate, this.selectedShift);
         },
         selectedShift() {
-            // console.log('tableList changed');
             this.loadAssignationList(this.selectedDate, this.selectedShift);
         },
 
@@ -339,11 +323,9 @@ export default {
         this.loadDate();
     },
     mounted() {
-        // console.clear();
         if (!operationSession.isActive) {
             this.$router.push('/operation');
         }
-        // this.loadDate();
         this.loadTableList();
         this.loadAssignationList();
     }

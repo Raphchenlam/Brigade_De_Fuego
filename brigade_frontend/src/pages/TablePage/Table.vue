@@ -55,9 +55,7 @@ export default {
             fillDarkColor: "",
             fillLightColor: "",
             tableNumberFormatted: "000",
-            //selected:null,
-            //tableCapacity: "6",
-            //validRegexTableNumber: "/^\d{3}$/gm"
+            
         }
     },
     methods: {

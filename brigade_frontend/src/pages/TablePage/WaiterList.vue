@@ -17,7 +17,7 @@
                 </p>
             </v-row>
             <v-row>
-                <v-list class="w-100 pa-2 ma-2">
+                <v-list v-model:selected="selected" class="w-100 pa-2 ma-2">
                     <v-list-item v-for="waiter in waitersList" :key="waiter.employeeNumber" :title="waiter.listInformations"
                         :value="waiter.employeeNumber" :color="waiter.waiterColor"
                         @click="selectWaiter(waiter.employeeNumber, waiter.waiterColor)">
@@ -69,14 +69,15 @@ import BlackButton from "../../components/Reusable/BlackButton.vue";
 
 
 export default {
-    inject: ['selectedDate', 'selectedShift', 'inEditionMode', 'toggleEditionMode', 'selectWaiter'],
+    inject: ['selectedDate', 'selectedShift', 'inEditionMode', 'toggleEditionMode', 'selectWaiter','selectedWaiter'],
     components: {
         BlackButton
     },
     data() {
         return {
             waitersList: [],
-            inColorMode: false
+            inColorMode: false,
+            selected:[]
         }
     },
 
@@ -102,8 +103,9 @@ export default {
             this.waitersList.forEach((employee) => {
                 updateEmployeeColor(employee.employeeNumber, employee.waiterColor)
             })
-            this.getWaitersList();
             this.inColorMode = false;
+            //**** RESET selectedWaiter TO NULL ****//
+            this.selectWaiter(0,0);
         },
         openColorPicker(waiter) {
             if (this.inColorMode) {
@@ -112,9 +114,6 @@ export default {
         },
         toggleColorMode() {
             this.inColorMode = !this.inColorMode;
-            if (!this.inColorMode) {
-                this.getWaitersList();
-            }
         }
 
     },
@@ -125,6 +124,16 @@ export default {
         selectedShift() {
             this.getWaitersList();
         },
+        selectedWaiter(){
+            if (this.selectedWaiter == null) {
+                this.selected=[];
+            }
+        },
+        inColorMode(){
+            if (!this.inColorMode) {
+                this.getWaitersList();
+            }
+        }
 
     },
 

@@ -246,6 +246,7 @@ export default {
         } else {
             this.loadReservations(this.selectedDate, this.selectedDate);
         }
+        console.log(this.selectedDate);
     }
 }
 </script>
