@@ -60,7 +60,9 @@ const selectAllEmployeesByRole = async (role) => {
             employeeNumber: row.employee_number,
             firstName: row.first_name,
             lastName: row.last_name,
-            role: row.role
+            role: row.role,
+            color: row.color_hexcode,
+            isActive: row.is_active
         };
         return employee;
     });
@@ -153,6 +155,20 @@ const updateEmployee = async (employeeToUpdate, passwordSalt, passwordHash, clie
     return selectEmployeeByEmployeeNumber(employeeToUpdate.employeeNumber);
 };
 exports.updateEmployee = updateEmployee;
+
+const updateEmployeeColorByEmployeeNumber = async (employeeNumber, employeeColor) =>{
+    
+    const result = await pool.query(
+        `UPDATE employee SET color_hexcode = $2
+            WHERE employee_number = $1`,
+            [employeeNumber, employeeColor]
+    );
+    if (result.rowCount === 0) {
+        return undefined
+    }
+    return employeeNumber + employeeColor;
+}
+exports.updateEmployeeColorByEmployeeNumber = updateEmployeeColorByEmployeeNumber;
 
 const selectEmployeeByEmployeeNumber = async (employeeNumber) => {
     const result = await pool.query(

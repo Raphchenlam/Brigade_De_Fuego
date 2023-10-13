@@ -3,7 +3,7 @@
     <v-card class="h-screen">
       <v-row class="mb-0">
         <v-text-field :autofocus="true" class="ma-2" @input="updateSearchedEvent" v-model='search' hide-details
-          placeholder="Rechercher un événement..."></v-text-field>
+          placeholder="Rechercher un événement..." clearable @click:clear="clearSearchInput"></v-text-field>
         <v-dialog persistent v-model="dialogNewEvent" width="70%">
           <template v-slot:activator="{ props }">
             <div v-if="$route.fullPath == '/espace/event'" class="ma-2 text-center">
@@ -31,7 +31,11 @@
       <div class="text-center ma-5">
         <p>Nombre d'evenements : {{ eventList.length }}</p>
       </div>
-      <v-list v-model:selected='selection' :items="eventList" item-title="name" item-value="name"></v-list>
+      <v-card class="ma-2">
+        <v-list v-model:selected='selection' :items="!!search?filteredEventList:eventList" item-title="information" item-value="name">
+        
+        </v-list>
+      </v-card>
     </v-card>
   </v-sheet>
 </template>
@@ -51,12 +55,12 @@ export default {
     BlackButton
   },
   inject: ['loadEvent', 'needUpdateEventList', 'toggleUpdateEventList', 'eventToDisplay'],
-  data()
-  {
+  data() {
     return {
       search: null,
       selection: [],
       eventList: [],
+      filteredEventList: [],
       allEventList: [],
       eventTypeList: [],
       eventTypeShowed: "Tous",
@@ -74,8 +78,10 @@ export default {
     };
   },
   methods: {
-    updateEventTypeList()
-    {
+    clearSearchInput() {
+      this.search = "";
+    },
+    updateEventTypeList() {
       this.eventTypeList = [];
       fetchAllEventType().then(allEventType =>
       {
@@ -90,35 +96,20 @@ export default {
           console.error(err);
         });
     },
-    updateSearchedEvent()
-    {
-      this.eventList = [];
-      if (this.search == null)
-      {
-        this.search = "";
-      }
-      fetchAllEvents().then(allEventList =>
-      {
-        allEventList.forEach(event =>
-        {
-          if (event.name.toUpperCase().indexOf(this.search.toUpperCase()) >= 0)
-          {
-            if (this.activeEventFilter == "Actif")
-            {
-              if (event.isActive)
-              {
-                this.eventList.push(event);
+    filterSearchedEvent() {
+      this.filteredEventList = [],
+
+      this.eventList.forEach(event => {
+        if (event.name.toUpperCase().indexOf(this.search.toUpperCase()) >= 0) {
+            if (this.activeEventFilter == "Actif") {
+              if (event.isActive) {
+                this.filteredEventList.push(event);
               }
-            } else
-            {
-              this.eventList.push(event);
+            } else {
+              this.filteredEventList.push(event);
             }
           }
-        })
-      }).catch(err =>
-      {
-        console.error(err);
-      });
+      })
     },
     updateEventList()
     {
@@ -131,6 +122,7 @@ export default {
           if (this.eventTypeShowed == "Tous" || this.eventTypeShowed == event.eventType)
           {
             const newEvent = {
+              information: event.name + "  -- (" + event.impact + " %)", 
               name: event.name,
               eventType: event.eventType,
               impact: event.impact,
@@ -174,8 +166,7 @@ export default {
       if (!!this.search)
       {
         this.updateSearchedEvent()
-      } else
-      {
+      } else {
         this.updateEventList();
       }
       this.selection[0] = "";
@@ -189,8 +180,7 @@ export default {
       if (!!this.search)
       {
         this.updateSearchedEvent()
-      } else
-      {
+      } else {
         this.updateEventList();
       }
     },
@@ -199,9 +189,11 @@ export default {
       this.updateEventList();
       //setTimeout(this.toggleUpdateEventList,500);
     },
-    eventToDisplay()
-    {
+    eventToDisplay() {
       this.selection[0] = this.eventToDisplay;
+    },
+    search(){
+      this.filterSearchedEvent();
     }
 
   },

@@ -144,8 +144,8 @@ exports.insertReservation = insertReservation;
 
 
 const getReservationListByDates = async (startDate, endDate) => {
-    const queryStartDate = !!startDate ? startDate : new Date().toLocaleDateString();
-    const queryEndDate = !!endDate ? endDate : new Date().toLocaleDateString();
+    const queryStartDate = !!startDate ? startDate : new Date().toLocaleDateString("en-GB");
+    const queryEndDate = !!endDate ? endDate : new Date().toLocaleDateString("en-GB");
 
     results = await pool.query(
         `SELECT 

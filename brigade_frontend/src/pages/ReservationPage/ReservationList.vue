@@ -2,7 +2,7 @@
     <v-sheet width="100%">
         <v-card class="ma-2">
             <v-row class="mb-0">
-                <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
+                <v-text-field @input="" v-model="search" hide-details placeholder="Rechercher une réservation..."
                     class="ma-2"></v-text-field>
                 <v-dialog v-model="dialogNewReservation" width="100%">
                     <template v-slot:activator="{ props }">
@@ -184,7 +184,7 @@ export default {
             this.reservations.forEach(reservation => {
                 var reservationtoKeep;
 
-                if (this.shiftShow == "Midi" && parseInt(reservation.startTime.split(':').slice(0)[0]) < 15) {
+                if (this.shiftShow == "Midi" && parseInt(reservation.startTime.split(':').slice(0)[0]) <= 15) {
                     reservationtoKeep = reservation;
                 } else if (this.shiftShow == "Soir" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) {
                     reservationtoKeep = reservation;
@@ -233,12 +233,19 @@ export default {
     mounted() {
         // console.clear();
         if (!(!!this.selectedDate)) {
-            this.todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
+            //TODO: choose witch one 
+            // this.todayDate = this.toLocale(new Date().toLocaleDateString("en-US")).date.fullDate;
+            this.todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
             this.endDate = this.startDate = this.todayDate;
             this.loadReservations(this.startDate, this.endDate);
         } else {
             this.loadReservations(this.selectedDate, this.selectedDate);
         }
+        // console.log(this.selectedDate);
+        console.clear();
+        console.log("date pas de param " + new Date().toLocaleDateString());
+        console.log("date en-GB " + new Date().toLocaleDateString("en-GB"));
+        console.log("date en-GB "+new Date().toLocaleDateString("en-GB"))
     }
 }
 </script>

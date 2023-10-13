@@ -125,7 +125,7 @@ export default {
     //   console.log(result);
     //   console.log(" ");
 
-    //   testStr = new Date().toLocaleDateString();
+    //   testStr = new Date().toLocaleDateString("en-GB");
     //   console.log("toLocaleDateString() : " + testStr);
     //   result = this.toLocale(testStr);
     //   console.log(result);
@@ -150,6 +150,9 @@ export default {
     },
     replaceAndSplitDateFromTime(str) {
       if (str) {
+        const indexOfComma = str.indexOf(",");
+        if (indexOfComma != -1) str = str.replace(/,/g, "");
+
         const indexOfSlash = str.indexOf("/");
         if (indexOfSlash != -1) str = str.replace(/\//g, "-");
 

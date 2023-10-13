@@ -33,6 +33,7 @@ import EventView from "./pages/EventPage/EventView.vue"
 import EventInformation from "./pages/EventPage/EventInformation.vue"
 import PunchManagerView from "./pages/PunchPage/PunchManagerView.vue"
 
+
 import NotFoundView from './pages/NotFound.vue'
 
 const app = createApp(App);
