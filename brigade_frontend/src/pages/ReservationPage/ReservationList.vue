@@ -143,7 +143,6 @@ export default {
             deep: true
         },
         selectedDate() {
-            console.log("selectedDate TRIGGERED");
             this.loadReservations(this.selectedDate, this.selectedDate);
         },
         selectedShift() {
@@ -151,7 +150,6 @@ export default {
         },
         hasNewReservation() {
             if (this.hasNewReservation) {
-                console.log("hasNewReservation TRIGGERED");
                 (this.selectedDate) ? this.loadReservations(this.selectedDate, this.selectedDate) : this.loadReservations(this.startDate, this.endDate);
                 this.hasNewReservation = false;
             }
@@ -159,11 +157,6 @@ export default {
     },
     methods: {
         refreshWithNewreservation(newReservation) {
-            console.log("refreshWithNewreservation TRIGGERED");
-            this.hasNewReservation = true;
-            console.log("this.hasNewReservation : ");
-            console.log(this.hasNewReservation);
-
             const newReservationShift = newReservation[3];
             this.shiftShow = newReservationShift;
 

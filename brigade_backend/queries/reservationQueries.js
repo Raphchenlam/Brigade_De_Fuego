@@ -39,7 +39,6 @@ const getReservationById = async (id) => {
         [id]);
 
     const row = result.rows[0];
-    console.log(row);
 
     if (row) {
 
