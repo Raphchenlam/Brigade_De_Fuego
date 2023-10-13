@@ -26,6 +26,23 @@ async function createServiceError(response)
     return new ServiceError(response.status, await getResponseMessage(response));
 }
 
+export async function getAllWaitersByDateAndShift(date, shift){
+    const response = await fetch(`/api/schedule/${date}/${shift}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            //...session.getAuthHeaders()
+        },
+    });
+    if (response.ok)
+    {
+        const respJson = await response.json();
+        return respJson;
+    } else
+    {
+        throw await createServiceError(response);
+    }
+}
 
 export async function getScheduleWeekInfoByID(scheduleWeekId)
 {

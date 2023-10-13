@@ -162,6 +162,31 @@ const selectEmailFromEmployeeNumber = async (employeeNumber) =>
 };
 exports.selectEmailFromEmployeeNumber = selectEmailFromEmployeeNumber
 
+const selectAllWaitersForOperationByDateAndShift = async (date, shift) =>
+{
+    const result = await pool.query(
+        `SELECT es.employee_number, e.first_name, e.last_name, e.color_hexcode, sp.date, sp.shift_name, es.start_time, es.end_time  FROM employee_schedule as es
+        INNER JOIN schedule_period as sp ON es.schedule_period_id = sp.id
+        INNER JOIN employee as e ON e.employee_number = es.employee_number
+        WHERE sp.date = $1 AND sp.shift_name = $2 AND e.role='Serveur'`,
+        [date, shift]
+    );
+
+    return result.rows.map(row =>
+    {
+        const employeeSchedule = {
+            waiterNumber: row.employee_number,
+            waiterName: row.first_name + " " + row.last_name,
+            waiterColor: row.color_hexcode,
+            date: row.date,
+            shift: row.shift_name,
+            shiftTime: row.start_time + "-" + row.end_time
+        };
+        return employeeSchedule;
+    });
+};
+exports.selectAllWaitersForOperationByDateAndShift = selectAllWaitersForOperationByDateAndShift;
+
 const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
 {
     const client = clientParam || await pool.connect();
