@@ -2,13 +2,13 @@
     <v-row class="justify-center">
         <v-sheet width="70%" class="pa-16">
             <v-form @submit.prevent="punchEmployee" class="pa-10" validate-on="submit lazy" ref="punchForm">
-                <v-text-field label="Scanner votre carte employe" v-model.trim="punch.employeeBarcodeNumber" autofocus
-                    clearable :rules="[rules.required, rules.validateBarcodeNumber]" maxlength="16" :counter="16"
-                    height="20px" class="mb-16">
+                <v-text-field label="Scanner votre carte employe" v-model.trim="punch.barcodeNumber" autofocus clearable
+                    :rules="[rules.required, rules.validateBarcodeNumber]" maxlength="16" :counter="16" height="20px"
+                    class="mb-16">
                 </v-text-field>
                 <v-row class="justify-space-around">
                     <DarkRedButton textbutton="EFFACER" class="ml-5 h- w-25" height="8rem"></DarkRedButton>
-                    <DarkRedButton type="submit" textbutton="PUNCHER" :disabled="disablePunchButton()" class="ml-5 w-25"
+                    <DarkRedButton type="submit" textbutton="PUNCHER" :disabled="disablePunchButton" class="ml-5 w-25"
                         height="8rem"></DarkRedButton>
                 </v-row>
                 <v-dialog v-model="dialogPunchIn" width="50%" persistent>
@@ -16,14 +16,14 @@
                         <v-card-title>Confirmation Punch-In</v-card-title>
                         <v-card-text>
                             <v-row class="justify-center">
-                                <p>{{ this.punch.employeeBarcodeNumber }} - Bon Shift !</p>
+                                <p>{{ this.punch.barcodeNumber }} - Bon Shift !</p>
                             </v-row>
                         </v-card-text>
                     </v-card>
                 </v-dialog>
                 <v-dialog v-model="dialogPunchOut" width="50%" persistent>
                     <v-card height="100px">
-                        <v-card-title>Confirmation Punch-In</v-card-title>
+                        <v-card-title>Confirmation Punch-Out</v-card-title>
                         <v-card-text>
                             <v-row class="justify-center">
                                 <p>{{ this.punch.barcodeNumber }} - Merci de ton travail !</p>
@@ -63,7 +63,6 @@ export default {
                 startTime: null,
                 endTime: null
             },
-            currentDate: null,
             dialogPunchIn: false,
             dialogPunchOut: false,
             rules: {
@@ -84,34 +83,34 @@ export default {
             getLastPunchFromEmployee(this.punch.barcodeNumber).then(result => {
                 if (result.noShift || (result.startTime && result.endTime)) {
 
-                    const punchInObject = this.toLocale(new Date().toLocaleDateString());
-                    let startHour = punchInObject.time.hours;
-                    let startMinute = punchInObject.time.minutes;
-                    this.punch.startTime = startHour + ":" + startMinute;
+                    this.punch.dateIn = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
+                    console.log("this.punch.dateIn", this.punch.dateIn);
+
+                    this.punch.startTime = this.convertToTimeObject(new Date().toLocaleTimeString()).fullTime;
+                    console.log("this.punch.startTime", this.punch.startTime);
 
                     punchInEmployee(this.punch).then(result => {
                         if (result) {
                             this.dialogPunchIn = true;
-                            setTimeout(this.closeAllDialog, 2000);
+                            setTimeout(this.closeAllDialog, 2500);
                         }
                     }).catch(err => {
                         console.error(err);
                         alert(err.message);
                     });
-                } 
+                }
                 if (result.startTime && !result.endTime) {
 
-                    const punchOutObject = this.toLocale(new Date().toLocaleDateString());
-                    this.punch.dateOut = this.currentDate;
-
-                    let endHour = punchOutObject.time.hours;
-                    let endMinute = punchOutObject.time.minutes;
-                    this.punch.endTime = endHour + ":" + endMinute;
+                    this.punch.dateIn = this.toLocale(result.dateIn).date.fullDate;
+                    console.log (this.punch.dateIn);
+                    this.punch.startTime = result.startTime;
+                    this.punch.dateOut = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
+                    this.punch.endTime = this.convertToTimeObject(new Date().toLocaleTimeString()).fullTime;
 
                     punchOutEmployee(this.punch).then(result => {
                         if (result) {
                             this.dialogPunchOut = true;
-                            setTimeout(this.closeAllDialog, 2000);
+                            setTimeout(this.closeAllDialog, 2500);
                         }
                     }).catch(err => {
                         console.error(err);
@@ -123,6 +122,20 @@ export default {
                 alert(err.message);
             });
         },
+        convertToTimeObject(timeStr) {
+            const match = timeStr.match(/(\d+)\sh\s(\d+)\smin\s(\d+)\ss/);
+
+            if (match) {
+                return {
+                    hours: parseInt(match[1], 10),
+                    minutes: parseInt(match[2], 10),
+                    seconds: parseInt(match[3], 10),
+                    fullTime: match[1] + ":" + match[2] + ":" + match[3]
+                }
+            } else {
+                console.error("Invalid time string format.");
+            }
+        },
         closeAllDialog() {
             this.dialogPunchIn = false;
             this.dialogPunchOut = false;
@@ -132,12 +145,10 @@ export default {
         if (!operationSession.isActive) {
             this.$router.push('/operation');
         }
-        this.currentDate = this.toLocale(new Date().toLocaleDateString()).date.fulldate;
-        this.punch.dateIn = this.currentDate;
     },
     computed: {
         disablePunchButton() {
-            return this.punch.employeeNumber;
+            return !this.punch.barcodeNumber;
         }
     }
 }
