@@ -1,4 +1,5 @@
 import session from '../sessions/UserSession'
+import OpSession from '../sessions/OperationSession'
 
 class ServiceError extends Error {
     constructor(status, message) {
@@ -154,6 +155,24 @@ export async function updateEmployeeByAdmin(employee){
     }
 }
 
+export async function updateEmployeeColor(employeeNumber, employeeColor) {
+    const response = await fetch(`/api/employee/employeeColor/${employeeNumber}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          //...session.getAuthHeaders(),
+        },
+        body: JSON.stringify({employeeColor:employeeColor}),
+      });
+    if (response.ok) {
+      const respJson = await response.json();
+      return respJson;
+  } else {
+      console.log(JSON.stringify(response));
+      throw await createServiceError(response);
+  }
+  }
+
 export async function updateEmployeeByEmployeeProfile(employee, employeeNumber){
     const response = await fetch(`/api/employee/${employeeNumber}`, {
         method: "PUT",
@@ -171,3 +190,4 @@ export async function updateEmployeeByEmployeeProfile(employee, employeeNumber){
         throw await createServiceError(response);
     }
 }
+

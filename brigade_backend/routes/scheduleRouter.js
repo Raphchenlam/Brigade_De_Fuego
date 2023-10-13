@@ -11,8 +11,7 @@ const { sendEmail } = require("../emailManagement");
 
 router.get('/employee/:employeeNumber/:scheduleWeekId',
     passport.authenticate('basic', { session: false }),
-    (req, res, next) =>
-    {
+    (req, res, next) => {
         const employee = req.user;
         const employeeNumberToGet = req.params.employeeNumber;
         if (!employee) return next(new HttpError(401, "Connexion requise"));
@@ -52,8 +51,7 @@ router.get("/:scheduleweekid",
     (req, res, next) =>
     {
         const scheduleWeekId = req.params.scheduleweekid;
-        if (!scheduleWeekId || scheduleWeekId === "")
-        {
+        if (!scheduleWeekId || scheduleWeekId === "") {
             return next(new HttpError(400, "Le champ ScheduleWeekId est requis"));
         }
         if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
@@ -70,8 +68,7 @@ router.get("/:scheduleweekid",
                         res.json(allScheduledPeriod);
                     })
 
-                } else
-                {
+                } else {
                     const week = findAllDayOfAWeek(scheduleWeekId);
                     scheduleQueries.insertNewScheduleWeek(week).then(result =>
                     {
@@ -79,15 +76,13 @@ router.get("/:scheduleweekid",
                         {
                             res.json(result);
                         }
-                        else
-                        {
+                        else {
                             return next(new HttpError(400, "semaine non creer"));
                         }
                     })
                 }
             })
-            .catch((err) =>
-            {
+            .catch((err) => {
                 return next(err);
             });
     }
@@ -96,8 +91,7 @@ router.get("/:scheduleweekid",
 
 router.get('/:scheduleweekid/employee',
     passport.authenticate('basic', { session: false }),
-    (req, res, next) =>
-    {
+    (req, res, next) => {
         const employee = req.user;
 
         if (!employee) return next(new HttpError(401, "Connexion requise"));
@@ -114,8 +108,7 @@ router.get('/:scheduleweekid/employee',
             {
                 let found = employeeList.find(({ employeeNumber }) => employeeNumber == element.employeeNumber);
 
-                if (!found)
-                {
+                if (!found) {
                     const employee = {
                         employeeNumber: element.employeeNumber,
                         name: element.name,
@@ -138,8 +131,39 @@ router.get('/:scheduleweekid/employee',
             });
 
             res.json(employeeList);
-        }).catch(err =>
-        {
+        }).catch(err => {
+            return next(err);
+        });
+    });
+
+router.get('/:date/:shift',
+    // passport.authenticate('basic', { session: false }),
+    (req, res, next) => {
+        const employee = req.user;
+
+        // if (!employee) return next(new HttpError(401, "Connexion requise"));
+        // if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
+        const date = req.params.date;
+        const shift = req.params.shift;
+
+        if (!date || date == "" || !shift || shift == "") { return next(new HttpError(400, `Une date et shift doit etre fournis`)); }
+
+        scheduleQueries.selectAllWaitersForOperationByDateAndShift(date, shift).then(result => {
+            employeeList = [];
+            result.forEach(element => {
+                const schedule = {
+                    waiterNumber: element.waiterNumber,
+                    waiterName: element.waiterName,
+                    waiterColor: element.waiterColor,
+                    date: element.date,
+                    shift: element.shift,
+                    shiftTime: element.shiftTime
+                }
+                employeeList.push(schedule);
+            });
+
+            res.json(employeeList);
+        }).catch(err => {
             return next(err);
         });
     });
@@ -216,8 +240,7 @@ router.put("/",
         scheduleQueries.selectAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(result =>
         {
             let periodIdList = [];
-            result.forEach(element =>
-            {
+            result.forEach(element => {
                 periodIdList.push(element.id)
             });
             if (periodIdList.length != 14) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Nous en avons obtenus seumlement ${periodIdList.length} `));
@@ -292,12 +315,10 @@ router.put("/",
                         return next(err);
                     })
                 }
-            }).catch(err =>
-            {
+            }).catch(err => {
                 return next(err);
             });
-        }).catch(err =>
-        {
+        }).catch(err => {
             return next(err);
         })
     }
@@ -334,8 +355,7 @@ function findAllDayOfAWeek(yearWeek)
     const friday = new Date(splittedYearWeek.year, 0, (1 + (splittedYearWeek.week) * 7) - 2);
     const saturday = new Date(splittedYearWeek.year, 0, (1 + (splittedYearWeek.week) * 7) - 1);
     const sunday = new Date(splittedYearWeek.year, 0, (1 + (splittedYearWeek.week) * 7));
-    while (sunday.getDay() !== 0)
-    {
+    while (sunday.getDay() !== 0) {
         sunday.setDate(sunday.getDate() - 1);
         monday.setDate(sunday.getDate() - 6);
         tuesday.setDate(sunday.getDate() - 5);
