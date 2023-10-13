@@ -117,7 +117,7 @@ export default {
             //***A remettre en place**/
             //************************/
             // const todayDate = new Date().toISOString().split('T')[0];
-            const todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
+            const todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
 
             this.selectedDate = (newReservationDate) ? newReservationDate : todayDate;
             this.selectedShift = (newReservationShift) ? newReservationShift : "Midi" ;
