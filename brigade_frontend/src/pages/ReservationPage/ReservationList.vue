@@ -143,7 +143,6 @@ export default {
             deep: true
         },
         selectedDate() {
-            console.log("selectedDate TRIGGERED");
             this.loadReservations(this.selectedDate, this.selectedDate);
         },
         selectedShift() {
@@ -151,7 +150,6 @@ export default {
         },
         hasNewReservation() {
             if (this.hasNewReservation) {
-                console.log("hasNewReservation TRIGGERED");
                 (this.selectedDate) ? this.loadReservations(this.selectedDate, this.selectedDate) : this.loadReservations(this.startDate, this.endDate);
                 this.hasNewReservation = false;
             }
@@ -159,11 +157,6 @@ export default {
     },
     methods: {
         refreshWithNewreservation(newReservation) {
-            console.log("refreshWithNewreservation TRIGGERED");
-            this.hasNewReservation = true;
-            console.log("this.hasNewReservation : ");
-            console.log(this.hasNewReservation);
-
             const newReservationShift = newReservation[3];
             this.shiftShow = newReservationShift;
 
@@ -191,7 +184,7 @@ export default {
             this.reservations.forEach(reservation => {
                 var reservationtoKeep;
 
-                if (this.shiftShow == "Midi" && parseInt(reservation.startTime.split(':').slice(0)[0]) < 15) {
+                if (this.shiftShow == "Midi" && parseInt(reservation.startTime.split(':').slice(0)[0]) <= 15) {
                     reservationtoKeep = reservation;
                 } else if (this.shiftShow == "Soir" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) {
                     reservationtoKeep = reservation;
@@ -240,13 +233,19 @@ export default {
     mounted() {
         // console.clear();
         if (!(!!this.selectedDate)) {
-            this.todayDate = this.toLocale(new Date().toLocaleDateString()).date.fullDate;
+            //TODO: choose witch one 
+            // this.todayDate = this.toLocale(new Date().toLocaleDateString("en-US")).date.fullDate;
+            this.todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
             this.endDate = this.startDate = this.todayDate;
             this.loadReservations(this.startDate, this.endDate);
         } else {
             this.loadReservations(this.selectedDate, this.selectedDate);
         }
-        console.log(this.selectedDate);
+        // console.log(this.selectedDate);
+        console.clear();
+        console.log("date pas de param " + new Date().toLocaleDateString());
+        console.log("date en-GB " + new Date().toLocaleDateString("en-GB"));
+        console.log("date en-GB "+new Date().toLocaleDateString("en-GB"))
     }
 }
 </script>
