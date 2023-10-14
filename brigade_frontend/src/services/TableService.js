@@ -57,6 +57,23 @@ export async function fetchAssignationByDate(date) {
   }
 }
 
+export async function createAssignation(assignations){
+  const response = await fetch(`/api/event`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      //...session.getAuthHeaders()
+    },
+    body: JSON.stringify(event)
+  });
+
+  if (response.ok) {
+    return convertToAssignation(await response.json());
+  } else {
+    throw await createServiceError(response);
+  }
+}
+
 
 
 ///**************** TABLES ****************///
