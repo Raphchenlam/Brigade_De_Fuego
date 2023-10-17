@@ -1,5 +1,5 @@
 const pool = require('./DBPool');
-
+const dATObj = require('../../REGEX/dateAndTimeObjectifier');
 // DATES OKAY HERE 
 
 const truncateDate = dateTime => {
@@ -71,10 +71,10 @@ exports.getReservationById = getReservationById;
 
 
 const getReservationByInformations = async (clientId, date, startTime) => {
-    const explodedStartTime = explodingTime(startTime);
+    const timeObj = dATObj.toLocale(startTime);
 
     let result;
-    if (explodedStartTime.hour >= 16) {
+    if (timeObj.hours >= 16) {
         result = await pool.query(
             `SELECT * FROM reservation
                 JOIN client ON client.id = reservation.client_id
@@ -189,3 +189,10 @@ const getReservationListByDates = async (startDate, endDate) => {
     });
 };
 exports.getReservationListByDates = getReservationListByDates;
+
+
+
+
+
+
+// TODO: delete from here
