@@ -8,8 +8,44 @@ const HttpError = require("../HttpError");
 const employeeQueries = require('../queries/employeeQueries');
 const punchQueries = require('../queries/punchQueries');
 
-
 // FOR NOW, PunchIn/PunchOut Operation
+
+//Espace Employé - Admin
+router.get('/all/:dateIn',
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) => {
+        const user = req.user;
+        if (!user) return next(new HttpError(401, 'Connexion requise'));
+        if (!user.isAdmin) return next(new HttpError(403, 'Droits administrateur requis'));
+
+        const dateIn = req.params.dateIn;
+        if (!dateIn) return next(HttpError(400, 'Le champ dateIn est requis'));
+
+        punchQueries.selectAllPunchsFromDateIn(dateIn).then(punchs => {
+            res.json(punchs);
+        }).catch(err => {
+            return next(err);
+        });
+    });
+
+
+// //Espace Employé - Admin
+// router.get('/all',
+//     passport.authenticate('basic', { session: false }),
+//     (req, res, next) => {
+//         const user = req.user;
+
+//         if (!user) return next(new HttpError(401, 'Connexion requise'));
+//         if (!user.isAdmin) return next(new HttpError(403, 'Droits administrateur requis'));
+
+//         punchQueries.selectAllPunchs().then(punchs => {
+//             res.json(punchs);
+//         }).catch(err => {
+//             return next(err);
+//         });
+//     });
+
+
 router.get('/:barcodeNumber',
     // passport.authenticate('basic', { session: false }),
     async (req, res, next) => {
@@ -28,21 +64,6 @@ router.get('/:barcodeNumber',
         });
     }
 );
-
-// //Espace Employé - Admin
-// router.get('/:employeeNumber',
-//     passport.authenticate('basic', { session: false }),
-//     (req, res, next) => {
-
-//     });
-
-// //Espace Employé - Admin
-// router.get('/',
-//     passport.authenticate('basic', { session: false }),
-//     (req, res, next) => {
-
-//     });
-
 
 //PunchIn/PunchOut Operation
 router.post('/',

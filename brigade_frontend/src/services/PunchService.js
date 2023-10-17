@@ -86,25 +86,25 @@ export async function getLastPunchFromEmployee(barcodeNumber) {
     }
 }
 
-export async function getAllPunchs() {
-    const response = await fetch(`/api/punch`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            ...userSession.getAuthHeaders()
-        }
-    });
+// export async function getAllPunchs() {
+//     const response = await fetch(`/api/punch/all`, {
+//         method: "GET",
+//         headers: {
+//             "Content-Type": "application/json",
+//             ...userSession.getAuthHeaders()
+//         }
+//     });
 
-    if (response.ok) {
-        const respJson = await response.json();
-        return respJson;
-    } else {
-        throw await createServiceError(response);
-    }
-}
+//     if (response.ok) {
+//         const respJson = await response.json();
+//         return respJson;
+//     } else {
+//         throw await createServiceError(response);
+//     }
+// }
 
 export async function getPunchListByDate(date) {
-    const response = await fetch(`/api/punch/${date}`, {
+    const response = await fetch(`/api/punch/all/${date}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
