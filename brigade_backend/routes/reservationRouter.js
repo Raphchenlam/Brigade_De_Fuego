@@ -4,6 +4,7 @@ const passport = require('passport');
 const reservationQueries = require('../queries/reservationQueries');
 const clientQueries = require('../queries/clientQueries');
 const regex = require('../../REGEX/REGEX_backend');
+const dATObj = require('../../REGEX/dateAndTimeObjectifier');
 
 const HttpError = require("../HttpError");
 
@@ -23,6 +24,7 @@ function isDateBeforeToday(dateString) {
 }
 
 router.get("/",
+    passport.authenticate('basic', { session: false }),
     (req, res, next) => {
 
         reservationQueries
@@ -41,6 +43,7 @@ router.get("/",
 );
 
 router.get("/:id",
+    passport.authenticate('basic', { session: false }),
     (req, res, next) => {
         const id = req.params.id;
         if (!id || id === "") {
@@ -63,6 +66,7 @@ router.get("/:id",
 );
 
 router.get("/:startDate/:endDate",
+    passport.authenticate('basic', { session: false }),
     (req, res, next) => {
         const startDate = req.params.startDate;
         const endDate = req.params.endDate;
@@ -83,6 +87,7 @@ router.get("/:startDate/:endDate",
 );
 
 router.post("/",
+    passport.authenticate('basic', { session: false }),
     (req, res, next) => {
         const clientId = req.body.clientId;
         if (!clientId || clientId === "") return next(new HttpError(400, "Le champ Id du client est requis"));
@@ -96,14 +101,14 @@ router.post("/",
         const startTime = req.body.startTime;
         if (!startTime || startTime == "") return next(new HttpError(400, "Le champ heure de début est requis"));
         if (!regex.validTime.test(startTime)) return next(new HttpError(400, "Le champ start_time ne respect pas les critères d'acceptation ex: '18:00:00'"));
-        const explodedStartTime = reservationQueries.explodingTime(startTime);
-        if (explodedStartTime.hour < 11 || explodedStartTime.hour > 23) return next(new HttpError(400, "Le champ heure de début doit être entre 11h00 am et 23h00 pm"));
+        const startTimeObj = dATObj.toLocale(startTime);
+        if (startTimeObj.hours < 11 || startTimeObj.hours > 23) return next(new HttpError(400, "Le champ heure de début doit être entre 11h00 am et 23h00 pm"));
 
         const endTime = req.body.endTime;
         if (!endTime || endTime == "") return next(new HttpError(400, "Le champ heure de début est requis"));
         if (!regex.validTime.test(endTime)) return next(new HttpError(400, "Le champ start_time ne respect pas les critères d'acceptation ex: '18:00:00', minuit s'écrit 00:00:00"));
-        const explodedEndTime = reservationQueries.explodingTime(endTime);
-        if (explodedEndTime.hour < 11) return next(new HttpError(400, "Le champ heure de fin ne peux pas être avant 11:00:00 ou dépassé 23:59:00"));
+        const EndTimeObj = dATObj.toLocale(endTime);
+        if (EndTimeObj.hours < 11) return next(new HttpError(400, "Le champ heure de fin ne peux pas être avant 11:00:00 ou dépassé 23:59:00"));
 
         const peopleCount = req.body.peopleCount;
         if (!peopleCount || peopleCount == "") return next(new HttpError(400, "Le champ peopleCount est requis"));
@@ -152,4 +157,26 @@ router.post("/",
     }
 );
 
+
+router.put("/",
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) => {
+
+                    // TODO: ajouter les paramètres a passés
+
+        reservationQueries
+            .updateReservation()
+            .then((reservationList) => {
+                if (reservationList) {
+                    res.json(reservationList);
+                } else {
+                    // TODO: Changer le message d'erreur
+                    return next(new HttpError(404, `Les réservations ${startDate} et ${endDate} sont introuvables`));
+                }
+            })
+            .catch((err) => {
+                return next(err);
+            });
+    }
+);
 module.exports = router;

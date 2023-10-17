@@ -2,30 +2,6 @@ const pool = require('./DBPool');
 const dATObj = require('../../REGEX/dateAndTimeObjectifier');
 // DATES OKAY HERE 
 
-const truncateDate = dateTime => {
-    return new Date(dateTime).toLocaleDateString();
-};
-
-
-const explodingTime = time => {
-    return {
-        hour: parseInt(time.split(':').slice(0)[0]),
-        minute: parseInt(time.split(':').slice(0)[1])
-    }
-}
-exports.explodingTime = explodingTime;
-
-
-const explodingDate = date => {
-    return {
-        year: parseInt(date.split('-').slice(0)[0]),
-        month: parseInt(date.split('-').slice(0)[1]),
-        day: parseInt(date.split('-').slice(0)[2])
-    }
-}
-exports.explodingDate = explodingDate;
-
-
 const getReservationById = async (id) => {
     const result = await pool.query(
         `SELECT 
@@ -41,13 +17,12 @@ const getReservationById = async (id) => {
     const row = result.rows[0];
 
     if (row) {
-
         const reservation = {
             id: row.res_id,
             tableNumber: row.table_number,
             clientId: row.client_id,
             peopleCount: row.people_count,
-            date: truncateDate(row.date),
+            date: dATObj.toLocale(row.date).fullDate,
             startTime: row.start_time,
             endTime: row.end_time,
             mention: row.mention,
@@ -91,7 +66,7 @@ const getReservationByInformations = async (clientId, date, startTime) => {
     const reservation = result.rows[0];
 
     if (reservation) {
-        reservation.date = truncateDate(reservation.date);
+        reservation.date = dATObj.toLocale(row.date).fullDate;
         return reservation;
     }
 
@@ -127,7 +102,7 @@ const insertReservation = async (reservationInfos) => {
             clientId: row.client_id,
             statusCode: row.status_code,
             peopleCount: row.people_count,
-            date: truncateDate(row.date),
+            date: dATObj.toLocale(row.date).fullDate,
             startTime: row.start_time,
             endTime: row.end_time,
             mention: row.mention,
@@ -141,6 +116,14 @@ const insertReservation = async (reservationInfos) => {
     throw new Error("L'insertion a échoué pour une raison inconnue");
 };
 exports.insertReservation = insertReservation;
+
+
+const updateReservation = async (reservationInfos) => {
+                    // TODO:  Faire la requête a la bd
+
+    
+};
+exports.updateReservation = updateReservation;
 
 
 const getReservationListByDates = async (startDate, endDate) => {
@@ -166,7 +149,7 @@ const getReservationListByDates = async (startDate, endDate) => {
             tableNumber: row.table_number,
             clientId: row.client_id,
             peopleCount: row.people_count,
-            date: truncateDate(row.date),
+            date: dATObj.toLocale(row.date).fullDate,
             startTime: row.start_time,
             endTime: row.end_time,
             mention: row.mention,
@@ -189,10 +172,3 @@ const getReservationListByDates = async (startDate, endDate) => {
     });
 };
 exports.getReservationListByDates = getReservationListByDates;
-
-
-
-
-
-
-// TODO: delete from here

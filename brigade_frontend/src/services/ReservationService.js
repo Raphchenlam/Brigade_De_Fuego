@@ -1,4 +1,4 @@
-// import session from "./session";
+import session from "../sessions/OperationSession";
 
 class ServiceError extends Error {
     constructor(status, message) {
@@ -41,7 +41,7 @@ export async function createReservation(reservation) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            // ...session.getAuthHeaders()
+            ...session.getAuthHeaders()
         },
         body: JSON.stringify(reservation)
     });
@@ -49,29 +49,59 @@ export async function createReservation(reservation) {
     if (response.ok) {
         return convertToReservation(await response.json());
     } else {
-        console.log(JSON.stringify(response));
+        console.info(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
+
+export async function updateReservation(reservation) {
+    const response = await fetch(`/api/reservation`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+        body: JSON.stringify(reservation)
+    });
+
+    if (response.ok) {
+        return convertToReservation(await response.json());
+    } else {
+        console.info(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
 
 export async function getReservationList(startDate, endDate) {
-    const response = await fetch(`/api/reservation/${startDate}/${endDate}`);
+    const response = await fetch(`/api/reservation/${startDate}/${endDate}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
 
     if (response.ok) {
         return await response.json();
     } else {
-        console.log(JSON.stringify(response));
+        console.info(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
 
 export async function getReservationById(reservationId) {
-    const response = await fetch(`/api/reservation/${reservationId}`);
+    const response = await fetch(`/api/reservation/${reservationId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
 
     if (response.ok) {
         return await response.json();
     } else {
-        console.log(JSON.stringify(response));
+        console.info(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }

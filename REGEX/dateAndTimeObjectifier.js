@@ -95,6 +95,8 @@ function dateOrTimeObjectifier(strObject) {
 
 
 const toLocale = function (str) {
+    str = (str instanceof Date) ? str.toLocaleString("en-GB"): str ;
+
     const dateAndTimeString = replaceAndSplitDateFromTime(str);
     return dateOrTimeObjectifier(dateAndTimeString);
 }

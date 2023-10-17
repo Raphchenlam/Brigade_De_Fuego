@@ -152,46 +152,45 @@ export default {
         var timeParts;
 
         if (!!dateIsPresent) {
-            dateParts = strObject.dateString.split("-");
+          dateParts = strObject.dateString.split("-");
 
-            var year = (dateParts[0] > 31) ? dateParts[0] : dateParts[2];
-            var month = dateParts[1];
-            var day = (dateParts[0] > 31) ? dateParts[2] : dateParts[0];
-            var fullDate = year + "-" + month + "-" + day
+          var year = (dateParts[0] > 31) ? dateParts[0] : dateParts[2];
+          var month = dateParts[1];
+          var day = (dateParts[0] > 31) ? dateParts[2] : dateParts[0];
+          var fullDate = year + "-" + month + "-" + day
         }
 
         const date = {
-            year: (!!dateIsPresent) ? parseInt(year) : undefined,
-            month: (!!dateIsPresent) ? parseInt(month) : undefined,
-            day: (!!dateIsPresent) ? parseInt(day) : undefined,
-            fullDate: (!!dateIsPresent) ? fullDate : undefined,
-            weekNumber: (!!dateIsPresent) ? this.getWeekNumber(fullDate) : undefined
+          year: (!!dateIsPresent) ? parseInt(year) : undefined,
+          month: (!!dateIsPresent) ? parseInt(month) : undefined,
+          day: (!!dateIsPresent) ? parseInt(day) : undefined,
+          fullDate: (!!dateIsPresent) ? fullDate : undefined,
+          weekNumber: (!!dateIsPresent) ? this.getWeekNumber(fullDate) : undefined
         }
 
-        if (!!timeIsPresent) {
-            timeParts = strObject.timeString.split(":");
-        }
+        if (!!timeIsPresent) timeParts = strObject.timeString.split(":");
+
         const time = {
-            hours: (!!timeIsPresent) ? parseInt(timeParts[0]) : undefined,
-            minutes: (!!timeIsPresent) ? parseInt(timeParts[1]) : undefined,
-            secondes: (!!timeIsPresent) ? parseInt(timeParts[2]) : undefined,
-            fullTime: (!!timeIsPresent) ? strObject.timeString : undefined
+          hours: (!!timeIsPresent) ? parseInt(timeParts[0]) : undefined,
+          minutes: (!!timeIsPresent) ? parseInt(timeParts[1]) : undefined,
+          secondes: (!!timeIsPresent) ? parseInt(timeParts[2]) : undefined,
+          fullTime: (!!timeIsPresent) ? strObject.timeString : undefined
         }
 
         return {
-            year:       date.year,
-            month:      date.month,
-            day:        date.day,
-            weekNumber: date.weekNumber,
-            fullDate:   date.fullDate,
-            fullTime:   time.fullTime,
-            hours:      time.hours,
-            minutes:    time.minutes,
-            secondes:   time.secondes,
-            date:       date,
-            time:       time,
+          year: date.year,
+          month: date.month,
+          day: date.day,
+          weekNumber: date.weekNumber,
+          fullDate: date.fullDate,
+          fullTime: time.fullTime,
+          hours: time.hours,
+          minutes: time.minutes,
+          secondes: time.secondes,
+          date: date,
+          time: time,
         }
-    }
+      }
     },
     getWeekNumber(date) {
       date = new Date(date);
@@ -203,7 +202,6 @@ export default {
 
       return weekNumber;
     },
-
     spliceDate(fullDate) {
       const date = fullDate.split('T').slice(0)[0];
       const fulltime = fullDate.split('T').slice(0)[1];
@@ -215,7 +213,6 @@ export default {
         minute: parseInt(fulltime.split(':').slice(0)[1])
       }
     },
-
     isUserAuthorized() {
       return ((this.userSession.employee && this.userSession.employee.isActive) && (this.userSession.employee.isAdmin || this.userSession.employee.isSuperAdmin)
       );
