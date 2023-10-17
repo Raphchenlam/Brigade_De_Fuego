@@ -80,6 +80,15 @@ export async function getEmployeeByBarcodeNumber(barcodeNumber) {
         throw await createServiceError(response);
     }
 }
+export async function getEmployeeByEmail(email) {
+    const response = await fetch(`/api/employee/email/${email}`);
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        throw await createServiceError(response);
+    }
+}
 
 export async function getAllRoles() {
     const response = await fetch(`/api/employee/role`, {

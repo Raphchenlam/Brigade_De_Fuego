@@ -84,10 +84,10 @@
             <v-row class="justify-center">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="refreshAndCloseAllDialog()">
                             </DarkRedButton>
-                <DarkRedButton class="mx-5" textbutton="Modifier l'événement ACTUEL"
+                <DarkRedButton class="mx-5" textbutton="Modifier ACTUEL"
                     @click="closeEventConfirmationDialog()">
                 </DarkRedButton>
-                <DarkRedButton class="mx-5" textbutton="Modifier l'événement TROUVÉ" @click="modififyExistingEvent()">
+                <DarkRedButton class="mx-5" textbutton="Modifier TROUVÉ" @click="modififyExistingEvent()">
                 </DarkRedButton>
             </v-row>
         </v-sheet>

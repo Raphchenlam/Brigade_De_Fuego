@@ -134,6 +134,40 @@ const selectLeavesByEmployeeNumber = async (employeeNumber) =>
 };
 exports.selectLeavesByEmployeeNumber = selectLeavesByEmployeeNumber;
 
+const selectApprovedLeavesByEmployeeNumberAndDate = async (employeeNumber,date) =>
+{
+    const result = await pool.query(
+        `SELECT *
+        FROM leave
+        WHERE leave.employee_number = $1
+        AND leave.start_date <= $2
+        AND leave.end_date >= $2
+        AND status = 'Approved'`,
+        [employeeNumber,date]
+    );
+
+    const row = result.rows[0];
+
+    if (!row) return [];
+
+    return result.rows.map(row =>
+    {
+        const leave = {
+            id: row.id,
+            employeeNumber: row.employee_number,
+            startDate: row.start_date,
+            endDate: row.end_date,
+            category: row.category,
+            reason: row.reason,
+            status: row.status
+        };
+        return leave;
+    });
+
+};
+exports.selectApprovedLeavesByEmployeeNumberAndDate = selectApprovedLeavesByEmployeeNumberAndDate;
+
+
 const selectLeaveByID = async (leaveID) =>
 {
     const result = await pool.query(
