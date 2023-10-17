@@ -157,12 +157,14 @@ export default {
     },
     methods: {
         refreshWithNewreservation(newReservation) {
+            // garder l'ordre comme ceci, sinon ça ne fonctionne pas avec les méthodes asynchrones
             const newReservationShift = newReservation[3];
             this.shiftShow = newReservationShift;
 
             const dateOnlyOfNewReservation = newReservation[1].split("T")[0];
             this.startDate = dateOnlyOfNewReservation;
             this.endDate = this.startDate;
+
             (this.selectedDate) ? this.loadDate(dateOnlyOfNewReservation, newReservationShift) : this.loadReservations(this.startDate, this.endDate);
 
             this.selected[0] = newReservation[0];
@@ -231,21 +233,14 @@ export default {
         }
     },
     mounted() {
-        // console.clear();
+        console.clear();
         if (!(!!this.selectedDate)) {
-            //TODO: choose witch one 
-            // this.todayDate = this.toLocale(new Date().toLocaleDateString("en-US")).date.fullDate;
             this.todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
             this.endDate = this.startDate = this.todayDate;
             this.loadReservations(this.startDate, this.endDate);
         } else {
             this.loadReservations(this.selectedDate, this.selectedDate);
         }
-        // console.log(this.selectedDate);
-        console.clear();
-        console.log("date pas de param " + new Date().toLocaleDateString());
-        console.log("date en-GB " + new Date().toLocaleDateString("en-GB"));
-        console.log("date en-GB "+new Date().toLocaleDateString("en-GB"))
     }
 }
 </script>
