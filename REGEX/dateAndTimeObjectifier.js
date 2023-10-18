@@ -107,22 +107,21 @@ const isBeforeToday = function (fullDate) {
     const dateToVerify = toLocale(fullDate)
     var today = toLocale(new Date().toLocaleString("en-GB"));
 
-
-    if (dateToVerify.date.year < today.date.year) {
+    if (dateToVerify.year < today.year) {
         return true;
     }
-    else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month < today.date.month) {
+    else if (dateToVerify.year == today.year && dateToVerify.month < today.month) {
         return true;
     }
-    else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month == today.date.month) {
-        if (dateToVerify.date.day < today.date.day) {
+    else if (dateToVerify.year == today.year && dateToVerify.month == today.month) {
+        if (dateToVerify.day < today.day) {
             return true;
         }
-        else if (dateToVerify.date.day == today.date.day) {
-            if (dateToVerify.time.hours < today.time.hours) {
+        else if (dateToVerify.day == today.day) {
+            if (dateToVerify.hours < today.hours) {
                 return true;
             }
-            else if (dateToVerify.time.hours == today.time.hours && dateToVerify.date.minutes <= (today.date.minutes + 5)) {
+            else if (dateToVerify.hours == today.hours && dateToVerify.minutes <= (today.minutes + 5)) {
                 return true;
             }
         }

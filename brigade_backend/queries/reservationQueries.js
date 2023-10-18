@@ -6,9 +6,9 @@ const dATObj = require('../../REGEX/dateAndTimeObjectifier');
 const getReservationById = async (id) => {
     const result = await pool.query(
         `SELECT 
-            r.id AS res_id, r.table_number, r.client_id, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by,
+            r.id AS res_id, r.table_number, r.client_id, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by, r.status_code,
             c.first_name AS client_first_name, c.last_name AS client_last_name, c.phone_number AS client_phone_number, c.allergy, c.is_favorite, c.is_blacklisted,
-            rs.name 
+            rs.name
                 FROM reservation AS r
                     JOIN client AS c ON c.id = r.client_id
                     JOIN reservation_status AS rs ON rs.code = r.status_code
@@ -35,7 +35,8 @@ const getReservationById = async (id) => {
             allergy: row.allergy,
             isFavorite: row.is_favorite,
             isBlacklisted: row.is_blacklisted,
-            status: row.name
+            status: row.name,
+            statusCode: row.status_code
         };
 
         return reservation;
@@ -67,7 +68,7 @@ const getReservationByInformations = async (clientId, date, startTime) => {
     const reservation = result.rows[0];
 
     if (reservation) {
-        reservation.date = dATObj.toLocale(row.date).fullDate;
+        reservation.date = dATObj.toLocale(reservation.date).fullDate;
         return reservation;
     }
 
@@ -124,22 +125,22 @@ const updateReservation = async (newReservationInfos) => {
     // TODO:  Faire la requête a la bd
 
 
+    // console.log("updateReservation call to DB used");
 
 
+    let UPDATEquery = `UPDATE reservation `;
+    let newInformation = [];
+    let changedFields = [];
+    let counter = 1;
 
-    // let UPDATEquery = `UPDATE reservation `;
-    // let newInformation = [];
-    // let changedFields = [];
-    // let counter = 1;
-
-    // if (newReservationInfos.date)          changedFields.push(`date = $${counter}`),           newInformation.push(newReservationInfos.date), counter++;
-    // if (newReservationInfos.startTime)     changedFields.push(`start_time = $${counter}`),     newInformation.push(newReservationInfos.startTime), counter++;
-    // if (newReservationInfos.endTime)       changedFields.push(`end_time = $${counter}`),       newInformation.push(newReservationInfos.endTime), counter++;
-    // if (newReservationInfos.tableNumber)   changedFields.push(`table_number = $${counter}`),   newInformation.push(newReservationInfos.tableNumber), counter++;
-    // if (newReservationInfos.statusCode)    changedFields.push(`status_code = $${counter}`),    newInformation.push(newReservationInfos.statusCode), counter++;
-    // if (newReservationInfos.peopleCount)   changedFields.push(`people_count = $${counter}`),   newInformation.push(newReservationInfos.peopleCount), counter++;
-    // if (newReservationInfos.mention)       changedFields.push(`mention = $${counter}`),        newInformation.push(newReservationInfos.mention), counter++;
-    // if (newReservationInfos.hasMinor)      changedFields.push(`has_minor = $${counter}`),      newInformation.push(newReservationInfos.hasMinor), counter++;
+    if (newReservationInfos.date)          changedFields.push(` date = $${counter}`),            console.log(`newReservationInfos.date : \t ${changedFields[counter - 1]} => ${newReservationInfos.date}`),           newInformation.push(newReservationInfos.date), counter++;
+    if (newReservationInfos.startTime)     changedFields.push(` start_time = $${counter}`),      console.log(`newReservationInfos.startTime : ${changedFields[counter - 1]} => ${newReservationInfos.startTime}`),     newInformation.push(newReservationInfos.startTime), counter++;
+    if (newReservationInfos.endTime)       changedFields.push(` end_time = $${counter}`),        console.log(`newReservationInfos.endTime : \t ${changedFields[counter - 1]} => ${newReservationInfos.endTime}`),       newInformation.push(newReservationInfos.endTime), counter++;
+    if (newReservationInfos.tableNumber)   changedFields.push(` table_number = $${counter}`),    console.log(`newReservationInfos.tableNumber : ${changedFields[counter - 1]} => ${newReservationInfos.tableNumber}`),   newInformation.push(newReservationInfos.tableNumber), counter++;
+    if (newReservationInfos.statusCode)    changedFields.push(` status_code = $${counter}`),     console.log(`newReservationInfos.statusCode : ${changedFields[counter - 1]} => ${newReservationInfos.statusCode}`),    newInformation.push(newReservationInfos.statusCode), counter++;
+    if (newReservationInfos.peopleCount)   changedFields.push(` people_count = $${counter}`),    console.log(`newReservationInfos.peopleCount : ${changedFields[counter - 1]} => ${newReservationInfos.peopleCount}`),   newInformation.push(newReservationInfos.peopleCount), counter++;
+    if (newReservationInfos.mention)       changedFields.push(` mention = $${counter}`),         console.log(`newReservationInfos.mention : ${changedFields[counter - 1]} => ${newReservationInfos.mention}`),        newInformation.push(newReservationInfos.mention), counter++;
+    if (newReservationInfos.hasMinor)      changedFields.push(` has_minor = $${counter}`),       console.log(`newReservationInfos.hasMinor : ${changedFields[counter - 1]} => ${newReservationInfos.hasMinor}`),      newInformation.push(newReservationInfos.hasMinor), counter++;
 
     // // if (checkboxes.pendingModified) changedFields.push(`leave.status = 'PendingModified'`);
 
@@ -198,6 +199,8 @@ const updateReservation = async (newReservationInfos) => {
     // resultFinal.push({ nbPending: parseInt(nbPending) });
     // return resultFinal;
     // } // TODO: remove or comment this braquette
+    return "updateReservation call to DB used";
+
 };
 exports.updateReservation = updateReservation;
 
