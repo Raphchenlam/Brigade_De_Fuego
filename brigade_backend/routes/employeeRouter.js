@@ -129,7 +129,6 @@ router.get('/barcode/:barcodenumber',
         }
     });
 
-
 router.get('/email/:email',
     (req, res, next) =>
     {
@@ -138,40 +137,7 @@ router.get('/email/:email',
         {
             if (employee)
             {
-                let password = generatePassword();
-                console.log("password",password);
-
-                const saltBuf = crypto.randomBytes(16);
-                const passwordSalt = saltBuf.toString("base64");
-
-                crypto.pbkdf2(password, passwordSalt, 100000, 64, "sha512", async (err, derivedKey) =>
-                {
-                    if (err) return next(err);
-
-                    const passwordHashBase64 = derivedKey.toString("base64");
-
-                    try
-                    {
-                        employeeQueries.updateEmployeePassword(employee, passwordSalt, passwordHashBase64).then(employee =>
-                        {
-
-                            let emailList = [];
-                            emailList.push(employee.email);
-                            let emailDone = sendEmailLostPassword(emailList, employee.firstName, password);
-                            if (emailDone)
-                            {
-                                res.json(employee);
-                            }
-                            else
-                            {
-                                return next(new HttpError(400, `Erreur dans l'envoie du courriel`));
-                            }
-                        })
-                    } catch (err)
-                    {
-                        return next(err);
-                    }
-                });
+                res.json(employee)
             } else
             {
                 return next(new HttpError(404, `Employee avec le courriel ${emailToGet} inexistant ou introuvable`));
@@ -328,6 +294,60 @@ router.post('/',
                 return next(err);
             }
         });
+    });
+
+
+router.put('/lostpassword/:employeeNumber',
+    (req, res, next) =>
+    {
+        const employeeNumber = req.params.employeeNumber;
+
+        employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber).then(employee =>
+        {
+            if (employee)
+            {
+                let password = generatePassword();
+                console.log("password", password);
+
+                const saltBuf = crypto.randomBytes(16);
+                const passwordSalt = saltBuf.toString("base64");
+
+                crypto.pbkdf2(password, passwordSalt, 100000, 64, "sha512", async (err, derivedKey) =>
+                {
+                    if (err) return next(err);
+
+                    const passwordHashBase64 = derivedKey.toString("base64");
+
+                    try
+                    {
+                        employeeQueries.updateEmployeePassword(employee, passwordSalt, passwordHashBase64).then(employee =>
+                        {
+
+                            let emailList = [];
+                            emailList.push(employee.email);
+                            let emailDone = sendEmailLostPassword(emailList, employee.firstName, password);
+                            if (emailDone)
+                            {
+                                res.json(employee);
+                            }
+                            else
+                            {
+                                return next(new HttpError(400, `Erreur dans l'envoie du courriel`));
+                            }
+                        })
+                    } catch (err)
+                    {
+                        return next(err);
+                    }
+                });
+            } else
+            {
+                return next(new HttpError(404, `Employee avec le courriel ${emailToGet} inexistant ou introuvable`));
+            }
+        }).catch(err =>
+        {
+            return next(err)
+        })
     });
 
 router.put('/employeeColor/:employeeNumber',
@@ -669,28 +689,31 @@ function sendEmailLostPassword(emailList, employeeFirstName, password)
     const text = "";
     const html = `
             <h1>Réinitialisation du mot de passe</h1>
-            <p>Bonjour ` + employeeFirstName +  `,</p>
-            <p>Voici votre mot de passe temporaire : `+ password +`</p>
+            <p>Bonjour ` + employeeFirstName + `,</p>
+            <p>Voici votre mot de passe temporaire : `+ password + `</p>
             <p>Veuillez vous connecter à l'application et changer votre mot de passe dans votre profil.</p>`
     sendEmail(recipients, subject, text, html);
     console.log("emails envoyes")
     return true
 };
 
-function generatePassword() {
+function generatePassword()
+{
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$!%*?&';
     let password = '';
-  
-    while (!password.match(regex)) {
-      password = '';
-      for (let i = 0; i < 8; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        password += characters[randomIndex];
-      }
+
+    while (!password.match(regex))
+    {
+        password = '';
+        for (let i = 0; i < 8; i++)
+        {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            password += characters[randomIndex];
+        }
     }
-  
+
     return password;
-  }
+}
 
 module.exports = router;

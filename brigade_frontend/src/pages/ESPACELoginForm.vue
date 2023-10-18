@@ -15,27 +15,29 @@
     </div>
     <v-dialog v-model="dialogLostPassword" width="50%" persistent>
         <v-form @submit.prevent="resetPassword" validate-on="submit lazy" ref="lostPasswordForm">
-        <v-card class="pa-5">
-            <v-card-title>
-                Réinitialisation du mot de passe
-            </v-card-title>
-            <v-card-text>
-                <v-row class="justify-center">
-                    <p v-if="warningEmployeeLostPassword" align="center" class="warning-message"> {{ warningEmployeeLostPasswordMessage }}</p>
+            <v-card class="pa-5">
+                <v-card-title>
+                    Réinitialisation du mot de passe
+                </v-card-title>
+                <v-card-text>
+                    <v-row class="justify-center">
+                        <p v-if="warningEmployeeLostPassword" align="center" class="warning-message"> {{
+                            warningEmployeeLostPasswordMessage }}</p>
+                    </v-row>
+                    <v-row class="justify-center">
+                        <v-col cols="12">
+                            <v-text-field v-model="emailLostPassword" label="Courriel"
+                                :rules="[rules.required, rules.validateEmail]"></v-text-field>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-row class="justify-end">
+                    <DarkRedButton class="mx-5" textbutton="Annuler" @click="closelostPasswordDialog()"></DarkRedButton>
+                    <DarkRedButton class="mx-5" textbutton="Réinitialiser" type="submit" :disabled="!emailLostPassword">
+                    </DarkRedButton>
                 </v-row>
-                <v-row class="justify-center">
-                    <v-col cols="12">
-                        <v-text-field v-model="emailLostPassword" label="Courriel" :rules="[rules.required, rules.validateEmail]"></v-text-field>
-                    </v-col>
-                </v-row>
-            </v-card-text>
-            <v-row class="justify-end">
-                <DarkRedButton class="mx-5" textbutton="Annuler" @click="closelostPasswordDialog()"></DarkRedButton>
-                <DarkRedButton class="mx-5" textbutton="Réinitialiser" type="submit"
-                    :disabled="!emailLostPassword"></DarkRedButton>
-            </v-row>
-        </v-card>
-    </v-form>
+            </v-card>
+        </v-form>
     </v-dialog>
     <v-dialog v-model="dialogConfirmLostPassword" width="75%" persistent>
         <v-card class="pa-5">
@@ -51,7 +53,7 @@
 import userSession from '../sessions/UserSession';
 import DarkRedButton from '../components/Reusable/DarkRedButton.vue';
 import { validEmail } from '../../../REGEX/REGEX_frontend';
-import { getEmployeeByEmail } from '../services/EmployeeService';
+import { getEmployeeByEmail, resetPassword } from '../services/EmployeeService';
 
 export default {
     components: {
@@ -106,16 +108,27 @@ export default {
             const validResetPassword = await this.$refs.lostPasswordForm.validate();
             if (validResetPassword.valid)
             {
-                getEmployeeByEmail(this.emailLostPassword).then(result =>
+                getEmployeeByEmail(this.emailLostPassword).then(employee =>
                 {
-                    this.dialogConfirmLostPassword = true;
-                    setTimeout(this.closeAllDialog, 4000);
-                    
+                    if (employee)
+                    {
+                        resetPassword(employee.employeeNumber).then(employeeReset =>
+                        {
+                            this.dialogConfirmLostPassword = true;
+                            setTimeout(this.closeAllDialog, 4000);
+                        }).catch(err =>
+                        {
+                            this.warningEmployeeLostPassword = true;
+                            this.warningEmployeeLostPasswordMessage = err.message;
+                            console.error(err);
+                        })
+                    }
                 }).catch(err =>
                 {
                     this.warningEmployeeLostPassword = true;
                     this.warningEmployeeLostPasswordMessage = err.message;
                     console.error(err);
+
                 })
             }
         }
@@ -133,6 +146,8 @@ export default {
 }
 </script>
 
-<style scoped>a {
+<style scoped>
+a {
     cursor: pointer;
-}</style>
+}
+</style>
