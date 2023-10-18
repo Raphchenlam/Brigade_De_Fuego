@@ -78,26 +78,55 @@ function dateOrTimeObjectifier(strObject) {
         }
 
         return {
-            year:       date.year,
-            month:      date.month,
-            day:        date.day,
+            year: date.year,
+            month: date.month,
+            day: date.day,
             weekNumber: date.weekNumber,
-            fullDate:   date.fullDate,
-            fullTime:   time.fullTime,
-            hours:      time.hours,
-            minutes:    time.minutes,
-            secondes:   time.secondes,
-            date:       date,
-            time:       time,
+            fullDate: date.fullDate,
+            fullTime: time.fullTime,
+            hours: time.hours,
+            minutes: time.minutes,
+            secondes: time.secondes,
+            date: date,
+            time: time,
         }
     }
 }
 
 
 const toLocale = function (str) {
-    str = (str instanceof Date) ? str.toLocaleString("en-GB"): str ;
+    str = (str instanceof Date) ? str.toLocaleString("en-GB") : str;
 
     const dateAndTimeString = replaceAndSplitDateFromTime(str);
     return dateOrTimeObjectifier(dateAndTimeString);
 }
 exports.toLocale = toLocale;
+
+
+const isBeforeToday = function (fullDate) {
+    const dateToVerify = toLocale(fullDate)
+    var today = toLocale(new Date().toLocaleString("en-GB"));
+
+
+    if (dateToVerify.date.year < today.date.year) {
+        return true;
+    }
+    else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month < today.date.month) {
+        return true;
+    }
+    else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month == today.date.month) {
+        if (dateToVerify.date.day < today.date.day) {
+            return true;
+        }
+        else if (dateToVerify.date.day == today.date.day) {
+            if (dateToVerify.time.hours < today.time.hours) {
+                return true;
+            }
+            else if (dateToVerify.time.hours == today.time.hours && dateToVerify.date.minutes <= (today.date.minutes + 5)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+exports.isBeforeToday = isBeforeToday;

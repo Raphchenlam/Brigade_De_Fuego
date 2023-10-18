@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const reservationQueries = require('../queries/reservationQueries');
 const clientQueries = require('../queries/clientQueries');
+const tableQueries = require("../queries/tableQueries");
 const regex = require('../../REGEX/REGEX_backend');
 const dATObj = require('../../REGEX/dateAndTimeObjectifier');
 
@@ -162,21 +163,65 @@ router.put("/",
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
 
-                    // TODO: ajouter les paramètres a passés
+        // TODO: ajouter les paramètres a passés
+        const newReservationInfos = {
+            id: req.params.id,
+            date: req.params.date,
+            startTime: req.params.startTime,
+            endTime: req.params.endTime,
+            tableNumber: req.params.tableNumber,
+            statusCode: req.params.statusCode,
+            peopleCount: req.params.peopleCount,
+            mention: req.params.mention,
+            hasMinor: req.params.hasMinor,
+        }
 
-        reservationQueries
-            .updateReservation()
-            .then((reservationList) => {
-                if (reservationList) {
-                    res.json(reservationList);
-                } else {
-                    // TODO: Changer le message d'erreur
-                    return next(new HttpError(404, `Les réservations ${startDate} et ${endDate} sont introuvables`));
-                }
-            })
-            .catch((err) => {
-                return next(err);
-            });
+        console.log(newReservationInfos);
+
+
+        //TODO: Verify date and capacity
+        // const oldReservationInfos = getReservationById(newReservationInfos.id);
+
+        // if (newReservationInfos.date != oldReservationInfos.date || newReservationInfos.startTime != oldReservationInfos.startTime) {
+        //     const fullDateToValidate = newReservationInfos.date + " " + newReservationInfos.startTime;
+        //     const dateInvalid = dATObj.isBeforeToday(fullDateToValidate);
+        //     if (dateInvalid) throw new Error("La date et l'heure ne peuvent être antérieurs à la date et l'heure actuelle +5 minutes.");
+        // }
+
+        // // if (newReservationInfos.endTime != oldReservationInfos.endTime) {
+        // //     const startTime = dATObj.toLocale(newReservationInfos.startTime);
+        // //     const endTimeToValidate = dATObj.toLocale(newReservationInfos.endTime);
+        // //     if (endTimeToValidate.hours < startTime.hours) throw new Error("L'heure de fin ne peux être antérieurs à l'heure de début.");
+        // //     if (endTimeToValidate.hours > 23 || endTimeToValidate.hours == 0 || endTimeToValidate.hours < 11) throw new Error("L'heure de fin ne peux être passé 23h59.");
+        // // }
+
+        // if (newReservationInfos.tableNumber != oldReservationInfos.tableNumber) {
+        //     const tableToValidate = newReservationInfos.tableNumber;
+        //     const tableCapacity = tableQueries.getTableByNumber(tableToValidate);
+        //     if (tableCapacity < newReservationInfos.peopleCount) throw new Error(`La capacité ${tableToValidate}de la table est insuffisante.`);
+        // }
+
+
+
+
+
+
+
+
+
+        // reservationQueries
+        //     .updateReservation()
+        //     .then((reservationList) => {
+        //         if (reservationList) {
+        //             res.json(reservationList);
+        //         } else {
+        //             // TODO: Changer le message d'erreur
+        //             return next(new HttpError(404, `Les réservations ${startDate} et ${endDate} sont introuvables`));
+        //         }
+        //     })
+        //     .catch((err) => {
+        //         return next(err);
+        //     });
     }
 );
 module.exports = router;

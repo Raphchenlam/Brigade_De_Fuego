@@ -39,21 +39,13 @@ export default {
     data() {
         return {
             reservation: {},
-            // id: null,
-            // tableNumber: null,
-            // clientId: null,
-            // clientName: null,
-            // statusCode: null,
-            // peopleCount: null,
-            // date: null,
-            // startTime: null,
-            // // fullDate: "2023-10-15 18:00", //FAIRE BIEN ATTENTENTION A CE FORMAT... C'EST CELUI UTILISER PAR LE V-TEXT-FIELD
-            // fullDate: null, //FAIRE BIEN ATTENTENTION A CE FORMAT... C'EST CELUI UTILISER PAR LE V-TEXT-FIELD
-            // endTime: null,
-            // mention: null,
-            // hasMinor: false,
-            // takenBy: null
-
+            editedStatusCode: null,
+            editedPeopleCount: null,
+            editedDate: null,
+            editedStartTime: null,
+            editedFullDate: null,
+            editedMention: null,
+            editedHasMinor: false,
         }
     },
     components: {
@@ -65,9 +57,10 @@ export default {
             if (receivedReservationId) {
                 getReservationById(receivedReservationId)
                     .then(reservation => {
+                        this.editedFullDate = reservation.date + " " + reservation.startTime;
                         this.reservation = {
                             ...reservation,
-                            fullDate: reservation.date + " " + reservation.startTime
+                            fullDate: this.editedFullDate
                         };
                     }).catch(err => {
                         console.error(err);

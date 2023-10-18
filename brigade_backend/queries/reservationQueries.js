@@ -1,5 +1,6 @@
 const pool = require('./DBPool');
 const dATObj = require('../../REGEX/dateAndTimeObjectifier');
+
 // DATES OKAY HERE 
 
 const getReservationById = async (id) => {
@@ -118,10 +119,85 @@ const insertReservation = async (reservationInfos) => {
 exports.insertReservation = insertReservation;
 
 
-const updateReservation = async (reservationInfos) => {
-                    // TODO:  Faire la requête a la bd
+const updateReservation = async (newReservationInfos) => {
 
-    
+    // TODO:  Faire la requête a la bd
+
+
+
+
+
+    // let UPDATEquery = `UPDATE reservation `;
+    // let newInformation = [];
+    // let changedFields = [];
+    // let counter = 1;
+
+    // if (newReservationInfos.date)          changedFields.push(`date = $${counter}`),           newInformation.push(newReservationInfos.date), counter++;
+    // if (newReservationInfos.startTime)     changedFields.push(`start_time = $${counter}`),     newInformation.push(newReservationInfos.startTime), counter++;
+    // if (newReservationInfos.endTime)       changedFields.push(`end_time = $${counter}`),       newInformation.push(newReservationInfos.endTime), counter++;
+    // if (newReservationInfos.tableNumber)   changedFields.push(`table_number = $${counter}`),   newInformation.push(newReservationInfos.tableNumber), counter++;
+    // if (newReservationInfos.statusCode)    changedFields.push(`status_code = $${counter}`),    newInformation.push(newReservationInfos.statusCode), counter++;
+    // if (newReservationInfos.peopleCount)   changedFields.push(`people_count = $${counter}`),   newInformation.push(newReservationInfos.peopleCount), counter++;
+    // if (newReservationInfos.mention)       changedFields.push(`mention = $${counter}`),        newInformation.push(newReservationInfos.mention), counter++;
+    // if (newReservationInfos.hasMinor)      changedFields.push(`has_minor = $${counter}`),      newInformation.push(newReservationInfos.hasMinor), counter++;
+
+    // // if (checkboxes.pendingModified) changedFields.push(`leave.status = 'PendingModified'`);
+
+    // if (changedFields.length > 0) 
+    // { //TODO there's a braquette at the end that goes with this one
+    //     UPDATEquery += `SET ${changedFields.join(', ')}`;
+    //     UPDATEquery += `WHERE reservation.id = $${counter}`;
+    //     newInformation.push(newReservationInfos.id);
+    // TODO: uncomment to here, not further
+
+    //     if (checkboxes.coming && checkboxes.passed) {
+    //         // Aucune condition WHERE nécessaire si les deux cases sont cochées
+    //     } else if (checkboxes.coming) {
+    //         query += ` AND leave.start_date >= CURRENT_DATE`;
+    //     } else if (checkboxes.passed) {
+    //         query += ` AND leave.start_date < CURRENT_DATE`;
+    //     }
+    // } else {
+    //     if (checkboxes.coming && checkboxes.passed) {
+    //         // Aucune condition WHERE nécessaire si les deux cases sont cochées
+    //     } else if (checkboxes.coming) {
+    //         query += ` WHERE leave.start_date >= CURRENT_DATE`;
+    //     } else if (checkboxes.passed) {
+    //         query += ` WHERE leave.start_date < CURRENT_DATE`;
+    //     }
+    // }
+
+    // query += ` ORDER BY leave.start_date`;
+
+    // let result;
+
+    // result = await pool.query(query);
+
+    // if (!result) return [];
+
+    // const resultNbPending = await pool.query(`SELECT COUNT(*) AS nb_pending
+    //                 FROM leave
+    //                 JOIN employee ON employee.employee_number = leave.employee_number
+    //                 WHERE leave.status = 'Pending' OR leave.status = 'PendingModified'`)
+
+    // nbPending = resultNbPending.rows[0].nb_pending;
+
+    // let resultFinal = result.rows.map(row => {
+    //     const leave = {
+    //         id: row.id,
+    //         employeeNumber: row.employee_number,
+    //         employeeName: row.first_name + " " + row.last_name,
+    //         startDate: row.start_date,
+    //         endDate: row.end_date,
+    //         category: row.category,
+    //         reason: row.reason,
+    //         status: row.status
+    //     };
+    //     return leave;
+    // });
+    // resultFinal.push({ nbPending: parseInt(nbPending) });
+    // return resultFinal;
+    // } // TODO: remove or comment this braquette
 };
 exports.updateReservation = updateReservation;
 
