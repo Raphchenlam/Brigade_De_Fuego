@@ -136,6 +136,35 @@ router.get('/:scheduleweekid/employee',
         });
     });
 
+    
+    router.get('/:scheduleweekid/event',
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) =>
+    {
+        const employee = req.user;
+
+        if (!employee) return next(new HttpError(401, "Connexion requise"));
+        if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
+        const scheduleWeekId = req.params.scheduleweekid;
+
+        if (!scheduleWeekId || scheduleWeekId == "") { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
+        if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
+
+        scheduleQueries.selectAllEventScheduleByWeekId(scheduleWeekId).then(result =>
+        {
+            let eventList = [];
+            result.forEach(element =>
+            {
+                eventList.push(element)
+            });
+
+            res.json(eventList);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
+
 router.get('/:date/:shift',
     // passport.authenticate('basic', { session: false }),
     (req, res, next) => {
@@ -169,33 +198,6 @@ router.get('/:date/:shift',
     });
 
 
-    router.get('/:scheduleweekid/event',
-    passport.authenticate('basic', { session: false }),
-    (req, res, next) =>
-    {
-        const employee = req.user;
-
-        if (!employee) return next(new HttpError(401, "Connexion requise"));
-        if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
-        const scheduleWeekId = req.params.scheduleweekid;
-
-        if (!scheduleWeekId || scheduleWeekId == "") { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
-        if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
-
-        scheduleQueries.selectAllEventScheduleByWeekId(scheduleWeekId).then(result =>
-        {
-            let eventList = [];
-            result.forEach(element =>
-            {
-                eventList.push(element)
-            });
-
-            res.json(eventList);
-        }).catch(err =>
-        {
-            return next(err);
-        });
-    });
 
 
 
