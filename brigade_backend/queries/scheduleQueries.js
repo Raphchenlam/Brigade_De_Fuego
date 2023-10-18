@@ -325,9 +325,9 @@ const updateSchedulePeriodsInformations = async (weekInformationsList, clientPar
         {
             const result = await pool.query(
                 `UPDATE schedule_period
-            SET average_traffic = $2, average_cost_by_client = $3
+            SET average_traffic = $2, average_cost_by_client = $3, scheduled_skill_points = $4
                 WHERE id = $1`,
-                [weekInformationsList[i].id, weekInformationsList[i].traffic, weekInformationsList[i].averageCostByClient]
+                [weekInformationsList[i].id, weekInformationsList[i].traffic, weekInformationsList[i].averageCostByClient,weekInformationsList[i].scheduledSkillPoints]
             );
         }
         await client.query("COMMIT");

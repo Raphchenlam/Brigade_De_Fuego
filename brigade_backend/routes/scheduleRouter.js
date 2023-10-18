@@ -208,7 +208,6 @@ router.put("/",
         const isPublished = req.body.isPublished;
         const isModified = req.body.isModified;
         const weekInformationsList = req.body.weekInformations;
-
         const employee = req.user;
         if (!employee) return next(new HttpError(401, "Connexion requise"));
         if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
