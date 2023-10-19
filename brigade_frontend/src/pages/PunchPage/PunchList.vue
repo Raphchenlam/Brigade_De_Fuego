@@ -27,7 +27,7 @@
                                     </v-row>
                                     <v-row>
                                         <v-col cols="12" sm="6" md="6">
-                                            <v-text-field type="date" v-model="editedItem.dateIn"
+                                            <v-text-field disabled type="date" v-model="editedItem.dateIn"
                                                 label="Date IN"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="6">
@@ -42,6 +42,14 @@
                                             <v-text-field type="time" v-model="editedItem.endTime"
                                                 label="Heure OUT"></v-text-field>
                                         </v-col>
+                                        <v-col v-if="errorPunchInfo" cols="12">
+                                            <span style="color: red;"> Une ou des informations sont manquantes ou invalides,
+                                                veuillez les régler</span>
+                                        </v-col>
+                                        <v-col v-if="dateOutError" cols="12">
+                                            <span style="color: red;">La date de fin doit être plus récente que la date de
+                                                début</span>
+                                        </v-col>
                                     </v-row>
                                 </v-container>
                             </v-card-text>
@@ -51,21 +59,25 @@
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
                                     Annuler
                                 </v-btn>
-                                <v-btn color="blue-darken-1" variant="text" @click="savePunchInfo">
+                                <v-btn color="blue-darken-1" variant="text" @click="editPunchInfo">
                                     Sauvegarder
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-dialog v-model="OKupdatedPunchDialog" max-width="500px">
-                        <v-card-title>
-                            <span>Confirmation de modification de punch</span>
-                        </v-card-title>
-                        <v-card-text>
-                            <v-row>
-                                <p>Le punch de {{ editedItem.employeeFullName }} du {{  }}</p>
-                            </v-row>
-                        </v-card-text>
+                    <v-dialog v-model="OKupdatedPunchDialog" width="50%" persistent>
+                        <v-card height="100px">
+                            <v-card-title>
+                                <span>Confirmation de modification de punch</span>
+                            </v-card-title>
+                            <v-card-text>
+                                <v-row class="justify-center">
+                                    <p>Le punch de {{ editedItem.employeeFullName }} le {{ editedItem.dateIn }} a été
+                                        modifié
+                                    </p>
+                                </v-row>
+                            </v-card-text>
+                        </v-card>
                     </v-dialog>
                 </v-toolbar>
             </template>
@@ -74,7 +86,6 @@
                     mdi-pencil
                 </v-icon>
             </template>
-
         </v-data-table-server>
     </v-sheet>
 </template>
@@ -94,6 +105,8 @@ export default {
         return {
             updatePunchDialog: false,
             OKupdatedPunchDialog: false,
+            errorPunchInfo: false,
+            dateOutError: false,
             currentDate: null,
             punchList: [],
             headers: [
@@ -186,7 +199,9 @@ export default {
                 this.editedIndex = -1
             });
         },
-        savePunchInfo() {
+        editPunchInfo() {
+            this.verifyPunchInfo();
+            if (this.errorPunchInfo) return;
             updatePunch(this.editedItem).then(updatedPunch => {
                 if (updatedPunch) {
                     this.OKupdatedPunchDialog = true;
@@ -196,6 +211,25 @@ export default {
             }).catch(err => {
                 console.error(err);
             });
+        },
+        verifyPunchInfo() {
+
+            this.errorPunchInfo = false;
+            this.dateOutError = false;
+
+            if (!this.editedItem.dateIn || !this.editedItem.startTime) this.errorPunchInfo = true;
+            if ((this.editedItem.dateOut && !this.editedItem.endTime) || (!this.editedItem.dateOut && this.editedItem.endTime)) this.errorPunchInfo = true;
+
+            const dateInParts = this.editedItem.dateIn.split('-');
+            const dateOutParts = this.editedItem.dateOut.split('-');
+
+            const dateInObj = new Date(dateInParts[0], dateInParts[1] - 1, dateInParts[2]);
+            const dateOutObj = new Date(dateOutParts[0], dateOutParts[1] - 1, dateOutParts[2]);
+
+            if (dateOutObj < dateInObj) {
+                this.errorPunchInfo = true;
+                this.dateOutError = true;
+            }
         }
     },
     watch: {

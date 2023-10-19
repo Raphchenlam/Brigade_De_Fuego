@@ -11,25 +11,6 @@ const changeDateFormat = dateTime => {
     }
 };
 
-const explodingTime = time => {
-    return {
-        hour: parseInt(time.split(':').slice(0)[0]),
-        minute: parseInt(time.split(':').slice(0)[1])
-    }
-}
-exports.explodingTime = explodingTime;
-
-
-const explodingDate = date => {
-    return {
-        year: parseInt(date.split('-').slice(0)[0]),
-        month: parseInt(date.split('-').slice(0)[1]),
-        day: parseInt(date.split('-').slice(0)[2])
-    }
-}
-exports.explodingDate = explodingDate;
-
-
 // const selectAllPunchs = async () => {
 //     const result = await pool.query (
 //         `SELECT *
@@ -112,9 +93,7 @@ const selectPunchByPunchId = async (punchId) => {
             endTime: row.punch_out
         };
     }
-    return {
-        noShift: "Aucun shift à cet identifiant"
-    };
+    return undefined;
 };
 exports.selectPunchByPunchId = selectPunchByPunchId;
 
@@ -195,13 +174,13 @@ const updateEmployeePunchOut = async (punchOut) => {
 
 exports.updateEmployeePunchOut = updateEmployeePunchOut;
 
-const updateEmployeePunchByPunchId = async (punchToUpdate) => {
+const updateEmployeePunch = async (punchToUpdate) => {
     const result = await pool.query(
         `UPDATE punch
-        SET date_in=$2, punch_in=$3, date_out=$4, punch_out=$5
+        SET punch_in=$2, date_out=$3, punch_out=$4
         WHERE punch.id = $1
         RETURNING*;`,
-        [punchToUpdate.employeeNumber, punchToUpdate.dateIn, punchToUpdate.startTime, punchToUpdate.dateOut, punchToUpdate.endTime]
+        [punchToUpdate.id, punchToUpdate.startTime, punchToUpdate.dateOut, punchToUpdate.endTime]
     );
 
     const row = result.rows[0];
@@ -211,11 +190,11 @@ const updateEmployeePunchByPunchId = async (punchToUpdate) => {
             employeeNumber: row.employee_number,
             dateIn: row.date_in,
             startTime: row.punch_in,
-            dateOut: dateOut,
+            dateOut: row.date_out,
             endTime: row.punch_out
         };
     }
     return undefined;
 }
 
-exports.updateEmployeePunchByPunchId = updateEmployeePunchByPunchId;
+exports.updateEmployeePunch = updateEmployeePunch;
