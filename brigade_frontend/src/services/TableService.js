@@ -1,4 +1,4 @@
-// import session from "./session";
+import session from '../sessions/OperationSession'
 
 class ServiceError extends Error {
   constructor(status, message) {
@@ -57,18 +57,21 @@ export async function fetchAssignationByDate(date) {
   }
 }
 
-export async function createAssignation(assignations){
-  const response = await fetch(`/api/event`, {
+export async function createAssignations(assignations){
+  console.log("Assignations-Service: " + Array.isArray(assignations))
+
+  const response = await fetch(`/api/assignation`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      //...session.getAuthHeaders()
+      ...session.getAuthHeaders()
     },
-    body: JSON.stringify(event)
+    body: JSON.stringify({assignations: assignations})
   });
 
   if (response.ok) {
-    return convertToAssignation(await response.json());
+    const respJson = await response.json();
+    return respJson.map(assignation => convertToAssignation(assignation));
   } else {
     throw await createServiceError(response);
   }

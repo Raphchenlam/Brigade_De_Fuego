@@ -44,11 +44,11 @@ import ReservationInformation from '../ReservationPage/ReservationInformation.vu
 import TableLayout from './TableLayout.vue';
 import TableInformation from './TableInformation.vue';
 import WaiterList from "./WaiterList.vue";
-import { fetchAllTables, fetchAssignationByDate } from '../../services/TableService';
+import { fetchAllTables, fetchAssignationByDate, createAssignations } from '../../services/TableService';
 
 
 export default {
-    inject: [ 'toLocale' ],
+    inject: ['toLocale'],
     name: 'TablePlanView',
     components: {
         OperationMenu,
@@ -102,8 +102,9 @@ export default {
             buildAssignations: this.buildAssignations,
             selectWaiter: this.selectWaiter,
             loadDate: this.loadDate,
-            
-            
+            refreshPageView:this.refreshPageView,
+
+
             ////////////TEMPORAIRE/////////
             hasReservation: computed(() => this.hasReservation),
         }
@@ -120,7 +121,7 @@ export default {
             const todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
 
             this.selectedDate = (newReservationDate) ? newReservationDate : todayDate;
-            this.selectedShift = (newReservationShift) ? newReservationShift : "Midi" ;
+            this.selectedShift = (newReservationShift) ? newReservationShift : "Midi";
             return todayDate;
         },
         loadTableList() {
@@ -178,23 +179,23 @@ export default {
             }
         },
         selectWaiter(waiterNumber, employeeColor) {
-                        
+
             if (this.selectedWaiter == null || this.selectedWaiter.waiterNumber != waiterNumber) {
                 if (waiterNumber == 0 && employeeColor == 0) {
                     this.selectedWaiter = null;
-                }else{
-                this.selectedWaiter = {
-                    waiterNumber: waiterNumber,
-                    employeeColor: employeeColor
+                } else {
+                    this.selectedWaiter = {
+                        waiterNumber: waiterNumber,
+                        employeeColor: employeeColor
+                    }
                 }
-            }
-            }else{
+            } else {
                 this.selectedWaiter = null;
             }
 
         },
         createLocalAssignations() {
-            console.log("Create the new localAssignations with :" + this.tempAssignationList.length)
+            //console.log("Create the new localAssignations with :" + this.tempAssignationList.length)
             this.localAssignations = [];
             this.localAssignations = this.tableList.map(table => {
                 return {
@@ -205,25 +206,29 @@ export default {
                     assignation: null,
                 }
             });
-            if (this.tempAssignationList.length > 0) {
-                this.tempAssignationList.forEach(assignation => {
 
-                    const table = this.localAssignations.find(table => {
-                        return (table.number == assignation.tableNumber)
-                    })
-                    if (table.isActive && !assignation.isActive) {
-                        table.isAssign = false;
-                    } else if (!table.isActive) {
-                        console.error(`La table ${table.number} est inactive.... veuillez retirer l'assignation`);
-                        table.isAssign = false;
-                        assignation.isActive = false;
-                    } else {
-                        table.isAssign = true;
-                    }
-                    table.assignation = assignation;
-                }
-                );
+            if (this.tempAssignationList.length == 0) {
+
+                this.tempAssignationList = JSON.parse(JSON.stringify(this.assignationList))
+
             }
+            this.tempAssignationList.forEach(assignation => {
+
+                const table = this.localAssignations.find(table => {
+                    return (table.number == assignation.tableNumber)
+                })
+                if (table.isActive && !assignation.isActive) {
+                    table.isAssign = false;
+                } else if (!table.isActive) {
+                    console.error(`La table ${table.number} est inactive.... veuillez retirer l'assignation`);
+                    table.isAssign = false;
+                    assignation.isActive = false;
+                } else {
+                    table.isAssign = true;
+                }
+                table.assignation = assignation;
+            }
+            );
         },
         loadReservationInformations(receivedReservationId) {
             this.selectedReservationId = receivedReservationId;
@@ -244,18 +249,18 @@ export default {
             if (this.selectedWaiter != null) {
                 const assignationFound = this.tempAssignationList.find((assignation) => {
                     return (
-                        assignation.waiterNumber == this.selectedWaiter.waiterNumber &&
+                        assignation.employeeNumber == this.selectedWaiter.waiterNumber &&
                         assignation.tableNumber == tableNumber
                     );
                 })
                 const assignedToWaiter = this.tempAssignationList.find((assignation) => {
-                    return assignation.waiterNumber != this.selectedWaiter.waiterNumber &&
+                    return assignation.employeeNumber != this.selectedWaiter.waiterNumber &&
                         assignation.tableNumber == tableNumber && assignation.isActive
                 })
                 console.log("AssignationFound : " + assignationFound);
                 console.log("AssignedToWaiter : " + assignedToWaiter);
 
-                if ((assignationFound && assignedToWaiter) || assignedToWaiter) {
+                if ((!assignationFound && assignedToWaiter)) {
                     alert("La table est déjà assignée à quelqu'un d'autre! Vous devez retirer la table de sa section actuelle avant de pouvoir la réassigner dans une autre section.")
                 }
                 else if (assignationFound && !assignedToWaiter) {
@@ -264,7 +269,7 @@ export default {
                 else {
                     const newAssignation = {
                         tableNumber: tableNumber,
-                        waiterNumber: this.selectedWaiter.waiterNumber,
+                        employeeNumber: this.selectedWaiter.waiterNumber,
                         employeeColor: this.selectedWaiter.employeeColor,
                         isActive: true
                     }
@@ -276,12 +281,34 @@ export default {
                 this.createLocalAssignations();
             }
         },
+        buildAssignations() {
+            const newAssignationList = this.tempAssignationList.map(assignation => {
+                return {
+                    ...assignation,
+                    date: this.selectedDate,
+                    shift: this.selectedShift
+                }
+            })
+            createAssignations(newAssignationList)
+            setTimeout(() => {
+                this.refreshPageView();
+                this.inEditionMode = false;
+                this.tempAssignationList = [];
+            }, 200);
+            
+        },
         toggleEditionMode() {
             this.inEditionMode = !this.inEditionMode;
             if (!this.inEditionMode) {
                 this.tempAssignationList = [];
+            } else {
+                this.createLocalAssignations();
             }
         },
+        refreshPageView(){
+            this.loadTableList();
+            this.loadAssignationList(this.selectedDate, this.selectedShift)
+        }
     },
     watch: {
         selectedDate() {
@@ -290,34 +317,6 @@ export default {
         selectedShift() {
             this.loadAssignationList(this.selectedDate, this.selectedShift);
         },
-
-        // tableInSection() {
-        //     console.log('tableInSection : ' + this.tableInSection)
-        //     if (this.selectedWaiter != null) {
-        //         const assignationIndex = this.tempAssignationList.indexOf((assignation) => {
-        //             return (assignation.tableNumber == this.tableInSection) && (assignation.waiterNumber == this.selectWaiter.waiterNumber)
-        //         })
-        //         if (assignationIndex != -1) {
-        //             this.tempAssignationList.splice(assignationIndex, 1);
-        //         }
-        //         else {
-        //             const newAssignation = {
-        //                 tableNumber: this.tableInSection,
-        //                 waiterNumber: this.selectedWaiter.waiterNumber,
-        //                 employeeColor: this.selectedWaiter.employeeColor,
-        //                 isActive: true
-        //             }
-        //             this.tempAssignationList.push(newAssignation);
-        //             this.createLocalAssignations();
-        //         }
-        //     }
-        // },
-
-        inEditionMode() {
-            if (this.inEditionMode) {
-                this.createLocalAssignations();
-            }
-        }
     },
     created() {
         this.loadDate();
@@ -326,8 +325,7 @@ export default {
         if (!operationSession.isActive) {
             this.$router.push('/operation');
         }
-        this.loadTableList();
-        this.loadAssignationList();
+        this.refreshPageView();
     }
 }
 </script>

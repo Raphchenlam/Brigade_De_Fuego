@@ -20,10 +20,6 @@
             <v-row class="ma-2">
                 <v-col class="py-0 ps-0">
                     <v-card class="pa-2 ma-4 w-100">
-                        <BlackButton v-if="tableInformation.isAssign" class="ma-2" textbutton="Changer le responsable">
-                        </BlackButton>
-                        <BlackButton v-if="!tableInformation.isAssign && tableInformation.isActive" class="ma-2"
-                            textbutton="Assigner un responsable"></BlackButton>
                         <BlackButton v-if="tableInformation.isAssign" class="ma-2" textbutton="Assigner une réservation">
                         </BlackButton>
                         <BlackButton v-if="!tableInformation.isActive" class="ma-2" textbutton="Réactiver la table">

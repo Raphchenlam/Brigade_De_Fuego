@@ -233,7 +233,6 @@ export default {
         }
     },
     mounted() {
-        console.clear();
         if (!(!!this.selectedDate)) {
             this.todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
             this.endDate = this.startDate = this.todayDate;
