@@ -26,10 +26,10 @@ export default {
             employeeNumber: '',
             password: '',
             validPassword: false,
+            invalidPasswordMessage: '',
             rules: {
                 required: value => !!value || "Le champ est requis",
-
-                validatePassword: () => this.validPassword === false ? "Numéro d'employé ou mot de passe invalide" : true
+                validatePassword: () => this.validPassword === false ? `${this.invalidPasswordMessage}` : true
             }
         };
     },
@@ -43,7 +43,7 @@ export default {
             }).catch(authError => {
                 this.validPassword = false;
                 this.$refs.loginForm.validate();
-                alert(authError.message);
+                this.invalidPasswordMessage = authError.message;
             });
         }
     },

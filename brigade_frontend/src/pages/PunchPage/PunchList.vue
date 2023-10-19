@@ -6,14 +6,14 @@
         </v-sheet>
     </v-row>
     <v-sheet class="mx-10">
-        <v-data-table-server no-data-text="Aucun punch à cette date-ci" height="300px" fixed-header :headers="headers" :items="punchList"
-            :items-length="punchList.length" class="elevation-1" @update:options="loadPunch">
+        <v-data-table-server no-data-text="Aucun punch à cette date-ci" height="300px" fixed-header :headers="headers"
+            :items="punchList" :items-length="punchList.length" class="elevation-1" @update:options="loadPunch">
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title>Listes des punchs</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="500px">
+                    <v-dialog v-model="updatePunchDialog" max-width="500px">
                         <v-card>
                             <v-card-title>
                                 <span class="text-h5">Modifier Punch - {{ editedItem.employeeFullName }}</span>
@@ -51,11 +51,21 @@
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
                                     Annuler
                                 </v-btn>
-                                <v-btn color="blue-darken-1" variant="text" @click="save">
+                                <v-btn color="blue-darken-1" variant="text" @click="savePunchInfo">
                                     Sauvegarder
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
+                    </v-dialog>
+                    <v-dialog v-model="OKupdatedPunchDialog" max-width="500px">
+                        <v-card-title>
+                            <span>Confirmation de modification de punch</span>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-row>
+                                <p>Le punch de {{ editedItem.employeeFullName }} du {{  }}</p>
+                            </v-row>
+                        </v-card-text>
                     </v-dialog>
                 </v-toolbar>
             </template>
@@ -73,7 +83,7 @@
 
 
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import { getPunchListByDate } from '../../services/PunchService';
+import { getPunchListByDate, updatePunch } from '../../services/PunchService';
 
 export default {
     inject: ['toLocale'],
@@ -82,7 +92,8 @@ export default {
     },
     data() {
         return {
-            dialog: false,
+            updatePunchDialog: false,
+            OKupdatedPunchDialog: false,
             currentDate: null,
             punchList: [],
             headers: [
@@ -152,7 +163,6 @@ export default {
     methods: {
         loadPunchListFromCurrentDate() {
             this.punchList = [];
-            console.log('DATE COURANTE', this.currentDate);
             getPunchListByDate(this.currentDate).then(allPunchs => {
                 console.log('allPunchs', allPunchs);
                 allPunchs.forEach(employeePunch => {
@@ -163,20 +173,29 @@ export default {
             });
         },
         editItem(item) {
-            console.log('SELECTED PUNCH', Object.assign({},item));
+            console.log('SELECTED PUNCH', Object.assign({}, item));
             this.editedIndex = this.punchList.indexOf(item)
             this.editedItem = Object.assign({}, item);
-            this.dialog = true;
+            this.updatePunchDialog = true;
         },
         close() {
-            this.dialog = false
+            this.updatePunchDialog = false;
+            this.OKupdatedPunchDialog = false;
             this.$nextTick(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
                 this.editedIndex = -1
             });
         },
-        save() {
-
+        savePunchInfo() {
+            updatePunch(this.editedItem).then(updatedPunch => {
+                if (updatedPunch) {
+                    this.OKupdatedPunchDialog = true;
+                    this.loadPunchListFromCurrentDate();
+                    setTimeout(this.close, 2500);
+                }
+            }).catch(err => {
+                console.error(err);
+            });
         }
     },
     watch: {

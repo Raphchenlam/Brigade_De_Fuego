@@ -137,3 +137,20 @@ export async function getPunchListByEmployeeNumber(employeeNumber) {
     }
 }
 
+export async function updatePunch(punchToUpdate){
+    const response = await fetch(`/api/punch/${punchToUpdate.id}`,{
+        method: "PUT",
+        headers:{
+            "Content-Type": "application/json",
+            ...userSession.getAuthHeaders()
+        },
+        body: JSON.stringify(punchToUpdate)
+    });
+
+    if(response.ok){
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw await createServiceError(response);
+    }
+}

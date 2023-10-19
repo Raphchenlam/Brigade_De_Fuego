@@ -115,51 +115,51 @@ router.post('/',
 
         const employeeNumber = req.body.employeeNumber;
         if (!employeeNumber || employeeNumber == '') return next(new HttpError(400, 'Le champ employeeNumber est requis'));
-        if (!regex.validEmployeeNumber.test(employeeNumber)) return next(new HttpError(400, 'Le numéro d\'employé ne respecte pas les critères d\'acceptation'));
+        if (!regex.validEmployeeNumber.test(employeeNumber)) return next(new HttpError(422, 'Le numéro d\'employé ne respecte pas les critères d\'acceptation'));
 
         const firstName = req.body.firstName;
         if (!firstName || firstName == '') return next(new HttpError(400, 'Le champ firstName est requis'));
-        if (firstName.length >= 256) return next(new HttpError(400, 'Le champ firstName ne peut pas être composé de plus de 255 caractères'));
-        if (!regex.validName.test(firstName)) return next(new HttpError(400, 'Le prénom ne respecte pas les critères d\'acceptation'));
+        if (firstName.length >= 256) return next(new HttpError(422, 'Le champ firstName ne peut pas être composé de plus de 255 caractères'));
+        if (!regex.validName.test(firstName)) return next(new HttpError(422, 'Le prénom ne respecte pas les critères d\'acceptation'));
 
         const lastName = req.body.lastName;
         if (!lastName || lastName == '') return next(new HttpError(400, 'Le champ lastName est requis'));
-        if (lastName.length >= 256) return next(new HttpError(400, 'Le champ lastName ne peut pas être composé de plus de 255 caractères'));
-        if (!regex.validName.test(lastName)) return next(new HttpError(400, 'Le nom ne respecte pas les critères d\'acceptation'));
+        if (lastName.length >= 256) return next(new HttpError(422, 'Le champ lastName ne peut pas être composé de plus de 255 caractères'));
+        if (!regex.validName.test(lastName)) return next(new HttpError(422, 'Le nom ne respecte pas les critères d\'acceptation'));
 
         const role = req.body.role;
         if (!role || role == '') return next(new HttpError(400, 'Le champ role est requis'));
-        if (!regex.validRole.test(role)) return next(new HttpError(400, 'Le rôle ne respecte pas les critères d\'acceptation'));
+        if (!regex.validRole.test(role)) return next(new HttpError(422, 'Le rôle ne respecte pas les critères d\'acceptation'));
 
         const colorHexCode = req.body.colorHexCode;
         if (!colorHexCode || colorHexCode == '') return next(new HttpError(400, 'Le champ colorHexCode est requis'));
-        if (!regex.validColorHexCode.test(colorHexCode)) return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
+        if (!regex.validColorHexCode.test(colorHexCode)) return next(new HttpError(422, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
         if (colorHexCode == "#827717") return next(new HttpError(400, 'La couleur par défaut (#827717) n\'a pas été changée lors de la création de l\'employé(e)'));
 
         const hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') return next(new HttpError(400, 'Le champ hourlyRate est requis'));
-        if (!regex.validHourlyRate.test(hourlyRate)) return next(new HttpError(400, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
+        if (!regex.validHourlyRate.test(hourlyRate)) return next(new HttpError(422, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
         // hourlyRate = parseFloat(hourlyRate);
 
         const barcodeNumber = req.body.barcodeNumber;
         if (!barcodeNumber || barcodeNumber == '') return next(new HttpError(400, 'Le champ barcodeNumber est requis'));
-        if (!regex.validBarcodeNumber.test(barcodeNumber)) return next(new HttpError(400, 'Le champ barcodeNumber ne respecte pas les critères d\'acceptation'));
+        if (!regex.validBarcodeNumber.test(barcodeNumber)) return next(new HttpError(422, 'Le champ barcodeNumber ne respecte pas les critères d\'acceptation'));
 
         const email = req.body.email;
         if (!email || email == '') return next(new HttpError(400, 'Le champ email est requis'));
-        if (!regex.validEmail.test(email)) return next(new HttpError(400, 'Le champ email ne respecte pas les critères d\'acceptation'));
+        if (!regex.validEmail.test(email)) return next(new HttpError(422, 'Le champ email ne respecte pas les critères d\'acceptation'));
 
         const phoneNumber = req.body.phoneNumber;
         if (!phoneNumber || phoneNumber == '') return next(new HttpError(400, 'Le champ phoneNumber est requis'));
 
-        if (!regex.validPhoneNumber.test(phoneNumber)) return next(new HttpError(400, 'Le champ phoneNumber ne respecte pas les critères d\'acceptation'));
+        if (!regex.validPhoneNumber.test(phoneNumber)) return next(new HttpError(422, 'Le champ phoneNumber ne respecte pas les critères d\'acceptation'));
 
         const isAdmin = req.body.isAdmin;
 
         const skillPoints = req.body.skillPoints;
         if (role != "Gestionnaire") {
             if (!skillPoints || skillPoints == '') return next(new HttpError(400, 'Le champ skillPoints est requis'));
-            if (!regex.validSkillPoints.test(skillPoints)) return next(new HttpError(400, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
+            if (!regex.validSkillPoints.test(skillPoints)) return next(new HttpError(422, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
             // skillPoints = parseInt(skillPoints);
         }
 
@@ -281,45 +281,45 @@ router.put('/:employeeNumber',
         const employeeNumberParams = req.params.employeeNumber;
         if (!employeeNumber || employeeNumber == '') return next(new HttpError(400, 'Le champ employeeNumber est requis'));
         if (employee.employeeNumber != employeeNumberParams) return next(new HttpError(403, 'Vous n\'avez pas l\'authorisation de modifier un autre employé'));
-        if (!regex.validEmployeeNumber.test(employeeNumber)) return next(new HttpError(400, 'Le numéro d\'employé ne respecte pas les critères d\'acceptation'));
+        if (!regex.validEmployeeNumber.test(employeeNumber)) return next(new HttpError(422, 'Le numéro d\'employé ne respecte pas les critères d\'acceptation'));
         // employeeNumber = parseInt(employeeNumber);
 
         const firstName = req.body.firstName;
         if (!firstName || firstName == '') return next(new HttpError(400, 'Le champ firstName est requis'));
-        if (firstName.length >= 256) return next(new HttpError(400, 'Le champ firstName ne peut pas être composé de plus de 255 caractères'));
-        if (!regex.validName.test(firstName)) return next(new HttpError(400, 'Le prénom ne respecte pas les critères d\'acceptation'));
+        if (firstName.length >= 256) return next(new HttpError(422, 'Le champ firstName ne peut pas être composé de plus de 255 caractères'));
+        if (!regex.validName.test(firstName)) return next(new HttpError(422, 'Le prénom ne respecte pas les critères d\'acceptation'));
 
         const lastName = req.body.lastName;
         if (!lastName || lastName == '') return next(new HttpError(400, 'Le champ lastName est requis'));
-        if (lastName.length >= 256) return next(new HttpError(400, 'Le champ lastName ne peut pas être composé de plus de 255 caractères'));
-        if (!regex.validName.test(lastName)) return next(new HttpError(400, 'Le nom ne respecte pas les critères d\'acceptation'));
+        if (lastName.length >= 256) return next(new HttpError(422, 'Le champ lastName ne peut pas être composé de plus de 255 caractères'));
+        if (!regex.validName.test(lastName)) return next(new HttpError(422, 'Le nom ne respecte pas les critères d\'acceptation'));
 
         const role = req.body.role;
         if (!role || role == '') return next(new HttpError(400, 'Le champ role est requis'));
-        if (!regex.validRole.test(role)) return next(new HttpError(400, 'Le rôle ne respecte pas les critères d\'acceptation'));
+        if (!regex.validRole.test(role)) return next(new HttpError(422, 'Le rôle ne respecte pas les critères d\'acceptation'));
 
         const colorHexCode = req.body.colorHexCode;
         if (!colorHexCode || colorHexCode == '') return next(new HttpError(400, 'Le champ colorHexCode est requis'));
-        if (!regex.validColorHexCode.test(colorHexCode)) return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
-        if (colorHexCode == employee.colorHexCode) return next(new HttpError(400, 'La couleur ne peut pas être changée lors de la modification de l\'employé(e)'));
+        if (!regex.validColorHexCode.test(colorHexCode)) return next(new HttpError(422, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
+        if (colorHexCode != employee.colorHexCode) return next(new HttpError(400, 'La couleur ne peut pas être changée lors de la modification de l\'employé(e)'));
 
         const hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') return next(new HttpError(400, 'Le champ hourlyRate est requis'));
-        if (!regex.validHourlyRate.test(hourlyRate)) return next(new HttpError(400, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
+        if (!regex.validHourlyRate.test(hourlyRate)) return next(new HttpError(422, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
         // hourlyRate = parseFloat(hourlyRate);
 
         const barcodeNumber = req.body.barcodeNumber;
         if (!barcodeNumber || barcodeNumber == '') return next(new HttpError(400, 'Le champ barcodeNumber est requis'));
-        if (!regex.validBarcodeNumber.test(barcodeNumber)) return next(new HttpError(400, 'Le champ barcodeNumber ne respecte pas les critères d\'acceptation'));
+        if (!regex.validBarcodeNumber.test(barcodeNumber)) return next(new HttpError(422, 'Le champ barcodeNumber ne respecte pas les critères d\'acceptation'));
 
         const email = req.body.email;
         if (!email || email == '') return next(new HttpError(400, 'Le champ email est requis'));
-        if (!regex.validEmail.test(email)) return next(new HttpError(400, 'Le champ email ne respecte pas les critères d\'acceptation'));
+        if (!regex.validEmail.test(email)) return next(new HttpError(422, 'Le champ email ne respecte pas les critères d\'acceptation'));
 
         const phoneNumber = req.body.phoneNumber;
         if (!phoneNumber || phoneNumber == '') return next(new HttpError(400, 'Le champ phoneNumber est requis'));
 
-        if (!regex.validPhoneNumber.test(phoneNumber)) return next(new HttpError(400, 'Le champ phoneNumber ne respecte pas les critères d\'acceptation'));
+        if (!regex.validPhoneNumber.test(phoneNumber)) return next(new HttpError(422, 'Le champ phoneNumber ne respecte pas les critères d\'acceptation'));
 
         const isAdmin = req.body.isAdmin;
 
@@ -328,13 +328,13 @@ router.put('/:employeeNumber',
         const skillPoints = req.body.skillPoints;
         if (role != "Gestionnaire") {
             if (!skillPoints || skillPoints == '') return next(new HttpError(400, 'Le champ skillPoints est requis'));
-            if (!regex.validSkillPoints.test(skillPoints)) return next(new HttpError(400, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
+            if (!regex.validSkillPoints.test(skillPoints)) return next(new HttpError(422, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
             // skillPoints = parseInt(skillPoints);
         }
 
         const password = req.body.password;
         if (password) {
-            if (!regex.validPassword.test(password)) return next(new HttpError(400, 'Le mot de passe ne respecte pas les critères d\'acceptation'));
+            if (!regex.validPassword.test(password)) return next(new HttpError(422, 'Le mot de passe ne respecte pas les critères d\'acceptation'));
         }
 
         try {
@@ -431,45 +431,45 @@ router.put('/',
 
         const employeeNumber = req.body.employeeNumber;
         if (!employeeNumber || employeeNumber == '') return next(new HttpError(400, 'Le champ employeeNumber est requis'));
-        if (!regex.validEmployeeNumber.test(employeeNumber)) return next(new HttpError(400, 'Le numéro d\'employé ne respecte pas les critères d\'acceptation'));
+        if (!regex.validEmployeeNumber.test(employeeNumber)) return next(new HttpError(422, 'Le numéro d\'employé ne respecte pas les critères d\'acceptation'));
         // employeeNumber = parseInt(employeeNumber);
 
         const firstName = req.body.firstName;
         if (!firstName || firstName == '') return next(new HttpError(400, 'Le champ firstName est requis'));
-        if (firstName.length >= 256) return next(new HttpError(400, 'Le champ firstName ne peut pas être composé de plus de 255 caractères'));
-        if (!regex.validName.test(firstName)) return next(new HttpError(400, 'Le prénom ne respecte pas les critères d\'acceptation'));
+        if (firstName.length >= 256) return next(new HttpError(422, 'Le champ firstName ne peut pas être composé de plus de 255 caractères'));
+        if (!regex.validName.test(firstName)) return next(new HttpError(422, 'Le prénom ne respecte pas les critères d\'acceptation'));
 
         const lastName = req.body.lastName;
         if (!lastName || lastName == '') return next(new HttpError(400, 'Le champ lastName est requis'));
-        if (lastName.length >= 256) return next(new HttpError(400, 'Le champ lastName ne peut pas être composé de plus de 255 caractères'));
-        if (!regex.validName.test(lastName)) return next(new HttpError(400, 'Le nom ne respecte pas les critères d\'acceptation'));
+        if (lastName.length >= 256) return next(new HttpError(422, 'Le champ lastName ne peut pas être composé de plus de 255 caractères'));
+        if (!regex.validName.test(lastName)) return next(new HttpError(422, 'Le nom ne respecte pas les critères d\'acceptation'));
 
         const role = req.body.role;
         if (!role || role == '') return next(new HttpError(400, 'Le champ role est requis'));
-        if (!regex.validRole.test(role)) return next(new HttpError(400, 'Le rôle ne respecte pas les critères d\'acceptation'));
+        if (!regex.validRole.test(role)) return next(new HttpError(422, 'Le rôle ne respecte pas les critères d\'acceptation'));
 
         const colorHexCode = req.body.colorHexCode;
         if (!colorHexCode || colorHexCode == '') return next(new HttpError(400, 'Le champ colorHexCode est requis'));
-        if (!regex.validColorHexCode.test(colorHexCode)) return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
+        if (!regex.validColorHexCode.test(colorHexCode)) return next(new HttpError(422, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
         if (colorHexCode == employee.colorHexCode) return next(new HttpError(400, 'La couleur ne peut pas être changée lors de la modification de l\'employé(e)'));
 
         const hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') return next(new HttpError(400, 'Le champ hourlyRate est requis'));
-        if (!regex.validHourlyRate.test(hourlyRate)) return next(new HttpError(400, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
+        if (!regex.validHourlyRate.test(hourlyRate)) return next(new HttpError(422, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
         // hourlyRate = parseFloat(hourlyRate);
 
         const barcodeNumber = req.body.barcodeNumber;
         if (!barcodeNumber || barcodeNumber == '') return next(new HttpError(400, 'Le champ barcodeNumber est requis'));
-        if (!regex.validBarcodeNumber.test(barcodeNumber)) return next(new HttpError(400, 'Le champ barcodeNumber ne respecte pas les critères d\'acceptation'));
+        if (!regex.validBarcodeNumber.test(barcodeNumber)) return next(new HttpError(422, 'Le champ barcodeNumber ne respecte pas les critères d\'acceptation'));
 
         const email = req.body.email;
         if (!email || email == '') return next(new HttpError(400, 'Le champ email est requis'));
-        if (!regex.validEmail.test(email)) return next(new HttpError(400, 'Le champ email ne respecte pas les critères d\'acceptation'));
+        if (!regex.validEmail.test(email)) return next(new HttpError(422, 'Le champ email ne respecte pas les critères d\'acceptation'));
 
         const phoneNumber = req.body.phoneNumber;
         if (!phoneNumber || phoneNumber == '') return next(new HttpError(400, 'Le champ phoneNumber est requis'));
 
-        if (!regex.validPhoneNumber.test(phoneNumber)) return next(new HttpError(400, 'Le champ phoneNumber ne respecte pas les critères d\'acceptation'));
+        if (!regex.validPhoneNumber.test(phoneNumber)) return next(new HttpError(422, 'Le champ phoneNumber ne respecte pas les critères d\'acceptation'));
 
         const isAdmin = req.body.isAdmin;
 
@@ -478,7 +478,7 @@ router.put('/',
         const skillPoints = req.body.skillPoints;
         if (role != "Gestionnaire") {
             if (!skillPoints || skillPoints == '') return next(new HttpError(400, 'Le champ skillPoints est requis'));
-            if (!regex.validSkillPoints.test(skillPoints)) return next(new HttpError(400, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
+            if (!regex.validSkillPoints.test(skillPoints)) return next(new HttpError(422, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
             // skillPoints = parseInt(skillPoints);
         }
 

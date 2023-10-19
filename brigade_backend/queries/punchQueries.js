@@ -3,7 +3,7 @@ const pool = require('./DBPool');
 const changeDateFormat = dateTime => {
     const tempFormat = new Date(dateTime).toLocaleDateString('en-GB');
     const parts = tempFormat.split('/');
-    if(parts.length === 3) {
+    if (parts.length === 3) {
         const [day, month, year] = parts;
         return `${year}-${month}-${day}`;
     } else {
@@ -54,7 +54,7 @@ exports.explodingDate = explodingDate;
 // }
 // exports.selectAllPunchs = selectAllPunchs;
 
-const selectAllPunchsFromDateIn = async(dateIn) => {
+const selectAllPunchsFromDateIn = async (dateIn) => {
     const result = await pool.query(
         `SELECT punch.*, employee.first_name, employee.last_name
         FROM punch
@@ -63,30 +63,61 @@ const selectAllPunchsFromDateIn = async(dateIn) => {
         [dateIn]
     );
 
-    if(result){
+    if (result) {
         return result.rows.map((row) => {
-            
+
             let dateOut = row.date_out;
-            if(row.date_out){
+            if (row.date_out) {
                 dateOut = changeDateFormat(row.date_out);
             }
 
-             const employeePunch = {
-                 id: row.id,
-                 employeeNumber: row.employee_number,
-                 employeeFullName: row.first_name + " " + row.last_name,
-                 dateIn: changeDateFormat(row.date_in),
-                 startTime: row.punch_in,
-                 dateOut: dateOut,
-                 endTime: row.punch_out
-             };
-             return employeePunch;
-         });
-     }
-     return ({message: 'Aucun employé s\'est punché à cette date-ci'});
+            const employeePunch = {
+                id: row.id,
+                employeeNumber: row.employee_number,
+                employeeFullName: row.first_name + " " + row.last_name,
+                dateIn: changeDateFormat(row.date_in),
+                startTime: row.punch_in,
+                dateOut: dateOut,
+                endTime: row.punch_out
+            };
+            return employeePunch;
+        });
+    }
+    return ({ message: 'Aucun employé s\'est punché à cette date-ci' });
 }
-
 exports.selectAllPunchsFromDateIn = selectAllPunchsFromDateIn;
+
+const selectPunchByPunchId = async (punchId) => {
+    const result = await pool.query(
+        `SELECT punch.*, employee.first_name, employee.last_name
+        FROM punch
+        JOIN employee ON employee.employee_number = punch.employee_number 
+        WHERE punch.id = $1`,
+        [punchId]
+    );
+
+    const row = result.rows[0];
+    if (row) {
+        let dateOut = row.date_out;
+        if (row.date_out) {
+            dateOut = changeDateFormat(row.date_out);
+        }
+        return {
+            punchId: row.id,
+            employeeNumber: row.employee_number,
+            employeeFullName: row.first_name + " " + row.last_name,
+            dateIn: changeDateFormat(row.date_in),
+            startTime: row.punch_in,
+            dateOut: dateOut,
+            endTime: row.punch_out
+        };
+    }
+    return {
+        noShift: "Aucun shift à cet identifiant"
+    };
+};
+exports.selectPunchByPunchId = selectPunchByPunchId;
+
 
 const selectLastPunchOfEmployee = async (employeeNumber) => {
     const result = await pool.query(
@@ -102,9 +133,9 @@ const selectLastPunchOfEmployee = async (employeeNumber) => {
     if (row) {
         return {
             employeeNumber: row.employee_number,
-            dateIn: truncateDate(row.date_in),
+            dateIn: changeDateFormat(row.date_in),
             startTime: row.punch_in,
-            dateOut: truncateDate(row.date_out),
+            dateOut: changeDateFormat(row.date_out),
             endTime: row.punch_out
         };
     }
@@ -113,8 +144,6 @@ const selectLastPunchOfEmployee = async (employeeNumber) => {
     };
 };
 exports.selectLastPunchOfEmployee = selectLastPunchOfEmployee;
-
-
 
 const insertEmployeePunchIn = async (punchIn) => {
     const result = await pool.query(
@@ -165,3 +194,28 @@ const updateEmployeePunchOut = async (punchOut) => {
 }
 
 exports.updateEmployeePunchOut = updateEmployeePunchOut;
+
+const updateEmployeePunchByPunchId = async (punchToUpdate) => {
+    const result = await pool.query(
+        `UPDATE punch
+        SET date_in=$2, punch_in=$3, date_out=$4, punch_out=$5
+        WHERE punch.id = $1
+        RETURNING*;`,
+        [punchToUpdate.employeeNumber, punchToUpdate.dateIn, punchToUpdate.startTime, punchToUpdate.dateOut, punchToUpdate.endTime]
+    );
+
+    const row = result.rows[0];
+    if (row) {
+        return {
+            punchId: row.id,
+            employeeNumber: row.employee_number,
+            dateIn: row.date_in,
+            startTime: row.punch_in,
+            dateOut: dateOut,
+            endTime: row.punch_out
+        };
+    }
+    return undefined;
+}
+
+exports.updateEmployeePunchByPunchId = updateEmployeePunchByPunchId;
