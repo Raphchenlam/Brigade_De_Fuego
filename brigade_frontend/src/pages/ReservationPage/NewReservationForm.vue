@@ -175,7 +175,7 @@ export default {
 
                         const startTimeObj = this.toLocale(this.reservation.startTime);
                         var newReservationShift;
-                        if (startTimeObj.time.hours < 15){
+                        if (startTimeObj.time.hours <= 15){
                             newReservationShift = "Midi";
                         }else{
                             newReservationShift = "Soir";
@@ -194,7 +194,8 @@ export default {
         },
         isBeforeToday(fullDate) {
             const dateToVerify = this.toLocale(fullDate)
-            var today = this.toLocale(new Date().toLocaleString());
+            var today = this.toLocale(new Date().toLocaleString("en-GB"));
+            
 
             if (dateToVerify.date.year < today.date.year) {
                 return true;
@@ -286,7 +287,7 @@ export default {
         }
     },
     mounted() {
-        const today = this.toLocale(new Date().toLocaleString());
+        const today = this.toLocale(new Date().toLocaleString("en-GB"));
         today.time.minutes += 5;
 
         if (today.time.minutes >= 60) today.time.minutes -= 60, today.time.hours += 1;

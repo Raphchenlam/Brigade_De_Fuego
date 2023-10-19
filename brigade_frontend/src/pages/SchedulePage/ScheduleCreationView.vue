@@ -758,15 +758,23 @@
                 Ajouter un nouveau shift a {{ employeeNewShift.name }} pour le {{ this.weekDate[dayNewShift].getDate() }}
                 {{ this.weekDate[dayNewShift].toLocaleString('fr-FR', { month: 'long' }) }}
             </v-card-title>
-            <v-card-text>
-                    <v-row class="justify-center">
-                        <p v-if="warningNewShiftEndTimeMessage" align="center" class="warning-message">L'heure de fin doit
-                            être après l'heure de début</p>
-                        <p v-if="warningNewShiftEmptyMessage" align="center" class="warning-message">Les champs pour les
-                            heures ne peuvent
-                            pas être vide</p>
+            <v-card-text v-if="employeeHaveApprovedLeave">
+                <v-row class="justify-center">
+                    <div class="my-10" v-if="employeeHaveApprovedLeave">
+                        <p align="center" class="warning-message">Vous ne pouvez pas ajouter {{ employeeNewShift.name }} à ce shift car il a un congé qui a été approuvé pour cette date</p>
+                    </div>
+
                     </v-row>
-                    <v-row class="justify-center">
+            </v-card-text>
+            <v-card-text v-else>
+                <v-row class="justify-center">
+                    <p v-if="warningNewShiftEndTimeMessage" align="center" class="warning-message">L'heure de fin doit
+                        être après l'heure de début</p>
+                    <p v-if="warningNewShiftEmptyMessage" align="center" class="warning-message">Les champs pour les
+                        heures ne peuvent
+                        pas être vide</p>
+                </v-row>
+                <v-row class="justify-center">
                     <v-col cols="12" sm="6" md="6">
                         <v-text-field type="time" v-model="startTimeNewShift" label="Heure Debut"></v-text-field>
                     </v-col>
@@ -777,7 +785,7 @@
             </v-card-text>
             <v-row class="justify-end">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeNewShiftDialog()"></DarkRedButton>
-                <DarkRedButton class="mx-5" textbutton="Sauvegarder" @click="confirmShiftToEmployee()"
+                <DarkRedButton v-if="!employeeHaveApprovedLeave" class="mx-5" textbutton="Sauvegarder" @click="confirmShiftToEmployee()"
                     :disabled="!startTimeNewShift || !endTimeNewShift"></DarkRedButton>
             </v-row>
         </v-card>
@@ -790,14 +798,14 @@
                 {{ this.weekDate[dayNewShift].toLocaleString('fr-FR', { month: 'long' }) }}
             </v-card-title>
             <v-card-text>
-                    <v-row class="justify-center">
-                        <p v-if="warningNewShiftEndTimeMessage" align="center" class="warning-message">L'heure de fin doit
-                            être après l'heure de début</p>
-                        <p v-if="warningNewShiftEmptyMessage" align="center" class="warning-message">Les champs pour les
-                            heures ne peuvent
-                            pas être vide</p>
-                    </v-row>
-                    <v-row class="justify-center">
+                <v-row class="justify-center">
+                    <p v-if="warningNewShiftEndTimeMessage" align="center" class="warning-message">L'heure de fin doit
+                        être après l'heure de début</p>
+                    <p v-if="warningNewShiftEmptyMessage" align="center" class="warning-message">Les champs pour les
+                        heures ne peuvent
+                        pas être vide</p>
+                </v-row>
+                <v-row class="justify-center">
                     <v-col cols="6" sm="6" md="6">
                         <v-text-field type="time" v-model="startTimeNewShift" label="Heure Debut"></v-text-field>
                     </v-col>
@@ -846,13 +854,12 @@
             </v-row>
             <v-row class="justify-end">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialogAddEvent"></DarkRedButton>
-                <DarkRedButton v-if="selectedEvent" class="mx-5" textbutton="Ajouter l'événement à ce shift" :disabled="!selectedEvent"
-                    @click="addNewEventToShift()">
+                <DarkRedButton v-if="selectedEvent" class="mx-5" textbutton="Ajouter l'événement à ce shift"
+                    :disabled="!selectedEvent" @click="addNewEventToShift()">
                 </DarkRedButton>.
                 <DarkRedButton v-if="!selectedEvent" class="mx-5" textbutton="Ne pas ajouter d'evénement à ce shift"
                     @click="removeNewEventToShift()">
                 </DarkRedButton>
-
             </v-row>
         </v-sheet>
     </v-dialog>
@@ -868,6 +875,7 @@ import { getAllRoles, getEmployeeByEmployeeNumber } from '../../services/Employe
 import { fetchEventByName } from '../../services/EventService'
 import { getScheduleWeekInfoByID, getAllEmployeeScheduleByScheduleWeekId, getAllEventByScheduleWeekId, updateSchedule } from '../../services/ScheduleService'
 import userSession from '../../sessions/UserSession'
+import { getApprovedLeavesByEmployeeNumberAndDate } from '../../services/LeaveService'
 import { watch } from 'vue'
 
 export default {
@@ -905,6 +913,7 @@ export default {
             dayNewShift: null,
             startTimeNewShift: null,
             endTimeNewShift: null,
+            employeeHaveApprovedLeave: false,
             datePropertyMapping: null,
             selectedEmployeeNumberToAdd: null,
             warningEmployeeAlreadyInScheduleMessage: false,
@@ -1004,7 +1013,7 @@ export default {
                 this.loaded = true;
             }).catch(err =>
             {
-                console.log(err)
+                console.error(err)
             });
         },
         loadEmployee()
@@ -1057,7 +1066,7 @@ export default {
                 this.refreshEmployee();
             }).catch(err =>
             {
-                console.log(err)
+                console.error(err)
             });
         },
         refreshEmployee()
@@ -1105,9 +1114,28 @@ export default {
         },
         addShiftToEmployee(employee, dayIndex)
         {
+            const date = this.weekDate[dayIndex];
+            let year = date.getFullYear();
+            let month = (date.getMonth() + 1).toString().padStart(2, '0'); // Ajoute un zéro devant si le mois est inférieur à 10
+            let day = date.getDate().toString().padStart(2, '0'); // Ajoute un zéro devant si le jour est inférieur à 10
+            let formattedDate = `${year}-${month}-${day}`;
+
             this.employeeNewShift = employee;
             this.dayNewShift = dayIndex;
-            this.dialogNewShift = true;
+            this.employeeHaveApprovedLeave = false;
+            getApprovedLeavesByEmployeeNumberAndDate(employee.employeeNumber, formattedDate).then(allLeaves =>
+            {
+                console.log("allLeaves",allLeaves)
+                console.log("allLeaves lenght",allLeaves.length)
+                
+                if (allLeaves.length > 0)
+                {
+                    console.log("ici44")
+                    this.employeeHaveApprovedLeave = true;
+                }
+                this.dialogNewShift = true;
+            })
+
         },
         editShiftToEmployee(employee, dayIndex)
         {
@@ -1202,7 +1230,7 @@ export default {
 
                 }).catch(err =>
                 {
-                    console.log(err);
+                    console.error(err);
                 })
 
             }
@@ -1353,11 +1381,9 @@ export default {
         requiredSkillPoints(shiftIndex)
         {
             let result1 = this.weekInformations[shiftIndex].traffic / 4;
-            console.log("impact1", this.weekInformations[shiftIndex].eventImpact);
-
             if (!this.weekInformations[shiftIndex].eventImpact) this.weekInformations[shiftIndex].eventImpact = 100;
+
             let result2 = result1 * (this.weekInformations[shiftIndex].eventImpact / 100);
-            console.log("impact2", this.weekInformations[shiftIndex].eventImpact);
 
             return parseInt(result2);
         }
@@ -1449,7 +1475,8 @@ export default {
 }
 </script>
 
-<style scoped>:deep(input)::-webkit-outer-spin-button,
+<style scoped>
+:deep(input)::-webkit-outer-spin-button,
 :deep(input)::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
@@ -1457,4 +1484,5 @@ export default {
 
 .slds-form-element__control .slds-radio {
     display: inline !important;
-}</style>
+}
+</style>

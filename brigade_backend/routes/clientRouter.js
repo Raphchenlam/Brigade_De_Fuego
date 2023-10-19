@@ -75,8 +75,8 @@ router.post("/",
     (req, res, next) =>
     {
         const user = req.user;
-        console.log("user",user)
-         if(!user){
+
+        if(!user){
              return next(new HttpError(401, "Authentification nécessaire"))
          }     
          if(!user.isAdmin || !user.isSuperAdmin){

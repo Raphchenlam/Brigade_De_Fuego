@@ -1,6 +1,11 @@
 <template>
     <!-- AFFICHER MESSAGE ERREUR QUAND BARCODE NE CORRESPOND A AUCUN EMPLOYE -->
     <v-row class="justify-center">
+        <div id="clock">
+            <p class="time">{{ time }}</p>
+        </div>
+    </v-row>
+    <v-row class="justify-center">
         <v-sheet width="70%" class="pa-16">
             <v-form @submit.prevent="punchEmployee" class="pa-10" validate-on="submit lazy" ref="punchForm">
                 <span v-if="isWrongBarcode" style="color: red;">{{wrongBarcodeMessage}}</span>
@@ -54,7 +59,8 @@ export default {
         OperationMenu,
         DarkRedButton
     },
-    data() {
+    data()
+    {
         return {
             operationSession: operationSession,
             punch: {
@@ -65,6 +71,8 @@ export default {
                 startTime: null,
                 endTime: null
             },
+            interval: null,
+            time: null,
             dialogPunchIn: false,
             dialogPunchOut: false,
             isWrongBarcode: false,
@@ -79,50 +87,61 @@ export default {
         async punchEmployee() {
 
             const validForm = await this.$refs.punchForm.validate();
-            if (!validForm.valid) {
+            if (!validForm.valid)
+            {
                 return;
             }
 
-            getLastPunchFromEmployee(this.punch.barcodeNumber).then(result => {
-                if (result.noShift || (result.startTime && result.endTime)) {
+            getLastPunchFromEmployee(this.punch.barcodeNumber).then(result =>
+            {
+                if (result.noShift || (result.startTime && result.endTime))
+                {
 
                     this.punch.dateIn = this.toLocale(new Date().toLocaleDateString('en-GB')).date.fullDate;
 
                     this.punch.startTime = new Date().toLocaleTimeString('en-GB');
 
-                    punchInEmployee(this.punch).then(result => {
-                        if (result) {
+                    punchInEmployee(this.punch).then(result =>
+                    {
+                        if (result)
+                        {
                             this.dialogPunchIn = true;
                             this.punch.barcodeNumber = null;
                             this.isWrongBarcode = false;
                             this.wrongBarcodeMessage = null;
                             setTimeout(this.closeAllDialog, 2500);
                         }
-                    }).catch(err => {
+                    }).catch(err =>
+                    {
                         console.error(err);
                         this.isWrongBarcode = true;
                         this.wrongBarcodeMessage = err.message;
                     });
                 }
-                if (result.startTime && !result.endTime) {
+                if (result.startTime && !result.endTime)
+                {
 
                     this.punch.dateIn = this.toLocale(result.dateIn).date.fullDate;
                     this.punch.startTime = result.startTime;
                     this.punch.dateOut = this.toLocale(new Date().toLocaleDateString('en-GB')).date.fullDate;
                     this.punch.endTime = new Date().toLocaleTimeString('en-GB');
 
-                    punchOutEmployee(this.punch).then(result => {
-                        if (result) {
+                    punchOutEmployee(this.punch).then(result =>
+                    {
+                        if (result)
+                        {
                             this.dialogPunchOut = true;
                             this.punch.barcodeNumber = null;
                             setTimeout(this.closeAllDialog, 2500);
                         }
-                    }).catch(err => {
+                    }).catch(err =>
+                    {
                         console.error(err);
                         alert(err.message);
                     });
                 }
-            }).catch(err => {
+            }).catch(err =>
+            {
                 console.error(err);
                 alert(err.message);
             });
@@ -141,20 +160,65 @@ export default {
         //         console.error("Invalid time string format.");
         //     }
         // },
-        closeAllDialog() {
+        closeAllDialog()
+        {
             this.dialogPunchIn = false;
             this.dialogPunchOut = false;
         }
     },
-    mounted() {
-        if (!operationSession.isActive) {
+    beforeDestroy()
+    {
+        // prevent memory leak
+        clearInterval(this.interval);
+    },
+    created()
+    {
+        // update the time every second
+        this.interval = setInterval(() =>
+        {
+            // Concise way to format time according to system locale.
+            // In my case this returns "3:48:00 am"
+            this.time = Intl.DateTimeFormat(navigator.language, {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            }).format()
+        }, 1000)
+    },
+    mounted()
+    {
+        if (!operationSession.isActive)
+        {
             this.$router.push('/operation');
         }
+        this.time = Intl.DateTimeFormat(navigator.language, {
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+        }).format()
     },
     computed: {
-        disablePunchButton() {
+        disablePunchButton()
+        {
             return !this.punch.barcodeNumber;
         }
     }
 }
 </script>
+
+<style scoped>
+#clock {
+    font-family: 'Share Tech Mono', monospace;
+    color: #000000;
+    text-align: center;
+    left: 50%;
+    color: #000000;
+    text-shadow: 0 0 20px rgb(230, 10, 10), 0 0 20px rgba(10, 175, 230, 0);
+
+    .time {
+        letter-spacing: 0.05em;
+        font-size: 50px;
+        padding: 5px 0;
+    }
+}
+</style>
