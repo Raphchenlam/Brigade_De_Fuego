@@ -1,4 +1,5 @@
 <template>
+    <!-- AFFICHER MESSAGE ERREUR QUAND BARCODE NE CORRESPOND A AUCUN EMPLOYE -->
     <v-row class="justify-center">
         <div id="clock">
             <p class="time">{{ time }}</p>
@@ -7,6 +8,7 @@
     <v-row class="justify-center">
         <v-sheet width="70%" class="pa-16">
             <v-form @submit.prevent="punchEmployee" class="pa-10" validate-on="submit lazy" ref="punchForm">
+                <span v-if="isWrongBarcode" style="color: red;">{{wrongBarcodeMessage}}</span>
                 <v-text-field label="Scanner votre carte employe" v-model.trim="punch.barcodeNumber" autofocus clearable
                     :rules="[rules.required, rules.validateBarcodeNumber]" maxlength="16" :counter="16" height="20px"
                     class="mb-16">
@@ -73,6 +75,8 @@ export default {
             time: null,
             dialogPunchIn: false,
             dialogPunchOut: false,
+            isWrongBarcode: false,
+            wrongBarcodeMessage: null,
             rules: {
                 required: value => !!value || 'Le champ est requis',
                 validateBarcodeNumber: value => validBarcodeNumber.test(value) || "Code barre invalide : doit être composé de 16 chiffres uniquement"
@@ -80,9 +84,7 @@ export default {
         }
     },
     methods: {
-        async punchEmployee()
-        {
-            console.log("PUNCH TIME");
+        async punchEmployee() {
 
             const validForm = await this.$refs.punchForm.validate();
             if (!validForm.valid)
@@ -96,29 +98,30 @@ export default {
                 {
 
                     this.punch.dateIn = this.toLocale(new Date().toLocaleDateString('en-GB')).date.fullDate;
-                    console.log(this.punch.dateIn);
 
                     this.punch.startTime = new Date().toLocaleTimeString('en-GB');
-                    console.log('this.punch.startTime', this.punch.startTime);
 
                     punchInEmployee(this.punch).then(result =>
                     {
                         if (result)
                         {
                             this.dialogPunchIn = true;
+                            this.punch.barcodeNumber = null;
+                            this.isWrongBarcode = false;
+                            this.wrongBarcodeMessage = null;
                             setTimeout(this.closeAllDialog, 2500);
                         }
                     }).catch(err =>
                     {
                         console.error(err);
-                        alert(err.message);
+                        this.isWrongBarcode = true;
+                        this.wrongBarcodeMessage = err.message;
                     });
                 }
                 if (result.startTime && !result.endTime)
                 {
 
                     this.punch.dateIn = this.toLocale(result.dateIn).date.fullDate;
-                    console.log(this.punch.dateIn);
                     this.punch.startTime = result.startTime;
                     this.punch.dateOut = this.toLocale(new Date().toLocaleDateString('en-GB')).date.fullDate;
                     this.punch.endTime = new Date().toLocaleTimeString('en-GB');
@@ -128,6 +131,7 @@ export default {
                         if (result)
                         {
                             this.dialogPunchOut = true;
+                            this.punch.barcodeNumber = null;
                             setTimeout(this.closeAllDialog, 2500);
                         }
                     }).catch(err =>
