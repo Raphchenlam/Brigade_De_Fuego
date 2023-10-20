@@ -561,7 +561,7 @@
                                     </CloseRedButton>
                                 </v-col>
                                 <v-col cols="11">
-                                    <p align="center">({{ employee.employeeNumber }}) {{ employee.name }}</p>
+                                    <p align="center"> {{ employee.role.substring(0,1) }} - ({{ employee.employeeNumber }}) {{ employee.name }}</p>
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -660,7 +660,7 @@
                                     </CloseRedButton>
                                 </v-col>
                                 <v-col cols="11">
-                                    <p align="center">({{ employee.employeeNumber }}) {{ employee.name }}</p>
+                                    <p align="center"> {{ employee.role.substring(0,1) }} - ({{ employee.employeeNumber }}) {{ employee.name }}</p>
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -1162,12 +1162,8 @@ export default {
             this.employeeHaveApprovedLeave = false;
             getApprovedLeavesByEmployeeNumberAndDate(employee.employeeNumber, formattedDate).then(allLeaves =>
             {
-                console.log("allLeaves",allLeaves)
-                console.log("allLeaves lenght",allLeaves.length)
-                
                 if (allLeaves.length > 0)
                 {
-                    console.log("ici44")
                     this.employeeHaveApprovedLeave = true;
                 }
                 this.dialogNewShift = true;
@@ -1442,10 +1438,8 @@ export default {
             {
                 resultRequired = this.weekInformations[shiftIndex].peopleReservation / 4;
                 if (this.weekInformations[shiftIndex].eventImpact == 100) this.weekInformations[shiftIndex].eventImpact = 100;
-                else resultRequired = resultRequired * (this.weekInformations[shiftIndex].eventImpact / 125);
+                else resultRequired = resultRequired * (this.weekInformations[shiftIndex].eventImpact / 130);
             }
-            
-
             this.weekInformations[shiftIndex].requiredSkillPoints = Math.ceil(parseFloat(resultRequired));
             return Math.ceil(parseFloat(resultRequired));
         }

@@ -257,7 +257,7 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
     } catch (error)
     {
         await client.query("ROLLBACK");
-        console.log("ERREUR", error)
+        console.error("ERREUR", error)
         throw new Error("L'insertion a échoué pour une raison inconnue");
     } finally
     {
@@ -302,7 +302,7 @@ const insertNewEmployeeSchedule = async (scheduledEmployeeList, clientParam) =>
     } catch (error)
     {
         await client.query("ROLLBACK");
-        console.log("ERREUR", error)
+        console.error("ERREUR", error)
         throw new Error("L'insertion a échoué pour une raison inconnue");
     } finally
     {
@@ -334,7 +334,7 @@ const updateSchedulePeriodsInformations = async (weekInformationsList, clientPar
     } catch (error)
     {
         await client.query("ROLLBACK");
-        console.log("ERREUR", error)
+        console.error("ERREUR", error)
         throw new Error("L'insertion a échoué pour une raison inconnue");
     } finally
     {
@@ -382,8 +382,6 @@ const updateEventForScheduleWeek = async (periodIdList, eventList, clientParam) 
                             eventList[i].events[j] &&
                             eventList[i].events[j] != null)
                         {
-                            console.log("eventList[i].idSchedulePeriod", eventList[i].idSchedulePeriod)
-                            console.log("eventList[i].events[j]", eventList[i].events[j])
                             const result = await pool.query(
                                 `INSERT INTO schedule_event (schedule_period_id, event_name)
                                 VALUES ($1,$2)`,
