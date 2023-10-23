@@ -74,12 +74,12 @@ router.post("/",
 
         const firstName = req.body.firstName;
         if (!firstName || firstName === "") return next(new HttpError(400, "Le champ prénom est requis"));
-        if (!regex.validName2.test(firstName)) return next(new HttpError(400, "Le champ prénom ne respect pas les critères d'acceptation"));
+        if (!regex.validName.test(firstName)) return next(new HttpError(400, "Le champ prénom ne respect pas les critères d'acceptation"));
         if (firstName.length > 255) return next(new HttpError(400, `Le champ prénom ne peux pas dépasser 255 caractères. Il y a ${firstName.length - 255} caractères de trop.`));
 
         const lastName = req.body.lastName;
         if (!lastName || lastName === "") return next(new HttpError(400, "Le champ nom de famille est requis"));
-        if (!regex.validName2.test(lastName)) return next(new HttpError(400, "Le champ nom de famille ne respect pas les critères d'acceptation"));
+        if (!regex.validName.test(lastName)) return next(new HttpError(400, "Le champ nom de famille ne respect pas les critères d'acceptation"));
         if (lastName.length > 255) return next(new HttpError(400, `Le champ nom de famille ne peux pas dépasser 255 caractères. Il y a ${lastName.length - 255} caractères de trop.`));
 
         const phoneNumber = req.body.phoneNumber;

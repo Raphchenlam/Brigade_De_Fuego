@@ -220,7 +220,6 @@ export default {
                 })
             }
             else {
-                console.log("RESET ICI")
                 this.updatingEmployee = {};
             }
         },
@@ -288,7 +287,6 @@ export default {
     },
     watch: {
         selectedRole() {
-            console.log("ROLE", this.updatingEmployee.role);
             this.updatingEmployee.role = this.selectedRole;
             if (this.updatingEmployee.role == "Gestionnaire") {
                 this.updatingEmployee.skillPoints = null;

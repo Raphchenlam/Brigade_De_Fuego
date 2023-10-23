@@ -15,16 +15,16 @@ const getAssignationsByDate = async (assignationDate) => {
         WHERE ass.date = $1`, [assignationDate]
     );
     return result.rows.map(row => {
-        
+
         const assignation = {
-            id:row.id,
+            id: row.id,
             date: formatDate(row.date),
             shift: row.shift,
-            tableNumber: row.table_number, 
-            employeeNumber: row.employee_number, 
-            employeeFirstName: row.first_name, 
+            tableNumber: row.table_number,
+            employeeNumber: row.employee_number,
+            employeeFirstName: row.first_name,
             employeeLastName: row.last_name,
-            employeeColor: row.color_hexcode, 
+            employeeColor: row.color_hexcode,
             isActive: row.assignation_is_active
         };
         return assignation;
@@ -32,19 +32,51 @@ const getAssignationsByDate = async (assignationDate) => {
 };
 exports.getAssignationsByDate = getAssignationsByDate;
 
-const insertAssignation = async (assignation) =>{
-    const result = await pool.query(
-        `INSERT INTO assignation (employee_number, table_number, date, shift, assignation_is_active)
-            VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-            [assignation.employeeNumber, assignation.tableNumber, assignation.date, assignation.shift, assignation.isActive]
-    );
-    const row = result.rows[0];
+const insertAssignation = async (assignations) => {
 
-    if (row) {
-        return row.id;
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+        let assignationList = [];
+        const previousAssignations = await getAssignationsByDate(assignations[0].date)
+
+        if (previousAssignations.length>0) {
+            await deleteAssignationsByDateAndShift(assignations[0].date, assignations[0].shift);
+        }
+
+        for (const assignation of assignations) {
+                const result = await pool.query(
+                    `INSERT INTO assignation (employee_number, table_number, date, shift, assignation_is_active)
+                    VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+                    [assignation.employeeNumber, assignation.tableNumber, assignation.date, assignation.shift, assignation.isActive]
+                );
+                const row = result.rows[0];
+
+                if (row) {
+                    const newAssignation = {
+                        id: row.id,
+                        employeeNumber: row.employeeNumber,
+                        tableNumber: row.tableNumber,
+                        date: row.date,
+                        shift: row.shift,
+                        isActive: row.isActive
+                    }
+                    assignationList.push(newAssignation)
+                }
+        };
+        client.query('COMMIT');
+
+        return assignationList;
+
+    } catch (error) {
+        await client.query("ROLLBACK");
+        console.error(error);
+        throw error;
+    } finally {
+        client.release();
     }
 
-    throw new Error("L'insertion a échoué pour une raison inconnue"); 
 };
 exports.insertAssignation = insertAssignation;
 
@@ -54,9 +86,21 @@ const updateAssignation = async (newAssignation) => {
         WHERE id = $1`,
         [newAssignation.id, newAssignation.employeeNumber, newAssignation.tableNumber, newAssignation.date, newAssignation.shift, newAssignation.isActive]
     );
-    if (result.rowCount === 0){
+    if (result.rowCount === 0) {
         return undefined
     }
     return getAssignationsByDate(newAssignation.date);
 };
 exports.updateAssignation = updateAssignation;
+
+const deleteAssignationsByDateAndShift = async (selectedDate, shift) => {
+    const result = await pool.query(
+        `DELETE FROM assignation WHERE date = $1 AND shift = $2`,
+        [selectedDate, shift]
+    )
+    if(result.rowCount>0){
+        console.info("Suppression réussie")
+        return result.rowCount
+    }
+};
+exports.deleteAssignationsByDateAndShift=deleteAssignationsByDateAndShift;

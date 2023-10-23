@@ -84,6 +84,31 @@ const getReservationByInformations = async (clientId, date, startTime) => {
 exports.getReservationByInformations = getReservationByInformations;
 
 
+const getExpectedPeopleByDateAndShiftName = async (date, shiftName) => {
+
+    let result;
+    if (shiftName == "Midi") {
+        result = await pool.query(
+            `SELECT SUM(people_count)
+            FROM public.reservation
+            WHERE date = $1
+            AND start_time < '16:00'`,
+            [date]);
+    } else {
+        result = await pool.query(
+            `SELECT SUM(people_count)
+            FROM public.reservation
+            WHERE date = $1
+            AND start_time >= '16:00'`,
+            [date]);
+    }
+    let peopleCount = result.rows[0].sum;
+    if (!peopleCount) peopleCount = 0;
+    return peopleCount;
+};
+exports.getExpectedPeopleByDateAndShiftName = getExpectedPeopleByDateAndShiftName;
+
+
 const insertReservation = async (reservationInfos) => {
     const result = await pool.query(
         `INSERT INTO reservation
@@ -214,3 +239,15 @@ const getReservationListByDates = async (startDate, endDate) => {
     });
 };
 exports.getReservationListByDates = getReservationListByDates;
+
+const updateTableOnReservationById = async(id, tableNumber) => {
+    const result = await pool.query(
+        `UPDATE reservation SET table_number = $2 WHERE id = $1`,
+        [id, tableNumber]
+    );
+    if(result.rowCount === 0) {
+        return undefined
+    }
+    return getReservationById(id);
+};
+exports.updateTableOnReservationById=updateTableOnReservationById;

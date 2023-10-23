@@ -28,9 +28,6 @@ export default {
       formatPhoneNumber: this.formatPhoneNumber,
       spliceDate: this.spliceDate,
       isUserAuthorized: this.isUserAuthorized,
-      loadReservationInformations: this.loadReservationInformations,
-      // selectedReservationId: computed(()=>this.selectedReservationId),
-      // test: this.test,
       toLocale: this.toLocale
 
     }
@@ -43,13 +40,10 @@ export default {
     return {
       operationSession: operationSession,
       userSession: userSession,
-      // selectedReservationId: null
     }
   },
   methods: {
-    // loadReservationInformations(receivedReservationId) {
-    //   this.selectedReservationId = receivedReservationId;
-    // },
+    
     capitalizeWords(inputString) {
       if (inputString) {
         const words = inputString

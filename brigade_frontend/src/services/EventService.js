@@ -76,7 +76,7 @@ export async function fetchAllEventType() {
       throw await createServiceError(response);
     }
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 
 };

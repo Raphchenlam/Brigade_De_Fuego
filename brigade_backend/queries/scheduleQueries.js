@@ -254,11 +254,10 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
             };
             return schedulePeriodObj;
         });
-
     } catch (error)
     {
         await client.query("ROLLBACK");
-        console.log("ERREUR", error)
+        console.error("ERREUR", error)
         throw new Error("L'insertion a échoué pour une raison inconnue");
     } finally
     {
@@ -268,43 +267,78 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
 
 exports.insertNewScheduleWeek = insertNewScheduleWeek;
 
-const insertNewEmployeeSchedule = async (scheduledEmployeeList) =>
+const insertNewEmployeeSchedule = async (scheduledEmployeeList, clientParam) =>
 {
-    if (scheduledEmployeeList.length > 0)
+    const client = clientParam || await pool.connect();
+
+    if (!clientParam)
     {
-        for (i = 0; i < scheduledEmployeeList.length; i++)
+        await client.query('BEGIN');
+    }
+    try
+    {
+        if (scheduledEmployeeList.length > 0)
         {
-            for (j = 0; j < 14; j++)
+            for (i = 0; i < scheduledEmployeeList.length; i++)
             {
-                if (
-                    scheduledEmployeeList[i] &&
-                    scheduledEmployeeList[i].schedules &&
-                    scheduledEmployeeList[i].schedules[j].startTime != null
-                )
+                for (j = 0; j < 14; j++)
                 {
-                    const result = await pool.query(
-                        `INSERT INTO employee_schedule (employee_number, schedule_period_id, start_time, end_time)
+                    if (
+                        scheduledEmployeeList[i] &&
+                        scheduledEmployeeList[i].schedules &&
+                        scheduledEmployeeList[i].schedules[j].startTime != null
+                    )
+                    {
+                        const result = await pool.query(
+                            `INSERT INTO employee_schedule (employee_number, schedule_period_id, start_time, end_time)
                 VALUES ($1,$2,$3,$4)`,
-                        [scheduledEmployeeList[i].employeeNumber, scheduledEmployeeList[i].schedules[j].id, scheduledEmployeeList[i].schedules[j].startTime, scheduledEmployeeList[i].schedules[j].endTime]
-                    );
+                            [scheduledEmployeeList[i].employeeNumber, scheduledEmployeeList[i].schedules[j].id, scheduledEmployeeList[i].schedules[j].startTime, scheduledEmployeeList[i].schedules[j].endTime]
+                        );
+                    }
                 }
             }
         }
+        await client.query("COMMIT");
+    } catch (error)
+    {
+        await client.query("ROLLBACK");
+        console.error("ERREUR", error)
+        throw new Error("L'insertion a échoué pour une raison inconnue");
+    } finally
+    {
+        client.release();
     }
 };
 exports.insertNewEmployeeSchedule = insertNewEmployeeSchedule;
 
 
-const updateSchedulePeriodsInformations = async (weekInformationsList) =>
+const updateSchedulePeriodsInformations = async (weekInformationsList, clientParam) =>
 {
-    for (i = 0; i < weekInformationsList.length; i++)
+    const client = clientParam || await pool.connect();
+    if (!clientParam)
     {
-        const result = await pool.query(
-            `UPDATE schedule_period
-            SET average_traffic = $2, average_cost_by_client = $3
+        await client.query('BEGIN');
+    }
+    try
+    {
+        for (i = 0; i < weekInformationsList.length; i++)
+        {
+            const result = await pool.query(
+                `UPDATE schedule_period
+            SET average_traffic = $2, average_cost_by_client = $3, scheduled_skill_points = $4
                 WHERE id = $1`,
-            [weekInformationsList[i].id, weekInformationsList[i].traffic, weekInformationsList[i].averageCostByClient]
-        );
+                [weekInformationsList[i].id, weekInformationsList[i].traffic, weekInformationsList[i].averageCostByClient,weekInformationsList[i].scheduledSkillPoints]
+            );
+        }
+        await client.query("COMMIT");
+    } catch (error)
+    {
+        await client.query("ROLLBACK");
+        console.error("ERREUR", error)
+        throw new Error("L'insertion a échoué pour une raison inconnue");
+    } finally
+    {
+        client.release();
     }
 };
 exports.updateSchedulePeriodsInformations = updateSchedulePeriodsInformations;
@@ -348,8 +382,6 @@ const updateEventForScheduleWeek = async (periodIdList, eventList, clientParam) 
                             eventList[i].events[j] &&
                             eventList[i].events[j] != null)
                         {
-                            console.log("eventList[i].idSchedulePeriod", eventList[i].idSchedulePeriod)
-                            console.log("eventList[i].events[j]", eventList[i].events[j])
                             const result = await pool.query(
                                 `INSERT INTO schedule_event (schedule_period_id, event_name)
                                 VALUES ($1,$2)`,

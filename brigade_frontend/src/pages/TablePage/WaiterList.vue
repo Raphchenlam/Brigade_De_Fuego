@@ -49,7 +49,7 @@
                         :textbutton='inColorMode ? "Annuler" : "Changer les couleurs"'></BlackButton>
                 </v-col>
                 <v-col>
-                    <BlackButton v-if="inEditionMode" @click="" class="ma-6" :textbutton='"Enregistrer les sections"'>
+                    <BlackButton v-if="inEditionMode" @click="createAssignations()" class="ma-6" :textbutton='"Enregistrer les sections"'>
                     </BlackButton>
                     <BlackButton v-if="inColorMode" @click="updatecolor()" class="ma-6"
                         :textbutton='"Enregistrer les couleurs"'></BlackButton>
@@ -69,7 +69,7 @@ import BlackButton from "../../components/Reusable/BlackButton.vue";
 
 
 export default {
-    inject: ['selectedDate', 'selectedShift', 'inEditionMode', 'toggleEditionMode', 'selectWaiter','selectedWaiter'],
+    inject: ['selectedDate', 'selectedShift', 'inEditionMode', 'toggleEditionMode', 'selectWaiter','selectedWaiter','buildAssignations','refreshPageView'],
     components: {
         BlackButton
     },
@@ -98,14 +98,19 @@ export default {
                     this.waitersList.push(newWaiter);
                 });
             })
+        }, 
+        createAssignations(){
+            this.buildAssignations();
         },
         updatecolor() {
             this.waitersList.forEach((employee) => {
                 updateEmployeeColor(employee.employeeNumber, employee.waiterColor)
             })
+            this.refreshPageView();
             this.inColorMode = false;
             //**** RESET selectedWaiter TO NULL ****//
             this.selectWaiter(0,0);
+
         },
         openColorPicker(waiter) {
             if (this.inColorMode) {

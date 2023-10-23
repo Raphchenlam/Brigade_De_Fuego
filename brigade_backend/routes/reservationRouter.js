@@ -43,6 +43,19 @@ router.get("/",
     }
 );
 
+router.get("/expectedpeople/:date/:shiftName",
+    (req, res, next) => {
+        const date = req.params.date;
+        const shiftName = req.params.shiftName;
+        reservationQueries.getExpectedPeopleByDateAndShiftName(date, shiftName).then((peopleCount) => {
+            res.json(peopleCount);
+        })
+        .catch((err) => {
+            return next(err);
+        });
+    }
+);
+
 router.get("/:id",
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
@@ -86,6 +99,7 @@ router.get("/:startDate/:endDate",
             });
     }
 );
+
 
 router.post("/",
     passport.authenticate('basic', { session: false }),
@@ -157,6 +171,31 @@ router.post("/",
 
     }
 );
+router.put('/:id/table/:tableNumber', (req, res, next) => {
+    const user = req.user;
+
+    // if (!user || !user.isAdmin) {
+    //   return next(new HttpError(403, "Droit administrateur requis"));
+    // }
+
+    const id = req.params.id;
+    if (!id || id === '') {
+        return next(new HttpError(400, 'Le paramètre ID est requis'));
+    }
+    const tableNumber = req.params.tableNumber;
+    if (!tableNumber || tableNumber === '') {
+        return next(new HttpError(400, 'Le numéro de table est requis'));
+    }
+
+    reservationQueries.updateTableOnReservationById(id, tableNumber).then(result => {
+        if (!result) {
+            return next(new HttpError(404, `La réservation est introuvable`));
+        }
+        res.json(result);
+    }).catch(err => {
+        return next(err);
+    })
+});
 
 
 router.put("/",

@@ -249,7 +249,6 @@ export default {
             {
                 getleavesByEmployeeNumber(this.employeeNumber).then(allLeaves =>
                 {
-                    console.log("allLeaves",allLeaves)
                     allLeaves.forEach(leave =>
                     {
                         //if (!leave.nbPending)
@@ -404,8 +403,6 @@ export default {
             {
                 for (var checkbox in checkboxList)
                 {
-                    console.log("watch", checkbox, checkboxList[checkbox])
-
                     if (checkboxList[checkbox] == false && checkbox != "all")
                     {
                         this.checkedBoxes.all = false;

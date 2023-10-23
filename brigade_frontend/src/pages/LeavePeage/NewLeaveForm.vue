@@ -122,7 +122,7 @@ export default {
                 });
             }).catch(err =>
             {
-                console.log(err);
+                console.error(err);
             });
         },
         createNewLeave()
@@ -137,7 +137,6 @@ export default {
 
             createLeave(newLeave).then(result =>
             {
-                console.log("result", result)
                 this.dialogOKLeave = true;
                 this.loadLeaves();
                 setTimeout(this.closeDialogs, 2000)
@@ -157,9 +156,6 @@ export default {
             var dayOfWeek = futureDate.getDay();
             var daysToAdd = 1 - dayOfWeek;
             futureDate.setDate(futureDate.getDate() + daysToAdd);
-            console.log("date", date);
-            console.log("today", today);
-            console.log("futureDate", futureDate);
             if (date.getFullYear() < futureDate.getFullYear())
             {
                 return true;
