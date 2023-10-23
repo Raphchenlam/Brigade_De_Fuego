@@ -2,11 +2,26 @@ const pool = require('./DBPool');
 const dATObj = require('../../REGEX/dateAndTimeObjectifier');
 
 // DATES OKAY HERE 
+const constructReservation = function (reservationObject) {
+    return {
+        id: reservationObject.id,
+        tableNumber: reservationObject.table_number,
+        clientId: reservationObject.client_id,
+        statusCode: reservationObject.status_code,
+        peopleCount: reservationObject.people_count,
+        date: dATObj.toLocale(reservationObject.date).fullDate,
+        startTime: reservationObject.start_time,
+        endTime: reservationObject.end_time,
+        mention: reservationObject.mention,
+        hasMinor: reservationObject.has_minor,
+        takenBy: reservationObject.taken_by
+    }
+}
 
 const getReservationById = async (id) => {
     const result = await pool.query(
         `SELECT 
-            r.id AS res_id, r.table_number, r.client_id, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by, r.status_code,
+            r.id AS id, r.table_number, r.client_id, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by, r.status_code,
             c.first_name AS client_first_name, c.last_name AS client_last_name, c.phone_number AS client_phone_number, c.allergy, c.is_favorite, c.is_blacklisted,
             rs.name
                 FROM reservation AS r
@@ -18,17 +33,10 @@ const getReservationById = async (id) => {
     const row = result.rows[0];
 
     if (row) {
-        const reservation = {
-            id: row.res_id,
-            tableNumber: row.table_number,
-            clientId: row.client_id,
-            peopleCount: row.people_count,
-            date: dATObj.toLocale(row.date).fullDate,
-            startTime: row.start_time,
-            endTime: row.end_time,
-            mention: row.mention,
-            hasMinor: row.has_minor,
-            takenBy: row.taken_by,
+
+        const reservation = constructReservation(row);
+
+        const reservationFinal = {
             firstName: row.client_first_name,
             lastName: row.client_last_name,
             phoneNumber: row.client_phone_number,
@@ -36,10 +44,10 @@ const getReservationById = async (id) => {
             isFavorite: row.is_favorite,
             isBlacklisted: row.is_blacklisted,
             status: row.name,
-            statusCode: row.status_code
+            ...reservation
         };
 
-        return reservation;
+        return reservationFinal;
     }
 
     return undefined;
@@ -65,11 +73,10 @@ const getReservationByInformations = async (clientId, date, startTime) => {
             [clientId, date]);
     }
 
-    const reservation = result.rows[0];
+    const row = result.rows[0];
 
-    if (reservation) {
-        reservation.date = dATObj.toLocale(reservation.date).fullDate;
-        return reservation;
+    if (row) {
+        return constructReservation(row);
     }
 
     return undefined;
@@ -96,24 +103,7 @@ const insertReservation = async (reservationInfos) => {
 
     const row = result.rows[0];
 
-    if (row) {
-
-        const reservation = {
-            id: row.id,
-            tableNumber: row.table_number,
-            clientId: row.client_id,
-            statusCode: row.status_code,
-            peopleCount: row.people_count,
-            date: dATObj.toLocale(row.date).fullDate,
-            startTime: row.start_time,
-            endTime: row.end_time,
-            mention: row.mention,
-            hasMinor: row.has_minor,
-            takenBy: row.taken_by
-        };
-
-        return reservation;
-    }
+    if (row) return constructReservation(row);
 
     throw new Error("L'insertion a échoué pour une raison inconnue");
 };
@@ -122,85 +112,64 @@ exports.insertReservation = insertReservation;
 
 const updateReservation = async (newReservationInfos) => {
 
+    // TODO:  Tu es rendu ici, créé la requête avant de la lancer a la bd, bonne chance
     // TODO:  Faire la requête a la bd
 
-
-    // console.log("updateReservation call to DB used");
-
+    // console.log(newReservationInfos);
 
     let UPDATEquery = `UPDATE reservation `;
     let newInformation = [];
     let changedFields = [];
     let counter = 1;
 
-    if (newReservationInfos.date)          changedFields.push(` date = $${counter}`),            console.log(`newReservationInfos.date : \t ${changedFields[counter - 1]} => ${newReservationInfos.date}`),           newInformation.push(newReservationInfos.date), counter++;
-    if (newReservationInfos.startTime)     changedFields.push(` start_time = $${counter}`),      console.log(`newReservationInfos.startTime : ${changedFields[counter - 1]} => ${newReservationInfos.startTime}`),     newInformation.push(newReservationInfos.startTime), counter++;
-    if (newReservationInfos.endTime)       changedFields.push(` end_time = $${counter}`),        console.log(`newReservationInfos.endTime : \t ${changedFields[counter - 1]} => ${newReservationInfos.endTime}`),       newInformation.push(newReservationInfos.endTime), counter++;
-    if (newReservationInfos.tableNumber)   changedFields.push(` table_number = $${counter}`),    console.log(`newReservationInfos.tableNumber : ${changedFields[counter - 1]} => ${newReservationInfos.tableNumber}`),   newInformation.push(newReservationInfos.tableNumber), counter++;
-    if (newReservationInfos.statusCode)    changedFields.push(` status_code = $${counter}`),     console.log(`newReservationInfos.statusCode : ${changedFields[counter - 1]} => ${newReservationInfos.statusCode}`),    newInformation.push(newReservationInfos.statusCode), counter++;
-    if (newReservationInfos.peopleCount)   changedFields.push(` people_count = $${counter}`),    console.log(`newReservationInfos.peopleCount : ${changedFields[counter - 1]} => ${newReservationInfos.peopleCount}`),   newInformation.push(newReservationInfos.peopleCount), counter++;
-    if (newReservationInfos.mention)       changedFields.push(` mention = $${counter}`),         console.log(`newReservationInfos.mention : ${changedFields[counter - 1]} => ${newReservationInfos.mention}`),        newInformation.push(newReservationInfos.mention), counter++;
-    if (newReservationInfos.hasMinor)      changedFields.push(` has_minor = $${counter}`),       console.log(`newReservationInfos.hasMinor : ${changedFields[counter - 1]} => ${newReservationInfos.hasMinor}`),      newInformation.push(newReservationInfos.hasMinor), counter++;
+    if (newReservationInfos.date) changedFields.push(`date = $${counter}`), newInformation.push(newReservationInfos.date), counter++;
+    if (newReservationInfos.startTime) changedFields.push(`start_time = $${counter}`), newInformation.push(newReservationInfos.startTime), counter++;
+    if (newReservationInfos.endTime) changedFields.push(`end_time = $${counter}`), newInformation.push(newReservationInfos.endTime), counter++;
+    if (newReservationInfos.tableNumber) changedFields.push(`table_number = $${counter}`), newInformation.push(newReservationInfos.tableNumber), counter++;
+    if (newReservationInfos.statusCode) changedFields.push(`status_code = $${counter}`), newInformation.push(newReservationInfos.statusCode), counter++;
+    if (newReservationInfos.peopleCount) changedFields.push(`people_count = $${counter}`), newInformation.push(newReservationInfos.peopleCount), counter++;
+    if (newReservationInfos.mention) changedFields.push(`mention = $${counter}`), newInformation.push(newReservationInfos.mention), counter++;
+    if (newReservationInfos.hasMinor === false || newReservationInfos.hasMinor === true) changedFields.push(`has_minor = $${counter}`), newInformation.push(newReservationInfos.hasMinor), counter++;
 
-    // // if (checkboxes.pendingModified) changedFields.push(`leave.status = 'PendingModified'`);
 
-    // if (changedFields.length > 0) 
-    // { //TODO there's a braquette at the end that goes with this one
-    //     UPDATEquery += `SET ${changedFields.join(', ')}`;
-    //     UPDATEquery += `WHERE reservation.id = $${counter}`;
-    //     newInformation.push(newReservationInfos.id);
-    // TODO: uncomment to here, not further
+    if (changedFields.length > 0) {
+        UPDATEquery += `SET ${changedFields.join(', ')}`;
+        UPDATEquery += ` WHERE reservation.id = $${counter} RETURNING *`;
+        newInformation.push(newReservationInfos.id);
 
-    //     if (checkboxes.coming && checkboxes.passed) {
-    //         // Aucune condition WHERE nécessaire si les deux cases sont cochées
-    //     } else if (checkboxes.coming) {
-    //         query += ` AND leave.start_date >= CURRENT_DATE`;
-    //     } else if (checkboxes.passed) {
-    //         query += ` AND leave.start_date < CURRENT_DATE`;
-    //     }
-    // } else {
-    //     if (checkboxes.coming && checkboxes.passed) {
-    //         // Aucune condition WHERE nécessaire si les deux cases sont cochées
-    //     } else if (checkboxes.coming) {
-    //         query += ` WHERE leave.start_date >= CURRENT_DATE`;
-    //     } else if (checkboxes.passed) {
-    //         query += ` WHERE leave.start_date < CURRENT_DATE`;
-    //     }
-    // }
+        // console.log(" ");
+        // console.log(UPDATEquery);
+        // console.log(newInformation);
+        // console.log(" ");
 
-    // query += ` ORDER BY leave.start_date`;
+        const result = await pool.query(UPDATEquery, newInformation);
 
-    // let result;
+        const row = result.rows[0];
+        if (row) {
+            console.log("row : ");
+            console.log(row);
 
-    // result = await pool.query(query);
+            const reservation = constructReservation(row);
 
-    // if (!result) return [];
+            const reservationFinal = {
+                ...reservation,
+                clientFirstname: row.client_first_name,
+                clientLastname: row.client_last_name,
+                clientPhoneNumber: row.client_phone_number,
+                clientAllergy: row.allergy,
+                clientIsFavorite: row.is_favorite,
+                clientIsBlacklisted: row.is_blacklisted,
+                employeeBarcodeNumber: row.employee_barcode_number,
+                employeeFirstname: row.employee_first_name,
+                employeeLastname: row.employee_last_name,
+                employeeRole: row.employee_role
+            };
 
-    // const resultNbPending = await pool.query(`SELECT COUNT(*) AS nb_pending
-    //                 FROM leave
-    //                 JOIN employee ON employee.employee_number = leave.employee_number
-    //                 WHERE leave.status = 'Pending' OR leave.status = 'PendingModified'`)
+            return reservationFinal;
+        }
+    }
 
-    // nbPending = resultNbPending.rows[0].nb_pending;
-
-    // let resultFinal = result.rows.map(row => {
-    //     const leave = {
-    //         id: row.id,
-    //         employeeNumber: row.employee_number,
-    //         employeeName: row.first_name + " " + row.last_name,
-    //         startDate: row.start_date,
-    //         endDate: row.end_date,
-    //         category: row.category,
-    //         reason: row.reason,
-    //         status: row.status
-    //     };
-    //     return leave;
-    // });
-    // resultFinal.push({ nbPending: parseInt(nbPending) });
-    // return resultFinal;
-    // } // TODO: remove or comment this braquette
-    return "updateReservation call to DB used";
-
+    return undefined;
 };
 exports.updateReservation = updateReservation;
 
@@ -211,7 +180,7 @@ const getReservationListByDates = async (startDate, endDate) => {
 
     results = await pool.query(
         `SELECT 
-            r.id AS res_id, r.table_number, r.client_id, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by,
+            r.id AS id, r.table_number, r.client_id, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by,
             c.first_name AS client_first_name, c.last_name AS client_last_name, c.phone_number AS client_phone_number, c.allergy, c.is_favorite, c.is_blacklisted,
             e.barcode_number AS employee_barcode_number, e.first_name AS employee_first_name, e.last_name AS employee_last_name, e.role AS employee_role
             FROM reservation AS r
@@ -223,17 +192,11 @@ const getReservationListByDates = async (startDate, endDate) => {
         [queryStartDate, queryEndDate]);
 
     return results.rows.map((row) => {
-        const reservation = {
-            id: row.res_id,
-            tableNumber: row.table_number,
-            clientId: row.client_id,
-            peopleCount: row.people_count,
-            date: dATObj.toLocale(row.date).fullDate,
-            startTime: row.start_time,
-            endTime: row.end_time,
-            mention: row.mention,
-            hasMinor: row.has_minor,
-            takenBy: row.taken_by,
+
+        const reservation = constructReservation(row);
+
+        const reservationFinal = {
+            ...reservation,
             clientFirstname: row.client_first_name,
             clientLastname: row.client_last_name,
             clientPhoneNumber: row.client_phone_number,
@@ -243,11 +206,11 @@ const getReservationListByDates = async (startDate, endDate) => {
             employeeBarcodeNumber: row.employee_barcode_number,
             employeeFirstname: row.employee_first_name,
             employeeLastname: row.employee_last_name,
-            employeeRole: row.employee_role,
+            employeeRole: row.employee_role
 
         };
 
-        return reservation;
+        return reservationFinal;
     });
 };
 exports.getReservationListByDates = getReservationListByDates;
