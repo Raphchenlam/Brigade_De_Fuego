@@ -1,4 +1,4 @@
-// import session from "./session";
+ import session from "../sessions/OperationSession.js";
 
 class ServiceError extends Error {
     constructor(status, message) {
@@ -91,4 +91,19 @@ export async function updateTableOnReservationById(id, tableNumber) {
         console.log(JSON.stringify(response));
         throw await createServiceError(response);
       }
+export async function getHowManyPeopleByDateAndShiftName(date, shiftName) {
+    const response = await fetch(`/api/reservation/expectedpeople/${date}/${shiftName}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            // ...session.getAuthHeaders()
+        },
+    });
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        console.log(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
 }

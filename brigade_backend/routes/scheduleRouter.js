@@ -136,6 +136,35 @@ router.get('/:scheduleweekid/employee',
         });
     });
 
+    
+    router.get('/:scheduleweekid/event',
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) =>
+    {
+        const employee = req.user;
+
+        if (!employee) return next(new HttpError(401, "Connexion requise"));
+        if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
+        const scheduleWeekId = req.params.scheduleweekid;
+
+        if (!scheduleWeekId || scheduleWeekId == "") { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
+        if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
+
+        scheduleQueries.selectAllEventScheduleByWeekId(scheduleWeekId).then(result =>
+        {
+            let eventList = [];
+            result.forEach(element =>
+            {
+                eventList.push(element)
+            });
+
+            res.json(eventList);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
+
 router.get('/:date/:shift',
     // passport.authenticate('basic', { session: false }),
     (req, res, next) => {
@@ -169,33 +198,6 @@ router.get('/:date/:shift',
     });
 
 
-    router.get('/:scheduleweekid/event',
-    passport.authenticate('basic', { session: false }),
-    (req, res, next) =>
-    {
-        const employee = req.user;
-
-        if (!employee) return next(new HttpError(401, "Connexion requise"));
-        if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
-        const scheduleWeekId = req.params.scheduleweekid;
-
-        if (!scheduleWeekId || scheduleWeekId == "") { return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`)); }
-        if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
-
-        scheduleQueries.selectAllEventScheduleByWeekId(scheduleWeekId).then(result =>
-        {
-            let eventList = [];
-            result.forEach(element =>
-            {
-                eventList.push(element)
-            });
-
-            res.json(eventList);
-        }).catch(err =>
-        {
-            return next(err);
-        });
-    });
 
 
 
@@ -206,15 +208,11 @@ router.put("/",
         const isPublished = req.body.isPublished;
         const isModified = req.body.isModified;
         const weekInformationsList = req.body.weekInformations;
-
         const employee = req.user;
         if (!employee) return next(new HttpError(401, "Connexion requise"));
         if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
 
         let body = req.body;
-        console.log("body", body)
-        console.log("body event", body.weekInformations[0].events)
-
         const scheduleWeekId = body.scheduleWeekId;
         if (!scheduleWeekId || scheduleWeekId == "") return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`));
         if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
@@ -235,8 +233,6 @@ router.put("/",
                 eventList.push(newEvent);
             }
         })
-        console.log("eventList", eventList)
-
         scheduleQueries.selectAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(result =>
         {
             let periodIdList = [];
@@ -286,11 +282,8 @@ router.put("/",
                                     Promise.all(emailPromises)
                                         .then((emailList) =>
                                         {
-                                            console.log("emailList", emailList);
-                                            console.log("dateString", dateString);
                                             emailList = ["m.marchand22@hotmail.com"] // A ENLEVER POUR LENVOYER EN PRODDUCTION!!!!
-                                            //let emailDone = sendEmailSchedule(emailList, isModified, dateString);
-                                            let emailDone = true;
+                                            let emailDone = sendEmailSchedule(emailList, isModified, dateString);
                                             if (emailDone) { res.status(200).json("Mise a jour reussi") };
                                         })
                                         .catch((error) =>

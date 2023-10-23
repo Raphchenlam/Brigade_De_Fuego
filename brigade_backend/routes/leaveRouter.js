@@ -97,6 +97,10 @@ router.get('/employee/:employeeNumber',
     (req, res, next) =>
     {
         const employeeNumberToGet = req.params.employeeNumber;
+        if (!employeeNumberToGet)
+        {
+            return next(new HttpError(401, "Un employé doit être fournis dans les paramètres"));
+        };
         const user = req.user;
         if (!user)
         {
@@ -107,6 +111,39 @@ router.get('/employee/:employeeNumber',
             if (!user.isAdmin) return next(new HttpError(403, "Vous ne pouvez pas obtenir les congés d'un autre employé"));
         };
         leaveQueries.selectLeavesByEmployeeNumber(employeeNumberToGet).then(leaves =>
+        {
+            res.json(leaves);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
+
+    router.get('/employee/:employeeNumber/:date',
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) =>
+    {
+        const employeeNumberToGet = req.params.employeeNumber;
+        if (!employeeNumberToGet)
+        {
+            return next(new HttpError(401, "Un employé doit être fournis dans les paramètres"));
+        };
+        const dateToGet = req.params.date;
+        if (!dateToGet)
+        {
+            return next(new HttpError(401, "Une date doit être fournis dans les paramètres"));
+        };
+
+        const user = req.user;
+        if (!user)
+        {
+            return next(new HttpError(401, "Vous devez etre connecté"));
+        };
+        if (user.employeeNumber != employeeNumberToGet)
+        {
+            if (!user.isAdmin) return next(new HttpError(403, "Vous ne pouvez pas obtenir les congés d'un autre employé"));
+        };
+        leaveQueries.selectApprovedLeavesByEmployeeNumberAndDate(employeeNumberToGet,dateToGet).then(leaves =>
         {
             res.json(leaves);
         }).catch(err =>

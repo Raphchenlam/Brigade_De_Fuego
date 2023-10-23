@@ -40,6 +40,19 @@ router.get("/",
     }
 );
 
+router.get("/expectedpeople/:date/:shiftName",
+    (req, res, next) => {
+        const date = req.params.date;
+        const shiftName = req.params.shiftName;
+        reservationQueries.getExpectedPeopleByDateAndShiftName(date, shiftName).then((peopleCount) => {
+            res.json(peopleCount);
+        })
+        .catch((err) => {
+            return next(err);
+        });
+    }
+);
+
 router.get("/:id",
     (req, res, next) => {
         const id = req.params.id;
@@ -81,6 +94,7 @@ router.get("/:startDate/:endDate",
             });
     }
 );
+
 
 router.post("/",
     (req, res, next) => {

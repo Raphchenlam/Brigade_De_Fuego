@@ -52,10 +52,10 @@ const selectAllFilteredLeaves = async (checkboxes) =>
             // Aucune condition WHERE nécessaire si les deux cases sont cochées
         } else if (checkboxes.coming)
         {
-            query += ` AND leave.start_date >= CURRENT_DATE`;
+            query += ` AND (leave.start_date >= CURRENT_DATE OR leave.end_date >= CURRENT_DATE)`;
         } else if (checkboxes.passed)
         {
-            query += ` AND leave.start_date < CURRENT_DATE`;
+            query += ` AND (leave.start_date < CURRENT_DATE OR leave.end_date >= CURRENT_DATE)`;
         }
     } else
     {
@@ -64,10 +64,10 @@ const selectAllFilteredLeaves = async (checkboxes) =>
             // Aucune condition WHERE nécessaire si les deux cases sont cochées
         } else if (checkboxes.coming)
         {
-            query += ` WHERE leave.start_date >= CURRENT_DATE`;
+            query += ` WHERE (leave.start_date >= CURRENT_DATE OR leave.end_date >= CURRENT_DATE)`;
         } else if (checkboxes.passed)
         {
-            query += ` WHERE leave.start_date < CURRENT_DATE`;
+            query += ` WHERE (leave.start_date < CURRENT_DATE OR leave.end_date >= CURRENT_DATE)`;
         }
     }
 
@@ -112,7 +112,7 @@ const selectLeavesByEmployeeNumber = async (employeeNumber) =>
         FROM leave
         JOIN employee ON employee.employee_number = leave.employee_number
         WHERE leave.employee_number = $1
-        AND leave.start_date >= CURRENT_DATE
+        AND (leave.start_date >= CURRENT_DATE OR leave.end_date >= CURRENT_DATE)
         ORDER BY leave.start_date`,
         [employeeNumber]
     );
@@ -133,6 +133,40 @@ const selectLeavesByEmployeeNumber = async (employeeNumber) =>
     });
 };
 exports.selectLeavesByEmployeeNumber = selectLeavesByEmployeeNumber;
+
+const selectApprovedLeavesByEmployeeNumberAndDate = async (employeeNumber,date) =>
+{
+    const result = await pool.query(
+        `SELECT *
+        FROM leave
+        WHERE leave.employee_number = $1
+        AND leave.start_date <= $2
+        AND leave.end_date >= $2
+        AND status = 'Approved'`,
+        [employeeNumber,date]
+    );
+
+    const row = result.rows[0];
+
+    if (!row) return [];
+
+    return result.rows.map(row =>
+    {
+        const leave = {
+            id: row.id,
+            employeeNumber: row.employee_number,
+            startDate: row.start_date,
+            endDate: row.end_date,
+            category: row.category,
+            reason: row.reason,
+            status: row.status
+        };
+        return leave;
+    });
+
+};
+exports.selectApprovedLeavesByEmployeeNumberAndDate = selectApprovedLeavesByEmployeeNumberAndDate;
+
 
 const selectLeaveByID = async (leaveID) =>
 {
