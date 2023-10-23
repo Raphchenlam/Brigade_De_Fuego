@@ -205,7 +205,7 @@ export default {
                     const clientsFullName = (clientsFullNameTemp.length <= 25) ? clientsFullNameTemp : clientsFullNameTemp.substring(0, 25) + "...";
 
                     let listInformationConcatenation = "";
-                    listInformationConcatenation += reservationtoKeep.tableNumber ? "#" + reservationtoKeep.tableNumber : "NO TABLE";
+                    listInformationConcatenation += reservationtoKeep.tableNumber ? "#" + reservationtoKeep.tableNumber : "N/A";
                     listInformationConcatenation += " - ";
                     listInformationConcatenation += clientsFullName;
                     listInformationConcatenation += " (" + reservationtoKeep.clientPhoneNumber + ") - ";
