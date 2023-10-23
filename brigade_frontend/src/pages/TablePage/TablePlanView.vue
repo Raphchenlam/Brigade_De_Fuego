@@ -2,7 +2,6 @@
     <v-sheet width="100%" class="pa-2">
         <v-row>
             <v-col>
-
                 <v-row>
                     <TableLayout v-if="selectedTable == null" class="pa-2"></TableLayout>
                     <TableInformation v-else class="pa-2" :reservation="reservationInformations"></TableInformation>
@@ -114,7 +113,7 @@ export default {
 
 
             ////////////TEMPORAIRE/////////
-            hasReservation: computed(() => this.hasReservation),
+            //hasReservation: computed(() => this.hasReservation),
         }
     },
     methods: {
@@ -168,6 +167,7 @@ export default {
         },
         updateTableLayout() {
             this.tableWithAssignationList = [];
+            this.reservations = [];
 
             this.tableWithAssignationList = this.tableList.map(table => {
                 return {
@@ -175,7 +175,9 @@ export default {
                     capacity: table.capacity,
                     isActive: table.isActive,
                     isAssign: false,
+                    hasReservation: false,
                     assignation: null,
+                    reservation: null
                 }
             });
 
@@ -195,6 +197,12 @@ export default {
                     }
                 }
                 );
+            }
+
+            if (this.reservations.length > 0) {
+                this.reservations.forEach(reservation => {
+                    
+                })
             }
         },
         selectWaiter(waiterNumber, employeeColor) {
