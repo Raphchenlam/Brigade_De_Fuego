@@ -62,7 +62,6 @@ export default {
     methods: {
         filterEmployeeList()
         {
-            console.log("ICI")
             this.filteredEmployeeList = [];
             this.employeeList.forEach(employee =>
             {
@@ -85,7 +84,6 @@ export default {
             this.filteredEmployeeList = [];
             getAllEmployees().then(allEmployees =>
             {
-                console.log("allEmployees",allEmployees)
                 allEmployees.forEach(employee =>
                 {
                     if ((this.$route.fullPath.split('/').slice(1)[1] == 'schedule' && employee.isActive)
@@ -137,7 +135,6 @@ export default {
         this.loadEmployees();
         getAllRoles().then(allRoles =>
         {
-            console.log("ALLROLES", allRoles)
             allRoles.forEach(role =>
             {
                 this.roleList.push(role.name);

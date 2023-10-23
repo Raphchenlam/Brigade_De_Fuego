@@ -29,7 +29,7 @@ function sendEmail(recipients, subjet, text, html)
             console.error("Erreur lors de l'envoi du courriel : " + error);
         } else
         {
-            console.log("Courriel envoyé avec succès : " + info.response);
+            console.info("Courriel envoyé avec succès : " + info.response);
         }
     });
 }

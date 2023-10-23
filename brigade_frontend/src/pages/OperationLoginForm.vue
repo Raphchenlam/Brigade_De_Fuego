@@ -41,7 +41,6 @@ export default {
 
       getEmployeeByBarcodeNumber(this.loginNumber).then(employee => {
         if (employee && (employee.isAdmin || employee.isSuperAdmin)) {
-          console.log("login employee", employee);
           operationSession.unlock(employee);
           this.warningLoginMessage = false;
           this.$router.push('/operation/punch');
