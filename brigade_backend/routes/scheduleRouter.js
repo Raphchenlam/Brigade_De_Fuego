@@ -11,7 +11,8 @@ const { sendEmail } = require("../emailManagement");
 
 router.get('/employee/:employeeNumber/:scheduleWeekId',
     passport.authenticate('basic', { session: false }),
-    (req, res, next) => {
+    (req, res, next) =>
+    {
         const employee = req.user;
         const employeeNumberToGet = req.params.employeeNumber;
         if (!employee) return next(new HttpError(401, "Connexion requise"));
@@ -46,12 +47,38 @@ router.get('/employee/:employeeNumber/:scheduleWeekId',
         });
     });
 
+router.get('/nextshift/:employeenumber',
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) =>
+    {
+        const employee = req.user;
+        const employeeNumber = req.params.employeenumber;
+        if (!employee) return next(new HttpError(401, "Connexion requise"));
+        if (employee.employeeNumber != employeeNumber) return next(new HttpError(403, "Vous ne pouvez pas obtenir le prochain shift d'un autre employé"));
+        if (!employeeNumber || employeeNumber == "") { return next(new HttpError(400, `Un numero d'employé doit etre fournis`)); }
+
+        scheduleQueries.selectNextShiftForEmployee(employeeNumber).then(result =>
+        {
+            if (!result)
+            {
+                return res.status(200).send({
+                    message: "Aucun prochain shift a l'horaire"
+                })
+            }
+            
+            res.json(result);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
 
 router.get("/:scheduleweekid",
     (req, res, next) =>
     {
         const scheduleWeekId = req.params.scheduleweekid;
-        if (!scheduleWeekId || scheduleWeekId === "") {
+        if (!scheduleWeekId || scheduleWeekId === "")
+        {
             return next(new HttpError(400, "Le champ ScheduleWeekId est requis"));
         }
         if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
@@ -68,7 +95,8 @@ router.get("/:scheduleweekid",
                         res.json(allScheduledPeriod);
                     })
 
-                } else {
+                } else
+                {
                     const week = findAllDayOfAWeek(scheduleWeekId);
                     scheduleQueries.insertNewScheduleWeek(week).then(result =>
                     {
@@ -76,13 +104,15 @@ router.get("/:scheduleweekid",
                         {
                             res.json(result);
                         }
-                        else {
+                        else
+                        {
                             return next(new HttpError(400, "semaine non creer"));
                         }
                     })
                 }
             })
-            .catch((err) => {
+            .catch((err) =>
+            {
                 return next(err);
             });
     }
@@ -91,7 +121,8 @@ router.get("/:scheduleweekid",
 
 router.get('/:scheduleweekid/employee',
     passport.authenticate('basic', { session: false }),
-    (req, res, next) => {
+    (req, res, next) =>
+    {
         const employee = req.user;
 
         if (!employee) return next(new HttpError(401, "Connexion requise"));
@@ -108,7 +139,8 @@ router.get('/:scheduleweekid/employee',
             {
                 let found = employeeList.find(({ employeeNumber }) => employeeNumber == element.employeeNumber);
 
-                if (!found) {
+                if (!found)
+                {
                     const employee = {
                         employeeNumber: element.employeeNumber,
                         name: element.name,
@@ -131,13 +163,14 @@ router.get('/:scheduleweekid/employee',
             });
 
             res.json(employeeList);
-        }).catch(err => {
+        }).catch(err =>
+        {
             return next(err);
         });
     });
 
-    
-    router.get('/:scheduleweekid/event',
+
+router.get('/:scheduleweekid/event',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
@@ -167,7 +200,8 @@ router.get('/:scheduleweekid/employee',
 
 router.get('/:date/:shift',
     // passport.authenticate('basic', { session: false }),
-    (req, res, next) => {
+    (req, res, next) =>
+    {
         const employee = req.user;
 
         // if (!employee) return next(new HttpError(401, "Connexion requise"));
@@ -177,9 +211,11 @@ router.get('/:date/:shift',
 
         if (!date || date == "" || !shift || shift == "") { return next(new HttpError(400, `Une date et shift doit etre fournis`)); }
 
-        scheduleQueries.selectAllWaitersForOperationByDateAndShift(date, shift).then(result => {
+        scheduleQueries.selectAllWaitersForOperationByDateAndShift(date, shift).then(result =>
+        {
             employeeList = [];
-            result.forEach(element => {
+            result.forEach(element =>
+            {
                 const schedule = {
                     waiterNumber: element.waiterNumber,
                     waiterName: element.waiterName,
@@ -192,12 +228,11 @@ router.get('/:date/:shift',
             });
 
             res.json(employeeList);
-        }).catch(err => {
+        }).catch(err =>
+        {
             return next(err);
         });
     });
-
-
 
 
 
@@ -236,7 +271,8 @@ router.put("/",
         scheduleQueries.selectAllSchedulePeriodsByScheduleWeekID(scheduleWeekId).then(result =>
         {
             let periodIdList = [];
-            result.forEach(element => {
+            result.forEach(element =>
+            {
                 periodIdList.push(element.id)
             });
             if (periodIdList.length != 14) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Nous en avons obtenus seumlement ${periodIdList.length} `));
@@ -261,7 +297,7 @@ router.put("/",
                                     scheduledEmployees.forEach(element =>
                                     {
                                         let found = employeeList.find(({ employeeNumber }) => employeeNumber == element.employeeNumber);
-    
+
                                         if (!found)
                                         {
                                             employeeList.push(element.employeeNumber);
@@ -272,7 +308,7 @@ router.put("/",
                                     let sundayDate = new Date(req.body.weekSunday)
                                     let sundayString = sundayDate.getDate() + " " + sundayDate.toLocaleString('fr-FR', { month: 'long' }) + " " + sundayDate.getFullYear();
                                     let dateString = mondayString + " au " + sundayString;
-    
+
                                     //envoie des emails avant le retour au front end
                                     const emailPromises = employeeList.map(async (element) =>
                                     {
@@ -296,8 +332,8 @@ router.put("/",
                                 });
                             }).catch(err =>
                             {
-                            return next(err);
-                                
+                                return next(err);
+
                             })
                         }).catch(err =>
                         {
@@ -308,10 +344,12 @@ router.put("/",
                         return next(err);
                     })
                 }
-            }).catch(err => {
+            }).catch(err =>
+            {
                 return next(err);
             });
-        }).catch(err => {
+        }).catch(err =>
+        {
             return next(err);
         })
     }
@@ -348,7 +386,8 @@ function findAllDayOfAWeek(yearWeek)
     const friday = new Date(splittedYearWeek.year, 0, (1 + (splittedYearWeek.week) * 7) - 2);
     const saturday = new Date(splittedYearWeek.year, 0, (1 + (splittedYearWeek.week) * 7) - 1);
     const sunday = new Date(splittedYearWeek.year, 0, (1 + (splittedYearWeek.week) * 7));
-    while (sunday.getDay() !== 0) {
+    while (sunday.getDay() !== 0)
+    {
         sunday.setDate(sunday.getDate() - 1);
         monday.setDate(sunday.getDate() - 6);
         tuesday.setDate(sunday.getDate() - 5);

@@ -120,6 +120,25 @@ export async function getScheduleForOneEmployeeByEmployeeNumberAndScheduleWeekId
     }
 }
 
+export async function getNextShiftForEmployee(employeeNumber,)
+{
+    const response = await fetch(`/api/schedule/nextshift/${employeeNumber}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
+    if (response.ok)
+    {
+        const respJson = await response.json();
+        return respJson;
+    } else
+    {
+        throw await createServiceError(response);
+    }
+}
+
 export async function updateSchedule(scheduleInformations)
 {
     const response = await fetch(`/api/schedule`, {

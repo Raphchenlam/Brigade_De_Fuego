@@ -115,6 +115,40 @@ const selectEmployeeScheduleByWeekId = async (employeeId, scheduleWeekId) =>
 };
 exports.selectEmployeeScheduleByWeekId = selectEmployeeScheduleByWeekId;
 
+const selectNextShiftForEmployee = async (employeeNumber) =>
+{
+    const result = await pool.query(
+        `SELECT * FROM employee_schedule as es
+        JOIN schedule_period as sp ON sp.id = es.schedule_period_id
+        JOIN schedule_week as sw ON sw.id = sp.schedule_week_id
+        WHERE es.employee_number = $1
+        AND sp.date >= CURRENT_DATE
+        AND sw.published = true
+        ORDER BY sp.date
+        LIMIT 1`,
+        [employeeNumber]
+    );
+    const row = result.rows[0];
+    if (row)
+    {
+        const shift = {
+            id: row.schedule_period_id,
+            employeeNumber: row.employee_number,
+            date: row.date,
+            shiftName: row.shift_name,
+            startTime: row.start_time,
+            endTime: row.end_time,
+            time: row.start_time + "-" + row.end_time,
+            isPublished: row.published
+        };
+        return shift;
+    }
+    return undefined;
+
+};
+exports.selectNextShiftForEmployee = selectNextShiftForEmployee;
+
+
 const selectAllEventScheduleByWeekId = async (scheduleWeekId) =>
 {
     const result = await pool.query(
@@ -327,7 +361,7 @@ const updateSchedulePeriodsInformations = async (weekInformationsList, clientPar
                 `UPDATE schedule_period
             SET average_traffic = $2, average_cost_by_client = $3, scheduled_skill_points = $4
                 WHERE id = $1`,
-                [weekInformationsList[i].id, weekInformationsList[i].traffic, weekInformationsList[i].averageCostByClient,weekInformationsList[i].scheduledSkillPoints]
+                [weekInformationsList[i].id, weekInformationsList[i].traffic, weekInformationsList[i].averageCostByClient, weekInformationsList[i].scheduledSkillPoints]
             );
         }
         await client.query("COMMIT");

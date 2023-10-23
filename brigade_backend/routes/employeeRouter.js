@@ -59,7 +59,6 @@ router.get('/role',
 
         employeeQueries.selectAllRoles().then(roleList =>
         {
-            console.log("roleList:", roleList);
             res.json(roleList);
         }).catch(err =>
         {

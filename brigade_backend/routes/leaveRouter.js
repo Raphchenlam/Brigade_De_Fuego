@@ -6,31 +6,6 @@ const HttpError = require("../HttpError");
 
 const leaveQueries = require('../queries/leaveQueries');
 
-// passport.authenticate('basic', { session: false }), (req,res,next)...
-
-/*
-router.get('/',
-    (req, res, next) =>
-    {
-        // const employee = req.employee;
-
-        // if (!employeeConnected) {
-        //     return next(new HttpError(401, "Vous devez etre connecté"));
-        // };
-        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
-        //     return next(new HttpError(403, "Droit administrateur requis"));
-        // };
-
-        leaveQueries.selectAllLeaves().then(leaves =>
-        {
-            res.json(leaves);
-        }).catch(err =>
-        {
-            return next(err);
-        });
-    });
-*/
-
 router.get('/category',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
@@ -92,6 +67,41 @@ router.get('/filter',
         });
     });
 
+    router.get('/current/:employeeNumber',
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) =>
+    {
+        const employeeNumberToGet = req.params.employeeNumber;
+        if (!employeeNumberToGet)
+        {
+            return next(new HttpError(401, "Un employé doit être fournis dans les paramètres"));
+        };
+        const user = req.user;
+        if (!user)
+        {
+            return next(new HttpError(401, "Vous devez etre connecté"));
+        };
+        if (user.employeeNumber != employeeNumberToGet)
+        {
+            if (!user.isAdmin) return next(new HttpError(403, "Vous ne pouvez pas obtenir les congés d'un autre employé"));
+        };
+        leaveQueries.selectCurrentLeaveByEmployeeNumber(employeeNumberToGet).then(leave =>
+        {
+            if (!leave)
+            {
+                return res.status(200).send({
+                    message: "Vous n'avez aucun congé présentement"
+                });
+            }
+            res.json(leave);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+        });
+    
+
+        
 router.get('/employee/:employeeNumber',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>

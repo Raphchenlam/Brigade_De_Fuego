@@ -84,6 +84,8 @@ export default {
             userSession.login(this.employeeNumber, this.password).then(() =>
             {
                 this.$refs.loginForm.validate();
+                
+            
                 this.$router.push('/espace/dashboard');
             }).catch(authError =>
             {
