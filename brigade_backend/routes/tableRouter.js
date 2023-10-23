@@ -30,11 +30,25 @@ router.get('/:tableNumber', (req, res, next) => {
         if (table) {
             res.json(table);
         }else {
-            return next(new HttpError(404, `Les tables sont introuvables`));
+            return next(new HttpError(404, `La table est introuvable`));
         }
     })
     .catch((err)=>{
         return next(err);
+    })
+})
+
+// UPDATE a table STATUS by number
+router.put('/:tableNumber', (req, res, next) =>{
+    const tableNumber = req.params.tableNumber;
+    const status = req.body.status;
+    tableQueries.updateTableStatus(tableNumber, status)
+    .then(table =>{
+        if (table) {
+            res.json(table);
+        } else {
+            return next(new HttpError(404, `Aucune table modifiée, car la table est introuvable`));
+        }
     })
 })
 
