@@ -75,3 +75,20 @@ export async function getReservationById(reservationId) {
         throw await createServiceError(response);
     }
 }
+
+export async function updateTableOnReservationById(id, tableNumber) {
+    const response = await fetch(`/api/reservation/${id}/table/${tableNumber}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            //...session.getAuthHeaders()
+        }
+    })
+    if (response.ok) {
+        return convertToReservation(await response.json());
+      } else {
+        console.log(response.status)
+        console.log(JSON.stringify(response));
+        throw await createServiceError(response);
+      }
+}

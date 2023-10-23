@@ -184,8 +184,19 @@ const getReservationListByDates = async (startDate, endDate) => {
             employeeRole: row.employee_role,
 
         };
-
         return reservation;
     });
 };
 exports.getReservationListByDates = getReservationListByDates;
+
+const updateTableOnReservationById = async(id, tableNumber) => {
+    const result = await pool.query(
+        `UPDATE reservation SET table_number = $2 WHERE id = $1`,
+        [id, tableNumber]
+    );
+    if(result.rowCount === 0) {
+        return undefined
+    }
+    return getReservationById(id);
+};
+exports.updateTableOnReservationById=updateTableOnReservationById;

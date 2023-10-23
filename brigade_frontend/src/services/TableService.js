@@ -102,3 +102,20 @@ export async function fetchTableByNumber(tableNumber) {
   }
 }
 
+export async function updateTableStatusByNumber(tableNumber, status){
+  const response = await fetch(`/api/table/${tableNumber}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...session.getAuthHeaders()
+    },
+    body: JSON.stringify({status: status})
+  });
+
+  if (response.ok) {
+    return convertToTable(await response.json());
+  } else {
+    throw await createServiceError(response);
+  }
+}
+

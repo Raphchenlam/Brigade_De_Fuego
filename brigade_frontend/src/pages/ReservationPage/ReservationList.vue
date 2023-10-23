@@ -48,10 +48,10 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 import NewReservationForm from "../reservationpage/NewReservationForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
-import { getReservationList } from '../../services/ReservationService';
+// import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale', 'loadDate'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale', 'loadDate', 'reservations','loadReservations'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -67,7 +67,7 @@ export default {
             shiftShow: "all",
             modal: false,
             selected: [],
-            reservations: [],
+            //reservations: [],
             filteredReservationList: [],
             dialogNewReservation: false,
             hasNewReservation: false,
@@ -170,16 +170,16 @@ export default {
             this.selected[0] = newReservation[0];
             this.search = newReservation[2];
         },
-        loadReservations(startDate, endDate) {
-            getReservationList(startDate, endDate)
-                .then((reservationList) => {
-                    this.reservations = reservationList;
-                })
-                .catch((err) => {
-                    console.error(err);
-                    alert(err.message);
-                });
-        },
+        // loadReservations(startDate, endDate) {
+        //     getReservationList(startDate, endDate)
+        //         .then((reservationList) => {
+        //             this.reservations = reservationList;
+        //         })
+        //         .catch((err) => {
+        //             console.error(err);
+        //             alert(err.message);
+        //         });
+        // },
         filterReservations() {
             this.filteredReservationList = [];
 

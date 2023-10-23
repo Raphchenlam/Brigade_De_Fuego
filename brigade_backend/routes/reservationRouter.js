@@ -151,5 +151,30 @@ router.post("/",
 
     }
 );
+router.put('/:id/table/:tableNumber', (req, res, next) => {
+    const user = req.user;
+
+    // if (!user || !user.isAdmin) {
+    //   return next(new HttpError(403, "Droit administrateur requis"));
+    // }
+
+    const id = req.params.id;
+    if (!id || id === '') {
+        return next(new HttpError(400, 'Le paramètre ID est requis'));
+    }
+    const tableNumber = req.params.tableNumber;
+    if (!tableNumber || tableNumber === '') {
+        return next(new HttpError(400, 'Le numéro de table est requis'));
+    }
+
+    reservationQueries.updateTableOnReservationById(id, tableNumber).then(result => {
+        if (!result) {
+            return next(new HttpError(404, `La réservation est introuvable`));
+        }
+        res.json(result);
+    }).catch(err => {
+        return next(err);
+    })
+});
 
 module.exports = router;
