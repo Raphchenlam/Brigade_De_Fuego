@@ -135,13 +135,23 @@ const insertReservation = async (reservationInfos) => {
 };
 exports.insertReservation = insertReservation;
 
+const getReservationStatusList = async (reservationInfos) => {
+    const result = await pool.query(
+        `SELECT * FROM public.reservation_status
+        ORDER BY code ASC `);
+
+    const row = result.rows;
+
+    if (row) {
+        return row;
+    }
+
+    throw new Error("La requête des statuts de réservation à échoué pour une raison inconnue");
+};
+exports.getReservationStatusList = getReservationStatusList;
+
 
 const updateReservation = async (newReservationInfos) => {
-
-    // TODO:  Tu es rendu ici, créé la requête avant de la lancer a la bd, bonne chance
-    // TODO:  Faire la requête a la bd
-
-    // console.log(newReservationInfos);
 
     let UPDATEquery = `UPDATE reservation `;
     let newInformation = [];
@@ -163,18 +173,13 @@ const updateReservation = async (newReservationInfos) => {
         UPDATEquery += ` WHERE reservation.id = $${counter} RETURNING *`;
         newInformation.push(newReservationInfos.id);
 
-        // console.log(" ");
-        // console.log(UPDATEquery);
-        // console.log(newInformation);
-        // console.log(" ");
-
         const result = await pool.query(UPDATEquery, newInformation);
-
+        
         const row = result.rows[0];
         if (row) {
             console.log("row : ");
             console.log(row);
-
+            
             const reservation = constructReservation(row);
 
             const reservationFinal = {

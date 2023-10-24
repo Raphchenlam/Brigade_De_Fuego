@@ -24,6 +24,25 @@ function isDateBeforeToday(dateString) {
     return givenDate < currentDate;
 }
 
+router.get("/statusList",
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) => {
+
+        reservationQueries
+            .getReservationStatusList()
+            .then((reservationList) => {
+                if (reservationList) {
+                    res.json(reservationList);
+                } else {
+                    return next(new HttpError(404, `Les réservations ${startDate} et ${endDate} sont introuvables`));
+                }
+            })
+            .catch((err) => {
+                return next(err);
+            });
+    }
+);
+
 router.get("/",
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
@@ -382,6 +401,8 @@ router.put("/",
                     reservationQueries
                         .updateReservation(newReservationInfos)
                         .then((updatedReservation) => {
+                            console.log("updatedReservation : ");
+                            console.log(updatedReservation);
                             if (updatedReservation) {
                                 res.json(updatedReservation);
                             } else {
