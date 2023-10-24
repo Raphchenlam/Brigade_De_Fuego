@@ -145,6 +145,12 @@ router.put('/:punchId',
             const dateInObj = new Date(dateInParts[0], dateInParts[1] -1, dateInParts[2]);
             const dateOutObj = new Date(dateOutParts[0], dateOutParts[1] -1, dateOutParts[2]);
 
+            if(dateOutObj >= dateInObj){
+                if(startTime > punchToUpdate.endTime){
+                    return next(new HttpError(400, "L'heure de fin doit être après l'heure de début"));
+                }
+            }
+
             if(dateOutObj < dateInObj){
                 return next (new HttpError (400, "La date de fin ne peut pas être plus vieille que la date de début"));
             }

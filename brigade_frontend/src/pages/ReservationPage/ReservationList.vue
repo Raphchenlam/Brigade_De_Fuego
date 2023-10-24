@@ -198,13 +198,25 @@ export default {
                     const explodedTime = reservationtoKeep.startTime.split(":");
                     const hour = explodedTime[0];
                     const min = explodedTime[1];
-                    const formattedStartTime = hour + "h" + min;
 
+                    const formattedStartTime = hour + "h" + min;
                     const allergies = (reservationtoKeep.clientAllergy) ? " - Allergie(s) : " + reservationtoKeep.clientAllergy : "";
+                    const clientsFullNameTemp = reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname;
+                    const clientsFullName = (clientsFullNameTemp.length <= 25) ? clientsFullNameTemp : clientsFullNameTemp.substring(0, 25) + "...";
+
+                    let listInformationConcatenation = "";
+                    listInformationConcatenation += reservationtoKeep.tableNumber ? "#" + reservationtoKeep.tableNumber : "N/A";
+                    listInformationConcatenation += " - ";
+                    listInformationConcatenation += clientsFullName;
+                    listInformationConcatenation += " (" + reservationtoKeep.clientPhoneNumber + ") - ";
+                    listInformationConcatenation += reservationtoKeep.peopleCount + " personnes - ";
+                    listInformationConcatenation += reservationtoKeep.date + " à " + formattedStartTime;
+                    listInformationConcatenation += allergies;
+
+
 
                     const reservationToAdd = {
-                        "listInformation":
-                        (reservationtoKeep.tableNumber ? "#" + reservationtoKeep.tableNumber: "NO TABLE") + " - " + reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname + " (" + reservationtoKeep.clientPhoneNumber + ") - " + reservationtoKeep.peopleCount + " personnes - " + reservationtoKeep.date + " à " + formattedStartTime + allergies,
+                        "listInformation": listInformationConcatenation,
                         ...reservationtoKeep,
                         props: {
                             color: 'red',
@@ -233,6 +245,7 @@ export default {
         }
     },
     mounted() {
+        console.clear();
         if (!(!!this.selectedDate)) {
             this.todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
             this.endDate = this.startDate = this.todayDate;
