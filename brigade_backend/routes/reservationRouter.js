@@ -100,7 +100,6 @@ router.get("/:startDate/:endDate",
     }
 );
 
-
 router.post("/",
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
@@ -171,6 +170,7 @@ router.post("/",
 
     }
 );
+
 router.put('/:id/table/:tableNumber', (req, res, next) => {
     const user = req.user;
 
@@ -196,7 +196,6 @@ router.put('/:id/table/:tableNumber', (req, res, next) => {
         return next(err);
     })
 });
-
 
 router.put("/",
     passport.authenticate('basic', { session: false }),
@@ -401,4 +400,5 @@ router.put("/",
             });
     }
 );
+
 module.exports = router;
