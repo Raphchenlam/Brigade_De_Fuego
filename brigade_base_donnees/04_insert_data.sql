@@ -152,8 +152,8 @@ VALUES
 ('Confirmé'),
 ('En cours'),
 ('En retard'),
-('Terminé'),
 ('Délai échu'),
+('Terminé'),
 ('No Show'),
 ('Annulé'),
 ('Blacklisted');
