@@ -50,6 +50,9 @@
                                             <span style="color: red;">La date de fin doit être plus récente que la date de
                                                 début</span>
                                         </v-col>
+                                        <v-col v-if="endTimeError" cols="12">
+                                            <span style="color: red;">L'heure de fin doit être après l'heure de début</span>
+                                        </v-col>
                                     </v-row>
                                 </v-container>
                             </v-card-text>
@@ -107,6 +110,7 @@ export default {
             OKupdatedPunchDialog: false,
             errorPunchInfo: false,
             dateOutError: false,
+            endTimeError: false,
             currentDate: null,
             punchList: [],
             headers: [
@@ -216,6 +220,7 @@ export default {
 
             this.errorPunchInfo = false;
             this.dateOutError = false;
+            this.endTimeError = false;
 
             if (!this.editedItem.dateIn || !this.editedItem.startTime) this.errorPunchInfo = true;
             if ((this.editedItem.dateOut && !this.editedItem.endTime) || (!this.editedItem.dateOut && this.editedItem.endTime)) this.errorPunchInfo = true;
@@ -225,6 +230,13 @@ export default {
 
             const dateInObj = new Date(dateInParts[0], dateInParts[1] - 1, dateInParts[2]);
             const dateOutObj = new Date(dateOutParts[0], dateOutParts[1] - 1, dateOutParts[2]);
+
+            if (dateOutObj >= dateInObj) {
+                if (this.editedItem.startTime > this.editedItem.endTime) {
+                    this.errorPunchInfo = true;
+                    this.endTimeError = true;
+                }
+            }
 
             if (dateOutObj < dateInObj) {
                 this.errorPunchInfo = true;

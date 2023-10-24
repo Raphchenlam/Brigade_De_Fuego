@@ -189,6 +189,23 @@ const updateEmployeePassword = async (employeeToUpdate, passwordSalt, passwordHa
 };
 exports.updateEmployeePassword = updateEmployeePassword;
 
+const updateNewEmployeePassword = async (employeeNumber, passwordSalt, passwordHash, clientParam) =>{
+    const user = clientParam || await pool.connect();
+    const newEmployeeState = false;
+    const result = await user.query(
+        `UPDATE employee
+        SET is_new_employee=$2, password_salt=$3, password_hash=$4
+        WHERE employee_number = $1
+        RETURNING *`,
+        [employeeNumber, newEmployeeState, passwordSalt, passwordHash]
+    );
+    if(result.rowCount === 0){
+        return undefined;
+    }
+    return selectEmployeeByEmployeeNumber(employeeNumber);
+};
+exports.updateNewEmployeePassword = updateNewEmployeePassword;
+
 const updateEmployeeColorByEmployeeNumber = async (employeeNumber, employeeColor) =>
 {
 
