@@ -140,7 +140,6 @@ export default {
             }
 
             userSession.login(this.employeeNumber, this.password).then((employee) => {
-                console.log(employee);
                 if (employee.isNewEmployee) {
                     this.dialogChangeNewEmployeePassword = true;
                 } else {

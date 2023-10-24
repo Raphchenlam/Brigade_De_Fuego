@@ -29,7 +29,7 @@
         </v-col>
       </v-row>
       <div class="text-center ma-5">
-        <p>Nombre d'evenements : {{ eventList.length }}</p>
+        <p>Nombre d'événements : {{ eventList.length }}</p>
       </div>
       <v-card class="ma-2">
         <v-list v-model:selected='selection' :items="!!search?filteredEventList:eventList" item-title="information" item-value="name">
