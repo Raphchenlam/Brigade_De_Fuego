@@ -24,6 +24,37 @@ const selectScheduleWeekInfoByID = async (scheduleWeekId) =>
 };
 exports.selectScheduleWeekInfoByID = selectScheduleWeekInfoByID;
 
+const selectSchedulePeriodInfoByDateAndShiftName = async (date, shiftName) =>
+{
+    const result = await pool.query(
+        `SELECT * FROM schedule_period
+        WHERE date = $1
+        AND shift_name = $2`,
+        [date, shiftName]);
+
+    const row = result.rows[0];
+    if (row)
+    {
+        const schedulePeriodInfo = {
+            id: row.id,
+            date: row.date,
+            shiftName: row.shift_name,
+            scheduleWeekId: row.schedule_week_id,
+            averageTraffic: row.average_traffic,
+            expectedTraffic: row.expected_traffic,
+            actualTraffic: row.actual_traffic,
+            averageCostByClient: row.average_cost_by_client,
+            requiredSkillPoints: row.required_skill_points,
+            expectedSkillPoints: row.expected_skill_points,
+            scheduledSkillPoints: row.scheduled_skill_points
+        };
+        return schedulePeriodInfo;
+    }
+
+    return undefined;
+};
+exports.selectSchedulePeriodInfoByDateAndShiftName = selectSchedulePeriodInfoByDateAndShiftName;
+
 const selectAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
 {
     const scheduleObj = await pool.query(
@@ -52,7 +83,6 @@ const selectAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
     });
 };
 exports.selectAllSchedulePeriodsByScheduleWeekID = selectAllSchedulePeriodsByScheduleWeekID;
-
 
 const selectAllEmployeesScheduleByScheduleWeekId = async (scheduleWeekId) =>
 {
@@ -148,7 +178,6 @@ const selectNextShiftForEmployee = async (employeeNumber) =>
 };
 exports.selectNextShiftForEmployee = selectNextShiftForEmployee;
 
-
 const selectAllEventScheduleByWeekId = async (scheduleWeekId) =>
 {
     const result = await pool.query(
@@ -180,7 +209,6 @@ const selectAllEventScheduleByWeekId = async (scheduleWeekId) =>
     return [];
 };
 exports.selectAllEventScheduleByWeekId = selectAllEventScheduleByWeekId;
-
 
 const selectEmailFromEmployeeNumber = async (employeeNumber) =>
 {
@@ -298,7 +326,6 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
         client.release();
     }
 };
-
 exports.insertNewScheduleWeek = insertNewScheduleWeek;
 
 const insertNewEmployeeSchedule = async (scheduledEmployeeList, clientParam) =>
@@ -345,7 +372,6 @@ const insertNewEmployeeSchedule = async (scheduledEmployeeList, clientParam) =>
 };
 exports.insertNewEmployeeSchedule = insertNewEmployeeSchedule;
 
-
 const updateSchedulePeriodsInformations = async (weekInformationsList, clientParam) =>
 {
     const client = clientParam || await pool.connect();
@@ -387,7 +413,6 @@ const updateScheduleWeekStatus = async (scheduleWeekId, isPublished) =>
     );
 };
 exports.updateScheduleWeekStatus = updateScheduleWeekStatus;
-
 
 const updateEventForScheduleWeek = async (periodIdList, eventList, clientParam) =>
 {
@@ -438,7 +463,6 @@ const updateEventForScheduleWeek = async (periodIdList, eventList, clientParam) 
 };
 exports.updateEventForScheduleWeek = updateEventForScheduleWeek;
 
-
 const deleteEmployeeFromSchedule = async (periodIdList) =>
 {
     const lowest = Math.min(...periodIdList);
@@ -449,5 +473,4 @@ const deleteEmployeeFromSchedule = async (periodIdList) =>
         [lowest, highest]
     );
 };
-
 exports.deleteEmployeeFromSchedule = deleteEmployeeFromSchedule;

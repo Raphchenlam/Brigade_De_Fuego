@@ -4,7 +4,7 @@
                         <p style="font-size: 28px;font-weight: bold;">CONGÉ EN COURS</p>
                     </v-row>
     <div >
-        <v-row class="justify-center mt-5">
+        <v-row class="justify-center ma-5">
         <p style="font-size: 28px;"> {{ currentLeaveMessage }}</p>
     </v-row>
     <v-row class="justify-center mt-5">
@@ -46,7 +46,6 @@ export default {
         {
             getCurrentLeaveByEmployeeNumber(userSession.employeeNumber).then(result =>
             {
-                console.log("Result", result)
                 if (result.id)
                 {
                     const startDateString = result.startDate;
@@ -70,7 +69,6 @@ export default {
     },
     mounted()
     {
-        console.log("ICI")
         this.loadNextShift();
     }
 }

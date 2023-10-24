@@ -45,21 +45,22 @@ router.get('/filter',
         };
 
         const checkboxesData = req.query.data;
-        if (!checkboxesData) return next(new HttpError(400, `Un data de checkboces doit etre fournis`));
+        if (!checkboxesData) return next(new HttpError(400, `Un data de checkboxes doit etre fournis`));
         const checkboxes = JSON.parse(checkboxesData);
 
 
         if (!checkboxes.accepted && !checkboxes.refused && !checkboxes.pending && !checkboxes.pendingModified) 
         {
-            res.json([]);
+            return res.json([]);
         }
         if (!checkboxes.coming && !checkboxes.passed) 
         {
-            res.json([]);
+            return res.json([]);
         }
-
+console.log("checkboxes",checkboxes)
         leaveQueries.selectAllFilteredLeaves(checkboxes).then(leaves =>
         {
+            console.log("leaves",leaves)
             res.json(leaves);
         }).catch(err =>
         {
@@ -67,7 +68,7 @@ router.get('/filter',
         });
     });
 
-    router.get('/current/:employeeNumber',
+router.get('/current/:employeeNumber',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
@@ -98,10 +99,10 @@ router.get('/filter',
         {
             return next(err);
         });
-        });
-    
+    });
 
-        
+
+
 router.get('/employee/:employeeNumber',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
@@ -129,7 +130,7 @@ router.get('/employee/:employeeNumber',
         });
     });
 
-    router.get('/employee/:employeeNumber/:date',
+router.get('/employee/:employeeNumber/:date',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
@@ -153,7 +154,7 @@ router.get('/employee/:employeeNumber',
         {
             if (!user.isAdmin) return next(new HttpError(403, "Vous ne pouvez pas obtenir les congés d'un autre employé"));
         };
-        leaveQueries.selectApprovedLeavesByEmployeeNumberAndDate(employeeNumberToGet,dateToGet).then(leaves =>
+        leaveQueries.selectApprovedLeavesByEmployeeNumberAndDate(employeeNumberToGet, dateToGet).then(leaves =>
         {
             res.json(leaves);
         }).catch(err =>
@@ -257,7 +258,7 @@ router.put('/',
             const dateStr = body.startDate;
             var dateParts = dateStr.split('-');
             var startDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-            
+
             if (startDate < futureDate && !(body.status == "Approved" || body.status == "Refused")) return next(new HttpError(400, `La date de debut doit etre minimum le lundi 1 semaine à l'avance`));
             if (body.endDate < body.startDate) return next(new HttpError(400, `La date de fin ne peut pas etre avant la date de debut`));
 

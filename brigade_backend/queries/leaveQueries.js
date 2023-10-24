@@ -28,7 +28,7 @@ const selectAllFilteredLeaves = async (checkboxes) =>
             query += ` AND (leave.start_date >= CURRENT_DATE OR leave.end_date >= CURRENT_DATE)`;
         } else if (checkboxes.passed)
         {
-            query += ` AND (leave.start_date < CURRENT_DATE OR leave.end_date >= CURRENT_DATE)`;
+            query += ` AND (leave.start_date < CURRENT_DATE AND leave.end_date <= CURRENT_DATE)`;
         }
     } else
     {
@@ -40,7 +40,7 @@ const selectAllFilteredLeaves = async (checkboxes) =>
             query += ` WHERE (leave.start_date >= CURRENT_DATE OR leave.end_date >= CURRENT_DATE)`;
         } else if (checkboxes.passed)
         {
-            query += ` WHERE (leave.start_date < CURRENT_DATE OR leave.end_date >= CURRENT_DATE)`;
+            query += ` WHERE (leave.start_date < CURRENT_DATE AND leave.end_date <= CURRENT_DATE)`;
         }
     }
 

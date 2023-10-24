@@ -14,6 +14,7 @@
     "luxon": "^3.3.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.2",
+    "vue-speedometer": "^2.0.0",
     "vuetify": "^3.3.5"
   },
   "devDependencies": {

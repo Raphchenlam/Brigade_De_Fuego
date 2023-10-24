@@ -47,6 +47,34 @@ router.get('/employee/:employeeNumber/:scheduleWeekId',
         });
     });
 
+router.get('/periodinfo/:date/:shiftName',
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) =>
+    {
+        const employee = req.user;
+        const date = req.params.date;
+        const shiftName = req.params.shiftName;
+
+        if (!employee) return next(new HttpError(401, "Connexion requise"));
+        if (!date) { return next(new HttpError(400, `Une date doit etre fournis`)); }
+        if (!shiftName || shiftName == "") { return next(new HttpError(400, `Un shift name etre fournis`)); }
+
+        scheduleQueries.selectSchedulePeriodInfoByDateAndShiftName(date, shiftName).then(result =>
+        {
+            if (result)
+            {
+                res.json(result);
+            }
+            else
+            {
+                res.status(206).json(`Aucun informations pour cette date`);
+            }
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
+
 router.get('/nextshift/:employeenumber',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
@@ -65,7 +93,7 @@ router.get('/nextshift/:employeenumber',
                     message: "Aucun prochain shift a l'horaire"
                 })
             }
-            
+
             res.json(result);
         }).catch(err =>
         {
@@ -117,7 +145,6 @@ router.get("/:scheduleweekid",
             });
     }
 );
-
 
 router.get('/:scheduleweekid/employee',
     passport.authenticate('basic', { session: false }),
@@ -233,8 +260,6 @@ router.get('/:date/:shift',
             return next(err);
         });
     });
-
-
 
 router.put("/",
     passport.authenticate('basic', { session: false }),
@@ -355,7 +380,6 @@ router.put("/",
     }
 );
 
-
 function sendEmailSchedule(emailList, isModified, date)
 {
     const recipients = emailList;
@@ -371,7 +395,6 @@ function sendEmailSchedule(emailList, isModified, date)
     console.log("emails envoyes")
     return true
 };
-
 
 function findAllDayOfAWeek(yearWeek)
 {
@@ -407,4 +430,5 @@ function findAllDayOfAWeek(yearWeek)
         sunday: sunday
     }
 }
+
 module.exports = router;
