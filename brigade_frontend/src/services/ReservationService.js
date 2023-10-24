@@ -34,7 +34,7 @@ const convertToReservation = jsonReservation => {
         hasMinor: jsonReservation.hasMinor,
         takenBy: jsonReservation.takenBy
     };
-};
+}
 
 export async function createReservation(reservation) {
     const response = await fetch(`/api/reservation`, {
@@ -122,6 +122,7 @@ export async function updateTableOnReservationById(id, tableNumber) {
         throw await createServiceError(response);
       }
 }
+
 export async function getHowManyPeopleByDateAndShiftName(date, shiftName) {
     const response = await fetch(`/api/reservation/expectedpeople/${date}/${shiftName}`, {
         method: "GET",

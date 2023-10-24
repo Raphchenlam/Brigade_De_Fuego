@@ -109,6 +109,7 @@ export default {
         };
     },
     mounted() {
+        console.clear();
         if (this.reservationId) {
             this.loadReservation(this.reservationId);
         }
