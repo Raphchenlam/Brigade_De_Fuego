@@ -44,7 +44,7 @@ import TableLayout from './TableLayout.vue';
 import TableInformation from './TableInformation.vue';
 import WaiterList from "./WaiterList.vue";
 import { fetchAllTables, fetchAssignationByDate, createAssignations, updateTableStatusByNumber } from '../../services/TableService';
-import { getReservationById, getReservationList } from '../../services/ReservationService';
+import { getReservationById, getReservationList, updateTableOnReservationById } from '../../services/ReservationService';
 
 
 
@@ -123,7 +123,13 @@ export default {
         loadReservations(startDate, endDate) {
             getReservationList(startDate, endDate)
                 .then((reservationList) => {
-                    this.reservations = reservationList;
+                    reservationList.forEach(reservation =>{
+                        if(this.selectedShift == "Midi" && parseInt(reservation.startTime.split(':').slice(0)[0]) <= 15 && reservation.statusCode <5){
+                            this.reservations.push(reservation);
+                        }else if(this.selectedShift == "Soir" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15 && reservation.statusCode <5){
+                            this.reservations.push(reservation);
+                        }
+                    })
                 })
                 .catch((err) => {
                     console.error(err);
@@ -201,7 +207,18 @@ export default {
 
             if (this.reservations.length > 0) {
                 this.reservations.forEach(reservation => {
-                    
+                    const table = this.tableWithAssignationList.find(table => {
+                        return (table.number == reservation.tableNumber)
+                    })
+                    if(table.isActive){
+                        table.hasReservation = true;
+                        table.reservation = reservation;
+                    } else{
+                        console.error(`La table ${table.number} est inactive`);
+                        table.hasReservation = false;
+                        updateTableOnReservationById(reservation.id, null)
+                        //reservation.tableNumber = null;
+                    }
                 })
             }
         },
