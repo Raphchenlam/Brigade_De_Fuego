@@ -39,6 +39,39 @@
             </v-card>
         </v-form>
     </v-dialog>
+
+    <v-dialog v-model="dialogChangeNewEmployeePassword" width="75%" persistent>
+        <v-card>
+            <v-form @submit.prevent="changePassword" validate-on="blur" ref="newEmployeePasswordForm" class="pa-10">
+                <v-row class="justify-center">
+                    <p >Bienvenue dans l'équipe Del Fuego!</p>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <v-text-field v-model="newPassword" label="Mot de passe" type="password"
+                            :rules="[rules.required, rules.validatePassword, rules.fieldLength255]" density="compact" ref="passwordInput"
+                            clearable>
+                        </v-text-field>
+                    </v-col>
+                    <v-col>
+                        <v-text-field v-model="newPasswordConfirmation" label="Confirmer le mot de passe"
+                            :rules="[rules.required, rules.passwordsMatch, rules.fieldLength255]" type="password" density="compact"
+                            ref="passwordConfirmInput" clearable>
+                        </v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col>
+                        <v-row class="justify-center">
+                            <DarkRedButton type="submit" class="mx-5" textbutton="Sauvegarder"></DarkRedButton>
+                        </v-row>
+                    </v-col>
+                </v-row>
+            </v-form>
+        </v-card>
+
+    </v-dialog>
+
     <v-dialog v-model="dialogConfirmLostPassword" width="75%" persistent>
         <v-card class="pa-5">
             <v-row class="justify-center">
@@ -53,19 +86,21 @@
 import userSession from '../sessions/UserSession';
 import DarkRedButton from '../components/Reusable/DarkRedButton.vue';
 import { validEmail } from '../../../REGEX/REGEX_frontend';
-import { getEmployeeByEmail, resetPassword } from '../services/EmployeeService';
+import { getEmployeeByEmail, changeNewEmployeePassword, resetPassword } from '../services/EmployeeService';
+import { validPassword } from '../../../REGEX/REGEX_frontend';
 
 export default {
     components: {
         DarkRedButton
     },
-    data()
-    {
+    data() {
         return {
             employeeNumber: '',
             password: '',
             validPassword: false,
             invalidPasswordMessage: '',
+            newPassword: '',
+            newPasswordConfirmation: '',
             rules: {
                 required: value => !!value || "Le champ est requis",
                 validatePassword: () => this.validPassword === false ? "Numéro d'employé ou mot de passe invalide" : true,
@@ -75,72 +110,109 @@ export default {
             warningEmployeeLostPassword: false,
             warningEmployeeLostPasswordMessage: '',
             dialogConfirmLostPassword: false,
-            emailLostPassword: ''
+            dialogChangeNewEmployeePassword: false,
+            emailLostPassword: '',
+            rules: {
+                required: value => !!value || "Le champ est requis",
+                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
+                validatePassword: value => {
+                    if (!this.newPassword && !this.newPasswordConfirmation) {
+                        return true;
+                    }
+                    return validPassword.test(value) || "Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial";
+                },
+                passwordsMatch: () => {
+                    if (!this.newPassword && !this.newPasswordConfirmation) {
+                        return true;
+                    }
+                    return this.newPassword === this.newPasswordConfirmation || "Les mots de passe ne correspondent pas";
+                }
+            }
         };
     },
     methods: {
-        login()
-        {
+        async login() {
             this.validPassword = true;
-            userSession.login(this.employeeNumber, this.password).then(() =>
-            {
-                this.$refs.loginForm.validate();
-                this.$router.push('/espace/dashboard');
-            }).catch(authError =>
-            {
+            const validForm = await this.$refs.loginForm.validate();
+
+            if (!validForm.valid) {
+                return;
+            }
+
+            userSession.login(this.employeeNumber, this.password).then((employee) => {
+                console.log(employee);
+                if (employee.isNewEmployee) {
+                    this.dialogChangeNewEmployeePassword = true;
+                } else {
+                    this.$router.push('/espace/dashboard');
+                }
+            }).catch(authError => {
                 this.validPassword = false;
                 this.$refs.loginForm.validate();
                 this.invalidPasswordMessage = authError.message;
             });
         },
-        closelostPasswordDialog()
-        {
+        closelostPasswordDialog() {
             this.dialogLostPassword = false;
             this.emailLostPassword = '';
         },
-        closeAllDialog()
-        {
+        closeAllDialog() {
             this.dialogConfirmLostPassword = false;
             this.closelostPasswordDialog();
         },
-        async resetPassword()
-        {
+        async resetPassword() {
             this.warningEmployeeLostPassword = false;
             const validResetPassword = await this.$refs.lostPasswordForm.validate();
-            if (validResetPassword.valid)
-            {
-                getEmployeeByEmail(this.emailLostPassword).then(employee =>
-                {
-                    if (employee)
-                    {
-                        resetPassword(employee.employeeNumber).then(employeeReset =>
-                        {
+            if (validResetPassword.valid) {
+                getEmployeeByEmail(this.emailLostPassword).then(employee => {
+                    if (employee) {
+                        resetPassword(employee.employeeNumber).then(employeeReset => {
                             this.dialogConfirmLostPassword = true;
                             setTimeout(this.closeAllDialog, 4000);
-                        }).catch(err =>
-                        {
+                        }).catch(err => {
                             this.warningEmployeeLostPassword = true;
                             this.warningEmployeeLostPasswordMessage = err.message;
                             console.error(err);
                         })
                     }
-                }).catch(err =>
-                {
+                }).catch(err => {
                     this.warningEmployeeLostPassword = true;
                     this.warningEmployeeLostPasswordMessage = err.message;
                     console.error(err);
 
                 })
             }
+        },
+        async changePassword() {
+            const formValid = await this.$refs.newEmployeePasswordForm.validate();
+            if (!formValid) {
+                return;
+            }
+            try {
+                await changeNewEmployeePassword(userSession.employeeNumber, this.newPassword).then((employee) => {
+                    if (employee) {
+                        try {
+                            const employeeNumber = userSession.employeeNumber;
+                            userSession.clearCredentials();
+                            userSession.setCredentials(employeeNumber, this.newPassword);
+                            this.$router.push('/espace/dashboard');
+                        } catch (error) {
+                            console.error(error);
+                            alert(error.message);
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error(error);
+                alert(error.message);
+                await this.$refs.newEmployeePasswordForm.validate();
+            }
         }
     },
-    created()
-    {
-        if (!userSession.employeeNumber && !userSession.password)
-        {
+    created() {
+        if (!userSession.employeeNumber && !userSession.password) {
             this.$router.push('/espace');
-        } else
-        {
+        } else {
             this.$router.push('/espace/dashboard');
         }
     }
