@@ -48,10 +48,10 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 import NewReservationForm from "../reservationpage/NewReservationForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
-import { getReservationList } from '../../services/ReservationService';
+// import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale', 'loadDate'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale', 'loadDate', 'reservations','loadReservations'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -67,7 +67,7 @@ export default {
             shiftShow: "all",
             modal: false,
             selected: [],
-            reservations: [],
+            //reservations: [],
             filteredReservationList: [],
             dialogNewReservation: false,
             hasNewReservation: false,
@@ -170,16 +170,16 @@ export default {
             this.selected[0] = newReservation[0];
             this.search = newReservation[2];
         },
-        loadReservations(startDate, endDate) {
-            getReservationList(startDate, endDate)
-                .then((reservationList) => {
-                    this.reservations = reservationList;
-                })
-                .catch((err) => {
-                    console.error(err);
-                    alert(err.message);
-                });
-        },
+        // loadReservations(startDate, endDate) {
+        //     getReservationList(startDate, endDate)
+        //         .then((reservationList) => {
+        //             this.reservations = reservationList;
+        //         })
+        //         .catch((err) => {
+        //             console.error(err);
+        //             alert(err.message);
+        //         });
+        // },
         filterReservations() {
             this.filteredReservationList = [];
 
@@ -198,13 +198,25 @@ export default {
                     const explodedTime = reservationtoKeep.startTime.split(":");
                     const hour = explodedTime[0];
                     const min = explodedTime[1];
-                    const formattedStartTime = hour + "h" + min;
 
+                    const formattedStartTime = hour + "h" + min;
                     const allergies = (reservationtoKeep.clientAllergy) ? " - Allergie(s) : " + reservationtoKeep.clientAllergy : "";
+                    const clientsFullNameTemp = reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname;
+                    const clientsFullName = (clientsFullNameTemp.length <= 25) ? clientsFullNameTemp : clientsFullNameTemp.substring(0, 25) + "...";
+
+                    let listInformationConcatenation = "";
+                    listInformationConcatenation += reservationtoKeep.tableNumber ? "#" + reservationtoKeep.tableNumber : "NO TABLE";
+                    listInformationConcatenation += " - ";
+                    listInformationConcatenation += clientsFullName;
+                    listInformationConcatenation += " (" + reservationtoKeep.clientPhoneNumber + ") - ";
+                    listInformationConcatenation += reservationtoKeep.peopleCount + " personnes - ";
+                    listInformationConcatenation += reservationtoKeep.date + " à " + formattedStartTime;
+                    listInformationConcatenation += allergies;
+
+
 
                     const reservationToAdd = {
-                        "listInformation":
-                        (reservationtoKeep.tableNumber ? "#" + reservationtoKeep.tableNumber: "NO TABLE") + " - " + reservationtoKeep.clientFirstname + " " + reservationtoKeep.clientLastname + " (" + reservationtoKeep.clientPhoneNumber + ") - " + reservationtoKeep.peopleCount + " personnes - " + reservationtoKeep.date + " à " + formattedStartTime + allergies,
+                        "listInformation": listInformationConcatenation,
                         ...reservationtoKeep,
                         props: {
                             color: 'red',
@@ -233,7 +245,6 @@ export default {
         }
     },
     mounted() {
-        console.clear();
         if (!(!!this.selectedDate)) {
             this.todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
             this.endDate = this.startDate = this.todayDate;

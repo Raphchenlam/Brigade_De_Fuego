@@ -122,10 +122,8 @@ export async function createEmployee(employee) {
         },
         body: JSON.stringify(employee)
     });
-
-    console.log('FETCH RESPONSE', response);
-
-    if (response.ok) {
+    if (response.ok)
+    {
         return convertToEmployee(await response.json());
     } else {
         console.log(JSON.stringify(response));

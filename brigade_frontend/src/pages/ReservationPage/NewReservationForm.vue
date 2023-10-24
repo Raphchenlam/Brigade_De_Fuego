@@ -16,7 +16,7 @@
                         <v-text-field type="datetime-local" v-model="reservationFullDate" class="ma-2 pre-wrap h-25 w-25"
                             label="Date de la reservation" :rules="[rules.required, rules.dateIsValid]">
                         </v-text-field>
-                        <v-text-field v-model="reservation.peopleCount" width="10px" type="number" :min="1" :max="30"
+                        <v-text-field v-model="reservation.peopleCount" width="10px" type="number" :min="1" :max="12"
                             class="shrink ma-2 h-25 w-25" label="Nombre de personnes"
                             :rules="[rules.required, rules.reservationMaximum, rules.reservationMinimum]">
                         </v-text-field>
@@ -125,7 +125,7 @@ export default {
                 required: value => !!value || "Le champ est requis",
                 dateIsValid: () => this.dateValid || "Date non valide\n\t- Ne doit pas etre avant la date d'aujourd'hui\n\t- Ni avant 11h ou apres 23h",
                 reservationMinimum: value => (value >= 1) || "Le nombre de personnes minimum est de 1 pour une seule réservation.",
-                reservationMaximum: value => (value <= 30) || "Le nombre de personnes maximum est de 30 pour une seule réservation.",
+                reservationMaximum: value => (value <= 12) || "Le nombre de personnes maximum est de 12 pour une seule réservation.",
                 fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
             },
             formValid: true
@@ -271,7 +271,7 @@ export default {
     computed: {
         createButtonDisabled() {
             var peopleCountValid = true;
-            if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 30) {
+            if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 12) {
                 peopleCountValid = false;
             }
 

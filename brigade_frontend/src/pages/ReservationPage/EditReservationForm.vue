@@ -2,7 +2,7 @@
     <div class="ma-2" width="auto">
         <v-form class="pa-10" validate-on="submit lazy" ref="editReservationForm">
             <v-row class="justify-center">
-                <p>Client : {{ reservation.clientName }}</p>
+                <p>Client : {{ reservation.firstName + " " + reservation.lastName }}</p>
             </v-row>
             <v-row class="justify-center">
                 <v-text-field v-model="reservation.fullDate" type="datetime-local" class="ma-2"
@@ -16,12 +16,12 @@
             <v-checkbox v-model="reservation.hasMinor" label="Mineur sur place"></v-checkbox>
             <v-row class="justify-space-between">
                 <cols>
-                <SmallBlackButton class="mx-5" width="auto" textbutton="No Show"></SmallBlackButton>
-            </cols>
+                    <SmallBlackButton class="mx-5" width="auto" textbutton="No Show"></SmallBlackButton>
+                </cols>
                 <cols>
-                <DarkRedButton class="mx-5"  textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                <DarkRedButton class="mx-5" textbutton="Sauvegarder"></DarkRedButton>
-            </cols>
+                    <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
+                    <DarkRedButton class="mx-5" textbutton="Sauvegarder"></DarkRedButton>
+                </cols>
             </v-row>
         </v-form>
     </div>
@@ -29,30 +29,23 @@
 <script>
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import SmallBlackButton from '../../components/Reusable/SmallBlackButton.vue';
+import { getReservationById } from '../../services/ReservationService';
 
 export default {
     inject: ['closeEditReservationDialog'],
     props: {
         reservationId: Number
     },
-    data()
-    {
+    data() {
         return {
-            reservation: {
-                id: 2,
-                tableNumber: null,
-                clientId: "1",
-                clientName: "Alice Dupays (555-555-5555)",
-                statusCode: "1",
-                peopleCount: 12,
-                date: "2023-10-15",
-                startTime: "18:00:00",
-                fullDate: "2023-10-15 18:00", //FAIRE BIEN ATTENTENTION A CE FORMAT... C'EST CELUI UTILISER PAR LE V-TEXT-FIELD
-                endTime: "20:00:00",
-                mention: "Fete a Annie",
-                hasMinor: false,
-                takenBy: "3883344939293432"
-            }
+            reservation: {},
+            editedStatusCode: null,
+            editedPeopleCount: null,
+            editedDate: null,
+            editedStartTime: null,
+            editedFullDate: null,
+            editedMention: null,
+            editedHasMinor: false,
         }
     },
     components: {
@@ -60,14 +53,29 @@ export default {
         SmallBlackButton
     },
     methods: {
-        closeDialog()
-        {
+        loadReservation(receivedReservationId) {
+            if (receivedReservationId) {
+                getReservationById(receivedReservationId)
+                    .then(reservation => {
+                        this.editedFullDate = reservation.date + " " + reservation.startTime;
+                        this.reservation = {
+                            ...reservation,
+                            fullDate: this.editedFullDate
+                        };
+                    }).catch(err => {
+                        console.error(err);
+                    })
+            }
+            else {
+                this.reservation = {};
+            }
+        },
+        closeDialog() {
             this.closeEditReservationDialog();
         }
     },
-    mounted()
-    {
-
+    mounted() {
+        this.loadReservation(this.reservationId);
     }
 }
 </script>
