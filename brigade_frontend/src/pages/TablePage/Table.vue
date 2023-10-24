@@ -42,11 +42,11 @@ export default {
         tableCapacity: Number,
         isAssign: Boolean,
         tableIsActive: Boolean,
-        assignation: Object
-        //hasReservation: Boolean,
-
+        assignation: Object,
+        hasReservation: Boolean,
+        reservation: Object
     },
-    inject: ['hasReservation', 'displaySelectedTable', 'selectTableInSection', 'inEditionMode'],
+    inject: ['displaySelectedTable', 'selectTableInSection', 'inEditionMode'],
     data() {
         return {
             employeeColor: null,

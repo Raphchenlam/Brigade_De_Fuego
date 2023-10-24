@@ -121,20 +121,14 @@ export default {
             this.selectedReservationId = receivedReservationId;
         },
         loadReservations(startDate, endDate) {
-            getReservationList(startDate, endDate)
-                .then((reservationList) => {
-                    reservationList.forEach(reservation =>{
-                        if(this.selectedShift == "Midi" && parseInt(reservation.startTime.split(':').slice(0)[0]) <= 15 && reservation.statusCode <5){
-                            this.reservations.push(reservation);
-                        }else if(this.selectedShift == "Soir" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15 && reservation.statusCode <5){
-                            this.reservations.push(reservation);
-                        }
-                    })
-                })
-                .catch((err) => {
-                    console.error(err);
-                    alert(err.message);
-                });
+            this.reservations = []
+            getReservationList(startDate, endDate).then((reservationList) => {
+                this.reservations = reservationList;
+                this.updateTableLayout();
+            }).catch(err => {
+                console.error(err);
+                alert(err.message);
+            })
         },
         loadDate(newReservationDate, newReservationShift) {
             //************************/
@@ -166,14 +160,13 @@ export default {
                         this.assignationList.push(assignation);
                     }
                 });
-                this.updateTableLayout();
+                // this.updateTableLayout();
             }).catch(err => {
                 console.error(err);
             });
         },
         updateTableLayout() {
             this.tableWithAssignationList = [];
-            this.reservations = [];
 
             this.tableWithAssignationList = this.tableList.map(table => {
                 return {
@@ -207,17 +200,37 @@ export default {
 
             if (this.reservations.length > 0) {
                 this.reservations.forEach(reservation => {
-                    const table = this.tableWithAssignationList.find(table => {
-                        return (table.number == reservation.tableNumber)
-                    })
-                    if(table.isActive){
-                        table.hasReservation = true;
-                        table.reservation = reservation;
-                    } else{
-                        console.error(`La table ${table.number} est inactive`);
-                        table.hasReservation = false;
-                        updateTableOnReservationById(reservation.id, null)
-                        //reservation.tableNumber = null;
+                    if (this.selectedShift == "Midi" && parseInt(reservation.startTime.split(':').slice(0)[0]) <= 15 && reservation.statusCode < 5) {
+                        const table = this.tableWithAssignationList.find(table => {
+                            return (table.number == reservation.tableNumber)
+                        })
+                        if (table) {
+                            if (table.isActive) {
+                                table.hasReservation = true;
+                                table.reservation = reservation;
+                            } else {
+                                console.error(`La table ${table.number} est inactive`);
+                                table.hasReservation = false;
+                                updateTableOnReservationById(reservation.id, null)
+                                //reservation.tableNumber = null;
+                            }
+                        }
+                    } else if (this.selectedShift == "Soir" && parseInt(reservation.startTime.split(':').slice(0)[0]) > 15 && reservation.statusCode < 5) {
+                        this.reservations.push(reservation);
+                        const table = this.tableWithAssignationList.find(table => {
+                            return (table.number == reservation.tableNumber)
+                        })
+                        if (table) {
+                            if (table.isActive) {
+                                table.hasReservation = true;
+                                table.reservation = reservation;
+                            } else {
+                                console.error(`La table ${table.number} est inactive`);
+                                table.hasReservation = false;
+                                updateTableOnReservationById(reservation.id, null)
+                                //reservation.tableNumber = null;
+                            }
+                        }
                     }
                 })
             }
@@ -252,7 +265,9 @@ export default {
                     capacity: table.capacity,
                     isActive: table.isActive,
                     isAssign: false,
+                    hasReservation: false,
                     assignation: null,
+                    reservation: null
                 }
             });
 
@@ -357,10 +372,14 @@ export default {
     },
     watch: {
         selectedDate() {
-            this.loadAssignationList(this.selectedDate, this.selectedShift);
+            // this.loadAssignationList(this.selectedDate, this.selectedShift);
+            // this.loadReservations(this.selectedDate, this.selectedDate);
+            this.refreshPageView();
         },
         selectedShift() {
             this.loadAssignationList(this.selectedDate, this.selectedShift);
+            this.loadReservations(this.selectedDate, this.selectedDate);
+
         },
         selectedReservationId() {
             if (this.selectedReservationId) {
