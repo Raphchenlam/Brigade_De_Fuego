@@ -45,7 +45,7 @@
                             :value="meter2.actualSkillPoints" :segments="3" :segmentColors="meter2.segmentColors"
                             :customSegmentStops="meter2.segmentStop" needleColor="black" :needleTransitionDuration="1000"
                             :customSegmentLabels="meter2.segmentLabels" :currentValueText="meter2.currentValueText"
-                            needleTransition="easeElastic"  />
+                            needleTransition="easeElastic" />
                     </v-row>
                 </v-card>
             </v-col>
@@ -79,7 +79,7 @@ export default {
                 event: null,
                 peopleReservation: 0,
                 segmentColors: ["red", "limegreen", "red"],
-                segmentStop: [0,20,30,50],
+                segmentStop: [0, 20, 30, 50],
                 maxValue: 50, //requiredSkillPoints x 2
                 traffic: 0,
                 actualSkillPoints: 0, //actualSkillPoints
@@ -107,7 +107,7 @@ export default {
                 event: null,
                 peopleReservation: 0,
                 segmentColors: ["red", "limegreen", "red"],
-                segmentStop: [0,20,30,50],
+                segmentStop: [0, 20, 30, 50],
                 maxValue: 50, //requiredSkillPoints x 2
                 traffic: 0,
                 actualSkillPoints: 0, //actualSkillPoints
@@ -138,12 +138,20 @@ export default {
         {
             getPeriodInfoByDateAndShiftName(this.todayDate, "Midi").then(result =>
             {
-                this.meter1.actualSkillPoints = result.scheduledSkillPoints ;
+                this.meter1.actualSkillPoints = result.scheduledSkillPoints;
                 this.meter1.traffic = result.averageTraffic;
                 fetchEventByDateAndShiftName(this.todayDate, "Midi").then(result =>
                 {
-                    this.meter1.event = result;
-
+                    if (result)
+                    {
+                        this.meter1.event = result;
+                    }
+                    else
+                    {
+                        this.meter1.event = {
+                            impact: 100
+                        }
+                    }
                     getHowManyPeopleByDateAndShiftName(this.todayDate, "Midi").then(result =>
                     {
                         this.meter1.peopleReservation = result;
@@ -172,12 +180,20 @@ export default {
             });
             getPeriodInfoByDateAndShiftName(this.todayDate, "Soir").then(result =>
             {
-                this.meter2.actualSkillPoints = result.scheduledSkillPoints ;
+                this.meter2.actualSkillPoints = result.scheduledSkillPoints;
                 this.meter2.traffic = result.averageTraffic;
                 fetchEventByDateAndShiftName(this.todayDate, "Soir").then(result =>
                 {
-                    this.meter2.event = result;
-
+                    if (result)
+                    {
+                        this.meter2.event = result;
+                    }
+                    else
+                    {
+                        this.meter2.event = {
+                            impact: 100
+                        }
+                    }
                     getHowManyPeopleByDateAndShiftName(this.todayDate, "Soir").then(result =>
                     {
                         this.meter2.peopleReservation = result;

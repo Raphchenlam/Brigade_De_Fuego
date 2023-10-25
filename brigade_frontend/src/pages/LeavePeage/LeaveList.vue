@@ -39,7 +39,7 @@
                                                 <v-checkbox v-model="checkedBoxes.refused" label="Refusé"></v-checkbox>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="6">
-                                                <v-checkbox v-model="checkedBoxes.coming" label="À venir"></v-checkbox>
+                                                <v-checkbox v-model="checkedBoxes.coming" label="En Cours / À venir"></v-checkbox>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="6">
                                                 <v-checkbox v-model="checkedBoxes.passed" label="Passé"></v-checkbox>
