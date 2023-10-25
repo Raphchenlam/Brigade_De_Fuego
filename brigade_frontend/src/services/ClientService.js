@@ -43,7 +43,7 @@ export async function getClientById(id) {
     if (response.ok) {
         return await response.json();
     } else {
-        console.log(JSON.stringify(response));
+        console.info(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
@@ -60,7 +60,7 @@ export async function getClientList() {
     if (response.ok) {
         return await response.json();
     } else {
-        console.log(JSON.stringify(response));
+        console.info(JSON.stringify(response));
         throw await createServiceError(response);
     }
 
@@ -79,7 +79,25 @@ export async function createClient(client) {
     if (response.ok) {
         return convertToClient(await response.json());
     } else {
-        console.log(JSON.stringify(response));
+        console.info(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
+
+export async function updateClient(client) {
+    const response = await fetch(`/api/client`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+        body: JSON.stringify(client)
+    });
+
+    if (response.ok) {
+        return convertToClient(await response.json());
+    } else {
+        console.info(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }

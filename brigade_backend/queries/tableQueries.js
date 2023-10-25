@@ -25,10 +25,10 @@ const pool = require('./DBPool');
 //     });
 // };
 // exports.getAssignationsByDate = getAssignationsByDate;
- 
+
 const getAllTables = async () => {
     const result = await pool.query(
-        `SELECT * FROM "table"`
+        `SELECT * FROM "table" ORDER BY number`
     );
     return result.rows.map(row => {
         const table = {
@@ -52,8 +52,19 @@ const getTableByNumber = async (tableNumber) => {
             capacity: row.capacity,
             isActive: row.is_active
         }
-        return table; 
-    } 
+        return table;
+    }
     return undefined;
 };
-exports.getTableByNumber=getTableByNumber;
+exports.getTableByNumber = getTableByNumber;
+
+const updateTableStatus = async (tableNumber, status) => {
+    const result = await pool.query(
+        `UPDATE "table" SET is_active = $1 WHERE number = $2`, [status, tableNumber]
+    );
+    if (result.rowCount === 0) {
+        return undefined
+    }
+    return getTableByNumber(tableNumber);
+};
+exports.updateTableStatus = updateTableStatus;

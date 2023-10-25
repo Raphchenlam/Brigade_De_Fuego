@@ -22,14 +22,16 @@
 
       <router-link to="/espace/employee" @click="displayDrawer = false"
         style="text-decoration: none; color: inherit;"><v-list-item prepend-icon="mdi-account-box-outline"
-          title="Employes" value="employee"></v-list-item></router-link>
+          title="Employés" value="employee"></v-list-item></router-link>
 
       <router-link to="/espace/event" @click="displayDrawer = false"
-        style="text-decoration: none; color: inherit;"><v-list-item prepend-icon="mdi-party-popper" title="Evenements"
+        style="text-decoration: none; color: inherit;"><v-list-item prepend-icon="mdi-party-popper" title="Événements"
           value="event"></v-list-item></router-link>
+
 
       <router-link to="/espace/leave"  @click="displayDrawer = false" style="text-decoration: none; color: inherit;"><v-list-item
           prepend-icon="mdi-timer-off-outline" title="Conges" value="leave"></v-list-item></router-link>
+
 
       <router-link to="/espace/punch"  @click="displayDrawer = false" style="text-decoration: none; color: inherit;"><v-list-item
           prepend-icon="mdi-timer-edit-outline" title="Punch" value="punch"></v-list-item></router-link>

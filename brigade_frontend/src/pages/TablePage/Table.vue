@@ -60,7 +60,7 @@ export default {
     },
     methods: {
         selectTable() {
-            if (this.inEditionMode) {
+            if (this.inEditionMode && this.tableIsActive) {
                 this.selectTableInSection(this.tableNumber);
             } else {
                 this.displaySelectedTable(this.tableNumber);

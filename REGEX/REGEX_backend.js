@@ -1,11 +1,8 @@
 const validEmployeeNumber = /^[1-9]\d{3}$/;
 exports.validEmployeeNumber = validEmployeeNumber;
 
-const validName = /^([A-Z][a-z]{1,}(?:[- ][A-Z][a-z]{1,})?)$/;
+const validName = /^[A-Z][a-z]{1,}(?:(?:[- ][A-Z][a-z]{1,})?)*$/;
 exports.validName = validName;
-
-const validName2 = /^[A-Z][a-z]{1,}(?:(?:[- ][A-Z][a-z]{1,})?)*$/;
-exports.validName2 = validName2;
 
 const validRole = /^[A-Z][a-zA-Z]*$/;
 exports.validRole = validRole;

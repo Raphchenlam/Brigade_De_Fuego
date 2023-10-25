@@ -1,45 +1,56 @@
 <template>
     <v-row class="ma-5 justify-center">
         <v-sheet width="300">
-            <v-text-field v-model="date" width="50%" type="date" label="Date">
+            <v-text-field v-model="currentDate" width="50%" type="date" label="Date">
             </v-text-field>
         </v-sheet>
     </v-row>
     <v-sheet class="mx-10">
-        <v-data-table-server height="300px" fixed-header :headers="headers" :items="punchList"
-            :items-length="punchList.length" class="elevation-1" @update:options="loadPunch">
+        <v-data-table-server no-data-text="Aucun punch à la date sélectionnée" height="300px" fixed-header :headers="headers"
+            :items="punchList" :items-length="punchList.length" class="elevation-1" @update:options="loadPunch">
             <template v-slot:top>
                 <v-toolbar flat>
-                    <v-toolbar-title>Listes des punchs</v-toolbar-title>
+                    <v-toolbar-title>Liste des punchs</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="500px">
+                    <v-dialog v-model="updatePunchDialog" max-width="500px">
                         <v-card>
                             <v-card-title>
-                                <span class="text-h5">Modifier Punch</span>
-                                <!-- on va devoir changer pour le name lorsque le fetch sera fait avec le inner join -->
+                                <span class="text-h5">Modifier Punch - {{ editedItem.employeeFullName }}</span>
                             </v-card-title>
 
                             <v-card-text>
                                 <v-container>
                                     <v-row class=" ma-2 justify-space-between">
-                                        <p>Nom employee : {{ editedItem.id }}</p>
-                                        <p>Numero Employee : {{ editedItem.employeeNumber }}</p>
+                                        <p>Numéro Employé : {{ editedItem.employeeNumber }}</p>
                                     </v-row>
                                     <v-row>
                                         <v-col cols="12" sm="6" md="6">
-                                            <v-text-field type="date" v-model="editedItem.dateIn"
+                                            <v-text-field disabled type="date" v-model="editedItem.dateIn"
                                                 label="Date IN"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="6">
-                                            <v-text-field type="time" v-model="editedItem.punchIn" label="Heure IN"></v-text-field>
+                                            <v-text-field type="time" v-model="editedItem.startTime"
+                                                label="Heure IN"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="6">
                                             <v-text-field type="date" v-model="editedItem.dateOut"
                                                 label="Date OUT"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="6">
-                                            <v-text-field type="time" v-model="editedItem.punchOut" label="Heure OUT"></v-text-field>
+                                            <v-text-field type="time" v-model="editedItem.endTime"
+                                                label="Heure OUT"></v-text-field>
+                                        </v-col>
+                                        <v-col v-if="errorPunchInfo" cols="12">
+                                            <span style="color: red;"> Une ou des informations sont manquantes ou invalides,
+                                                veuillez les régler</span>
+                                        </v-col>
+                                        <v-col v-if="dateOutError" cols="12">
+                                            <span style="color: red;">La date de fin doit être plus récente que la date de
+                                                début</span>
+                                        </v-col>
+                                        <v-col v-if="endTimeError" cols="12">
+                                            <span style="color: red;">L'heure de fin doit être après l'heure de début</span>
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -50,10 +61,24 @@
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
                                     Annuler
                                 </v-btn>
-                                <v-btn color="blue-darken-1" variant="text" @click="save">
+                                <v-btn color="blue-darken-1" variant="text" @click="editPunchInfo">
                                     Sauvegarder
                                 </v-btn>
                             </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                    <v-dialog v-model="OKupdatedPunchDialog" width="50%" persistent>
+                        <v-card height="100px">
+                            <v-card-title>
+                                <span>Confirmation de modification de punch</span>
+                            </v-card-title>
+                            <v-card-text>
+                                <v-row class="justify-center">
+                                    <p>Le punch de {{ editedItem.employeeFullName }} le {{ editedItem.dateIn }} a été
+                                        modifié
+                                    </p>
+                                </v-row>
+                            </v-card-text>
                         </v-card>
                     </v-dialog>
                 </v-toolbar>
@@ -63,51 +88,66 @@
                     mdi-pencil
                 </v-icon>
             </template>
-
         </v-data-table-server>
     </v-sheet>
 </template>
 
 <script>
+
+
 import { VDataTable } from 'vuetify/labs/VDataTable'
+import { getPunchListByDate, updatePunch } from '../../services/PunchService';
 
 export default {
+    inject: ['toLocale'],
     components: {
         VDataTable,
-
     },
-    data()
-    {
+    data() {
         return {
-            dialog: false,
-            date: null,
+            updatePunchDialog: false,
+            OKupdatedPunchDialog: false,
+            errorPunchInfo: false,
+            dateOutError: false,
+            endTimeError: false,
+            currentDate: null,
             punchList: [],
             headers: [
                 {
                     align: 'start',
                     key: 'employeeNumber',
                     sortable: false,
-                    title: 'Nom',
+                    title: '#EMPLOYÉ',
                 },
                 {
-                    key: 'punchIn',
+                    key: 'employeeFullName',
                     sortable: false,
-                    title: 'IN',
+                    title: 'NOM',
                 },
                 {
-                    key: 'punchOut',
+                    key: 'dateIn',
                     sortable: false,
-                    title: 'OUT',
+                    title: 'DATE IN',
                 },
                 {
-                    key: 'total',
+                    key: 'startTime',
                     sortable: false,
-                    title: 'Total',
+                    title: 'START AT',
+                },
+                {
+                    key: 'dateOut',
+                    sortable: false,
+                    title: 'DATE OUT',
+                },
+                {
+                    key: 'endTime',
+                    sortable: false,
+                    title: 'END AT',
                 },
                 {
                     key: 'actions',
                     sortable: false,
-                    title: 'Action',
+                    title: 'ACTION',
                 },
             ],
             editedIndex: -1,
@@ -115,97 +155,92 @@ export default {
                 id: 0,
                 employeeNumber: "",
                 dateIn: "",
-                punchIn: "",
+                startTime: "",
                 dateOut: "",
-                punchOut: null,
-                total: null
+                endTime: null
             },
             defaultItem: {
                 id: 0,
                 employeeNumber: "",
                 dateIn: "",
-                punchIn: "",
+                startTime: "",
                 dateOut: "",
-                punchOut: null,
-                total: null
+                endTime: null
             },
         }
     },
     methods: {
-        loadPunch()
-        {
-            const allPunch = [
-                {
-                    id: 1,
-                    employeeNumber: "1111",
-                    dateIn: "2023-09-23",
-                    punchIn: "10:00",
-                    dateOut: "2023-09-23",
-                    punchOut: "15:00",
-                    total: "5:00"
-                },
-                {
-                    id: 2,
-                    employeeNumber: "2222",
-                    dateIn: "2023-09-23",
-                    punchIn: "11:00",
-                    dateOut: "2023-09-23",
-                    punchOut: "16:00",
-                    total: "5:00"
-                },
-                {
-                    id: 3,
-                    employeeNumber: "3333",
-                    dateIn: "2023-09-23",
-                    punchIn: "15:00",
-                    dateOut: "2023-09-23",
-                    punchOut: "16:00",
-                    total: "5:00"
-                },
-                {
-                    id: 4,
-                    employeeNumber: "4444",
-                    dateIn: "2023-09-23",
-                    punchIn: "17:00",
-                    dateOut: "2023-09-23",
-                    punchOut: "23:00",
-                    total: "6:00"
-                },
-                {
-                    id: 5,
-                    employeeNumber: "5555",
-                    dateIn: "2023-09-23",
-                    punchIn: "19:00",
-                    dateOut: "2023-09-23",
-                    punchOut: "16:00",
-                    total: "5:00"
-                },
-            ];
-            this.punchList = allPunch;
+        loadPunchListFromCurrentDate() {
+            this.punchList = [];
+            getPunchListByDate(this.currentDate).then(allPunchs => {
+                allPunchs.forEach(employeePunch => {
+                    this.punchList.push(employeePunch);
+                });
+            }).catch(err => {
+                console.error(err);
+            });
         },
-        editItem(item)
-        {
+        editItem(item) {
             this.editedIndex = this.punchList.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialog = true
+            this.editedItem = Object.assign({}, item);
+            this.updatePunchDialog = true;
         },
-        close()
-        {
-            this.dialog = false
-            this.$nextTick(() =>
-            {
+        close() {
+            this.updatePunchDialog = false;
+            this.OKupdatedPunchDialog = false;
+            this.$nextTick(() => {
                 this.editedItem = Object.assign({}, this.defaultItem)
                 this.editedIndex = -1
-            })
+            });
         },
-        save()
-        {
+        editPunchInfo() {
+            this.verifyPunchInfo();
+            if (this.errorPunchInfo) return;
+            updatePunch(this.editedItem).then(updatedPunch => {
+                if (updatedPunch) {
+                    this.OKupdatedPunchDialog = true;
+                    this.loadPunchListFromCurrentDate();
+                    setTimeout(this.close, 2500);
+                }
+            }).catch(err => {
+                console.error(err);
+            });
+        },
+        verifyPunchInfo() {
 
+            this.errorPunchInfo = false;
+            this.dateOutError = false;
+            this.endTimeError = false;
+
+            if (!this.editedItem.dateIn || !this.editedItem.startTime) this.errorPunchInfo = true;
+            if ((this.editedItem.dateOut && !this.editedItem.endTime) || (!this.editedItem.dateOut && this.editedItem.endTime)) this.errorPunchInfo = true;
+
+            const dateInParts = this.editedItem.dateIn.split('-');
+            const dateOutParts = this.editedItem.dateOut.split('-');
+
+            const dateInObj = new Date(dateInParts[0], dateInParts[1] - 1, dateInParts[2]);
+            const dateOutObj = new Date(dateOutParts[0], dateOutParts[1] - 1, dateOutParts[2]);
+
+            if (dateOutObj >= dateInObj) {
+                if (this.editedItem.startTime > this.editedItem.endTime) {
+                    this.errorPunchInfo = true;
+                    this.endTimeError = true;
+                }
+            }
+
+            if (dateOutObj < dateInObj) {
+                this.errorPunchInfo = true;
+                this.dateOutError = true;
+            }
         }
     },
-    mounted()
-    {
-        this.date = "2023-09-05" //changer pour obtenir la date de aujourdhui
+    watch: {
+        currentDate() {
+            this.loadPunchListFromCurrentDate();
+        }
+    },
+    mounted() {
+        this.currentDate = this.toLocale(new Date().toLocaleDateString('en-GB')).date.fullDate;
     },
 }
 </script>

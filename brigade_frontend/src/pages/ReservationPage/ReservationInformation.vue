@@ -1,6 +1,6 @@
 <template>
     <v-sheet width="100%" class="pa-2" v-if="reservationId">
-        <v-card >
+        <v-card>
             <v-dialog v-model="dialogEditReservation" width="100%">
                 <template v-slot:activator="{ props }">
                     <v-row class="justify-space-between">
@@ -8,9 +8,8 @@
                             <h1 class="mt-5 ml-10">{{ reservation.firstName + " " + reservation.lastName }}</h1>
                         </v-col>
                         <v-col>
-                            <h1 class="mt-5 ml-10" 
-                            :class="{ noTable: !reservation.tableNumber }">
-                            {{ reservation.tableNumber ? "Table #" + reservation.tableNumber : "Aucune Table" }}</h1>
+                            <h1 class="mt-5 ml-10" :class="{ noTable: !reservation.tableNumber }">
+                                {{ reservation.tableNumber ? "Table #" + reservation.tableNumber : "Aucune Table" }}</h1>
                         </v-col>
                         <EditBlackButton class="ma-2" v-bind="props"></EditBlackButton>
                     </v-row>
@@ -38,6 +37,10 @@
                     <p v-if="reservation.allergy">Allergy: {{ reservation.allergy }}</p>
                 </v-col>
             </v-row>
+            <v-row v-if='$route.path == "/operation/tablePlan"'>
+                <BlackButton @click="toggleReservation" class="ma-6"
+                    :textbutton='!!reservation.tableNumber ? "Libérer la table" : "Assigner une table"'></BlackButton>
+            </v-row>
             <v-card class="ma-5 justify-space-between" color="#36454f">
                 <v-card-title v-if="reservation.isBlacklisted" class="red ma-2">
                     <strong>BLACKLISTED!</strong>
@@ -62,6 +65,7 @@ export default {
         BlackButton,
         EditBlackButton
     },
+    inject: ['selectedTable'],
     data() {
         return {
             dialogEditReservation: false,
@@ -71,17 +75,18 @@ export default {
     watch: {
         reservationId() {
             this.loadReservation(this.reservationId);
-        }
+        },
+
     },
     methods: {
         loadReservation(selectedReservationId) {
             if (selectedReservationId) {
                 getReservationById(selectedReservationId)
-                .then(reservation => {
-                    this.reservation = reservation;
-                }).catch(err => {
-                    console.error(err);
-                })
+                    .then(reservation => {
+                        this.reservation = reservation;
+                    }).catch(err => {
+                        console.error(err);
+                    })
             }
             else {
                 this.reservation = {};
@@ -89,6 +94,13 @@ export default {
         },
         closeEditReservationDialog() {
             this.dialogEditReservation = false;
+        },
+        toggleReservation() {
+            if (!!this.reservation.tableNumber) {
+                this.reservation.tableNumber = null;
+            } else if (this.reservation.tableNumber == null && this.selectedTable != null) {
+                this.reservation.tableNumber = this.selectedTable.number;
+            }
         }
     },
     provide() {
@@ -97,6 +109,7 @@ export default {
         };
     },
     mounted() {
+        console.clear();
         if (this.reservationId) {
             this.loadReservation(this.reservationId);
         }
