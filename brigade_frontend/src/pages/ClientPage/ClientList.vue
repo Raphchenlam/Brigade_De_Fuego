@@ -2,7 +2,7 @@
     <v-sheet class="h-15">
         <v-card class="mx-10 h-75">
             <v-row class="mb-0">
-                <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
+                <v-text-field @input="" v-model="search" hide-details placeholder="Rechercher un client..."
                     class="ma-2" clearable @click:clear="clearSearchInput"></v-text-field>
                 <v-dialog v-model="dialogNewClient" width="100%">
                     <template v-slot:activator="{ props }">
@@ -12,7 +12,7 @@
                     </template>
                     <v-card>
                         <v-card-title>
-                            Creer un nouveau client
+                            Créer un nouveau client
                         </v-card-title>
                         <NewClientForm></NewClientForm>
                     </v-card>

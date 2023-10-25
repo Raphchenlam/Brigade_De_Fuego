@@ -3,12 +3,12 @@
         <v-form class="pa-10" validate-on="submit lazy" ref="editClientForm">
             <p>Idclient : {{ clientId }}</p>
             <v-row>
-                <v-text-field v-model="client.firstName" class="ma-2" label="Prenom" clearable>
+                <v-text-field v-model="client.firstName" class="ma-2" label="Prénom" clearable>
                 </v-text-field>
                 <v-text-field v-model="client.lastName" class="ma-2" label="Nom de famille" clearable>
                 </v-text-field>
             </v-row>
-            <v-text-field v-model="client.phoneNumber" label="Numero de telephone(format: xxx-xxx-xxxx)" density="compact"
+            <v-text-field v-model="client.phoneNumber" label="Numéro de téléphone(format: xxx-xxx-xxxx)" density="compact"
                 clearable>
             </v-text-field>
             <v-text-field v-model="client.allergy" label="Allergies" density="compact" ref="passwordInput" clearable>

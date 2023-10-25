@@ -17,13 +17,12 @@
                         <v-card>
                             <v-card-title>
                                 <span class="text-h5">Modifier Punch - {{ editedItem.employeeFullName }}</span>
-                                <!-- on va devoir changer pour le name lorsque le fetch sera fait avec le inner join -->
                             </v-card-title>
 
                             <v-card-text>
                                 <v-container>
                                     <v-row class=" ma-2 justify-space-between">
-                                        <p>Numero Employee : {{ editedItem.employeeNumber }}</p>
+                                        <p>Numéro Employé : {{ editedItem.employeeNumber }}</p>
                                     </v-row>
                                     <v-row>
                                         <v-col cols="12" sm="6" md="6">

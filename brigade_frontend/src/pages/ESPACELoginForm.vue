@@ -2,14 +2,14 @@
     <div class="boxed-center">
         <v-sheet class="ma-2" max-width="40rem">
             <v-form @submit.prevent="login" validate-on="submit lazy" ref="loginForm">
-                <v-text-field v-model="employeeNumber" label="Numero d'employé" :counter="4" maxlength="4"
+                <v-text-field v-model="employeeNumber" label="Numéro d'employé" :counter="4" maxlength="4"
                     :rules="[rules.required, rules.validatePassword]" density="compact" autofocus></v-text-field>
                 <v-text-field v-model="password" label="Mot de passe" type="password"
                     :rules="[rules.required, rules.validatePassword]" density="compact"></v-text-field>
                 <v-btn type="submit" :disabled="!employeeNumber || !password">Se connecter</v-btn>
             </v-form>
             <div class="text-body ma-3">Mot de passe oublié ?&nbsp;
-                <a @click="dialogLostPassword = true" style="color:blue; text-decoration: underline;">cliquez ici!</a>
+                <a @click="dialogLostPassword = true" style="color:blue; text-decoration: underline;">Cliquez ici!</a>
             </div>
         </v-sheet>
     </div>
@@ -50,13 +50,13 @@
                     <v-col>
                         <v-text-field v-model="newPassword" label="Mot de passe" type="password"
                             :rules="[rules.required, rules.validatePassword, rules.fieldLength255]" density="compact" ref="passwordInput"
-                            clearable>
+                            clearable autofocus maxlength="255" :counter="255">
                         </v-text-field>
                     </v-col>
                     <v-col>
                         <v-text-field v-model="newPasswordConfirmation" label="Confirmer le mot de passe"
                             :rules="[rules.required, rules.passwordsMatch, rules.fieldLength255]" type="password" density="compact"
-                            ref="passwordConfirmInput" clearable>
+                            ref="passwordConfirmInput" clearable maxlength="255" :counter="255">
                         </v-text-field>
                     </v-col>
                 </v-row>
@@ -75,7 +75,7 @@
     <v-dialog v-model="dialogConfirmLostPassword" width="75%" persistent>
         <v-card class="pa-5">
             <v-row class="justify-center">
-                <p style="font-size: 25px;">Votre email a bien été réinitialisé. Un courriel vous a été envoyé.</p>
+                <p style="font-size: 25px;">Votre mot de passe a bien été réinitialisé. Un courriel vous a été envoyé.</p>
             </v-row>
         </v-card>
     </v-dialog>

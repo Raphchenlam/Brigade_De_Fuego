@@ -2,7 +2,7 @@
     <v-sheet class="pl-10 py-5">
         <v-card height="600px">
             <v-row class="mb-0">
-                <v-text-field v-model="search" hide-details placeholder="Nom à rechercher" class="ma-2"></v-text-field>
+                <v-text-field v-model="search" hide-details placeholder="Rechercher un employé..." class="ma-2"></v-text-field>
                 <v-dialog v-model="dialogNewEmployee" width="50%" persistent>
                     <template v-slot:activator="{ props }">
                         <div v-if="$route.fullPath == '/espace/employee'" class="ma-2 text-center">
