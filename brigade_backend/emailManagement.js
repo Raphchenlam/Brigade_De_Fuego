@@ -24,7 +24,7 @@ function sendEmail(recipients, subjet, text, html)
     };
     transporter.sendMail(mailOptions, function (error, info)
     {
-        if (erreur)
+        if (error)
         {
             console.error("Erreur lors de l'envoi du courriel : " + error);
         } else

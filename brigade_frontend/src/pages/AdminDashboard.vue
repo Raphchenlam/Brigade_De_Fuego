@@ -14,7 +14,7 @@
                     </v-row>
                     <v-row class="justify-center ma-5">
                         <div>
-                            <p class="ma-5" style="font-size: 45px;font-weight: bold;text-align: center;">6</p>
+                            <p class="ma-5" style="font-size: 45px;font-weight: bold;text-align: center;"> {{ currentPendingLeaves}}</p>
                         </div>
                     </v-row>
                 </v-card>
@@ -74,6 +74,7 @@ export default {
     data()
     {
         return {
+            currentPendingLeaves : 8,
             todayDate: null,
             meter1: {
                 event: null,
@@ -221,6 +222,13 @@ export default {
                 console.error(err);
             });
         },
+        loadCurrentPendingleaves()
+        {
+
+
+            
+            this.currentPendingLeaves = 8;
+        },
         calculateRequiredSkillPoints(shiftName)
         {
             let resultRequired;
@@ -262,6 +270,10 @@ export default {
     {
         this.todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
         this.loadMeterInformations()
+    },
+    mounted()
+    {
+        this.loadCurrentPendingleaves()
     }
 }
 </script>
