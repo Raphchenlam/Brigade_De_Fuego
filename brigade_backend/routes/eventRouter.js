@@ -24,6 +24,22 @@ router.get("/", (req, res, next) => {
     });
 });
 
+router.get('/:date/:shiftName', (req, res, next) => {
+  const date = req.params.date;
+  const shiftName = req.params.shiftName;
+  if (!date) return next(new HttpError(400, "une date doit etre fournis"));
+  if (!shiftName || shiftName == "") return next(new HttpError(400, "une nom de shift doit etre fournis"));
+
+  eventQueries.getEventByDateAndShift(date,shiftName).then(event => {
+    if (event) {
+      res.json(event);
+    }
+    else {
+      res.status(206).json(`Aucun événement pour cette date`);
+    }
+  })
+});
+
 // GET un evenement individuel par nom
 // Doit etre Admin
 

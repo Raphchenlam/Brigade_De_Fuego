@@ -39,7 +39,7 @@
                                                 <v-checkbox v-model="checkedBoxes.refused" label="Refusée"></v-checkbox>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="6">
-                                                <v-checkbox v-model="checkedBoxes.coming" label="À venir"></v-checkbox>
+                                                <v-checkbox v-model="checkedBoxes.coming" label="En Cours / À venir"></v-checkbox>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="6">
                                                 <v-checkbox v-model="checkedBoxes.passed" label="Passée"></v-checkbox>
@@ -233,8 +233,8 @@ export default {
                 all: false,
                 pending: true,
                 pendingModified: true,
-                refused: true,
-                accepted: true,
+                refused: false,
+                accepted: false,
                 passed: false,
                 coming: true
             },
@@ -251,8 +251,6 @@ export default {
                 {
                     allLeaves.forEach(leave =>
                     {
-                        //if (!leave.nbPending)
-                        //{
                         leave.startDate = leave.startDate.split('T').slice(0)[0]
                         leave.endDate = leave.endDate.split('T').slice(0)[0]
                         if (leave.status == 'Pending') leave.statusShow = 'En Attente'
@@ -260,10 +258,6 @@ export default {
                         if (leave.status == 'Approved') leave.statusShow = 'Accepté'
                         if (leave.status == 'Refused') leave.statusShow = 'Refusé'
                         this.leaveList.push(leave);
-                        //} else
-                        //{
-                        //this.nbPendingLeave = leave.nbPending;
-                        //}
                     });
                     this.loading = false;
                 }).catch(err =>
@@ -274,6 +268,11 @@ export default {
             {
                 getAllFilteredLeaves(this.checkedBoxes).then(allLeaves =>
                 {
+                    if (allLeaves.length == 0)
+                    {
+                        this.leaveList = allLeaves;
+                        this.filteredLeaveList = this.leaveList;
+                    }
                     allLeaves.forEach(leave =>
                     {
                         if (!leave.nbPending)
@@ -289,13 +288,12 @@ export default {
                         {
                             this.nbPendingLeave = leave.nbPending;
                         }
-                        this.loading = false;
                     });
+                    this.loading = false;
                 }).catch(err =>
                 {
                     console.error(err);
                 })
-
             }
             this.filteredLeaveList = this.leaveList;
         },

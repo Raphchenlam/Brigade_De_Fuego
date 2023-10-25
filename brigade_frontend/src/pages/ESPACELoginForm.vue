@@ -133,6 +133,7 @@ export default {
     methods: {
         async login() {
             this.validPassword = true;
+
             const validForm = await this.$refs.loginForm.validate();
 
             if (!validForm.valid) {

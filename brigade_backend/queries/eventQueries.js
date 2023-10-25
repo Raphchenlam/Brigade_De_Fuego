@@ -1,11 +1,13 @@
 const pool = require("./DBPool");
 
-const getAllEvents = async () => {
+const getAllEvents = async () =>
+{
   const result = await pool.query(
     `SELECT * FROM event`
   );
 
-  return result.rows.map(row => {
+  return result.rows.map(row =>
+  {
     const event = {
       name: row.name,
       eventType: row.event_type,
@@ -17,13 +19,15 @@ const getAllEvents = async () => {
 };
 exports.getAllEvents = getAllEvents;
 
-const getEventByName = async (eventName) => {
+const getEventByName = async (eventName) =>
+{
   const result = await pool.query(
     `SELECT * FROM event WHERE name = $1`, [eventName]
   );
 
   const row = result.rows[0];
-  if (row) {
+  if (row)
+  {
     const event = {
       name: row.name,
       eventType: row.event_type,
@@ -35,10 +39,38 @@ const getEventByName = async (eventName) => {
   return undefined;
 };
 
-
 exports.getEventByName = getEventByName;
 
-const getAllEventType = async () => {
+const getEventByDateAndShift = async (date, shiftName) =>
+{
+  const result = await pool.query(
+    `SELECT * FROM schedule_event as se
+    JOIN event on event.name = se.event_name
+    JOIN schedule_period as sp ON sp.id = se.schedule_period_id
+    WHERE date = $1
+    AND shift_name = $2
+    LIMIT 1`,
+    [date, shiftName]
+  );
+
+  const row = result.rows[0];
+  if (row)
+  {
+    const event = {
+      name: row.event_name,
+      eventType: row.event_type,
+      impact: row.impact,
+      isActive: row.is_active
+    };
+    return event;
+  }
+  return undefined;
+};
+
+exports.getEventByDateAndShift = getEventByDateAndShift;
+
+const getAllEventType = async () =>
+{
   const result = await pool.query(
     `SELECT name FROM event_type`
   );
@@ -50,7 +82,8 @@ const getAllEventType = async () => {
 
 exports.getAllEventType = getAllEventType;
 
-const insertEvent = async (event) => {
+const insertEvent = async (event) =>
+{
   const result = await pool.query(
     `INSERT INTO event(name, event_type, impact, is_active)
             VALUES ($1, $2, $3, true) RETURNING name`,
@@ -58,7 +91,8 @@ const insertEvent = async (event) => {
   );
   const row = result.rows[0];
 
-  if (row) {
+  if (row)
+  {
     return row.name;
   }
 
@@ -67,25 +101,29 @@ const insertEvent = async (event) => {
 };
 exports.insertEvent = insertEvent;
 
-const updateEvent = async (newEvent) => {
+const updateEvent = async (newEvent) =>
+{
   const result = await pool.query(
     `UPDATE event SET event_type = $2, impact = $3, is_active = $4
     WHERE name = $1`,
     [newEvent.name, newEvent.eventType, newEvent.impact, newEvent.isActive]
   );
-  if (result.rowCount === 0) {
+  if (result.rowCount === 0)
+  {
     return undefined
   }
   return getEventByName(newEvent.name);
 };
 exports.updateEvent = updateEvent;
 
-const deleteEvent = async (eventName) => {
+const deleteEvent = async (eventName) =>
+{
   const result = await pool.query(
     `DELETE FROM event WHERE name = $1`,
     [eventName]
   );
-  if (result.rowCount === 0) {
+  if (result.rowCount === 0)
+  {
     return undefined;
   }
   return {};
