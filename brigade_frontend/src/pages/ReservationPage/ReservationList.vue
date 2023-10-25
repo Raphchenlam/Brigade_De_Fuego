@@ -21,10 +21,10 @@
             </v-row>
             <v-row v-if='$route.path == "/operation/reservation"'>
                 <v-text-field type="date" class="ma-2 pa-4" label="Date Debut" v-model="startDate"
-                    @click:clear="resetStartDate" clearable hint="'Clear' réinitialise la date courante" persistent-hint>
+                    @click:clear="resetStartDate" clearable hint="Le 'X' réinitialise la date à celle d'aujourd'hui" persistent-hint>
                 </v-text-field>
                 <v-text-field type="date" class="ma-2 pa-4" label="Date Fin" v-model="endDate" @click:clear="resetEndDate"
-                    clearable hint="'Clear' réinitialise la date courante" persistent-hint>
+                    clearable hint="Le 'X' réinitialise la date à celle d'aujourd'hui" persistent-hint>
                 </v-text-field>
             </v-row>
             <v-radio-group v-model="shiftShow" v-if='$route.path == "/operation/reservation"'>

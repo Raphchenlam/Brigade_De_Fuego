@@ -1,3 +1,5 @@
+const { error } = require("console");
+
 function replaceAndSplitDateFromTime(str) {
     if (str) {
         const indexOfComma = str.indexOf(",");
@@ -89,22 +91,33 @@ function dateOrTimeObjectifier(strObject) {
             secondes: time.secondes,
             date: date,
             time: time,
+            proof: "This is an object made with toLocale. TM Brigade_De_Fuego"
         }
     }
 }
 
 
 const toLocale = function (str) {
-    str = (str instanceof Date) ? str.toLocaleString("en-GB") : str;
+    if (typeof str === "object" && str.proof == "This is an object made with toLocale. TM Brigade_De_Fuego") {
+        console.info(str.proof);
+        return str;
+    }else if (typeof str === "string" || str instanceof Date){
+        str = (str instanceof Date) ? str.toLocaleString("en-GB") : str;
 
-    const dateAndTimeString = replaceAndSplitDateFromTime(str);
-    return dateOrTimeObjectifier(dateAndTimeString);
+        const dateAndTimeString = replaceAndSplitDateFromTime(str);
+        return dateOrTimeObjectifier(dateAndTimeString);
+
+    }else if (typeof str === "object"){
+        throw ("Received an object that is not a toLocale object.");
+    }
+
+
 }
 exports.toLocale = toLocale;
 
 
 const isBeforeToday = function (fullDate) {
-    const dateToVerify = toLocale(fullDate)
+    const dateToVerify = (typeof fullDate === "object") ? fullDate : toLocale(fullDate);
     var today = toLocale(new Date().toLocaleString("en-GB"));
 
     if (dateToVerify.year < today.year) {
@@ -129,3 +142,14 @@ const isBeforeToday = function (fullDate) {
     return false;
 }
 exports.isBeforeToday = isBeforeToday;
+
+
+// run with < node dateAndTimeObjectifier.js > in terminal, when in REGEX folder
+// const variable = toLocale("2023-10-26")
+// console.log("variable : ", variable)
+
+// const variable2 = toLocale(variable)
+// console.log("variable2 : ", variable2)
+
+// const variable3 = toLocale({ wrong: "Wrong object given to toLocale"})
+// console.log("Never gets here, line above throws an error before : ", variable3)

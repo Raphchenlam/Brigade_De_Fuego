@@ -92,7 +92,7 @@ import ClientList from '../ClientPage/ClientList.vue';
 import { createReservation } from '../../services/ReservationService'
 
 export default {
-    inject: ['closeNewReservationDialog', 'spliceDate', 'refreshWithNewreservation', 'toLocale'],
+    inject: ['closeNewReservationDialog', 'spliceDate', 'refreshWithNewreservation', 'toLocale', 'isBeforeToday'],
     components: {
         DarkRedButton,
         ClientList,
@@ -192,32 +192,7 @@ export default {
                 this.dialogConfirmReservation = false;
             });
         },
-        isBeforeToday(fullDate) {
-            const dateToVerify = this.toLocale(fullDate)
-            var today = this.toLocale(new Date().toLocaleString("en-GB"));
-            
 
-            if (dateToVerify.date.year < today.date.year) {
-                return true;
-            }
-            else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month < today.date.month) {
-                return true;
-            }
-            else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month == today.date.month) {
-                if (dateToVerify.date.day < today.date.day) {
-                    return true;
-                }
-                else if (dateToVerify.date.day == today.date.day) {
-                    if (dateToVerify.time.hours < today.time.hours) {
-                        return true;
-                    }
-                    else if (dateToVerify.time.hours == today.time.hours && dateToVerify.date.minutes <= today.date.minutes) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
     },
     watch: {
         reservationFullDate() {
@@ -317,6 +292,10 @@ export default {
     text-align: center;
     width: 80%;
     max-width: 80rem;
+}
+
+.pre-wrap {
+    white-space: pre-wrap;
 }
 
 .error-message {

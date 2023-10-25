@@ -1,18 +1,22 @@
 <template>
     <div class="ma-2" width="auto">
-        <v-form class="pa-10" validate-on="submit lazy" ref="editReservationForm">
+        <v-form @submit.prevent="verifyReservation" class="pa-10" validate-on="blur" ref="editReservationForm">
             <v-row class="justify-center">
                 <p>Client : {{ reservation.firstName + " " + reservation.lastName }}</p>
             </v-row>
             <v-row class="justify-center">
                 <v-col cols="4">
-                    <v-text-field v-model="editedFullDate" type="datetime-local" class="ma-2" label="Date de la reservation"
-                        clearable>
+                    <v-text-field v-model="editedFullDate" type="datetime-local" class="ma-2 pb-10 pre-wrap"
+                        label="Date de la reservation" @click:clear="resetDate" clearable persistent-clear
+                        hint="Le 'X' réinitialise ce champ à la valeur initial" persistent-hint
+                        :rules="[rules.required, rules.dateIsValid]">
                     </v-text-field>
                 </v-col>
                 <v-col cols="4">
-                    <v-text-field v-model="editedPeopleCount" width="10px" type="number" class="shrink ma-2"
-                        label="Nombre de personnes" clearable>
+                    <v-text-field v-model="editedPeopleCount" width="10px" type="number" class="shrink ma-2" :min="1"
+                        :max="12" label="Nombre de personnes" clearable @click:clear="resetPeopleCount" persistent-clear
+                        hint="Le 'X' réinitialise ce champ à la valeur initial" persistent-hint
+                        :rules="[rules.required, rules.reservationMinimum, rules.reservationMaximum]">
                     </v-text-field>
                 </v-col>
                 <v-col cols="4">
@@ -21,7 +25,7 @@
                 </v-col>
             </v-row>
             <v-row no-gutters>
-                <v-textarea v-model="editedMention" label="Mentions speciales"></v-textarea>
+                <v-textarea v-model="editedMention" label="Mentions speciales" :rules="[rules.fieldLength255]"></v-textarea>
             </v-row>
             <v-row>
                 <v-checkbox v-model="editedHasMinor" label="Mineur sur place"></v-checkbox>
@@ -92,7 +96,7 @@ import { getReservationById, updateReservation, getReservationStatusList } from 
 import { fetchTableByNumber } from '../../services/TableService';
 
 export default {
-    inject: ['closeEditReservationDialog'],
+    inject: ['closeEditReservationDialog', 'toLocale', 'isBeforeToday', 'loadReservationInformations'],
     props: {
         reservationId: Number
     },
@@ -106,12 +110,22 @@ export default {
             dialogTablePasOk: false,
             dialogReservationNonModidier: false,
             editedStartTime: null,
+            editedEndTime: null,
             editedFullDate: null,
             editedPeopleCount: null,
             editedMention: null,
             editedHasMinor: false,
             editedStatusCode: null,
-            editedTableNumber: null
+            editedTableNumber: null,
+            dateValid: true,
+            rules: {
+                required: value => !!value || "Le champ est requis",
+                dateIsValid: () => this.dateValid || "Date non valide\n\t- Ne doit pas etre avant la date d'aujourd'hui\n\t- Ni avant 11h ou apres 23h",
+                reservationMinimum: value => (value >= 1) || "Le nombre de personnes minimum est de 1 pour une seule réservation.",
+                reservationMaximum: value => (value <= 12) || "Le nombre de personnes maximum est de 12 pour une seule réservation.",
+                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
+            },
+            formValid: true
         }
     },
     components: {
@@ -123,7 +137,47 @@ export default {
             if (!this.dialogOKReservation) {
                 this.closeAllDialog();
             }
-        }
+        },
+        dateValid() {
+            if (this.editedDate == this.reservation.date && this.editedStartTime == this.reservation.startTime) {
+                this.dateValid = true;
+            }
+        },
+        editedFullDate() {
+
+            this.dateValid = true;
+
+            //Date management
+            const reservationDateObject = this.toLocale(this.editedFullDate);
+            this.editedFullDate = reservationDateObject.fullDate + " " + reservationDateObject.fullTime;
+            this.editedDate = reservationDateObject.fullDate;
+
+            // //Start time management
+            this.editedStartTime = reservationDateObject.time.fullTime;
+
+            // //End time management
+            let endHour = reservationDateObject.time.hours + 3;
+            let endMinute = reservationDateObject.time.minutes;
+            if (endHour >= 24) {
+                endHour = 23;
+                endMinute = 59;
+            }
+            const endTimeHours = (endHour < 10) ? "0" + endHour : "" + endHour;
+            const endTimeMinutes = (endMinute < 10) ? "0" + endMinute : "" + endMinute;
+            this.editedEndTime = endTimeHours + ":" + endTimeMinutes;
+
+            //Date validation
+            if (this.editedDate != this.reservation.date || this.editedStartTime != this.reservation.startTime) {
+                this.dateValid = !this.isBeforeToday(this.editedFullDate);
+            } else {
+                this.dateValid = true;
+            }
+
+            if (reservationDateObject.time.hour < 11 || reservationDateObject.time.hour >= 23) {
+                this.dateValid = false;
+            }
+
+        },
     },
     methods: {
         loadReservation(receivedReservationId) {
@@ -131,8 +185,7 @@ export default {
                 getReservationById(receivedReservationId)
                     .then(reservation => {
                         this.editedDate = reservation.date;
-                        this.editedStartTime = reservation.startTime;
-                        this.editedFullDate = reservation.date + " " + reservation.startTime;
+                        this.editedFullDate = reservation.date + " " + reservation.startTime; // editedStartTime se regle dans le watch d editedFullDate
                         this.editedPeopleCount = reservation.peopleCount;
                         this.editedMention = reservation.mention;
                         this.editedHasMinor = reservation.hasMinor;
@@ -144,18 +197,20 @@ export default {
                             fullDate: this.editedFullDate
                         };
 
-                        fetchTableByNumber(this.reservation.tableNumber)
-                            .then(table => {
-                                if (table) {
-                                    this.table = table;
-                                } else {
-                                    alert(`${this.reservation.tableNumber} n'est pas trouvable`)
-                                }
-                            })
-                            .catch(err => {
-                                console.error(err);
-                                alert(err.message);
-                            });
+                        if (this.reservation.tableNumber) {
+                            fetchTableByNumber(this.reservation.tableNumber)
+                                .then(table => {
+                                    if (table) {
+                                        this.table = table;
+                                    } else {
+                                        alert(`${this.reservation.tableNumber} n'est pas trouvable`)
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    alert(err.message);
+                                });
+                        }
                     }).catch(err => {
                         console.error(err);
                     })
@@ -182,12 +237,8 @@ export default {
                 id: this.reservationId
             }
 
-            //TODO: Séparé la validation des champs de la construction de l'objet d'envoie
-            //TODO: Validate onBlur
             //TODO: Deactivate the save button if not valid, can't be valid if didn't change anything
-            //TODO: Then construct
-
-            if (this.editedDate != this.reservation.date) {
+            if (this.dateValid && this.editedDate != this.reservation.date) {
                 updatedReservationInformations = {
                     ...updatedReservationInformations,
                     date: this.editedDate
@@ -197,14 +248,8 @@ export default {
             if (this.editedStartTime != this.reservation.startTime) {
                 updatedReservationInformations = {
                     ...updatedReservationInformations,
-                    startTime: this.editedStartTime
-                }
-            }
-
-            if (this.editedFullDate != this.reservation.fullDate) {
-                updatedReservationInformations = {
-                    ...updatedReservationInformations,
-                    fullDate: this.editedFullDate
+                    startTime: this.editedStartTime,
+                    endTime: this.editedEndTime
                 }
             }
 
@@ -223,7 +268,8 @@ export default {
                 } else {
                     updatedReservationInformations = {
                         ...updatedReservationInformations,
-                        peopleCount: this.editedPeopleCount
+                        peopleCount: this.editedPeopleCount,
+                        tableNumber: this.reservation.tableNumber
                     }
                 }
             }
@@ -249,7 +295,13 @@ export default {
                 }
             }
 
-            if (Object.keys(updatedReservationInformations).length < 1) {
+            console.log("Object.keys(updatedReservationInformations).length : ");
+            console.log(Object.keys(updatedReservationInformations).length);
+            console.log("updatedReservationInformations : ");
+            console.log(updatedReservationInformations);
+
+
+            if (Object.keys(updatedReservationInformations).length > 1) {
 
                 updateReservation(updatedReservationInformations)
                     .then(result => {
@@ -278,8 +330,37 @@ export default {
         closeAllDialog() {
             this.dialogOKReservation = false;
             this.closeEditReservationDialog();
+        },
+        resetDate() {
+            //TODO: si changé l'heure/date a un moment antérieur a maintenant, changer le statut pour terminé ou commencer, depend de l'heure de fin
+            this.editedFullDate = this.reservation.fullDate;
+        },
+        resetPeopleCount() {
+            this.editedPeopleCount = this.reservation.peopleCount;
         }
 
+    },
+    computed: {
+        saveButtonDisabled() {
+            // var peopleCountValid = true;
+            // if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 12) {
+            //     peopleCountValid = false;
+            // }
+
+            // return !(this.dateValid
+            //     && this.clientIdValid
+            //     && !!this.reservationFullDate
+            //     && !!this.reservation.clientId
+            //     && !!this.reservation.peopleCount
+            //     && peopleCountValid
+            //     && !!this.reservation.date
+            //     && !!this.reservation.startTime
+            //     && !!this.reservation.endTime);
+            //TODO: implémenter la désactivation du bouton sauvegarder
+
+            //TODO: a ajouter au bouton de sauvegarde
+            // :disabled="saveButtonDisabled"
+        }
     },
     mounted() {
         console.clear();
@@ -290,6 +371,10 @@ export default {
 </script>
 
 <style scoped>
+.pre-wrap {
+    white-space: pre-wrap;
+}
+
 .boxed-center {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     margin: 1rem auto;

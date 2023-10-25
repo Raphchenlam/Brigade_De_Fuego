@@ -77,7 +77,17 @@ const getReservationByInformations = async (clientId, date, startTime) => {
     const row = result.rows[0];
 
     if (row) {
-        return constructReservation(row);
+        const reservation = constructReservation(row);
+
+        return {
+            ...reservation,
+            clientFirstname: row.first_name,
+            clientLastname: row.last_name,
+            clientPhoneNumber: row.phone_number,
+            clientAllergy: row.allergy,
+            clientIsFavorite: row.is_favorite,
+            clientIsBlacklisted: row.is_blacklisted,
+        }
     }
 
     return undefined;
@@ -174,12 +184,9 @@ const updateReservation = async (newReservationInfos) => {
         newInformation.push(newReservationInfos.id);
 
         const result = await pool.query(UPDATEquery, newInformation);
-        
+
         const row = result.rows[0];
         if (row) {
-            console.log("row : ");
-            console.log(row);
-            
             const reservation = constructReservation(row);
 
             const reservationFinal = {
@@ -248,14 +255,14 @@ const getReservationListByDates = async (startDate, endDate) => {
 exports.getReservationListByDates = getReservationListByDates;
 
 
-const updateTableOnReservationById = async(id, tableNumber) => {
+const updateTableOnReservationById = async (id, tableNumber) => {
     const result = await pool.query(
         `UPDATE reservation SET table_number = $2 WHERE id = $1`,
         [id, tableNumber]
     );
-    if(result.rowCount === 0) {
+    if (result.rowCount === 0) {
         return undefined
     }
     return getReservationById(id);
 };
-exports.updateTableOnReservationById=updateTableOnReservationById;
+exports.updateTableOnReservationById = updateTableOnReservationById;
