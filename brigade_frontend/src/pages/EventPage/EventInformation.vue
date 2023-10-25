@@ -11,7 +11,7 @@
             </template>
             <v-card>
                 <v-card-title>
-                    Modfier un evenement
+                    Modfier un événement
                 </v-card-title>
                 <EditEventForm :event="event"></EditEventForm>
             </v-card>

@@ -51,7 +51,6 @@ router.get('/role',
         if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
 
         employeeQueries.selectAllRoles().then(roleList => {
-            console.log("roleList:", roleList);
             res.json(roleList);
         }).catch(err => {
             return next(err);
@@ -123,8 +122,7 @@ router.get('/email/:email',
 router.post('/',
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
-        console.log("REQ.EMPLOYEE", req.user);
-
+        
         const employee = req.user;
 
         if (!employee || !employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
@@ -300,7 +298,6 @@ router.put('/lostpassword/:employeeNumber',
         employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber).then(employee => {
             if (employee) {
                 let password = generatePassword();
-                console.log("password", password);
 
                 const saltBuf = crypto.randomBytes(16);
                 const passwordSalt = saltBuf.toString("base64");
@@ -343,9 +340,6 @@ router.put('/employeeColor/:employeeNumber',
         // if (!employee) return next(new HttpError(401, "Connection nécessaire"));
         const employeeNumber = req.params.employeeNumber;
         const employeeColor = req.body.employeeColor;
-        console.log("employeeNumber", employeeNumber);
-        console.log("employeeColor", employeeColor);
-        console.log("body", req.body)
 
         if (!employeeNumber || employeeNumber == '') return next(new HttpError(400, 'Le champ employeeNumber est requis'));
         if (!employeeColor || employeeColor == '') return next(new HttpError(400, 'Le champ employeeColor est requis'));
@@ -371,7 +365,6 @@ router.put('/employeeColor/:employeeNumber',
 router.put('/:employeeNumber',
     passport.authenticate('basic', { session: false }),
     async (req, res, next) => {
-        console.log("REQ.EMPLOYEE", req.user);
 
         const employee = req.user;
 
@@ -523,7 +516,6 @@ router.put('/:employeeNumber',
 router.put('/',
     passport.authenticate('basic', { session: false }),
     async (req, res, next) => {
-        console.log("REQ.EMPLOYEE", req.user);
 
         const employee = req.user;
 
@@ -651,7 +643,6 @@ function sendEmailLostPassword(emailList, employeeFirstName, password) {
             <p>Voici votre mot de passe temporaire : `+ password + `</p>
             <p>Veuillez vous connecter à l'application et changer votre mot de passe dans votre profil.</p>`
     sendEmail(recipients, subject, text, html);
-    console.log("emails envoyes")
     return true
 };
 

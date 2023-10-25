@@ -1,5 +1,4 @@
 <template>
-    <!-- AFFICHER MESSAGE ERREUR QUAND BARCODE NE CORRESPOND A AUCUN EMPLOYE -->
     <v-row class="justify-center">
         <div id="clock">
             <p class="time">{{ time }}</p>
@@ -20,20 +19,20 @@
                 </v-row>
                 <v-dialog v-model="dialogPunchIn" width="50%" persistent>
                     <v-card height="100px">
-                        <v-card-title>Confirmation Punch-In</v-card-title>
+                        <v-card-title>Confirmation Punch In</v-card-title>
                         <v-card-text>
                             <v-row class="justify-center">
-                                <p>{{ this.punch.barcodeNumber }} - Bon Shift !</p>
+                                <p> Bon Shift !</p>
                             </v-row>
                         </v-card-text>
                     </v-card>
                 </v-dialog>
                 <v-dialog v-model="dialogPunchOut" width="50%" persistent>
                     <v-card height="100px">
-                        <v-card-title>Confirmation Punch-Out</v-card-title>
+                        <v-card-title>Confirmation Punch Out</v-card-title>
                         <v-card-text>
                             <v-row class="justify-center">
-                                <p>{{ this.punch.barcodeNumber }} - Merci de ton travail !</p>
+                                <p>Merci de ton travail !</p>
                             </v-row>
                         </v-card-text>
                     </v-card>
