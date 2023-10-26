@@ -171,7 +171,7 @@ const updateReservation = async (newReservationInfos) => {
     if (newReservationInfos.date) changedFields.push(`date = $${counter}`), newInformation.push(newReservationInfos.date), counter++;
     if (newReservationInfos.startTime) changedFields.push(`start_time = $${counter}`), newInformation.push(newReservationInfos.startTime), counter++;
     if (newReservationInfos.endTime) changedFields.push(`end_time = $${counter}`), newInformation.push(newReservationInfos.endTime), counter++;
-    if (newReservationInfos.tableNumber) changedFields.push(`table_number = $${counter}`), newInformation.push(newReservationInfos.tableNumber), counter++;
+    if (newReservationInfos.tableNumber || newReservationInfos.tableNumber == null) changedFields.push(`table_number = $${counter}`), newInformation.push(newReservationInfos.tableNumber), counter++;
     if (newReservationInfos.statusCode) changedFields.push(`status_code = $${counter}`), newInformation.push(newReservationInfos.statusCode), counter++;
     if (newReservationInfos.peopleCount) changedFields.push(`people_count = $${counter}`), newInformation.push(newReservationInfos.peopleCount), counter++;
     if (newReservationInfos.mention) changedFields.push(`mention = $${counter}`), newInformation.push(newReservationInfos.mention), counter++;

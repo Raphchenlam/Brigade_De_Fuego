@@ -2,19 +2,20 @@
     <div class="ma-2" width="auto">
         <v-form @submit.prevent="verifyReservation" class="pa-10" validate-on="blur" ref="editReservationForm">
             <v-row class="justify-center">
-                <p>Client : {{ reservation.firstName + " " + reservation.lastName }}</p>
+                <h2>Client : {{ reservation.firstName + " " + reservation.lastName }}</h2>
             </v-row>
             <v-row class="justify-center">
                 <v-col cols="4">
-                    <v-text-field v-model="editedFullDate" type="datetime-local" class="ma-2 pb-10 pre-wrap"
+                    <v-text-field class="ma-2 pre-wrap" v-model="editedFullDate" type="datetime-local"
                         label="Date de la reservation" @click:clear="resetDate" clearable persistent-clear
                         hint="Le 'X' réinitialise ce champ à la valeur initial" persistent-hint
                         :rules="[rules.required, rules.dateIsValid]">
                     </v-text-field>
                 </v-col>
                 <v-col cols="4">
-                    <v-text-field v-model="editedPeopleCount" width="10px" type="number" class="shrink ma-2" :min="1"
-                        :max="12" label="Nombre de personnes" clearable @click:clear="resetPeopleCount" persistent-clear
+                    <v-text-field class="shrink ma-2" v-model="editedPeopleCount" width="10px" type="number"
+                        onkeydown="return event.keyCode !== 69" :min="1" :max="12" label="Nombre de personnes" clearable
+                        @click:clear="resetPeopleCount" persistent-clear
                         hint="Le 'X' réinitialise ce champ à la valeur initial" persistent-hint
                         :rules="[rules.required, rules.reservationMinimum, rules.reservationMaximum]">
                     </v-text-field>
@@ -24,11 +25,20 @@
                         item-title="name" item-value="code"></v-select>
                 </v-col>
             </v-row>
+            <v-row>
+                <v-col cols="2" no-gutters>
+                    <v-checkbox class="pb-2" v-model="editedHasMinor" label="Mineur sur place"
+                        hide-details="auto"></v-checkbox>
+                </v-col>
+                <v-col cols="2" offset="2" no-gutters>
+                    <h3 class="pl-4 table" v-if="table.number">Table #{{ table.number }}, capacité : {{ table.capacity }}</h3>
+                    <!-- <h3 class="pl-4 table" v-if="table.number">Table #{{ table.number }}</h3>
+                    <h2 class="pl-4 capacity" v-if="table.number">- capacité : {{ table.capacity }}</h2> -->
+                    <h3 class="pl-4 table noTable" v-if="!table.number">Aucune table</h3>
+                </v-col>
+            </v-row>
             <v-row no-gutters>
                 <v-textarea v-model="editedMention" label="Mentions speciales" :rules="[rules.fieldLength255]"></v-textarea>
-            </v-row>
-            <v-row>
-                <v-checkbox v-model="editedHasMinor" label="Mineur sur place"></v-checkbox>
             </v-row>
             <v-row class="justify-space-between">
                 <cols>
@@ -37,7 +47,7 @@
                 </cols>
                 <cols>
                     <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                    <DarkRedButton class="mx-5" textbutton="Sauvegarder" @click="sendUpdate()"></DarkRedButton>
+                    <DarkRedButton class="mx-5" textbutton="Sauvegarder" @click="sendUpdate()" :disabled="saveButtonDisabled"></DarkRedButton>
                 </cols>
             </v-row>
             <v-dialog v-model="dialogOKReservation" width="50%">
@@ -68,7 +78,7 @@
                                 @click="dialogTablePasOk = false">
                             </SmallBlackButton>
                             <SmallBlackButton class="mx-5" width="200px" textbutton="Enlevé table"
-                                @click="editedTableNumber = null, dialogTablePasOk = false">
+                                @click="removeTableAndSend()">
                             </SmallBlackButton>
                         </v-row>
                     </v-card-text>
@@ -105,6 +115,7 @@ export default {
             reservationStatusList: [],
             reservation: {},
             table: {},
+            tableWasRemoved: false,
             editedDate: null,
             dialogOKReservation: false,
             dialogTablePasOk: false,
@@ -144,7 +155,6 @@ export default {
             }
         },
         editedFullDate() {
-
             this.dateValid = true;
 
             //Date management
@@ -256,7 +266,15 @@ export default {
             //TODO: verifier si il y a une table d'assigner et si oui est-ce qu'elle a assez de place, si non proposer de l'enlever avec la mise à jours ou d'annuler ??
             if (this.editedPeopleCount != this.reservation.peopleCount) {
                 if (this.table.capacity < this.editedPeopleCount) {
-                    this.dialogTablePasOk = true;
+                    console.log("Je suis dans la verification table capacity vs editedPeopleCount");
+                    console.log("this.table.capacity : ");
+                    console.log(this.table.capacity);
+                    console.log("this.editedPeopleCount : ");
+                    console.log(this.editedPeopleCount);
+
+                    if(!this.tableWasRemoved){
+                        this.dialogTablePasOk = true;
+                    }
 
                     if (!this.editedTableNumber) {
                         updatedReservationInformations = {
@@ -306,6 +324,8 @@ export default {
                 updateReservation(updatedReservationInformations)
                     .then(result => {
                         if (result) {
+                            console.log("result : ");
+                            console.log(result);
                             console.log("La réservation a bien été enregistré");
                             this.dialogOKReservation = true;
                             setTimeout(this.closeAllDialog, 1000);
@@ -318,7 +338,7 @@ export default {
                         //TODO: pourrait proposer des changements selon l'erreur ??
                         //TODO: How can you trigger this one ???
                     });
-            } else {
+            } else if(this.dialogTablePasOk != true){
                 this.dialogReservationNonModidier = true;
                 setTimeout(() => this.dialogReservationNonModidier = false, 2000);
             }
@@ -337,25 +357,27 @@ export default {
         },
         resetPeopleCount() {
             this.editedPeopleCount = this.reservation.peopleCount;
+        },
+        removeTableAndSend(){
+            this.editedTableNumber = null;
+            this.dialogTablePasOk = false;
+            this.tableWasRemoved = true;
+            this.sendUpdate();
         }
 
     },
     computed: {
         saveButtonDisabled() {
-            // var peopleCountValid = true;
-            // if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 12) {
-            //     peopleCountValid = false;
-            // }
+            var peopleCountValid = true;
+            if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 12) {
+                peopleCountValid = false;
+            }
 
-            // return !(this.dateValid
-            //     && this.clientIdValid
-            //     && !!this.reservationFullDate
-            //     && !!this.reservation.clientId
-            //     && !!this.reservation.peopleCount
-            //     && peopleCountValid
-            //     && !!this.reservation.date
-            //     && !!this.reservation.startTime
-            //     && !!this.reservation.endTime);
+            console.log();
+
+            return !(this.dateValid
+                && peopleCountValid
+                );
             //TODO: implémenter la désactivation du bouton sauvegarder
 
             //TODO: a ajouter au bouton de sauvegarde
@@ -375,6 +397,16 @@ export default {
     white-space: pre-wrap;
 }
 
+.noTable {
+    color: orange
+}
+
+.table {
+    font-size: 1.5em;
+}
+.capacity {
+    font-size: 1em;
+}
 .boxed-center {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     margin: 1rem auto;
