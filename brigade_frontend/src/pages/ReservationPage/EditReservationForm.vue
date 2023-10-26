@@ -30,10 +30,8 @@
                     <v-checkbox class="pb-2" v-model="editedHasMinor" label="Mineur sur place"
                         hide-details="auto"></v-checkbox>
                 </v-col>
-                <v-col cols="2" offset="2" no-gutters>
+                <v-col cols="auto" offset="2" no-gutters>
                     <h3 class="pl-4 table" v-if="table.number">Table #{{ table.number }}, capacité : {{ table.capacity }}</h3>
-                    <!-- <h3 class="pl-4 table" v-if="table.number">Table #{{ table.number }}</h3>
-                    <h2 class="pl-4 capacity" v-if="table.number">- capacité : {{ table.capacity }}</h2> -->
                     <h3 class="pl-4 table noTable" v-if="!table.number">Aucune table</h3>
                 </v-col>
             </v-row>

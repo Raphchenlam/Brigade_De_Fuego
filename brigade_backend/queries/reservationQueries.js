@@ -174,7 +174,7 @@ const updateReservation = async (newReservationInfos) => {
     if (newReservationInfos.tableNumber || newReservationInfos.tableNumber == null) changedFields.push(`table_number = $${counter}`), newInformation.push(newReservationInfos.tableNumber), counter++;
     if (newReservationInfos.statusCode) changedFields.push(`status_code = $${counter}`), newInformation.push(newReservationInfos.statusCode), counter++;
     if (newReservationInfos.peopleCount) changedFields.push(`people_count = $${counter}`), newInformation.push(newReservationInfos.peopleCount), counter++;
-    if (newReservationInfos.mention) changedFields.push(`mention = $${counter}`), newInformation.push(newReservationInfos.mention), counter++;
+    if (newReservationInfos.mention || newReservationInfos.mention == '') changedFields.push(`mention = $${counter}`), newInformation.push(newReservationInfos.mention), counter++;
     if (newReservationInfos.hasMinor === false || newReservationInfos.hasMinor === true) changedFields.push(`has_minor = $${counter}`), newInformation.push(newReservationInfos.hasMinor), counter++;
 
 

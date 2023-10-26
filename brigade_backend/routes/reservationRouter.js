@@ -224,30 +224,23 @@ router.put("/",
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
         // For debugging perpuses
-        // var tempReservation = {
+        // var debuggingReservation = {
         //     id: req.body.id,
         //     tableNumber: req.body.tableNumber,
         //     clientId: req.body.clientId,
         //     statusCode: req.body.statusCode,
-        //     statusName: req.body.statusName,
         //     peopleCount: req.body.peopleCount,
         //     date: req.body.date,
         //     startTime: req.body.startTime,
         //     endTime: req.body.endTime,
         //     mention: req.body.mention,
         //     hasMinor: req.body.hasMinor,
-        //     takenBy: req.body.takenBy,
-        //     clientFirstname: req.body.clientFirstname,
-        //     clientLastname: req.body.clientLastname,
-        //     clientPhoneNumber: req.body.clientPhoneNumber,
-        //     clientAllergy: req.body.clientAllergy,
-        //     clientIsFavorite: req.body.clientIsFavorite,
-        //     clientIsBlacklisted: req.body.clientIsBlacklisted,
-        //     employeeBarcodeNumber: req.body.employeeBarcodeNumber,
-        //     employeeFirstname: req.body.employeeFirstname,
-        //     employeeLastname: req.body.employeeLastname,
-        //     employeeRole: req.body.employeeRole
+        //     takenBy: req.body.takenBy
         // }
+        // console.log("****************************************");
+        // console.log("debuggingReservation : ");
+        // console.log(debuggingReservation);
+
         reservationQueries.getReservationById(req.body.id)
             .then((oldReservation) => {
                 var newReservationInfos = { id: req.body.id }
@@ -316,7 +309,7 @@ router.put("/",
                         if (endTimeObj.hours < 11) return next(new HttpError(400, "Le champ heure de fin ne peux pas être avant 11:00:00 ou dépassé 23:59:00"));
 
                         const startTimeString = (!!req.body.startTime) ? req.body.startTime : oldReservation.startTime;
-                        const startTimeObject = toLocale(startTimeString);
+                        const startTimeObject = dATObj.toLocale(startTimeString);
                         const totalReservationTime = ((endTimeObj.hours * 60 + endTimeObj.minutes) - (startTimeObject.hours * 60 + startTimeObject.minutes)) / 60;
 
                         if (endTimeObj.hours < startTimeObject.hours) {
@@ -355,7 +348,7 @@ router.put("/",
                         }
                     }
 
-                    if (!!req.body.mention && req.body.mention != oldReservation.mention) {
+                    if (!!req.body.mention || req.body.mention == '' && req.body.mention != oldReservation.mention) {
                         if (req.body.mention.length > 255) {
                             return next(new HttpError(400, `Le champ "mention" ne peux contenir plus de 255 caractères. Vous en avez ${req.body.mention.length},  c'est-à-dire *${req.body.mention.length - 255}* de trop.`));
                         }
