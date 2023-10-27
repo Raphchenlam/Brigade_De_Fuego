@@ -16,7 +16,7 @@
                 </template>
                 <v-card>
                     <v-card-title>
-                        Editer les informations du client
+                        Éditer les informations du client
                     </v-card-title>
                     <EditClientForm :clientId="client.id"></EditClientForm>
                 </v-card>

@@ -2,7 +2,7 @@
   <div class="boxed-center-large mt-16">
     <v-sheet class="ma-2" max-width="80rem">
       <v-form @submit.prevent="unlockOperationSession" validate-on="submit lazy" ref="loginform">
-        <p v-if="warningLoginMessage" class="warning-message">Vous devez être un gestionnaire pour débloquer l'accès à
+        <p v-if="warningLoginMessage" class="warning-message">Vous devez avoir un accès adminitrateur pour débloquer l'accès à
           l'espace OPERATION </p>
         <p v-if="warningLenghtMessage" class="warning-message">Le numéro doit avoir 16 chiffres pour être valide</p>
         <p v-if="warningNumberMessage" class="warning-message">Le numéro ne peut pas comporter de lettre(s)</p>

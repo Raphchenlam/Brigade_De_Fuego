@@ -13,14 +13,14 @@
                         true-value="Dinner" inset />
                 </v-col>
                 <v-col cols="4">
-                    Selection de la semaine pour l'horaire
+                    Sélection de la semaine pour l'horaire
                     <v-text-field density="compact" type="week" v-model="scheduleWeek">
                     </v-text-field>
                 </v-col>
             </v-row>
             <v-row class="justify-center">
-                <span v-if="!isPublished">Cette horaire n'est pas encore publier</span>
-                <span v-else>Cette horaire est déja publier. Vous pouvez la modifier</span>
+                <span v-if="!isPublished">Cette horaire n'est pas encore publiée</span>
+                <span v-else>Cette horaire est déja publiée. Vous pouvez la modifier</span>
 
             </v-row>
             <div>
@@ -29,7 +29,7 @@
                         <v-card v-if="showedShift == 'Lunch'" class="pa-1">
                             <v-row class="justify-left ma-0 pa-0" no-gutters>
                                 <v-col class="ma-1" cols="4">
-                                    <p align="right" class="text-caption">Ajouter un evenement</p>
+                                    <p align="right" class="text-caption">Ajouter un événement</p>
                                 </v-col>
                                 <v-col v-if="loaded && weekInformations[0].events.length < 1" align="center" class="ma-1"
                                     cols="1"><v-btn @click="addEventToShift(0)" class="elevation-0">+</v-btn></v-col>
@@ -37,7 +37,7 @@
                                     cols="1"><v-btn @click="addEventToShift(0)" class="elevation-0" style="font-size:8px">{{
                                         weekInformations[0].events[0] }}</v-btn></v-col>
                                 <v-col v-if="loaded && weekInformations[2].events.length < 1" align="center" class="ma-1"
-                                    cols="1"><v-btn @click="addEventToShift(2)" class="elevation-0">+</v-btn></v-col>
+                                    cols="1"><v-btn @click="addEventToShift(2)" class="elevation-0">+s</v-btn></v-col>
                                 <v-col v-if="loaded && weekInformations[2].events.length > 0" align="center" class="ma-1"
                                     cols="1"><v-btn @click="addEventToShift(2)" class="elevation-0" style="font-size:8px">{{
                                         weekInformations[2].events[0] }}</v-btn></v-col>
@@ -111,7 +111,7 @@
                             </v-row>
                             <v-row class="justify-left" no-gutters>
                                 <v-col class="ma-1" cols="4">
-                                    <p align="right">Achalendage Moyen (nombre de clients)</p>
+                                    <p align="right">Achalandage Moyen (nombre de clients)</p>
                                 </v-col>
                                 <v-col class="ml-2" cols="1"><v-text-field type="number"
                                         v-model="weekInformations[0].traffic" density="compact" class=" pa-0"
@@ -219,7 +219,7 @@
                         <v-card v-else class="pa-1">
                             <v-row class="justify-left ma-0 pa-0" no-gutters>
                                 <v-col class="ma-1" cols="4">
-                                    <p align="right" class="text-caption">Ajouter un evenement</p>
+                                    <p align="right" class="text-caption">Ajouter un événement</p>
                                 </v-col>
                                 <v-col v-if="loaded && weekInformations[1].events.length < 1" align="center" class="ma-1"
                                     cols="1"><v-btn @click="addEventToShift(1)" class="elevation-0">+</v-btn></v-col>
@@ -300,7 +300,7 @@
                             </v-row>
                             <v-row class="justify-left" no-gutters>
                                 <v-col class="ma-1" cols="4">
-                                    <p align="right">Achalendage Moyen (nombre de clients)</p>
+                                    <p align="right">Achalandage Moyen (nombre de clients)</p>
                                 </v-col>
                                 <v-col class="ml-2" cols="1"><v-text-field type="number"
                                         v-model="weekInformations[1].traffic" density="compact" class=" pa-0"
@@ -408,10 +408,10 @@
         </v-sheet>
         <v-sheet class="mx-15 my-7" v-if="this.isUserAuthorized()">
             <v-row class="justify-space-around">
-                <v-btn @click="dialogAddEmployee = true">Ajouter un employe</v-btn>
+                <v-btn @click="dialogAddEmployee = true">Ajouter un employé</v-btn>
                 <v-btn v-if="!isPublished" @click="saveSchedule()">Sauvegarger (sans la publier)</v-btn>
                 <DarkRedButton v-if="!isPublished" @click="publishSchedule()" textbutton="Publier un nouvel
-                    l'horaire"></DarkRedButton>
+                    horaire"></DarkRedButton>
                 <DarkRedButton v-else @click="publishSchedule()" textbutton="Publier les modifications de
                     l'horaire"></DarkRedButton>
 
@@ -429,7 +429,7 @@
                         </v-row>
                     </v-col>
                     <v-col class="ml-2" cols="1">
-                        <p align="center" class="text-caption">Point de competence</p>
+                        <p align="center" class="text-caption">Points de compétences</p>
                     </v-col>
                     <v-col class="ml-2" cols="1">
                         <p align="center" class="text-caption">Lundi</p>
@@ -783,7 +783,7 @@
     <v-dialog v-model="dialogNewShift" width="50%" persistent>
         <v-card class="pa-5">
             <v-card-title>
-                Ajouter un nouveau shift a {{ employeeNewShift.name }} pour le {{ this.weekDate[dayNewShift].getDate() }}
+                Ajouter un nouveau shift à {{ employeeNewShift.name }} pour le {{ this.weekDate[dayNewShift].getDate() }}
                 {{ this.weekDate[dayNewShift].toLocaleString('fr-FR', { month: 'long' }) }}
             </v-card-title>
             <v-card-text v-if="employeeHaveApprovedLeave">
@@ -800,7 +800,7 @@
                         être après l'heure de début</p>
                     <p v-if="warningNewShiftEmptyMessage" align="center" class="warning-message">Les champs pour les
                         heures ne peuvent
-                        pas être vide</p>
+                        pas être vides</p>
                 </v-row>
                 <v-row class="justify-center">
                     <v-col cols="12" sm="6" md="6">
@@ -831,7 +831,7 @@
                         être après l'heure de début</p>
                     <p v-if="warningNewShiftEmptyMessage" align="center" class="warning-message">Les champs pour les
                         heures ne peuvent
-                        pas être vide</p>
+                        pas être vides</p>
                 </v-row>
                 <v-row class="justify-center">
                     <v-col cols="6" sm="6" md="6">
@@ -871,10 +871,10 @@
     <v-dialog v-model="dialogAddEvent" width="75%" persistent>
         <v-sheet class="pa-5">
             <v-card-title>
-                Ajouter un evenement a la liste
+                Ajouter un événement à la liste
             </v-card-title>
             <v-row class="justify-center">
-                <p v-if="warningEventAlreadyInScheduleMessage" align="center" class="warning-message">L'evenement est déjà
+                <p v-if="warningEventAlreadyInScheduleMessage" align="center" class="warning-message">L'événement est déjà
                     dans ce shift</p>
             </v-row>
             <v-row>
@@ -885,13 +885,13 @@
                 <DarkRedButton v-if="selectedEvent" class="mx-5" textbutton="Ajouter l'événement à ce shift"
                     :disabled="!selectedEvent" @click="addNewEventToShift()">
                 </DarkRedButton>.
-                <DarkRedButton v-if="!selectedEvent" class="mx-5" textbutton="Ne pas ajouter d'evénement à ce shift"
+                <DarkRedButton v-if="!selectedEvent" class="mx-5" textbutton="Ne pas ajouter d'événement à ce shift"
                     @click="removeNewEventToShift()">
                 </DarkRedButton>
             </v-row>
         </v-sheet>
     </v-dialog>
-</template>
+</template> 
 
 
 <script>

@@ -6,31 +6,6 @@ const HttpError = require("../HttpError");
 
 const leaveQueries = require('../queries/leaveQueries');
 
-// passport.authenticate('basic', { session: false }), (req,res,next)...
-
-/*
-router.get('/',
-    (req, res, next) =>
-    {
-        // const employee = req.employee;
-
-        // if (!employeeConnected) {
-        //     return next(new HttpError(401, "Vous devez etre connecté"));
-        // };
-        // if (!employeeConnected.isAdmin || !employeeConnected.isSuperAdmin) {
-        //     return next(new HttpError(403, "Droit administrateur requis"));
-        // };
-
-        leaveQueries.selectAllLeaves().then(leaves =>
-        {
-            res.json(leaves);
-        }).catch(err =>
-        {
-            return next(err);
-        });
-    });
-*/
-
 router.get('/category',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
@@ -70,27 +45,63 @@ router.get('/filter',
         };
 
         const checkboxesData = req.query.data;
-        if (!checkboxesData) return next(new HttpError(400, `Un data de checkboces doit etre fournis`));
+        if (!checkboxesData) return next(new HttpError(400, `Un data de checkboxes doit etre fournis`));
         const checkboxes = JSON.parse(checkboxesData);
 
 
         if (!checkboxes.accepted && !checkboxes.refused && !checkboxes.pending && !checkboxes.pendingModified) 
         {
-            res.json([]);
+            return res.json([]);
         }
         if (!checkboxes.coming && !checkboxes.passed) 
         {
-            res.json([]);
+            return res.json([]);
         }
-
+console.log("checkboxes",checkboxes)
         leaveQueries.selectAllFilteredLeaves(checkboxes).then(leaves =>
         {
+            console.log("leaves",leaves)
             res.json(leaves);
         }).catch(err =>
         {
             return next(err);
         });
     });
+
+router.get('/current/:employeeNumber',
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) =>
+    {
+        const employeeNumberToGet = req.params.employeeNumber;
+        if (!employeeNumberToGet)
+        {
+            return next(new HttpError(401, "Un employé doit être fournis dans les paramètres"));
+        };
+        const user = req.user;
+        if (!user)
+        {
+            return next(new HttpError(401, "Vous devez etre connecté"));
+        };
+        if (user.employeeNumber != employeeNumberToGet)
+        {
+            if (!user.isAdmin) return next(new HttpError(403, "Vous ne pouvez pas obtenir les congés d'un autre employé"));
+        };
+        leaveQueries.selectCurrentLeaveByEmployeeNumber(employeeNumberToGet).then(leave =>
+        {
+            if (!leave)
+            {
+                return res.status(200).send({
+                    message: "Vous n'avez aucun congé présentement"
+                });
+            }
+            res.json(leave);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
+
+
 
 router.get('/employee/:employeeNumber',
     passport.authenticate('basic', { session: false }),
@@ -119,7 +130,7 @@ router.get('/employee/:employeeNumber',
         });
     });
 
-    router.get('/employee/:employeeNumber/:date',
+router.get('/employee/:employeeNumber/:date',
     passport.authenticate('basic', { session: false }),
     (req, res, next) =>
     {
@@ -143,7 +154,7 @@ router.get('/employee/:employeeNumber',
         {
             if (!user.isAdmin) return next(new HttpError(403, "Vous ne pouvez pas obtenir les congés d'un autre employé"));
         };
-        leaveQueries.selectApprovedLeavesByEmployeeNumberAndDate(employeeNumberToGet,dateToGet).then(leaves =>
+        leaveQueries.selectApprovedLeavesByEmployeeNumberAndDate(employeeNumberToGet, dateToGet).then(leaves =>
         {
             res.json(leaves);
         }).catch(err =>
@@ -247,7 +258,7 @@ router.put('/',
             const dateStr = body.startDate;
             var dateParts = dateStr.split('-');
             var startDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-            
+
             if (startDate < futureDate && !(body.status == "Approved" || body.status == "Refused")) return next(new HttpError(400, `La date de debut doit etre minimum le lundi 1 semaine à l'avance`));
             if (body.endDate < body.startDate) return next(new HttpError(400, `La date de fin ne peut pas etre avant la date de debut`));
 
