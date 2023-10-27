@@ -31,7 +31,8 @@
                         hide-details="auto"></v-checkbox>
                 </v-col>
                 <v-col cols="auto" offset="2" no-gutters>
-                    <h3 class="pl-4 table" v-if="table.number">Table #{{ table.number }}, capacité : {{ table.capacity }}</h3>
+                    <h3 class="pl-4 table" v-if="table.number">Table #{{ table.number }}, capacité : {{ table.capacity }}
+                    </h3>
                     <h3 class="pl-4 table noTable" v-if="!table.number">Aucune table</h3>
                 </v-col>
             </v-row>
@@ -45,7 +46,10 @@
                 </cols>
                 <cols>
                     <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeDialog()"></DarkRedButton>
-                    <DarkRedButton class="mx-5" textbutton="Sauvegarder" @click="sendUpdate()" :disabled="saveButtonDisabled"></DarkRedButton>
+                    <DarkRedButton class="mx-5" textbutton="Sauvegarder"
+                        @click="viewEditedReservation = false, sendUpdate()" :disabled="saveButtonDisabled"></DarkRedButton>
+                    <DarkRedButton class="mx-5" textbutton="Sauvegarder et Visualisé"
+                        @click="viewEditedReservation = true, sendUpdate()" :disabled="saveButtonDisabled"></DarkRedButton>
                 </cols>
             </v-row>
             <v-dialog v-model="dialogOKReservation" width="50%">
@@ -104,7 +108,7 @@ import { getReservationById, updateReservation, getReservationStatusList } from 
 import { fetchTableByNumber } from '../../services/TableService';
 
 export default {
-    inject: ['closeEditReservationDialog', 'toLocale', 'isBeforeToday', 'loadReservationInformations'],
+    inject: ['closeEditReservationDialog', 'toLocale', 'isBeforeToday', 'loadReservationInformations', 'editedReservationRefreshAndSearch'],
     props: {
         reservationId: Number
     },
@@ -126,6 +130,8 @@ export default {
             editedHasMinor: false,
             editedStatusCode: null,
             editedTableNumber: null,
+            viewEditedReservation: false,
+            peopleCountValid: true,
             dateValid: true,
             rules: {
                 required: value => !!value || "Le champ est requis",
@@ -241,11 +247,8 @@ export default {
             this.closeEditReservationDialog();
         },
         sendUpdate() {
-            let updatedReservationInformations = {
-                id: this.reservationId
-            }
+            let updatedReservationInformations = { id: this.reservationId }
 
-            //TODO: Deactivate the save button if not valid, can't be valid if didn't change anything
             if (this.dateValid && this.editedDate != this.reservation.date) {
                 updatedReservationInformations = {
                     ...updatedReservationInformations,
@@ -261,16 +264,9 @@ export default {
                 }
             }
 
-            //TODO: verifier si il y a une table d'assigner et si oui est-ce qu'elle a assez de place, si non proposer de l'enlever avec la mise à jours ou d'annuler ??
             if (this.editedPeopleCount != this.reservation.peopleCount) {
                 if (this.table.capacity < this.editedPeopleCount) {
-                    console.log("Je suis dans la verification table capacity vs editedPeopleCount");
-                    console.log("this.table.capacity : ");
-                    console.log(this.table.capacity);
-                    console.log("this.editedPeopleCount : ");
-                    console.log(this.editedPeopleCount);
-
-                    if(!this.tableWasRemoved){
+                    if (!this.tableWasRemoved) {
                         this.dialogTablePasOk = true;
                     }
 
@@ -311,32 +307,34 @@ export default {
                 }
             }
 
-            console.log("Object.keys(updatedReservationInformations).length : ");
-            console.log(Object.keys(updatedReservationInformations).length);
-            console.log("updatedReservationInformations : ");
-            console.log(updatedReservationInformations);
-
-
             if (Object.keys(updatedReservationInformations).length > 1) {
 
                 updateReservation(updatedReservationInformations)
                     .then(result => {
                         if (result) {
-                            console.log("result : ");
-                            console.log(result);
-                            console.log("La réservation a bien été enregistré");
                             this.dialogOKReservation = true;
                             setTimeout(this.closeAllDialog, 1000);
+
+                            const startTimeHour = this.toLocale(result.startTime).time.hours;
+                            const shiftFilter = startTimeHour <= 15 ? 'Midi' : 'Soir';
+
+                            const refreshingInformations = {
+                                firstName: this.reservation.firstName,
+                                date: result.date,
+                                shift: shiftFilter,
+                                changeListFilters: this.viewEditedReservation
+                            }
+
+                            this.editedReservationRefreshAndSearch(refreshingInformations);
                         }
                     })
                     .catch(err => {
                         console.error(err);
                         alert(err.message);
-                        //TODO: ajouter un dialogue d'erreur ou garder l'alerte 
-                        //TODO: pourrait proposer des changements selon l'erreur ??
-                        //TODO: How can you trigger this one ???
                     });
-            } else if(this.dialogTablePasOk != true){
+
+
+            } else if (this.dialogTablePasOk != true) {
                 this.dialogReservationNonModidier = true;
                 setTimeout(() => this.dialogReservationNonModidier = false, 2000);
             }
@@ -350,13 +348,12 @@ export default {
             this.closeEditReservationDialog();
         },
         resetDate() {
-            //TODO: si changé l'heure/date a un moment antérieur a maintenant, changer le statut pour terminé ou commencer, depend de l'heure de fin
             this.editedFullDate = this.reservation.fullDate;
         },
         resetPeopleCount() {
             this.editedPeopleCount = this.reservation.peopleCount;
         },
-        removeTableAndSend(){
+        removeTableAndSend() {
             this.editedTableNumber = null;
             this.dialogTablePasOk = false;
             this.tableWasRemoved = true;
@@ -366,20 +363,10 @@ export default {
     },
     computed: {
         saveButtonDisabled() {
-            var peopleCountValid = true;
-            if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 12) {
-                peopleCountValid = false;
-            }
-
-            console.log();
-
-            return !(this.dateValid
-                && peopleCountValid
-                );
-            //TODO: implémenter la désactivation du bouton sauvegarder
-
-            //TODO: a ajouter au bouton de sauvegarde
-            // :disabled="saveButtonDisabled"
+            this.peopleCountValid = true;
+            if (this.editedPeopleCount < 1 || this.editedPeopleCount > 12) this.peopleCountValid = false;
+            
+            return !(this.dateValid && this.peopleCountValid);
         }
     },
     mounted() {
@@ -402,9 +389,11 @@ export default {
 .table {
     font-size: 1.5em;
 }
+
 .capacity {
     font-size: 1em;
 }
+
 .boxed-center {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     margin: 1rem auto;
