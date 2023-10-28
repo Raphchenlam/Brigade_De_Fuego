@@ -62,6 +62,8 @@ import BlackButton from '../components/Reusable/BlackButton.vue';
 import { getHowManyPeopleByDateAndShiftName } from '../services/ReservationService'
 import { fetchEventByDateAndShiftName } from '../services/EventService'
 import { getPeriodInfoByDateAndShiftName } from '../services/ScheduleService'
+import { getHowManyCurrentPendingLeaves } from '../services/LeaveService'
+import { mdiLanPending } from "@mdi/js";
 
 export default {
     inject: ['toLocale'],
@@ -224,7 +226,13 @@ export default {
         },
         loadCurrentPendingleaves()
         {
-
+            getHowManyCurrentPendingLeaves().then(result =>
+            {
+                this.currentPendingLeaves = result;
+            }).catch(err =>
+            {
+                console.error(err);
+            })
 
             
             this.currentPendingLeaves = 8;
