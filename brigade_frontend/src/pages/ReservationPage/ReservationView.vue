@@ -30,12 +30,29 @@ export default {
     return {
       operationSession: operationSession,
       reservations: [],
-      selectedReservationId: null
+      selectedReservationId: null,
+      selectedDate: null,
+      selectedShift: null,
+      editedFirstName: null,
+      refreshListWithSameFilters: null
     }
   },
   methods: {
     loadReservationInformations(receivedReservationId) {
       this.selectedReservationId = receivedReservationId;
+    },
+    resetRefreshListWithSameFilters() {
+      this.refreshListWithSameFilters = null;
+    },
+    editedReservationRefreshAndSearch(refreshingInformations) {
+      this.refreshListWithSameFilters = refreshingInformations.changeListFilters;
+
+      if (refreshingInformations.changeListFilters) {
+        this.editedFirstName = refreshingInformations.firstName;
+        this.selectedDate = refreshingInformations.date;
+        this.selectedShift = refreshingInformations.shift;
+        this.loadReservations(this.selectedDate, this.selectedDate);
+      }
     },
     loadReservations(startDate, endDate) {
       getReservationList(startDate, endDate)
@@ -60,9 +77,14 @@ export default {
     return {
       loadReservationInformations: this.loadReservationInformations,
       loadReservations: this.loadReservations,
+      editedReservationRefreshAndSearch: this.editedReservationRefreshAndSearch,
       reservations: computed(() => this.reservations),
 
-
+      editedFirstName: computed(() => this.editedFirstName),
+      selectedDate: computed(() => this.selectedDate),
+      selectedShift: computed(() => this.selectedShift),
+      refreshListWithSameFilters: computed(() => this.refreshListWithSameFilters),
+      resetRefreshListWithSameFilters: this.resetRefreshListWithSameFilters
     };
   },
   mounted() {
