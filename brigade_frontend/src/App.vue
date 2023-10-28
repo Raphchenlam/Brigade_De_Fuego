@@ -28,8 +28,8 @@ export default {
       formatPhoneNumber: this.formatPhoneNumber,
       spliceDate: this.spliceDate,
       isUserAuthorized: this.isUserAuthorized,
-      toLocale: this.toLocale
-
+      toLocale: this.toLocale,
+      isBeforeToday: this.isBeforeToday
     }
   },
   components: {
@@ -43,7 +43,7 @@ export default {
     }
   },
   methods: {
-    
+
     capitalizeWords(inputString) {
       if (inputString) {
         const words = inputString
@@ -195,6 +195,32 @@ export default {
       const weekNumber = Math.floor((date.getTime() - new Date(date.getFullYear(), 0, 4).getTime()) / 86400000 / 7) + 1;
 
       return weekNumber;
+    },
+    isBeforeToday(fullDate) {
+      const dateToVerify = this.toLocale(fullDate)
+      var today = this.toLocale(new Date().toLocaleString("en-GB"));
+
+
+      if (dateToVerify.date.year < today.date.year) {
+        return true;
+      }
+      else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month < today.date.month) {
+        return true;
+      }
+      else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month == today.date.month) {
+        if (dateToVerify.date.day < today.date.day) {
+          return true;
+        }
+        else if (dateToVerify.date.day == today.date.day) {
+          if (dateToVerify.time.hours < today.time.hours) {
+            return true;
+          }
+          else if (dateToVerify.time.hours == today.time.hours && dateToVerify.date.minutes <= today.date.minutes) {
+            return true;
+          }
+        }
+      }
+      return false;
     },
     spliceDate(fullDate) {
       const date = fullDate.split('T').slice(0)[0];
