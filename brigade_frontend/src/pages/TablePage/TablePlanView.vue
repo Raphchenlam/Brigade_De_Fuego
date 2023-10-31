@@ -109,19 +109,11 @@ export default {
             changeTableStatus: this.changeTableStatus,
             refreshPageView: this.refreshPageView,
 
-
-            ////////////TEMPORAIRE/////////
-            //hasReservation: computed(() => this.hasReservation),
         }
     },
     methods: {
         loadReservationInformations(receivedReservationId) {
             this.selectedReservationId = receivedReservationId;
-        },
-        filterReservationsStatus(){
-            this.reservations = this.reservations.filter((reservation)=>{
-                return (reservation.statusCode < 5)
-            })
         },
         loadReservations(startDate, endDate) {
             this.reservations = [];
@@ -132,6 +124,11 @@ export default {
             }).catch(err => {
                 console.error(err);
                 alert(err.message);
+            })
+        },
+        filterReservationsStatus(){
+            this.reservations = this.reservations.filter((reservation)=>{
+                return (reservation.statusCode < 5)
             })
         },
         loadDate(newReservationDate, newReservationShift) {
@@ -157,7 +154,7 @@ export default {
         },
         loadAssignationList(date, shift) {
             this.assignationList = [];
-            this.tableWithAssignationList = [];
+            //this.tableWithAssignationList = [];
             fetchAssignationByDate(date).then(allAssignations => {
                 allAssignations.forEach(assignation => {
                     if (assignation.shift == shift) {
@@ -401,6 +398,7 @@ export default {
             this.loadTableList();
             this.loadAssignationList(this.selectedDate, this.selectedShift)
             this.loadReservations(this.selectedDate, this.selectedDate);
+            this.updateTableLayout();
         }
     },
     watch: {
