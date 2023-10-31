@@ -182,7 +182,7 @@ export default {
         },
         async changePassword() {
             const formValid = await this.$refs.newEmployeePasswordForm.validate();
-            if (!formValid) {
+            if (!formValid.valid) {
                 return;
             }
             try {
