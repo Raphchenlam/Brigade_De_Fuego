@@ -115,12 +115,6 @@ export default {
         isAssign() {
             this.tableSetUp();
         },
-        
-        reservation() {
-            if (this.reservation.statusCode == 3) {
-                this.statusWarning = 3;
-            }
-        }
     },
     mounted() {
         this.tableSetUp();

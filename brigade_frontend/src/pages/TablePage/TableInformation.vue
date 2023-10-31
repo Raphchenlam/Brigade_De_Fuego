@@ -94,7 +94,15 @@ export default {
     },
     data() {
         return {
-            tableInformation: {},
+            tableInformation: {
+                number:null,
+                capacity:null,
+                isActive:false,
+                isAssign:false,
+                hasReservation:false,
+                assignation:null,
+                reservation:null
+            },
             hasReservation: false
         }
     },

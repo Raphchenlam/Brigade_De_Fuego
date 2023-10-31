@@ -21,7 +21,8 @@
             </v-row>
             <v-row v-if='$route.path == "/operation/reservation"'>
                 <v-text-field type="date" class="ma-2 pa-4" label="Date Debut" v-model="startDate"
-                    @click:clear="resetStartDate" clearable hint="Le 'X' réinitialise la date à celle d'aujourd'hui" persistent-hint>
+                    @click:clear="resetStartDate" clearable hint="Le 'X' réinitialise la date à celle d'aujourd'hui"
+                    persistent-hint>
                 </v-text-field>
                 <v-text-field type="date" class="ma-2 pa-4" label="Date Fin" v-model="endDate" @click:clear="resetEndDate"
                     clearable hint="Le 'X' réinitialise la date à celle d'aujourd'hui" persistent-hint>
@@ -51,7 +52,8 @@ import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'editedFirstName', 'toLocale', 'loadDate', 'reservations','loadReservations', 'refreshListWithSameFilters', 'resetRefreshListWithSameFilters','selectedReservationId'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'editedFirstName', 'toLocale', 'loadDate', 'reservations',
+        'loadReservations', 'refreshListWithSameFilters', 'resetRefreshListWithSameFilters', 'selectedReservationId', 'tableIsInactiveToday'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -76,7 +78,7 @@ export default {
         return {
             closeNewReservationDialog: this.closeNewReservationDialog,
             refreshWithNewreservation: this.refreshWithNewreservation,
-            hasNewReservation: computed(()=> this.hasNewReservation)
+            hasNewReservation: computed(() => this.hasNewReservation)
         };
     },
     watch: {
@@ -156,18 +158,23 @@ export default {
                 this.hasNewReservation = false;
             }
         },
-        selectedReservationId(){
+        tableIsInactiveToday() {
+            if (this.tableIsInactiveToday) {
+                this.loadReservations(this.selectedDate, this.selectedDate);
+            }
+        },
+        selectedReservationId() {
             if (this.selectedReservationId != null) {
                 this.selected[0] = this.selectedReservationId;
-            }else{
-                this.selected = []; 
+            } else {
+                this.selected = [];
             }
         },
         editedFirstName() {
             this.search = this.editedFirstName;
         },
-        refreshListWithSameFilters(){
-            if(this.refreshListWithSameFilters === false) this.loadReservations(this.startDate, this.endDate);
+        refreshListWithSameFilters() {
+            if (this.refreshListWithSameFilters === false) this.loadReservations(this.startDate, this.endDate);
             this.resetRefreshListWithSameFilters();
         }
     },

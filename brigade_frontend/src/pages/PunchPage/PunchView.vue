@@ -1,5 +1,5 @@
 <template>
-    <v-row class="justify-center">
+    <v-row class="justify-center pa-5 ma-5">
         <div id="clock">
             <p class="time">{{ time }}</p>
         </div>
@@ -211,13 +211,12 @@ export default {
     color: #000000;
     text-align: center;
     left: 50%;
-    color: #000000;
-    text-shadow: 0 0 20px rgb(230, 10, 10), 0 0 20px rgba(10, 175, 230, 0);
+    color: #b11616;
+    text-shadow: 0 0 20px rgb(192, 42, 42), 0 0 20px rgba(212, 241, 29, 0);
 
     .time {
         letter-spacing: 0.05em;
-        font-size: 50px;
-        padding: 5px 0;
+        font-size: 90px;
     }
 }
 </style>
