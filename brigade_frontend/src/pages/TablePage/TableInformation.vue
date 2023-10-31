@@ -12,28 +12,40 @@
                     </h2>
                     <h2 v-if="!tableInformation.isAssign && tableInformation.isActive">Non assigné</h2>
                     <h2 v-if="tableInformation.isAssign && tableInformation.isActive"> Responsable: {{
-                        tableInformation.assignation.employeeFirstName }} {{
-        tableInformation.assignation.employeeLastName
-    }}</h2>
+                        tableInformation.assignation.employeeFirstName }} {{ tableInformation.assignation.employeeLastName
+    }}
+                    </h2>
                 </v-col>
             </v-row>
             <v-row class="ms-1">
                 <h3>Capacité: {{ tableInformation.capacity }}</h3>
-                <br>
-                <h3 v-if="hasReservation"> | Réservation(s): {{ reservation.firstName }} {{ reservation.lastName }} - {{
-                    reservation.peopleCount }} personnes - {{ reservation.startTime }} à {{ reservation.endTime }}</h3>
+            </v-row>
+            <v-row class="ms-1">
+                <h3 v-if="tableInformation.hasReservation">Réservation(s): {{ tableInformation.reservation.firstName }} {{
+                    tableInformation.reservation.lastName }} - {{
+        tableInformation.reservation.peopleCount }} personnes - {{ tableInformation.reservation.startTime }} à
+                    {{ tableInformation.reservation.endTime }}</h3>
             </v-row>
             <v-row class="ma-2">
                 <v-col class="py-0 ps-0">
-                    <v-card class="pa-2 ma-4 w-100" v-if="!!reservation">
-                        <BlackButton class="ma-2" v-if="!hasReservation" @click="addReservation()"
+                    <v-card class="pa-2 ma-4 w-100" v-if="!!reservation || tableInformation.hasReservation">
+                        <BlackButton class="ma-2" v-if="!tableInformation.hasReservation" @click="addReservation()"
                             textbutton="Assigner la réservation sélectionnée">
                         </BlackButton>
-                        <BlackButton class="ma-2" v-if="hasReservation" @click="removeReservation()"
-                            textbutton="Libérer la table">
+                        <BlackButton class="ma-2"
+                            v-if="tableInformation.hasReservation && (tableInformation.reservation.statusCode == 1 || tableInformation.reservation.statusCode == 3)"
+                            @click="updateReservationStatus()" textbutton="COMMENCER">
                         </BlackButton>
-                        <BlackButton class="ma-2" v-if="hasReservation" @click="completeAndRemoveReservation()"
-                            textbutton="Terminer la réservation et libérer la table">
+                        <BlackButton class="ma-2"
+                            v-if="tableInformation.hasReservation && tableInformation.reservation.statusCode == 3"
+                            @click="updateReservationStatus('NOSHOW')" textbutton="NO SHOW">
+                        </BlackButton>
+                        <BlackButton class="ma-2"
+                            v-if="tableInformation.hasReservation && (tableInformation.reservation.statusCode == 2 || tableInformation.reservation.statusCode == 4)"
+                            @click="updateReservationStatus()" textbutton="COMPLÉTER">
+                        </BlackButton>
+                        <BlackButton class="ma-2" v-if="tableInformation.hasReservation" @click="removeReservation()"
+                            textbutton="Libérer la table">
                         </BlackButton>
                         <!-- <BlackButton @click="toggleReservation" class="ma-2"
                         :textbutton='!!reservation ? "Assigner la réservation sélectionnée":"Sélectionner une réservation"'></BlackButton> -->
@@ -44,8 +56,8 @@
                         <!-- <BlackButton v-if="tableInformation.isActive" class="ma-2" textbutton="Désactiver la table">
                         </BlackButton> -->
                     </v-card>
-                    <v-card class="pa-2 ma-4 w-100" v-else>
-
+                    <v-card class="pa-2 ma-4 w-100"
+                        v-if="!((!!reservation) || tableInformation.hasReservation) && tableInformation.isActive">
                         <p><v-icon color="warning" icon="mdi-alert" size="x-large" class="ma-3"></v-icon>Pour assigner cette
                             table a une réservation, veuillez la sélectionner dans la liste...</p>
                     </v-card>
@@ -70,10 +82,10 @@
 
 <script>
 import BlackButton from "../../components/Reusable/BlackButton.vue";
-import { getReservationById, updateTableOnReservationById } from "../../services/ReservationService"
+import { getReservationById, updateTableOnReservationById, updateReservationStatusById } from "../../services/ReservationService"
 
 export default {
-    inject: ['selectedTable', 'tableWithAssignationList', 'toggleSelectedTable', 'refreshPageView', 'displaySelectedTable', 'changeTableStatus'],
+    inject: ['selectedTable', 'tableWithAssignationList', 'toggleSelectedTable', 'refreshPageView', 'displaySelectedTable', 'changeTableStatus', 'loadReservationInformations'],
     components: {
         BlackButton
     },
@@ -93,32 +105,38 @@ export default {
             })
         },
         async addReservation() {
-            if (this.reservation.peopleCount <= this.tableInformation.capacity) {
-                const reservationFound = await getReservationById(this.reservation.id);
-                if (!reservationFound) {
-                    if (this.reservation.tableNumber == null && this.selectedTable != null) {
+            const reservationFound = await getReservationById(this.reservation.id);
+            if (reservationFound) {
+                if (this.reservation.tableNumber == null && this.selectedTable != null) {
+                    if (this.reservation.peopleCount <= this.tableInformation.capacity) {
                         this.reservation.tableNumber = this.selectedTable.number;
                         await updateTableOnReservationById(this.reservation.id, this.reservation.tableNumber);
-                        this.hasReservation = true;
+                        //this.hasReservation = true;
                         this.refreshPageView();
-                    }
-                } else {
-                    if (reservationFound.tableNumber == this.reservation.tableNumber == this.selectedTable.tableNumber) {
-                        alert("La réservation est déjà assigné à cette table #" + reservationFound.tableNumber);
-                        this.hasReservation = true;
                     } else {
-                        alert("La réservation est déjà assigné à une autre table: #" + reservationFound.tableNumber);
-                        this.hasReservation = true;
+                        alert("Il n'y a pas suffisament de place sur la table, veuillez choisir une autre table.")
+                        console.info("Il n'y a pas suffisament de place sur la table, veuillez choisir une autre table.")
                     }
                 }
-
+                else {
+                    if (reservationFound.tableNumber == this.reservation.tableNumber == this.selectedTable.tableNumber) {
+                        console.info("La réservation est déjà assigné à cette table #" + reservationFound.tableNumber);
+                        alert("La réservation est déjà assigné à cette table #" + reservationFound.tableNumber);
+                    } else {
+                        console.info("La réservation est déjà assigné à la table: #" + reservationFound.tableNumber);
+                        alert("La réservation est déjà assigné à la table: #" + reservationFound.tableNumber);
+                    }
+                }
             } else {
-                alert("Il n'y a pas suffisament de place sur la table, veuillez choisir une autre table.")
+                console.error("Aucune réservation trouvée ayant cet ID");
+                alert("Aucune réservation trouvée ayant cet ID");
             }
+
 
         },
         async removeReservation() {
-            const reservationFound = await getReservationById(this.reservation.id)
+            const reservationFound = await getReservationById(this.tableInformation.reservation.id)
+            console.log("reservationFound : " + JSON.stringify(reservationFound));
             if (!reservationFound) {
                 alert("Aucune réservation trouvée")
             } else {
@@ -126,19 +144,37 @@ export default {
                     alert("Il n'y a aucune réservation sur cette table actuellement.")
                 } else {
                     this.reservation.tableNumber = null;
-                    await updateTableOnReservationById(this.reservationFound.id, null)
+                    await updateTableOnReservationById(reservationFound.id, 0)
                     this.hasReservation = false;
                 }
             }
             this.refreshPageView();
         },
-        completeAndRemoveReservation() {
-            if (!!this.reservation.tableNumber) {
-                this.reservation.tableNumber = null;
-                this.reservation.status = "Terminé";
-                this.hasReservation = false;
+
+        async updateReservationStatus(status) {
+            const reservationFound = await getReservationById(this.tableInformation.reservation.id)
+            console.log("reservationFound : " + JSON.stringify(reservationFound));
+            if (!reservationFound) {
+                alert("Aucune réservation trouvée")
+            } else {
+                if (reservationFound.tableNumber == null) {
+                    alert("Il n'y a aucune réservation sur cette table actuellement.")
+                } else {
+                    if ((this.tableInformation.reservation.statusCode == 1 || this.tableInformation.reservation.statusCode == 3) && status != "NOSHOW") {
+                        await updateReservationStatusById(reservationFound.id, 2)
+                        this.hasReservation = true;
+                    } else if ((this.tableInformation.reservation.statusCode == 1 || this.tableInformation.reservation.statusCode == 3) && status == "NOSHOW") {
+                        await updateReservationStatusById(reservationFound.id, 6)
+                        this.hasReservation = false;
+                    } else if ((this.tableInformation.reservation.statusCode == 2 || this.tableInformation.reservation.statusCode == 4)) {
+                        await updateReservationStatusById(reservationFound.id, 5)
+                        this.hasReservation = false;
+                    }
+                }
             }
-        }
+            this.refreshPageView();
+            this.toggleSelectedTable();
+        },
     },
     watch: {
         selectedTable() {
@@ -146,7 +182,16 @@ export default {
         },
         tableWithAssignationList() {
             this.getTableInformation();
-        }
+            //this.loadReservationInformations(this.tableInformation.reservation.id)
+
+        },
+        // tableInformation() {
+        //     if (!!this.tableInformation) {
+        //         if (this.tableInformation.hasReservation) {
+        //             this.loadReservationInformations(this.tableInformation.reservation.id)
+        //         }
+        //     }
+        // }
     },
     mounted() {
         this.getTableInformation();

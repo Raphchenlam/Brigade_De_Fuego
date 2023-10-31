@@ -244,6 +244,8 @@ exports.getReservationListByDates = getReservationListByDates;
 
 
 const updateTableOnReservationById = async(id, tableNumber) => {
+    if(tableNumber==0)tableNumber = null;
+
     const result = await pool.query(
         `UPDATE reservation SET table_number = $2 WHERE id = $1`,
         [id, tableNumber]
@@ -254,3 +256,17 @@ const updateTableOnReservationById = async(id, tableNumber) => {
     return getReservationById(id);
 };
 exports.updateTableOnReservationById=updateTableOnReservationById;
+
+const updateReservationStatusById = async(id, statusCode) => {
+    if (statusCode != null) {
+        const result = await pool.query(
+            `UPDATE reservation SET status_code = $2 WHERE id = $1`,
+            [id, statusCode]
+        );
+        if(result.rowCount === 0) {
+            return undefined
+        }
+        return getReservationById(id);
+    }
+};
+exports.updateReservationStatusById = updateReservationStatusById;

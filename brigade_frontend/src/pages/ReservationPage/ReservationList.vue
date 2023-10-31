@@ -44,6 +44,7 @@
 
 
 <script>
+import { computed } from "vue";
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import NewReservationForm from "../reservationpage/NewReservationForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
@@ -51,7 +52,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 // import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale', 'loadDate', 'reservations','loadReservations'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale', 'loadDate', 'reservations','loadReservations','selectedReservationId'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -64,7 +65,7 @@ export default {
             startDate: null,
             endDate: null,
             search: "",
-            shiftShow: "all",
+            shiftShow: (!!this.selectedShift) ? this.selectedShift : "all",
             modal: false,
             selected: [],
             //reservations: [],
@@ -76,7 +77,8 @@ export default {
     provide() {
         return {
             closeNewReservationDialog: this.closeNewReservationDialog,
-            refreshWithNewreservation: this.refreshWithNewreservation
+            refreshWithNewreservation: this.refreshWithNewreservation,
+            hasNewReservation: computed(()=> this.hasNewReservation)
         };
     },
     watch: {
@@ -147,11 +149,19 @@ export default {
         },
         selectedShift() {
             this.shiftShow = this.selectedShift;
+            this.loadReservations(this.selectedDate, this.selectedDate);
         },
         hasNewReservation() {
             if (this.hasNewReservation) {
                 (this.selectedDate) ? this.loadReservations(this.selectedDate, this.selectedDate) : this.loadReservations(this.startDate, this.endDate);
                 this.hasNewReservation = false;
+            }
+        },
+        selectedReservationId(){
+            if (this.selectedReservationId != null) {
+                this.selected[0] = this.selectedReservationId;
+            }else{
+                this.selected = []; 
             }
         }
     },
@@ -222,11 +232,9 @@ export default {
                             color: 'red',
                         },
                     };
-
                     if (reservationToAdd.listInformation.toUpperCase().indexOf(this.search.toUpperCase()) >= 0) {
                         this.filteredReservationList.push(reservationToAdd);
                     }
-
                 }
             });
         },
@@ -245,7 +253,6 @@ export default {
         }
     },
     mounted() {
-        console.clear();
         if (!(!!this.selectedDate)) {
             this.todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
             this.endDate = this.startDate = this.todayDate;

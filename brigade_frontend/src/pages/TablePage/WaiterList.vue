@@ -49,9 +49,10 @@
                         :textbutton='inColorMode ? "Annuler" : "Changer les couleurs"'></BlackButton>
                 </v-col>
                 <v-col>
-                    <BlackButton v-if="inEditionMode" @click="createAssignations()" class="ma-6" :textbutton='"Enregistrer les sections"'>
+                    <BlackButton v-if="inEditionMode" @click="createAssignations()" class="ma-6"
+                        :textbutton='"Enregistrer les sections"'>
                     </BlackButton>
-                    <BlackButton v-if="inColorMode" @click="updatecolor()" class="ma-6"
+                    <BlackButton v-if="inColorMode" @click="updateColor()" class="ma-6"
                         :textbutton='"Enregistrer les couleurs"'></BlackButton>
                 </v-col>
 
@@ -69,7 +70,7 @@ import BlackButton from "../../components/Reusable/BlackButton.vue";
 
 
 export default {
-    inject: ['selectedDate', 'selectedShift', 'inEditionMode', 'toggleEditionMode', 'selectWaiter','selectedWaiter','buildAssignations','refreshPageView'],
+    inject: ['selectedDate', 'selectedShift', 'inEditionMode', 'toggleEditionMode', 'selectWaiter', 'selectedWaiter', 'buildAssignations', 'refreshPageView'],
     components: {
         BlackButton
     },
@@ -77,7 +78,7 @@ export default {
         return {
             waitersList: [],
             inColorMode: false,
-            selected:[]
+            selected: []
         }
     },
 
@@ -98,20 +99,29 @@ export default {
                     this.waitersList.push(newWaiter);
                 });
             })
-        }, 
-        createAssignations(){
+        },
+        createAssignations() {
             this.buildAssignations();
         },
-        updatecolor() {
-            this.waitersList.forEach((employee) => {
-                updateEmployeeColor(employee.employeeNumber, employee.waiterColor)
-            })
+        async updateColor() {
+            for (const employee of this.waitersList) {
+                await updateEmployeeColor(employee.employeeNumber, employee.waiterColor);
+            }
             this.refreshPageView();
             this.inColorMode = false;
-            //**** RESET selectedWaiter TO NULL ****//
-            this.selectWaiter(0,0);
-
+            // Reset selectedWaiter to null
+            this.selectWaiter(0, 0);
         },
+        // async updatecolor() {
+        //     this.waitersList.forEach((employee) => {
+        //         await updateEmployeeColor(employee.employeeNumber, employee.waiterColor)
+        //     })
+        //     this.refreshPageView();
+        //     this.inColorMode = false;
+        //     //**** RESET selectedWaiter TO NULL ****//
+        //     this.selectWaiter(0,0);
+
+        // },
         openColorPicker(waiter) {
             if (this.inColorMode) {
                 waiter.dialogVisible = !waiter.dialogVisible;
@@ -124,17 +134,18 @@ export default {
     },
     watch: {
         selectedDate() {
+            this.inColorMode = false;
             this.getWaitersList();
         },
         selectedShift() {
             this.getWaitersList();
         },
-        selectedWaiter(){
+        selectedWaiter() {
             if (this.selectedWaiter == null) {
-                this.selected=[];
+                this.selected = [];
             }
         },
-        inColorMode(){
+        inColorMode() {
             if (!this.inColorMode) {
                 this.getWaitersList();
             }
