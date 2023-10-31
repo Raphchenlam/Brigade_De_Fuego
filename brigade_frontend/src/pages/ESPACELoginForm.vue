@@ -176,7 +176,6 @@ export default {
                     this.warningEmployeeLostPassword = true;
                     this.warningEmployeeLostPasswordMessage = err.message;
                     console.error(err);
-
                 })
             }
         },
