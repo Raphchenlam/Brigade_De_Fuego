@@ -375,7 +375,6 @@ router.put('/:employeeNumber',
         if (!employeeNumber || employeeNumber == '') return next(new HttpError(400, 'Le champ employeeNumber est requis'));
         if (employee.employeeNumber != employeeNumberParams) return next(new HttpError(403, 'Vous n\'avez pas l\'authorisation de modifier un autre employé'));
         if (!regex.validEmployeeNumber.test(employeeNumber)) return next(new HttpError(422, 'Le numéro d\'employé ne respecte pas les critères d\'acceptation'));
-        // employeeNumber = parseInt(employeeNumber);
 
         const firstName = req.body.firstName;
         if (!firstName || firstName == '') return next(new HttpError(400, 'Le champ firstName est requis'));
@@ -399,7 +398,6 @@ router.put('/:employeeNumber',
         const hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') return next(new HttpError(400, 'Le champ hourlyRate est requis'));
         if (!regex.validHourlyRate.test(hourlyRate)) return next(new HttpError(422, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
-        // hourlyRate = parseFloat(hourlyRate);
 
         const barcodeNumber = req.body.barcodeNumber;
         if (!barcodeNumber || barcodeNumber == '') return next(new HttpError(400, 'Le champ barcodeNumber est requis'));
