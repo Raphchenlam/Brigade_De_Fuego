@@ -49,13 +49,13 @@
                 <v-row>
                     <v-col>
                         <v-text-field v-model="newPassword" label="Mot de passe" type="password"
-                            :rules="[rules.required, rules.validatePassword, rules.fieldLength255]" density="compact" ref="passwordInput"
+                            :rules="[rules.required, rules.validateNewPassword, rules.fieldLength255]" density="compact" ref="passwordInput"
                             clearable autofocus maxlength="255" :counter="255">
                         </v-text-field>
                     </v-col>
                     <v-col>
                         <v-text-field v-model="newPasswordConfirmation" label="Confirmer le mot de passe"
-                            :rules="[rules.required, rules.passwordsMatch, rules.fieldLength255]" type="password" density="compact"
+                            :rules="[rules.required, rules.newPasswordsMatch, rules.fieldLength255]" type="password" density="compact"
                             ref="passwordConfirmInput" clearable maxlength="255" :counter="255">
                         </v-text-field>
                     </v-col>
@@ -105,29 +105,26 @@ export default {
                 required: value => !!value || "Le champ est requis",
                 validatePassword: () => this.validPassword === false ? "Numéro d'employé ou mot de passe invalide" : true,
                 validateEmail: value => validEmail.test(value) || "Adresse courriel invalide",
+                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
+                validateNewPassword: value => {
+                    if (!this.newPassword && !this.newPasswordConfirmation) {
+                        return true;
+                    }
+                    return validPassword.test(value) || "Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial";
+                },
+                newPasswordsMatch: () => {
+                    if (!this.newPassword && !this.newPasswordConfirmation) {
+                        return true;
+                    }
+                    return this.newPassword === this.newPasswordConfirmation || "Les mots de passe ne correspondent pas";
+                }
             },
             dialogLostPassword: false,
             warningEmployeeLostPassword: false,
             warningEmployeeLostPasswordMessage: '',
             dialogConfirmLostPassword: false,
             dialogChangeNewEmployeePassword: false,
-            emailLostPassword: '',
-            rules: {
-                required: value => !!value || "Le champ est requis",
-                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
-                validatePassword: value => {
-                    if (!this.newPassword && !this.newPasswordConfirmation) {
-                        return true;
-                    }
-                    return validPassword.test(value) || "Le mot de passe doit contenir au moins 8 caractères, 1 majuscule, 1 chiffre et 1 caractère spécial";
-                },
-                passwordsMatch: () => {
-                    if (!this.newPassword && !this.newPasswordConfirmation) {
-                        return true;
-                    }
-                    return this.newPassword === this.newPasswordConfirmation || "Les mots de passe ne correspondent pas";
-                }
-            }
+            emailLostPassword: ''
         };
     },
     methods: {
