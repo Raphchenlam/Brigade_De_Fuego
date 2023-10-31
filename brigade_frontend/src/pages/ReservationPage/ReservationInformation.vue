@@ -24,7 +24,7 @@
             </v-dialog>
             <v-row>
                 <v-col class="ma-5 justify-space-between">
-                    <p :class="{ green: reservation.status == 'Confirmé', red: reservation.status == 'Blacklisted' }">Status : {{ reservation.status }}</p>
+                    <p :class="{ green: reservation.status == 'Confirmé', red: reservation.status == 'Blacklisted', redStatus: reservation.status == 'En retard' }">Status : {{ reservation.status }}</p>
                     <p>Numero reservation : {{ reservation.id }}</p>
                     <p>Nombre de personne: {{ reservation.peopleCount }}</p>
                     <p v-if="reservation.hasMinor"><strong>Mineur sur place !</strong></p>
@@ -40,10 +40,6 @@
                 <v-card-title><strong>Mention: </strong></v-card-title>
                 <p>{{ reservation.mention }}</p>
             </v-card>
-            <v-row v-if='$route.path == "/operation/tablePlan"'>
-                <BlackButton @click="toggleReservation" class="ma-6"
-                    :textbutton='!!reservation.tableNumber ? "Libérer la table" : "Assigner une table"'></BlackButton>
-            </v-row>
             <v-card class="ma-5 justify-space-between" color="#36454f">
                 <v-card-title v-if="reservation.isBlacklisted" class="red2 ma-2">
                     <strong>BLACKLISTED!</strong>
@@ -68,7 +64,7 @@ export default {
         BlackButton,
         EditBlackButton
     },
-    inject: ['selectedTable', 'refreshWithUpdatedReservation'],
+    inject: ['selectedTable', 'refreshWithUpdatedReservation','reservationInformations'],
     data() {
         return {
             dialogEditReservation: false,
@@ -81,17 +77,22 @@ export default {
         },
         refreshWithUpdatedReservation(){
             this.loadReservation(this.reservationId);
-        }
+        },
+        'reservationInformations':{
+            handler: function () {
+                if(this.reservationInformations) this.reservation = this.reservationInformations;
+            },
+            deep: true
+        },
     },
     methods: {
-        loadReservation(selectedReservationId) {
+        async loadReservation(selectedReservationId) {
             if (selectedReservationId) {
-                getReservationById(selectedReservationId)
-                    .then(reservation => {
-                        this.reservation = reservation;
-                    }).catch(err => {
-                        console.error(err);
-                    })
+                try {
+                    this.reservation = await getReservationById(selectedReservationId)
+                } catch (err) {
+                    console.error(err);
+                }
             }
             else {
                 this.reservation = {};
@@ -143,7 +144,9 @@ p {
     font-size: 1.5em;
     text-align: center
 }
-
+.redStatus {
+    color: red
+}
 .green {
     color: green
 }

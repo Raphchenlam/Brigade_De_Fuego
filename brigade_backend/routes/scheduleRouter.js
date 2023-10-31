@@ -384,13 +384,21 @@ function sendEmailSchedule(emailList, isModified, date)
 {
     const recipients = emailList;
     let subject = "Nouvel horaire disponible";
-    if (isModified) subject = "Horaire mis a jour"
-    const text = "Bonjour, un nouvel horaire a été publier pour la semaine du " + date + ".Vous pouvez la consulter en vous connectant sur l'application";
-    const html = `
+    const text = "";
+    let html = `
         <h1>Nouvel horaire</h1>
         <p>Bonjour,</p>
-        <p>Un nouvel horaire a été publiépour la semaine du ` + date + `.</p>
+        <p>Un nouvel horaire a été publié pour la semaine du ` + date + `.</p>
         <p>Veuillez vous connecter à l'application afin d'y avoir accès.</p>`
+    if (isModified)
+    {
+        subject = "Horaire mis a jour";
+        html = `
+        <h1>Horaire mis à jour</h1>
+        <p>Bonjour,</p>
+        <p>L'horaire pour la semaine du ` + date + ` vient d'être mis à jour.</p>
+        <p>Veuillez vous connecter à l'application afin d'y avoir accès.</p>`
+    }
     sendEmail(recipients, subject, text, html);
     console.log("emails envoyes")
     return true
