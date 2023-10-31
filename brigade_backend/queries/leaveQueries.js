@@ -107,7 +107,7 @@ const selectLeavesByEmployeeNumber = async (employeeNumber) =>
 };
 exports.selectLeavesByEmployeeNumber = selectLeavesByEmployeeNumber;
 
-const selectApprovedLeavesByEmployeeNumberAndDate = async (employeeNumber,date) =>
+const selectApprovedLeavesByEmployeeNumberAndDate = async (employeeNumber, date) =>
 {
     const result = await pool.query(
         `SELECT *
@@ -116,7 +116,7 @@ const selectApprovedLeavesByEmployeeNumberAndDate = async (employeeNumber,date) 
         AND leave.start_date <= $2
         AND leave.end_date >= $2
         AND status = 'Approved'`,
-        [employeeNumber,date]
+        [employeeNumber, date]
     );
 
     const row = result.rows[0];
@@ -139,7 +139,6 @@ const selectApprovedLeavesByEmployeeNumberAndDate = async (employeeNumber,date) 
 
 };
 exports.selectApprovedLeavesByEmployeeNumberAndDate = selectApprovedLeavesByEmployeeNumberAndDate;
-
 
 const selectCurrentLeaveByEmployeeNumber = async (employeeNumber) =>
 {
@@ -168,7 +167,7 @@ const selectCurrentLeaveByEmployeeNumber = async (employeeNumber) =>
         return leave;
     }
     return undefined
-    
+
 };
 exports.selectCurrentLeaveByEmployeeNumber = selectCurrentLeaveByEmployeeNumber;
 
@@ -195,10 +194,9 @@ const selectLeaveByID = async (leaveID) =>
         return leave;
     }
     return undefined
-    
+
 };
 exports.selectLeaveByID = selectLeaveByID;
-
 
 const selectAllLeavesCategory = async () =>
 {
@@ -218,7 +216,17 @@ const selectAllLeavesCategory = async () =>
 };
 exports.selectAllLeavesCategory = selectAllLeavesCategory;
 
+const selectAllCurrentLeaves = async () =>
+{
+    const resultNbPending = await pool.query(`SELECT COUNT(*) AS nb_pending
+    FROM leave
+    JOIN employee ON employee.employee_number = leave.employee_number
+    WHERE leave.status = 'Pending' OR leave.status = 'PendingModified'`)
 
+    nbPending = resultNbPending.rows[0].nb_pending;
+    return parseInt(nbPending);
+};
+exports.selectAllCurrentLeaves = selectAllCurrentLeaves;
 
 const insertLeave = async (newLeave) =>
 {
@@ -249,7 +257,6 @@ const insertLeave = async (newLeave) =>
     throw new Error("L'insertion a échoué pour une raison inconnue");
 };
 exports.insertLeave = insertLeave;
-
 
 const updateLeave = async (leave) =>
 {

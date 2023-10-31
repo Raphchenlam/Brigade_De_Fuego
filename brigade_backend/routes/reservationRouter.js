@@ -9,7 +9,7 @@ const dATObj = require('../../REGEX/dateAndTimeObjectifier');
 
 const HttpError = require("../HttpError");
 
-// DATES OKAY HERE 
+// Functions
 function isDateBeforeToday(dateString) {
     const parts = dateString.split('-');
     const year = parseInt(parts[0], 10);
@@ -23,6 +23,29 @@ function isDateBeforeToday(dateString) {
 
     return givenDate < currentDate;
 }
+
+
+
+
+// Routes
+router.get("/statusList",
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) => {
+
+        reservationQueries
+            .getReservationStatusList()
+            .then((reservationList) => {
+                if (reservationList) {
+                    res.json(reservationList);
+                } else {
+                    return next(new HttpError(404, `Les réservations ${startDate} et ${endDate} sont introuvables`));
+                }
+            })
+            .catch((err) => {
+                return next(err);
+            });
+    }
+);
 
 router.get("/",
     passport.authenticate('basic', { session: false }),
@@ -50,9 +73,9 @@ router.get("/expectedpeople/:date/:shiftName",
         reservationQueries.getExpectedPeopleByDateAndShiftName(date, shiftName).then((peopleCount) => {
             res.json(peopleCount);
         })
-        .catch((err) => {
-            return next(err);
-        });
+            .catch((err) => {
+                return next(err);
+            });
     }
 );
 
@@ -160,7 +183,7 @@ router.post("/",
                             return next(err);
                         });
                 } else {
-                    return next(new HttpError(409, `Une réservation du client ${reservation.first_name} ${reservation.last_name}, le ${reservation.date} a ${reservation.start_time} existe déjà`))
+                    return next(new HttpError(409, `Une réservation du client ${reservation.clientFirstname} ${reservation.clientLastname}, le ${reservation.date} a ${reservation.startTime} existe déjà`))
                 }
             })
             .catch((err) => {
@@ -186,8 +209,32 @@ router.put('/:id/table/:tableNumber', (req, res, next) => {
     if (!tableNumber || tableNumber === '') {
         return next(new HttpError(400, 'Le numéro de table est requis'));
     }
-
     reservationQueries.updateTableOnReservationById(id, tableNumber).then(result => {
+        if (!result) {
+            return next(new HttpError(404, `La réservation est introuvable`));
+        }
+        res.json(result);
+    }).catch(err => {
+        return next(err);
+    })
+});
+
+router.put('/:id/status/:statusCode', (req, res, next) => {
+    const user = req.user;
+
+    // if (!user || !user.isAdmin) {
+    //   return next(new HttpError(403, "Droit administrateur requis"));
+    // }
+
+    const id = req.params.id;
+    if (!id || id === '') {
+        return next(new HttpError(400, 'Le paramètre ID est requis'));
+    }
+    const statusCode = req.params.statusCode;
+    if (!statusCode || statusCode === '') {
+        return next(new HttpError(400, 'Le code du statut est requis'));
+    }
+    reservationQueries.updateReservationStatusById(id, statusCode).then(result => {
         if (!result) {
             return next(new HttpError(404, `La réservation est introuvable`));
         }
@@ -200,197 +247,158 @@ router.put('/:id/table/:tableNumber', (req, res, next) => {
 router.put("/",
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
-        console.log("****************************************************************")
+        // For debugging perpuses
+        // var debuggingReservation = {
+        //     id: req.body.id,
+        //     tableNumber: req.body.tableNumber,
+        //     clientId: req.body.clientId,
+        //     statusCode: req.body.statusCode,
+        //     peopleCount: req.body.peopleCount,
+        //     date: req.body.date,
+        //     startTime: req.body.startTime,
+        //     endTime: req.body.endTime,
+        //     mention: req.body.mention,
+        //     hasMinor: req.body.hasMinor,
+        //     takenBy: req.body.takenBy
+        // }
+        // console.log("****************************************");
+        // console.log("debuggingReservation : ");
+        // console.log(debuggingReservation);
+
         reservationQueries.getReservationById(req.body.id)
             .then((oldReservation) => {
-
                 var newReservationInfos = { id: req.body.id }
 
                 if (oldReservation) {
-                    const startTimeObj = dATObj.toLocale(req.body.startTime);
-
                     if (!!req.body.clientId && req.body.clientId != oldReservation.clientId) {
                         return next(new HttpError(400, `Une réservation ne peux pas changer de client ( id reçu ${req.body.clientId}, id de la base de données ${oldReservation.clientId})`))
-                    } else {
-                        newReservationInfos = {
-                            ...newReservationInfos,
-                            clientId: oldReservation.clientId
-                        }
                     }
 
                     if (!!req.body.takenBy && req.body.takenBy != oldReservation.takenBy) {
-                        return next(new HttpError(400, `Une réservation ne peux pas le code bar de l'employé responsable.`))
-                    } else {
-                        newReservationInfos = {
-                            ...newReservationInfos,
-                            takenBy: oldReservation.takenBy
-                        }
+                        return next(new HttpError(400, `Une réservation ne peux pas changer le code bar de l'employé responsable.`))
                     }
 
-                    if (!!req.body.date && !!req.body.startTime && !!req.body.endTime) {
-                        if (req.body.date != oldReservation.date || req.body.startTime != oldReservation.startTime) {
-                            const fullDateToValidate = req.body.date + " " + req.body.startTime;
-                            const dateInvalid = dATObj.isBeforeToday(fullDateToValidate);
+                    if (!!req.body.date) {
+                        const date = req.body.date;
+                        if (date == "") return next(new HttpError(400, "Le champ date est requis"));
+                        if (!regex.validDate.test(date)) return next(new HttpError(400, "Le champ date ne respect pas les critères d'acceptation ex: '2023-09-11'"));
+                        if (dATObj.isBeforeToday(date)) return next(new HttpError(400, "La date de la réservation ne peux indiquer une date antérieur à aujourd'hui"));
+                    }
 
-                            if (dateInvalid || startTimeObj.hours < 11 || startTimeObj.hours > 23) {
-                                return next(new HttpError(400, "La date et l'heure de début ne peuvent être antérieurs à la date et l'heure actuelle +5 minutes et doit être entre 11h am et 23h59 pm."));
-                            }
+                    if (!!req.body.startTime) {
+                        const startTime = req.body.startTime;
+                        if (startTime == "") return next(new HttpError(400, "Le champ heure de début est requis"));
+                        if (!regex.validTime.test(startTime)) return next(new HttpError(400, "Le champ start_time ne respect pas les critères d'acceptation ex: '18:00:00'"));
 
-                            newReservationInfos = {
-                                ...newReservationInfos,
-                                date: req.body.date,
-                                startTime: req.body.startTime
-                            }
-                        }else{
-                            newReservationInfos = {
-                                ...newReservationInfos,
-                                date: undefined,
-                                startTime: undefined,
-                            }
-                        }
+                        const startTimeObj = dATObj.toLocale(startTime);
+                        if (startTimeObj.hours < 11 || startTimeObj.hours > 23) return next(new HttpError(400, "Le champ heure de début doit être entre 11h00 am et 23h00 pm"));
+                    }
 
-                        if (req.body.endTime != oldReservation.endTime) {
-                            const startTime = dATObj.toLocale(req.body.startTime);
-                            const endTime = dATObj.toLocale(req.body.endTime);
-                            let totalReservationTime = ((endTime.hours * 60 + endTime.minutes) - (startTime.hours * 60 + startTime.minutes)) / 60;
+                    if (!!req.body.endTime) {
+                        const endTime = req.body.endTime;
+                        if (endTime == "") return next(new HttpError(400, "Le champ heure de début est requis"));
+                        if (!regex.validTime.test(endTime)) return next(new HttpError(400, "Le champ end_time ne respect pas les critères d'acceptation ex: '18:00:00', minuit s'écrit 00:00:00"));
 
-                            if (endTime.hours < startTime.hours) {
-                                return next(new HttpError(400, "L'heure de fin ne peux être antérieurs à l'heure de début."));
-                            } else if (endTime.hours == startTime.hours && endTime.minutes <= startTime.minutes) {
-                                return next(new HttpError(400, "L'heure de fin ne peux être antérieurs à l'heure de début."));
-                            } else if (totalReservationTime > 3) {
-                                const totalReservationTimeString = parseInt(totalReservationTime) + "h" + parseInt((totalReservationTime - parseInt(totalReservationTime)) * 60) + "m";
-                                return next(new HttpError(400, `La durée total de la réservation (${totalReservationTimeString}) ne peux excédé 3 heures.`));
-                            }
+                        const endTimeObj = dATObj.toLocale(endTime);
+                        if (endTimeObj.hours < 11) return next(new HttpError(400, "Le champ heure de fin ne peux pas être avant 11:00:00 ou dépassé 23:59:00"));
 
-                            if (endTime.hours > 23 || endTime.hours == 0 || endTime.hours < 11) return next(new HttpError(400, "L'heure de fin ne peux être avant 11h00 am ou passé 23h59 pm."));
-                            
-                            newReservationInfos = {
-                                ...newReservationInfos,
-                                endTime: req.body.endTime
-                            }
+                        const startTimeString = (!!req.body.startTime) ? req.body.startTime : oldReservation.startTime;
+                        const startTimeObject = dATObj.toLocale(startTimeString);
+                        const totalReservationTime = ((endTimeObj.hours * 60 + endTimeObj.minutes) - (startTimeObject.hours * 60 + startTimeObject.minutes)) / 60;
 
-                        }else{
-                            newReservationInfos = {
-                                ...newReservationInfos,
-                                endTime: undefined
-                            }
-                        }
-
-                    } else {
-                        newReservationInfos = {
-                            ...newReservationInfos,
-                            date: undefined,
-                            startTime: undefined,
-                            endTime: undefined
+                        if (endTimeObj.hours < startTimeObject.hours) {
+                            return next(new HttpError(400, "L'heure de fin ne peux être antérieurs à l'heure de début."));
+                        } else if (endTimeObj.hours == startTimeObject.hours && endTimeObj.minutes <= startTimeObject.minutes) {
+                            return next(new HttpError(400, "L'heure de fin ne peux être antérieurs à l'heure de début."));
+                        } else if (totalReservationTime > 3) {
+                            const totalReservationTimeString = parseInt(totalReservationTime) + "h" + parseInt((totalReservationTime - parseInt(totalReservationTime)) * 60) + "m";
+                            return next(new HttpError(400, `La durée total de la réservation (${totalReservationTimeString}) ne peux excédé 3 heures.`));
                         }
                     }
 
                     if (!!req.body.statusCode && req.body.statusCode != oldReservation.statusCode) {
                         if (req.body.statusCode < 1 || req.body.statusCode > 8) {
                             return next(new HttpError(400, `Le code de status de la réservation doit être entre 1 et 8, code reçu ${req.body.statusCode}.`));
-                        } else {
-                            newReservationInfos = {
-                                ...newReservationInfos,
-                                statusCode: req.body.statusCode
-                            }
-                        }
-                    } else {
-                        newReservationInfos = {
-                            ...newReservationInfos,
-                            statusCode: undefined
                         }
                     }
 
-                    if (!!req.body.mention && req.body.mention != oldReservation.mention) {
-                        if (req.body.mention.length > 255) {
+                    if ((!!req.body.mention || req.body.mention == '') && req.body.mention != oldReservation.mention && req.body.mention.length > 255) {
                             return next(new HttpError(400, `Le champ "mention" ne peux contenir plus de 255 caractères. Vous en avez ${req.body.mention.length},  c'est-à-dire *${req.body.mention.length - 255}* de trop.`));
-                        } else {
-                            newReservationInfos = {
-                                ...newReservationInfos,
-                                mention: req.body.mention
-                            }
-                        }
-                    } else {
-                        newReservationInfos = {
-                            ...newReservationInfos,
-                            mention: undefined
-                        }
                     }
 
                     if (req.body.hasMinor !== undefined && req.body.hasMinor !== false && req.body.hasMinor !== true) {
                         return next(new HttpError(400, `Le champ "Mineur sur place" ne peux pas être ''${req.body.hasMinor}''.`));
-                    } else {
-                        if (req.body.hasMinor === true || req.body.hasMinor === false) {
-                            newReservationInfos = {
-                                ...newReservationInfos,
-                                hasMinor: req.body.hasMinor
-                            }
-                        } else {
-                            newReservationInfos = {
-                                ...newReservationInfos,
-                                hasMinor: undefined
-                            }
-                        }
                     }
 
-                    if (!!req.body.tableNumber || !!req.body.peopleCount) {
-                        if (req.body.tableNumber != oldReservation.tableNumber || req.body.peopleCount != oldReservation.peopleCount) {
-                            const tableNumber = req.body.tableNumber;
-                            const peopleCount = req.body.peopleCount;
-
-                            tableQueries.getTableByNumber(tableNumber)
-                                .then((table) => {
-                                    if (table && table.isActive) {
-                                        if (table.capacity < peopleCount) return next(new HttpError(400, `La table #${tableNumber} ne peux acceuillir ${peopleCount} personnes.`));
-
-                                        newReservationInfos = {
-                                            ...newReservationInfos,
-                                            tableNumber: req.body.tableNumber,
-                                            peopleCount: req.body.peopleCount
-                                        }
-
-                                        reservationQueries
-                                            .updateReservation(newReservationInfos)
-                                            .then((updatedReservation) => {
-                                                if (updatedReservation) {
-                                                    res.json(updatedReservation);
-                                                } else {
-                                                    return next(new HttpError(404, `La mise à jours de la réservation ${newReservationInfos.id} à échoué pour une raison inconnue.`));
-                                                }
-                                            })
-                                            .catch((err) => {
-                                                return next(err);
-                                            });
-                                    } else {
-                                        return next(new HttpError(400, `La table ${tableNumber} est introuvable ou inactive.`));
-                                    }
-                                })
-                                .catch((err) => {
-                                    return next(err);
-                                });
-
-                        }
+                    if (!!req.body.peopleCount && req.body.peopleCount < 1 || req.body.peopleCount > 12) {
+                        return next(new HttpError(400, `Le nombre de personnes reçu ( ${req.body.peopleCount} ) n'est pas entre 1 et 12.`));
                     }
 
                     newReservationInfos = {
                         ...newReservationInfos,
-                        tableNumber: undefined,
-                        peopleCount: undefined
+                        clientId: oldReservation.clientId,
+                        takenBy: oldReservation.takenBy,
+                        date: req.body.date,
+                        startTime: req.body.startTime,
+                        endTime: req.body.endTime,
+                        statusCode: req.body.statusCode,
+                        mention: req.body.mention,
+                        hasMinor: req.body.hasMinor
                     }
 
-                    reservationQueries
-                        .updateReservation(newReservationInfos)
-                        .then((updatedReservation) => {
-                            if (updatedReservation) {
-                                res.json(updatedReservation);
-                            } else {
-                                return next(new HttpError(404, `La mise à jours de la réservation ${newReservationInfos.id} à échoué pour une raison inconnue.`));
-                            }
-                        })
-                        .catch((err) => {
-                            return next(err);
-                        });
+                    if (!!req.body.tableNumber || !!req.body.peopleCount && req.body.tableNumber != null) {
+                        tableQueries.getTableByNumber(req.body.tableNumber)
+                            .then((table) => {
+                                if (table && table.isActive) {
+                                    if (table.capacity < req.body.peopleCount) return next(new HttpError(400, `La table #${req.body.tableNumber} ne peux acceuillir ${req.body.peopleCount} personnes.`));
+
+                                    newReservationInfos = {
+                                        ...newReservationInfos,
+                                        tableNumber: req.body.tableNumber,
+                                        peopleCount: req.body.peopleCount
+                                    }
+
+                                    reservationQueries
+                                        .updateReservation(newReservationInfos)
+                                        .then((updatedReservation) => {
+                                            if (updatedReservation) {
+                                                res.json(updatedReservation);
+                                            } else {
+                                                return next(new HttpError(404, `La mise à jours de la réservation ${newReservationInfos.id} à échoué pour une raison inconnue.`));
+                                            }
+                                        })
+                                        .catch((err) => {
+                                            return next(err);
+                                        });
+                                } else {
+                                    return next(new HttpError(400, `La table ${req.body.tableNumber} est introuvable ou inactive.`));
+                                }
+                            })
+                            .catch((err) => {
+                                return next(err);
+                            });
+                    } else {
+
+                        newReservationInfos = {
+                            ...newReservationInfos,
+                            tableNumber: null,
+                            peopleCount: req.body.peopleCount
+                        }
+
+                        reservationQueries
+                            .updateReservation(newReservationInfos)
+                            .then((updatedReservation) => {
+                                if (updatedReservation) {
+                                    res.json(updatedReservation);
+                                } else {
+                                    return next(new HttpError(404, `La mise à jours de la réservation ${newReservationInfos.id} à échoué pour une raison inconnue.`));
+                                }
+                            })
+                            .catch((err) => {
+                                return next(err);
+                            });
+                    }
+
                 } else {
                     return next(new HttpError(404, `La réservation ${newReservationInfos.id} n'existe pas dans notre base de données.`));
                 }

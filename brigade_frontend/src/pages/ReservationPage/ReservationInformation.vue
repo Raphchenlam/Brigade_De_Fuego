@@ -24,7 +24,7 @@
             </v-dialog>
             <v-row>
                 <v-col class="ma-5 justify-space-between">
-                    <p :class="{ green: reservation.status == 'Confirmé' }">Status : {{ reservation.status }}</p>
+                    <p :class="{ green: reservation.status == 'Confirmé', redStatus: reservation.status == 'En retard' }">Status : {{ reservation.status }}</p>
                     <p>Numero reservation : {{ reservation.id }}</p>
                     <p>Nombre de personne: {{ reservation.peopleCount }}</p>
                     <p v-if="reservation.hasMinor"><strong>Mineur sur place !</strong></p>
@@ -33,14 +33,13 @@
                 <v-col class="ma-5 justify-space-between">
                     <p>Date: {{ reservation.date }}</p>
                     <p>Heure : {{ reservation.startTime }}</p>
-                    <p v-if="reservation.mention">Mention: {{ reservation.mention }}</p>
                     <p v-if="reservation.allergy">Allergy: {{ reservation.allergy }}</p>
                 </v-col>
             </v-row>
-            <v-row v-if='$route.path == "/operation/tablePlan"'>
-                <BlackButton @click="toggleReservation" class="ma-6"
-                    :textbutton='!!reservation.tableNumber ? "Libérer la table" : "Assigner une table"'></BlackButton>
-            </v-row>
+            <v-card class="ma-4 pl-4 pb-4 pr-4 elevation-4">
+                <v-card-title><strong>Mention: </strong></v-card-title>
+                <p v-if="reservation.mention">{{ reservation.mention }}</p>
+            </v-card>
             <v-card class="ma-5 justify-space-between" color="#36454f">
                 <v-card-title v-if="reservation.isBlacklisted" class="red ma-2">
                     <strong>BLACKLISTED!</strong>
@@ -65,7 +64,7 @@ export default {
         BlackButton,
         EditBlackButton
     },
-    inject: ['selectedTable'],
+    inject: ['selectedTable','reservationInformations'],
     data() {
         return {
             dialogEditReservation: false,
@@ -76,17 +75,24 @@ export default {
         reservationId() {
             this.loadReservation(this.reservationId);
         },
+        'reservationInformations':{
+            handler: function () {
+                if(this.reservationInformations) this.reservation = this.reservationInformations;
+            },
+            deep: true
+        },
+        
+      
 
     },
     methods: {
-        loadReservation(selectedReservationId) {
+        async loadReservation(selectedReservationId) {
             if (selectedReservationId) {
-                getReservationById(selectedReservationId)
-                    .then(reservation => {
-                        this.reservation = reservation;
-                    }).catch(err => {
-                        console.error(err);
-                    })
+                try {
+                    this.reservation = await getReservationById(selectedReservationId)
+                } catch (err) {
+                    console.error(err);
+                }
             }
             else {
                 this.reservation = {};
@@ -119,6 +125,11 @@ export default {
 </script>
 
 <style scoped>
+p {
+    word-break: break-all;
+    white-space: normal;
+}
+
 .noTable {
     color: orange
 }
@@ -128,7 +139,9 @@ export default {
     font-size: 2em;
     text-align: center
 }
-
+.redStatus {
+    color: red
+}
 .green {
     color: green
 }
