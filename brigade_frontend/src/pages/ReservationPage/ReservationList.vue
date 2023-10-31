@@ -50,7 +50,7 @@ import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'editedFirstName', 'toLocale', 'loadDate', 'reservations','loadReservations', 'refreshListWithSameFilters', 'resetRefreshListWithSameFilters'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'editedFirstName', 'toLocale', 'loadDate', 'reservations','loadReservations', 'refreshWithUpdatedReservation'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -156,9 +156,8 @@ export default {
         editedFirstName() {
             this.search = this.editedFirstName;
         },
-        refreshListWithSameFilters(){
-            if(this.refreshListWithSameFilters === false) this.loadReservations(this.startDate, this.endDate);
-            this.resetRefreshListWithSameFilters();
+        refreshWithUpdatedReservation(){
+            if(this.refreshWithUpdatedReservation === false) this.loadReservations(this.startDate, this.endDate);
         }
     },
     methods: {

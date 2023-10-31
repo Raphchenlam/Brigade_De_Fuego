@@ -49,6 +49,7 @@ import EditClientForm from './EditClientForm.vue';
 import { getClientById } from '../../services/ClientService';
 
 export default {
+    inject: ['refresh'],
     props: {
         clientId: Number
     },
@@ -80,11 +81,14 @@ export default {
             }
         },
         closeEditClientDialog() {
-            this.dialogEditClient = false;
+            setTimeout(() => this.dialogEditClient = false, 2000);
         }
     },
     watch: {
         clientId() {
+            this.loadClientById(this.clientId);
+        },
+        refresh(){
             this.loadClientById(this.clientId);
         }
     },

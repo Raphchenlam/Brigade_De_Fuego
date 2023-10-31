@@ -206,12 +206,10 @@ router.put("/",
                     return next(new HttpError(400, `Le id ${clientId} ne correspond pas aux informations du client trouvé avec la combinaison des informations personnels ${clientOldFirstName}, ${clientOldLastName} et ${clientOldPhoneNumber}.`))
                 }
 
-                if ((clientNewIsBlacklisted === true || clientNewIsBlacklisted === false) && clientNewIsBlacklisted !== result[0].isFavorite) hasChanged = true;
-                if ((clientNewIsFavorite === true || clientNewIsFavorite === false) && clientNewIsFavorite !== result[0].isBlacklisted) hasChanged = true;
-
+                if ((clientNewIsFavorite === true || clientNewIsFavorite === false) && clientNewIsFavorite !== result[0].isFavorite) hasChanged = true;
+                if ((clientNewIsBlacklisted === true || clientNewIsBlacklisted === false) && clientNewIsBlacklisted !== result[0].isBlacklisted) hasChanged = true;
 
                 if (!hasChanged) return next(new HttpError(400, `Aucun changement n'a été reçu`));
-
 
                 const clientMAJ = {
                     id: req.body.id,
