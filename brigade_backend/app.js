@@ -52,10 +52,11 @@ class BasicStrategyModified extends BasicStrategy {
   }
 };
 
-passport.use(new BasicStrategyModified((employeeNumber, password, cb) => {
+passport.use(new BasicStrategyModified((employeeNumber, password, cb) =>
+{
   if (employeeNumber.length == 16) {
     employeeQueries.selectEmployeeByBarcodeNumber(employeeNumber).then(login => {
-      if (!login || !login.isAdmin || !login.isSuperAdmin) {
+      if (!login || !login.isAdmin) {
         return cb(null, false);
       }
       return cb(null, login);

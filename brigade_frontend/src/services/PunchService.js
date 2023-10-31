@@ -38,7 +38,7 @@ export async function punchInEmployee(punch) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            // ...operationSession.getAuthHeaders()
+            ...operationSession.getAuthHeaders()
         },
         body: JSON.stringify(punch)
     });
@@ -56,7 +56,7 @@ export async function punchOutEmployee(punch) {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
-            // ...operationSession.getAuthHeaders()
+             ...operationSession.getAuthHeaders()
         },
         body: JSON.stringify(punch)
     });

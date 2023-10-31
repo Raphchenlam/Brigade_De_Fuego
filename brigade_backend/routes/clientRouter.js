@@ -13,10 +13,10 @@ router.get("/",
         if (!user) {
             return next(new HttpError(401, "Authentification nécessaire"))
         }
-        if (!user.isAdmin || !user.isSuperAdmin) {
+        console.log("user",user)
+        if (!user.isAdmin && !user.isSuperAdmin) {
             return next(new HttpError(403, "Vous n'avez pas les droits requis"))
         }
-
         clientQueries
             .getClientList()
             .then((clients) => {
@@ -39,7 +39,7 @@ router.get("/:id",
         if (!user) {
             return next(new HttpError(401, "Authentification nécessaire"))
         }
-        if (!user.isAdmin || !user.isSuperAdmin) {
+        if (!user.isAdmin && !user.isSuperAdmin) {
             return next(new HttpError(403, "Vous n'avez pas les droits requis"))
         }
 
@@ -68,7 +68,7 @@ router.post("/",
         if (!user) {
             return next(new HttpError(401, "Authentification nécessaire"))
         }
-        if (!user.isAdmin || !user.isSuperAdmin) {
+        if (!user.isAdmin && !user.isSuperAdmin) {
             return next(new HttpError(403, "Vous n'avez pas les droits requis"))
         }
 

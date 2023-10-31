@@ -32,6 +32,7 @@ CREATE TABLE schedule_week (
   id           varchar(255) NOT NULL, 
   "start_date" date NOT NULL, 
   end_date     date NOT NULL, 
+  published boolean NOT NULL DEFAULT false,
   PRIMARY KEY (id));
 
   CREATE TABLE shift (
