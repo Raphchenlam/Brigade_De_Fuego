@@ -18,16 +18,19 @@ const getClientById = async (id) => {
         [id]);
 
     const row = result.rows[0];
-
-    return {
-        id: row.id,
-        firstName: row.first_name,
-        lastName: row.last_name,
-        phoneNumber: row.phone_number,
-        allergy: row.allergy,
-        isFavorite: row.is_favorite,
-        isBlacklisted: row.is_blacklisted
+    if (row) {
+        return {
+            id: row.id,
+            firstName: row.first_name,
+            lastName: row.last_name,
+            phoneNumber: row.phone_number,
+            allergy: row.allergy,
+            isFavorite: row.is_favorite,
+            isBlacklisted: row.is_blacklisted
+        }
     }
+    
+    return undefined;
 };
 exports.getClientById = getClientById;
 

@@ -24,6 +24,37 @@ const selectScheduleWeekInfoByID = async (scheduleWeekId) =>
 };
 exports.selectScheduleWeekInfoByID = selectScheduleWeekInfoByID;
 
+const selectSchedulePeriodInfoByDateAndShiftName = async (date, shiftName) =>
+{
+    const result = await pool.query(
+        `SELECT * FROM schedule_period
+        WHERE date = $1
+        AND shift_name = $2`,
+        [date, shiftName]);
+
+    const row = result.rows[0];
+    if (row)
+    {
+        const schedulePeriodInfo = {
+            id: row.id,
+            date: row.date,
+            shiftName: row.shift_name,
+            scheduleWeekId: row.schedule_week_id,
+            averageTraffic: row.average_traffic,
+            expectedTraffic: row.expected_traffic,
+            actualTraffic: row.actual_traffic,
+            averageCostByClient: row.average_cost_by_client,
+            requiredSkillPoints: row.required_skill_points,
+            expectedSkillPoints: row.expected_skill_points,
+            scheduledSkillPoints: row.scheduled_skill_points
+        };
+        return schedulePeriodInfo;
+    }
+
+    return undefined;
+};
+exports.selectSchedulePeriodInfoByDateAndShiftName = selectSchedulePeriodInfoByDateAndShiftName;
+
 const selectAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
 {
     const scheduleObj = await pool.query(
@@ -52,7 +83,6 @@ const selectAllSchedulePeriodsByScheduleWeekID = async (scheduleWeekId) =>
     });
 };
 exports.selectAllSchedulePeriodsByScheduleWeekID = selectAllSchedulePeriodsByScheduleWeekID;
-
 
 const selectAllEmployeesScheduleByScheduleWeekId = async (scheduleWeekId) =>
 {
@@ -115,6 +145,39 @@ const selectEmployeeScheduleByWeekId = async (employeeId, scheduleWeekId) =>
 };
 exports.selectEmployeeScheduleByWeekId = selectEmployeeScheduleByWeekId;
 
+const selectNextShiftForEmployee = async (employeeNumber) =>
+{
+    const result = await pool.query(
+        `SELECT * FROM employee_schedule as es
+        JOIN schedule_period as sp ON sp.id = es.schedule_period_id
+        JOIN schedule_week as sw ON sw.id = sp.schedule_week_id
+        WHERE es.employee_number = $1
+        AND sp.date >= CURRENT_DATE
+        AND sw.published = true
+        ORDER BY sp.date
+        LIMIT 1`,
+        [employeeNumber]
+    );
+    const row = result.rows[0];
+    if (row)
+    {
+        const shift = {
+            id: row.schedule_period_id,
+            employeeNumber: row.employee_number,
+            date: row.date,
+            shiftName: row.shift_name,
+            startTime: row.start_time,
+            endTime: row.end_time,
+            time: row.start_time + "-" + row.end_time,
+            isPublished: row.published
+        };
+        return shift;
+    }
+    return undefined;
+
+};
+exports.selectNextShiftForEmployee = selectNextShiftForEmployee;
+
 const selectAllEventScheduleByWeekId = async (scheduleWeekId) =>
 {
     const result = await pool.query(
@@ -146,7 +209,6 @@ const selectAllEventScheduleByWeekId = async (scheduleWeekId) =>
     return [];
 };
 exports.selectAllEventScheduleByWeekId = selectAllEventScheduleByWeekId;
-
 
 const selectEmailFromEmployeeNumber = async (employeeNumber) =>
 {
@@ -264,7 +326,6 @@ const insertNewScheduleWeek = async (scheduleWeek, clientParam) =>
         client.release();
     }
 };
-
 exports.insertNewScheduleWeek = insertNewScheduleWeek;
 
 const insertNewEmployeeSchedule = async (scheduledEmployeeList, clientParam) =>
@@ -311,7 +372,6 @@ const insertNewEmployeeSchedule = async (scheduledEmployeeList, clientParam) =>
 };
 exports.insertNewEmployeeSchedule = insertNewEmployeeSchedule;
 
-
 const updateSchedulePeriodsInformations = async (weekInformationsList, clientParam) =>
 {
     const client = clientParam || await pool.connect();
@@ -327,7 +387,7 @@ const updateSchedulePeriodsInformations = async (weekInformationsList, clientPar
                 `UPDATE schedule_period
             SET average_traffic = $2, average_cost_by_client = $3, scheduled_skill_points = $4
                 WHERE id = $1`,
-                [weekInformationsList[i].id, weekInformationsList[i].traffic, weekInformationsList[i].averageCostByClient,weekInformationsList[i].scheduledSkillPoints]
+                [weekInformationsList[i].id, weekInformationsList[i].traffic, weekInformationsList[i].averageCostByClient, weekInformationsList[i].scheduledSkillPoints]
             );
         }
         await client.query("COMMIT");
@@ -353,7 +413,6 @@ const updateScheduleWeekStatus = async (scheduleWeekId, isPublished) =>
     );
 };
 exports.updateScheduleWeekStatus = updateScheduleWeekStatus;
-
 
 const updateEventForScheduleWeek = async (periodIdList, eventList, clientParam) =>
 {
@@ -404,7 +463,6 @@ const updateEventForScheduleWeek = async (periodIdList, eventList, clientParam) 
 };
 exports.updateEventForScheduleWeek = updateEventForScheduleWeek;
 
-
 const deleteEmployeeFromSchedule = async (periodIdList) =>
 {
     const lowest = Math.min(...periodIdList);
@@ -415,5 +473,4 @@ const deleteEmployeeFromSchedule = async (periodIdList) =>
         [lowest, highest]
     );
 };
-
 exports.deleteEmployeeFromSchedule = deleteEmployeeFromSchedule;

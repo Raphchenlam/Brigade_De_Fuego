@@ -72,6 +72,24 @@ export async function updateReservation(reservation) {
     }
 }
 
+export async function getReservationStatusList(startDate, endDate) {
+    const response = await fetch(`/api/reservation/statusList`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        console.info(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
+
+
 export async function getReservationList(startDate, endDate) {
     const response = await fetch(`/api/reservation/${startDate}/${endDate}`, {
         method: "GET",

@@ -18,19 +18,19 @@
                 </v-dialog>
                 <v-divider :thickness="2" class="border-opacity-50"></v-divider>
                 <v-row class="ma-5 justify-space-between">
-                        <p>Numero employé : {{ employee.employeeNumber }}</p>
+                        <p>Numéro Employé : {{ employee.employeeNumber }}</p>
                         <p>Poste : {{ employee.role }}</p>
                 </v-row>
                 <v-row class="ma-5 justify-space-between">
-                        <p>Numero de telephone : {{ employee.phoneNumber }}</p>
-                        <p>Courriel : {{ employee.email }}</p>
+                        <p>Numéro de téléphone : {{ employee.phoneNumber }}</p>
+                        <p>Adresse Courriel : {{ employee.email }}</p>
                 </v-row>
                 <v-row class="ma-5 justify-space-between">
                         <p>Taux horaire : {{ employee.hourlyRate }}</p>
-                        <p>Numero carte : {{ employee.barcodeNumber }}</p>
+                        <p>Numéro carte : {{ employee.barcodeNumber }}</p>
                 </v-row>
                 <v-row class="ma-5 justify-space-between">
-                        <p>Status :
+                        <p>Statut :
                                 <span v-if="employee.isActive" style='color:rgb(3, 211, 3)'>ACTIF</span>
                                 <span v-else style='color:red'>INACTIF</span>
                         </p>

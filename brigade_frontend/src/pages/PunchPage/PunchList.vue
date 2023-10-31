@@ -6,24 +6,23 @@
         </v-sheet>
     </v-row>
     <v-sheet class="mx-10">
-        <v-data-table-server no-data-text="Aucun punch à cette date-ci" height="300px" fixed-header :headers="headers"
+        <v-data-table-server no-data-text="Aucun punch à la date sélectionnée" height="300px" fixed-header :headers="headers"
             :items="punchList" :items-length="punchList.length" class="elevation-1" @update:options="loadPunch">
             <template v-slot:top>
                 <v-toolbar flat>
-                    <v-toolbar-title>Listes des punchs</v-toolbar-title>
+                    <v-toolbar-title>Liste des punchs</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
                     <v-dialog v-model="updatePunchDialog" max-width="500px">
                         <v-card>
                             <v-card-title>
                                 <span class="text-h5">Modifier Punch - {{ editedItem.employeeFullName }}</span>
-                                <!-- on va devoir changer pour le name lorsque le fetch sera fait avec le inner join -->
                             </v-card-title>
 
                             <v-card-text>
                                 <v-container>
                                     <v-row class=" ma-2 justify-space-between">
-                                        <p>Numero Employee : {{ editedItem.employeeNumber }}</p>
+                                        <p>Numéro Employé : {{ editedItem.employeeNumber }}</p>
                                     </v-row>
                                     <v-row>
                                         <v-col cols="12" sm="6" md="6">
@@ -118,7 +117,7 @@ export default {
                     align: 'start',
                     key: 'employeeNumber',
                     sortable: false,
-                    title: '#Employee',
+                    title: '#EMPLOYÉ',
                 },
                 {
                     key: 'employeeFullName',
@@ -146,14 +145,9 @@ export default {
                     title: 'END AT',
                 },
                 {
-                    key: 'total',
-                    sortable: false,
-                    title: 'Total',
-                },
-                {
                     key: 'actions',
                     sortable: false,
-                    title: 'Action',
+                    title: 'ACTION',
                 },
             ],
             editedIndex: -1,
@@ -163,8 +157,7 @@ export default {
                 dateIn: "",
                 startTime: "",
                 dateOut: "",
-                endTime: null,
-                total: null
+                endTime: null
             },
             defaultItem: {
                 id: 0,
@@ -172,8 +165,7 @@ export default {
                 dateIn: "",
                 startTime: "",
                 dateOut: "",
-                endTime: null,
-                total: null
+                endTime: null
             },
         }
     },
@@ -181,7 +173,6 @@ export default {
         loadPunchListFromCurrentDate() {
             this.punchList = [];
             getPunchListByDate(this.currentDate).then(allPunchs => {
-                console.log('allPunchs', allPunchs);
                 allPunchs.forEach(employeePunch => {
                     this.punchList.push(employeePunch);
                 });
@@ -190,7 +181,6 @@ export default {
             });
         },
         editItem(item) {
-            console.log('SELECTED PUNCH', Object.assign({}, item));
             this.editedIndex = this.punchList.indexOf(item)
             this.editedItem = Object.assign({}, item);
             this.updatePunchDialog = true;

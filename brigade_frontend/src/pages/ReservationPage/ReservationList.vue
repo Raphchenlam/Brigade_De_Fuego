@@ -21,10 +21,10 @@
             </v-row>
             <v-row v-if='$route.path == "/operation/reservation"'>
                 <v-text-field type="date" class="ma-2 pa-4" label="Date Debut" v-model="startDate"
-                    @click:clear="resetStartDate" clearable hint="'Clear' réinitialise la date courante" persistent-hint>
+                    @click:clear="resetStartDate" clearable hint="Le 'X' réinitialise la date à celle d'aujourd'hui" persistent-hint>
                 </v-text-field>
                 <v-text-field type="date" class="ma-2 pa-4" label="Date Fin" v-model="endDate" @click:clear="resetEndDate"
-                    clearable hint="'Clear' réinitialise la date courante" persistent-hint>
+                    clearable hint="Le 'X' réinitialise la date à celle d'aujourd'hui" persistent-hint>
                 </v-text-field>
             </v-row>
             <v-radio-group v-model="shiftShow" v-if='$route.path == "/operation/reservation"'>
@@ -49,10 +49,9 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 import NewReservationForm from "../reservationpage/NewReservationForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
-// import { getReservationList } from '../../services/ReservationService';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'toLocale', 'loadDate', 'reservations','loadReservations','selectedReservationId'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'editedFirstName', 'toLocale', 'loadDate', 'reservations','loadReservations', 'refreshListWithSameFilters', 'resetRefreshListWithSameFilters','selectedReservationId'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -64,11 +63,10 @@ export default {
             todayDate: null,
             startDate: null,
             endDate: null,
-            search: "",
+            search: (!!this.editedFirstName) ? this.editedFirstName : "",
             shiftShow: (!!this.selectedShift) ? this.selectedShift : "all",
             modal: false,
             selected: [],
-            //reservations: [],
             filteredReservationList: [],
             dialogNewReservation: false,
             hasNewReservation: false,
@@ -145,6 +143,7 @@ export default {
             deep: true
         },
         selectedDate() {
+            this.endDate = this.startDate = this.selectedDate;
             this.loadReservations(this.selectedDate, this.selectedDate);
         },
         selectedShift() {
@@ -163,6 +162,13 @@ export default {
             }else{
                 this.selected = []; 
             }
+        },
+        editedFirstName() {
+            this.search = this.editedFirstName;
+        },
+        refreshListWithSameFilters(){
+            if(this.refreshListWithSameFilters === false) this.loadReservations(this.startDate, this.endDate);
+            this.resetRefreshListWithSameFilters();
         }
     },
     methods: {
@@ -180,16 +186,6 @@ export default {
             this.selected[0] = newReservation[0];
             this.search = newReservation[2];
         },
-        // loadReservations(startDate, endDate) {
-        //     getReservationList(startDate, endDate)
-        //         .then((reservationList) => {
-        //             this.reservations = reservationList;
-        //         })
-        //         .catch((err) => {
-        //             console.error(err);
-        //             alert(err.message);
-        //         });
-        // },
         filterReservations() {
             this.filteredReservationList = [];
 

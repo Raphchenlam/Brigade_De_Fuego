@@ -33,10 +33,13 @@
                 <v-col class="ma-5 justify-space-between">
                     <p>Date: {{ reservation.date }}</p>
                     <p>Heure : {{ reservation.startTime }}</p>
-                    <p v-if="reservation.mention">Mention: {{ reservation.mention }}</p>
                     <p v-if="reservation.allergy">Allergy: {{ reservation.allergy }}</p>
                 </v-col>
             </v-row>
+            <v-card class="ma-4 pl-4 pb-4 pr-4 elevation-4">
+                <v-card-title><strong>Mention: </strong></v-card-title>
+                <p v-if="reservation.mention">{{ reservation.mention }}</p>
+            </v-card>
             <v-card class="ma-5 justify-space-between" color="#36454f">
                 <v-card-title v-if="reservation.isBlacklisted" class="red ma-2">
                     <strong>BLACKLISTED!</strong>
@@ -122,6 +125,11 @@ export default {
 </script>
 
 <style scoped>
+p {
+    word-break: break-all;
+    white-space: normal;
+}
+
 .noTable {
     color: orange
 }

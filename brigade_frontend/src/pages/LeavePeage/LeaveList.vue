@@ -5,7 +5,7 @@
             class="ma-5">
             <v-row class="ma-5 justify-space-around">
                 <v-col cols="11">
-                    <h3>Nombre de demande de conges non-traite : {{ calculatePendingLeaves }} affichées / {{ nbPendingLeave
+                    <h3>Nombre de demandes de congés non-traitées : {{ calculatePendingLeaves }} affichées / {{ nbPendingLeave
                     }} total</h3>
                 </v-col>
                 <v-col cols="1">
@@ -16,33 +16,33 @@
                         <v-dialog v-model="filterDialog" max-width="500px">
                             <v-card>
                                 <v-card-title>
-                                    <span class="text-h5">Filtre Conge</span>
+                                    <span class="text-h5">Filtres Congé</span>
                                 </v-card-title>
                                 <v-card-text>
                                     <v-container>
                                         <v-row>
                                             <v-col cols="12">
                                                 <v-checkbox @click="checkAllBoxes()" v-model="checkedBoxes.all"
-                                                    label="Tout selectionner"></v-checkbox>
+                                                    label="Tout séléctionner"></v-checkbox>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="6">
                                                 <v-checkbox v-model="checkedBoxes.pending" label="En Attente"></v-checkbox>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="6">
                                                 <v-checkbox v-model="checkedBoxes.pendingModified"
-                                                    label="Modifié, en attente"></v-checkbox>
+                                                    label="Modifiée, en attente"></v-checkbox>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="6">
-                                                <v-checkbox v-model="checkedBoxes.accepted" label="Accepté"></v-checkbox>
+                                                <v-checkbox v-model="checkedBoxes.accepted" label="Acceptée"></v-checkbox>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="6">
-                                                <v-checkbox v-model="checkedBoxes.refused" label="Refusé"></v-checkbox>
+                                                <v-checkbox v-model="checkedBoxes.refused" label="Refusée"></v-checkbox>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="6">
-                                                <v-checkbox v-model="checkedBoxes.coming" label="À venir"></v-checkbox>
+                                                <v-checkbox v-model="checkedBoxes.coming" label="En Cours / À venir"></v-checkbox>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="6">
-                                                <v-checkbox v-model="checkedBoxes.passed" label="Passé"></v-checkbox>
+                                                <v-checkbox v-model="checkedBoxes.passed" label="Passée"></v-checkbox>
                                             </v-col>
                                         </v-row>
                                     </v-container>
@@ -63,7 +63,7 @@
                 </v-col>
             </v-row>
             <v-row>
-                <v-text-field v-model="search" hide-details placeholder="Rechercher un employe"
+                <v-text-field v-model="search" hide-details placeholder="Rechercher un employé"
                     class="mx-10"></v-text-field>
             </v-row>
         </v-sheet>
@@ -75,7 +75,7 @@
 
                 <template v-slot:top>
                     <v-toolbar flat>
-                        <v-toolbar-title>Listes des conges</v-toolbar-title>
+                        <v-toolbar-title>Liste des congés</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-dialog v-model="dialogNewLeave" max-width="500px">
                             <template v-slot:activator="{ props }">
@@ -94,7 +94,7 @@
                     <v-dialog v-model="dialogEditLeave" max-width="500px">
                         <v-card>
                             <v-card-title>
-                                <span class="text-h5">Modifier Conge</span>
+                                <span class="text-h5">Modifier Congé</span>
                             </v-card-title>
                             <v-card-text>
                                 <EditLeaveForm :editedItem="editedItem"></EditLeaveForm>
@@ -187,7 +187,7 @@ export default {
                 {
                     key: 'startDate',
                     sortable: false,
-                    title: 'Date Debut',
+                    title: 'Date Début',
                 },
                 {
                     key: 'endDate',
@@ -197,7 +197,7 @@ export default {
                 {
                     key: 'statusShow',
                     sortable: false,
-                    title: 'Status',
+                    title: 'Statut',
                 },
                 {
                     key: 'actions',
@@ -233,8 +233,8 @@ export default {
                 all: false,
                 pending: true,
                 pendingModified: true,
-                refused: true,
-                accepted: true,
+                refused: false,
+                accepted: false,
                 passed: false,
                 coming: true
             },
@@ -251,8 +251,6 @@ export default {
                 {
                     allLeaves.forEach(leave =>
                     {
-                        //if (!leave.nbPending)
-                        //{
                         leave.startDate = leave.startDate.split('T').slice(0)[0]
                         leave.endDate = leave.endDate.split('T').slice(0)[0]
                         if (leave.status == 'Pending') leave.statusShow = 'En Attente'
@@ -260,10 +258,6 @@ export default {
                         if (leave.status == 'Approved') leave.statusShow = 'Accepté'
                         if (leave.status == 'Refused') leave.statusShow = 'Refusé'
                         this.leaveList.push(leave);
-                        //} else
-                        //{
-                        //this.nbPendingLeave = leave.nbPending;
-                        //}
                     });
                     this.loading = false;
                 }).catch(err =>
@@ -274,6 +268,11 @@ export default {
             {
                 getAllFilteredLeaves(this.checkedBoxes).then(allLeaves =>
                 {
+                    if (allLeaves.length == 0)
+                    {
+                        this.leaveList = allLeaves;
+                        this.filteredLeaveList = this.leaveList;
+                    }
                     allLeaves.forEach(leave =>
                     {
                         if (!leave.nbPending)
@@ -289,13 +288,12 @@ export default {
                         {
                             this.nbPendingLeave = leave.nbPending;
                         }
-                        this.loading = false;
                     });
+                    this.loading = false;
                 }).catch(err =>
                 {
                     console.error(err);
                 })
-
             }
             this.filteredLeaveList = this.leaveList;
         },

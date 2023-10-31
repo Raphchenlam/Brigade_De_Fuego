@@ -77,7 +77,17 @@ const getReservationByInformations = async (clientId, date, startTime) => {
     const row = result.rows[0];
 
     if (row) {
-        return constructReservation(row);
+        const reservation = constructReservation(row);
+
+        return {
+            ...reservation,
+            clientFirstname: row.first_name,
+            clientLastname: row.last_name,
+            clientPhoneNumber: row.phone_number,
+            clientAllergy: row.allergy,
+            clientIsFavorite: row.is_favorite,
+            clientIsBlacklisted: row.is_blacklisted,
+        }
     }
 
     return undefined;
@@ -135,13 +145,23 @@ const insertReservation = async (reservationInfos) => {
 };
 exports.insertReservation = insertReservation;
 
+const getReservationStatusList = async (reservationInfos) => {
+    const result = await pool.query(
+        `SELECT * FROM public.reservation_status
+        ORDER BY code ASC `);
+
+    const row = result.rows;
+
+    if (row) {
+        return row;
+    }
+
+    throw new Error("La requête des statuts de réservation à échoué pour une raison inconnue");
+};
+exports.getReservationStatusList = getReservationStatusList;
+
 
 const updateReservation = async (newReservationInfos) => {
-
-    // TODO:  Tu es rendu ici, créé la requête avant de la lancer a la bd, bonne chance
-    // TODO:  Faire la requête a la bd
-
-    // console.log(newReservationInfos);
 
     let UPDATEquery = `UPDATE reservation `;
     let newInformation = [];
@@ -151,10 +171,10 @@ const updateReservation = async (newReservationInfos) => {
     if (newReservationInfos.date) changedFields.push(`date = $${counter}`), newInformation.push(newReservationInfos.date), counter++;
     if (newReservationInfos.startTime) changedFields.push(`start_time = $${counter}`), newInformation.push(newReservationInfos.startTime), counter++;
     if (newReservationInfos.endTime) changedFields.push(`end_time = $${counter}`), newInformation.push(newReservationInfos.endTime), counter++;
-    if (newReservationInfos.tableNumber) changedFields.push(`table_number = $${counter}`), newInformation.push(newReservationInfos.tableNumber), counter++;
+    if (newReservationInfos.tableNumber || newReservationInfos.tableNumber == null) changedFields.push(`table_number = $${counter}`), newInformation.push(newReservationInfos.tableNumber), counter++;
     if (newReservationInfos.statusCode) changedFields.push(`status_code = $${counter}`), newInformation.push(newReservationInfos.statusCode), counter++;
     if (newReservationInfos.peopleCount) changedFields.push(`people_count = $${counter}`), newInformation.push(newReservationInfos.peopleCount), counter++;
-    if (newReservationInfos.mention) changedFields.push(`mention = $${counter}`), newInformation.push(newReservationInfos.mention), counter++;
+    if (newReservationInfos.mention || newReservationInfos.mention == '') changedFields.push(`mention = $${counter}`), newInformation.push(newReservationInfos.mention), counter++;
     if (newReservationInfos.hasMinor === false || newReservationInfos.hasMinor === true) changedFields.push(`has_minor = $${counter}`), newInformation.push(newReservationInfos.hasMinor), counter++;
 
 
@@ -163,18 +183,10 @@ const updateReservation = async (newReservationInfos) => {
         UPDATEquery += ` WHERE reservation.id = $${counter} RETURNING *`;
         newInformation.push(newReservationInfos.id);
 
-        // console.log(" ");
-        // console.log(UPDATEquery);
-        // console.log(newInformation);
-        // console.log(" ");
-
         const result = await pool.query(UPDATEquery, newInformation);
 
         const row = result.rows[0];
         if (row) {
-            console.log("row : ");
-            console.log(row);
-
             const reservation = constructReservation(row);
 
             const reservationFinal = {
@@ -202,7 +214,7 @@ exports.updateReservation = updateReservation;
 
 const getReservationListByDates = async (startDate, endDate) => {
     const queryStartDate = !!startDate ? startDate : new Date().toLocaleDateString("en-GB");
-    const queryEndDate = !!endDate ? endDate : new Date().toLocaleDateString("en-GB");
+    const queryEndDate = !!endDate ? endDate : new Date().toLocaleDateString("en-GB");    
 
     results = await pool.query(
         `SELECT 
@@ -250,7 +262,7 @@ const updateTableOnReservationById = async(id, tableNumber) => {
         `UPDATE reservation SET table_number = $2 WHERE id = $1`,
         [id, tableNumber]
     );
-    if(result.rowCount === 0) {
+    if (result.rowCount === 0) {
         return undefined
     }
     return getReservationById(id);

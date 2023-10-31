@@ -35,5 +35,3 @@ function sendEmail(recipients, subjet, text, html)
 }
 
 module.exports = { sendEmail };
-
-//
