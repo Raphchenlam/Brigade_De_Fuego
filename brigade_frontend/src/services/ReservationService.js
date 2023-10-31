@@ -141,6 +141,24 @@ export async function updateTableOnReservationById(id, tableNumber) {
       }
 }
 
+export async function updateReservationStatusById(id, statusCode) {
+    const response = await fetch(`/api/reservation/${id}/status/${statusCode}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        }
+    })
+    if (response.ok) {
+        return convertToReservation(await response.json());
+      } else {
+        console.log(response.status)
+        console.log(JSON.stringify(response));
+        throw await createServiceError(response);
+      }
+}
+
+
 export async function getHowManyPeopleByDateAndShiftName(date, shiftName) {
     const response = await fetch(`/api/reservation/expectedpeople/${date}/${shiftName}`, {
         method: "GET",

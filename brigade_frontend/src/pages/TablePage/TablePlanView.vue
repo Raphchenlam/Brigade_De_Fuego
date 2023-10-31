@@ -2,10 +2,9 @@
     <v-sheet width="100%" class="pa-2">
         <v-row>
             <v-col>
-
                 <v-row>
                     <TableLayout v-if="selectedTable == null" class="pa-2"></TableLayout>
-                    <TableInformation v-else class="pa-2" :reservation="reservationInformations"></TableInformation>
+                    <TableInformation v-else class="pa-2" :reservation="reservationInformations" ></TableInformation>
                 </v-row>
                 <v-row>
                     <WaiterList class="pa-2" v-if="!selectedReservationId"></WaiterList>
@@ -45,7 +44,7 @@ import TableLayout from './TableLayout.vue';
 import TableInformation from './TableInformation.vue';
 import WaiterList from "./WaiterList.vue";
 import { fetchAllTables, fetchAssignationByDate, createAssignations, updateTableStatusByNumber } from '../../services/TableService';
-import { getReservationById, getReservationList } from '../../services/ReservationService';
+import { getReservationById, getReservationList, updateTableOnReservationById } from '../../services/ReservationService';
 
 
 
@@ -78,10 +77,8 @@ export default {
             tableInSection: null,
             selectedWaiter: null,
             inEditionMode: false,
-
-
-            ////////////TEMPORAIRE/////////
-            hasReservation: true,
+            tableIsInactiveToday: false,
+            //reservationToSelect:null,
 
         }
     },
@@ -99,6 +96,8 @@ export default {
             reservationInformations: computed(() => this.reservationInformations),
             inEditionMode: computed(() => this.inEditionMode),
             localAssignations: computed(() => this.localAssignations),
+            selectedReservationId: computed(() => this.selectedReservationId),
+            tableIsInactiveToday: computed(() => this.tableIsInactiveToday),
 
             toggleEditionMode: this.toggleEditionMode,
             toggleSelectedTable: this.toggleSelectedTable,
@@ -112,9 +111,6 @@ export default {
             changeTableStatus: this.changeTableStatus,
             refreshPageView: this.refreshPageView,
 
-
-            ////////////TEMPORAIRE/////////
-            hasReservation: computed(() => this.hasReservation),
         }
     },
     methods: {
@@ -122,14 +118,20 @@ export default {
             this.selectedReservationId = receivedReservationId;
         },
         loadReservations(startDate, endDate) {
-            getReservationList(startDate, endDate)
-                .then((reservationList) => {
-                    this.reservations = reservationList;
-                })
-                .catch((err) => {
-                    console.error(err);
-                    alert(err.message);
-                });
+            this.reservations = [];
+            getReservationList(startDate, endDate).then((reservationList) => {
+                this.reservations = reservationList;
+                this.filterReservationsStatus();
+                this.updateTableLayout();
+            }).catch(err => {
+                console.error(err);
+                alert(err.message);
+            })
+        },
+        filterReservationsStatus(){
+            this.reservations = this.reservations.filter((reservation)=>{
+                return (reservation.statusCode < 5)
+            })
         },
         loadDate(newReservationDate, newReservationShift) {
             //************************/
@@ -161,13 +163,14 @@ export default {
                         this.assignationList.push(assignation);
                     }
                 });
-                this.updateTableLayout();
+                // this.updateTableLayout();
             }).catch(err => {
                 console.error(err);
             });
         },
         updateTableLayout() {
             this.tableWithAssignationList = [];
+            this.tableIsInactiveToday = false; 
 
             this.tableWithAssignationList = this.tableList.map(table => {
                 return {
@@ -175,7 +178,9 @@ export default {
                     capacity: table.capacity,
                     isActive: table.isActive,
                     isAssign: false,
+                    hasReservation: false,
                     assignation: null,
+                    reservation: null
                 }
             });
 
@@ -195,6 +200,32 @@ export default {
                     }
                 }
                 );
+            }
+
+            if (this.reservations.length > 0) {
+                this.reservations.forEach(reservation => {
+                    const shift = parseInt(reservation.startTime.split(':').slice(0)[0]) > 15 ? "Soir" : "Midi"
+
+                    if (this.selectedShift == shift && reservation.statusCode < 5) {
+                        const table = this.tableWithAssignationList.find(table => {
+                            return (table.number == reservation.tableNumber)
+                        })
+                        if (table) {
+                            table.hasReservation = true;
+                            table.reservation = reservation;
+                            
+                            const todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
+                            
+                            if (!table.isActive && todayDate == this.selectedDate) {
+                                table.hasReservation = false;
+                                this.tableIsInactiveToday = true; 
+                                updateTableOnReservationById(reservation.id, 0)
+                                console.info(`La réservation au nom de ${reservation.clientFirstname} ${reservation.clientLastname} à ${reservation.startTime} devra être attitrée à une nouvelle table, car la table #${reservation.tableNumber} est inactive aujourd'hui.`)
+                                alert(`La réservation au nom de ${reservation.clientFirstname} ${reservation.clientLastname} à ${reservation.startTime} devra être attitrée à une nouvelle table, car la table #${reservation.tableNumber} est inactive aujourd'hui.`)
+                            } 
+                        }
+                    }
+                })
             }
         },
         selectWaiter(waiterNumber, employeeColor) {
@@ -219,6 +250,7 @@ export default {
             this.displaySelectedTable(tableNumber);
         },
         createLocalAssignations() {
+
             //console.log("Create the new localAssignations with :" + this.tempAssignationList.length)
             this.localAssignations = [];
             this.localAssignations = this.tableList.map(table => {
@@ -227,7 +259,9 @@ export default {
                     capacity: table.capacity,
                     isActive: table.isActive,
                     isAssign: false,
+                    hasReservation: false,
                     assignation: null,
+                    reservation: null
                 }
             });
 
@@ -241,18 +275,57 @@ export default {
                 const table = this.localAssignations.find(table => {
                     return (table.number == assignation.tableNumber)
                 })
-                if (table.isActive && !assignation.isActive) {
-                    table.isAssign = false;
-                } else if (!table.isActive) {
+                if (!table.isActive) {
                     console.error(`La table ${table.number} est inactive.... veuillez retirer l'assignation`);
                     table.isAssign = false;
                     assignation.isActive = false;
                 } else {
-                    table.isAssign = true;
+                    if (!assignation.isActive) {
+                        table.isAssign = false;
+                        table.assignation = null;
+                    } else {
+                        table.isAssign = true;
+                        table.assignation = assignation;
+                    }
                 }
-                table.assignation = assignation;
+                // if (table.isActive && !assignation.isActive) {
+                //     table.isAssign = false;
+                // } else if (!table.isActive) {
+                //     console.error(`La table ${table.number} est inactive.... veuillez retirer l'assignation`);
+                //     table.isAssign = false;
+                //     assignation.isActive = false;
+                // } else {
+                //     table.isAssign = true;
+                // }
+                //table.assignation = assignation;
+            })
+            if(this.reservations.length > 0) {
+                this.reservations.forEach(reservation => {
+                    let shift = null;
+                    if(parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) shift = "Soir" 
+                    if(parseInt(reservation.startTime.split(':').slice(0)[0]) <= 15) shift = "Midi" 
+
+                    if (this.selectedShift == shift && reservation.statusCode < 5) {
+                        const table = this.localAssignations.find(table => {
+                            return (table.number == reservation.tableNumber)
+                        })
+                        if (table) {
+                            if (table.isActive) {
+                                table.hasReservation = true;
+                                table.reservation = reservation;
+                            } else {
+                                console.error(`La table ${table.number} est inactive`);
+                                // const todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
+                                // if (todayDate == this.selectedDate) {
+                                //     table.hasReservation = false;
+                                //     updateTableOnReservationById(reservation.id, null)
+                                //     //reservation.tableNumber = null;
+                                // }
+                            }
+                        }
+                    }
+                })
             }
-            );
         },
         toggleSelectedTable() {
             if (this.selectedTable != "" || this.selectedTable != null) {
@@ -296,9 +369,9 @@ export default {
                     }
                     this.tempAssignationList.push(newAssignation);
                 }
-                this.tempAssignationList = this.tempAssignationList.filter((assignation) => {
-                    return assignation.isActive;
-                })
+                // this.tempAssignationList = this.tempAssignationList.filter((assignation) => {
+                //     return assignation.isActive;
+                // })
                 this.createLocalAssignations();
             }
         },
@@ -328,14 +401,21 @@ export default {
             this.loadTableList();
             this.loadAssignationList(this.selectedDate, this.selectedShift)
             this.loadReservations(this.selectedDate, this.selectedDate);
+            this.updateTableLayout();
         }
     },
     watch: {
         selectedDate() {
-            this.loadAssignationList(this.selectedDate, this.selectedShift);
+            // this.loadAssignationList(this.selectedDate, this.selectedShift);
+            // this.loadReservations(this.selectedDate, this.selectedDate);
+            this.inEditionMode = false;
+            this.toggleSelectedTable();
+            this.refreshPageView();
         },
         selectedShift() {
             this.loadAssignationList(this.selectedDate, this.selectedShift);
+            this.loadReservations(this.selectedDate, this.selectedDate);
+
         },
         selectedReservationId() {
             if (this.selectedReservationId) {
@@ -349,7 +429,19 @@ export default {
             else {
                 this.reservationInformations = null;
             }
-        }
+        }, 
+        selectedTable(){
+            if (this.selectedTable != null) {
+                if(this.selectedTable.hasReservation)this.selectedReservationId = this.selectedTable.reservation.id;
+            } else {
+                this.selectedReservationId = null
+            }            
+        },
+        // tableIsInactiveToday(){
+        //     if (this.tableIsInactiveToday) {
+        //         this.removeReservationFromTableInactive();
+        //     }
+        // }
     },
     created() {
         this.loadDate();

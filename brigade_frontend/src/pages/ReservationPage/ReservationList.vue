@@ -21,7 +21,8 @@
             </v-row>
             <v-row v-if='$route.path == "/operation/reservation"'>
                 <v-text-field type="date" class="ma-2 pa-4" label="Date Debut" v-model="startDate"
-                    @click:clear="resetStartDate" clearable hint="Le 'X' réinitialise la date à celle d'aujourd'hui" persistent-hint>
+                    @click:clear="resetStartDate" clearable hint="Le 'X' réinitialise la date à celle d'aujourd'hui"
+                    persistent-hint>
                 </v-text-field>
                 <v-text-field type="date" class="ma-2 pa-4" label="Date Fin" v-model="endDate" @click:clear="resetEndDate"
                     clearable hint="Le 'X' réinitialise la date à celle d'aujourd'hui" persistent-hint>
@@ -44,13 +45,15 @@
 
 
 <script>
+import { computed } from "vue";
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import NewReservationForm from "../reservationpage/NewReservationForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
 export default {
-    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'editedFirstName', 'toLocale', 'loadDate', 'reservations','loadReservations', 'refreshListWithSameFilters', 'resetRefreshListWithSameFilters'],
+    inject: ['loadReservationInformations', 'selectedDate', 'selectedShift', 'editedFirstName', 'toLocale', 'loadDate', 'reservations',
+        'loadReservations', 'refreshListWithSameFilters', 'resetRefreshListWithSameFilters', 'selectedReservationId', 'tableIsInactiveToday'],
     components: {
         VDataTable,
         NewReservationForm,
@@ -63,7 +66,7 @@ export default {
             startDate: null,
             endDate: null,
             search: (!!this.editedFirstName) ? this.editedFirstName : "",
-            shiftShow: "all",
+            shiftShow: (!!this.selectedShift) ? this.selectedShift : "all",
             modal: false,
             selected: [],
             filteredReservationList: [],
@@ -74,7 +77,8 @@ export default {
     provide() {
         return {
             closeNewReservationDialog: this.closeNewReservationDialog,
-            refreshWithNewreservation: this.refreshWithNewreservation
+            refreshWithNewreservation: this.refreshWithNewreservation,
+            hasNewReservation: computed(() => this.hasNewReservation)
         };
     },
     watch: {
@@ -146,6 +150,7 @@ export default {
         },
         selectedShift() {
             this.shiftShow = this.selectedShift;
+            this.loadReservations(this.selectedDate, this.selectedDate);
         },
         hasNewReservation() {
             if (this.hasNewReservation) {
@@ -153,11 +158,23 @@ export default {
                 this.hasNewReservation = false;
             }
         },
+        tableIsInactiveToday() {
+            if (this.tableIsInactiveToday) {
+                this.loadReservations(this.selectedDate, this.selectedDate);
+            }
+        },
+        selectedReservationId() {
+            if (this.selectedReservationId != null) {
+                this.selected[0] = this.selectedReservationId;
+            } else {
+                this.selected = [];
+            }
+        },
         editedFirstName() {
             this.search = this.editedFirstName;
         },
-        refreshListWithSameFilters(){
-            if(this.refreshListWithSameFilters === false) this.loadReservations(this.startDate, this.endDate);
+        refreshListWithSameFilters() {
+            if (this.refreshListWithSameFilters === false) this.loadReservations(this.startDate, this.endDate);
             this.resetRefreshListWithSameFilters();
         }
     },
@@ -218,11 +235,9 @@ export default {
                             color: 'red',
                         },
                     };
-
                     if (reservationToAdd.listInformation.toUpperCase().indexOf(this.search.toUpperCase()) >= 0) {
                         this.filteredReservationList.push(reservationToAdd);
                     }
-
                 }
             });
         },
@@ -241,7 +256,6 @@ export default {
         }
     },
     mounted() {
-        console.clear();
         if (!(!!this.selectedDate)) {
             this.todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
             this.endDate = this.startDate = this.todayDate;

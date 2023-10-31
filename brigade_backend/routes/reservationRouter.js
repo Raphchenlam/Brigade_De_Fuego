@@ -209,8 +209,32 @@ router.put('/:id/table/:tableNumber', (req, res, next) => {
     if (!tableNumber || tableNumber === '') {
         return next(new HttpError(400, 'Le numéro de table est requis'));
     }
-
     reservationQueries.updateTableOnReservationById(id, tableNumber).then(result => {
+        if (!result) {
+            return next(new HttpError(404, `La réservation est introuvable`));
+        }
+        res.json(result);
+    }).catch(err => {
+        return next(err);
+    })
+});
+
+router.put('/:id/status/:statusCode', (req, res, next) => {
+    const user = req.user;
+
+    // if (!user || !user.isAdmin) {
+    //   return next(new HttpError(403, "Droit administrateur requis"));
+    // }
+
+    const id = req.params.id;
+    if (!id || id === '') {
+        return next(new HttpError(400, 'Le paramètre ID est requis'));
+    }
+    const statusCode = req.params.statusCode;
+    if (!statusCode || statusCode === '') {
+        return next(new HttpError(400, 'Le code du statut est requis'));
+    }
+    reservationQueries.updateReservationStatusById(id, statusCode).then(result => {
         if (!result) {
             return next(new HttpError(404, `La réservation est introuvable`));
         }
