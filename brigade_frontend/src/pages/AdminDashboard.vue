@@ -14,7 +14,7 @@
                     </v-row>
                     <v-row class="justify-center ma-5">
                         <div>
-                            <p class="ma-5" style="font-size: 45px;font-weight: bold;text-align: center;">6</p>
+                            <p class="ma-5" style="font-size: 45px;font-weight: bold;text-align: center;"> {{ currentPendingLeaves}}</p>
                         </div>
                     </v-row>
                 </v-card>
@@ -62,6 +62,8 @@ import BlackButton from '../components/Reusable/BlackButton.vue';
 import { getHowManyPeopleByDateAndShiftName } from '../services/ReservationService'
 import { fetchEventByDateAndShiftName } from '../services/EventService'
 import { getPeriodInfoByDateAndShiftName } from '../services/ScheduleService'
+import { getHowManyCurrentPendingLeaves } from '../services/LeaveService'
+import { mdiLanPending } from "@mdi/js";
 
 export default {
     inject: ['toLocale'],
@@ -74,6 +76,7 @@ export default {
     data()
     {
         return {
+            currentPendingLeaves : 8,
             todayDate: null,
             meter1: {
                 event: null,
@@ -221,6 +224,19 @@ export default {
                 console.error(err);
             });
         },
+        loadCurrentPendingleaves()
+        {
+            getHowManyCurrentPendingLeaves().then(result =>
+            {
+                this.currentPendingLeaves = result;
+            }).catch(err =>
+            {
+                console.error(err);
+            })
+
+            
+            this.currentPendingLeaves = 8;
+        },
         calculateRequiredSkillPoints(shiftName)
         {
             let resultRequired;
@@ -262,6 +278,10 @@ export default {
     {
         this.todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
         this.loadMeterInformations()
+    },
+    mounted()
+    {
+        this.loadCurrentPendingleaves()
     }
 }
 </script>

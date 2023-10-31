@@ -29,6 +29,29 @@ router.get('/category',
         });
     });
 
+    router.get('/currentpending',
+    passport.authenticate('basic', { session: false }),
+    (req, res, next) =>
+    {
+        const user = req.user;
+        if (!user)
+        {
+            return next(new HttpError(401, "Vous devez etre connecté"));
+        };
+        if (!user.isAdmin)
+        {
+            return next(new HttpError(403, "Droit administrateur requis"));
+        };
+
+        leaveQueries.selectAllCurrentLeaves().then(nbPending =>
+        {
+            res.json(nbPending);
+        }).catch(err =>
+        {
+            return next(err);
+        });
+    });
+
 
 router.get('/filter',
     passport.authenticate('basic', { session: false }),

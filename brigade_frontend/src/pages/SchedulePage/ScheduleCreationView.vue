@@ -37,7 +37,7 @@
                                     cols="1"><v-btn @click="addEventToShift(0)" class="elevation-0" style="font-size:8px">{{
                                         weekInformations[0].events[0] }}</v-btn></v-col>
                                 <v-col v-if="loaded && weekInformations[2].events.length < 1" align="center" class="ma-1"
-                                    cols="1"><v-btn @click="addEventToShift(2)" class="elevation-0">+s</v-btn></v-col>
+                                    cols="1"><v-btn @click="addEventToShift(2)" class="elevation-0">+</v-btn></v-col>
                                 <v-col v-if="loaded && weekInformations[2].events.length > 0" align="center" class="ma-1"
                                     cols="1"><v-btn @click="addEventToShift(2)" class="elevation-0" style="font-size:8px">{{
                                         weekInformations[2].events[0] }}</v-btn></v-col>
