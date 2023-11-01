@@ -24,7 +24,7 @@
             </v-dialog>
             <v-row>
                 <v-col class="ma-5 justify-space-between">
-                    <p :class="{ green: reservation.status == 'Confirmé', redStatus: reservation.status == 'En retard' }">Status : {{ reservation.status }}</p>
+                    <p :class="{ green: reservation.status == 'Confirmé', red: reservation.status == 'Blacklisted', redStatus: reservation.status == 'En retard' }">Status : {{ reservation.status }}</p>
                     <p>Numero reservation : {{ reservation.id }}</p>
                     <p>Nombre de personne: {{ reservation.peopleCount }}</p>
                     <p v-if="reservation.hasMinor"><strong>Mineur sur place !</strong></p>
@@ -36,12 +36,12 @@
                     <p v-if="reservation.allergy">Allergy: {{ reservation.allergy }}</p>
                 </v-col>
             </v-row>
-            <v-card class="ma-4 pl-4 pb-4 pr-4 elevation-4">
+            <v-card class="ma-4 pl-4 pb-4 pr-4 elevation-4" v-if="reservation.mention">
                 <v-card-title><strong>Mention: </strong></v-card-title>
-                <p v-if="reservation.mention">{{ reservation.mention }}</p>
+                <p>{{ reservation.mention }}</p>
             </v-card>
             <v-card class="ma-5 justify-space-between" color="#36454f">
-                <v-card-title v-if="reservation.isBlacklisted" class="red ma-2">
+                <v-card-title v-if="reservation.isBlacklisted" class="red2 ma-2">
                     <strong>BLACKLISTED!</strong>
                 </v-card-title>
             </v-card>
@@ -64,7 +64,7 @@ export default {
         BlackButton,
         EditBlackButton
     },
-    inject: ['selectedTable','reservationInformations'],
+    inject: ['selectedTable', 'refreshWithUpdatedReservation','reservationInformations'],
     data() {
         return {
             dialogEditReservation: false,
@@ -75,15 +75,15 @@ export default {
         reservationId() {
             this.loadReservation(this.reservationId);
         },
+        refreshWithUpdatedReservation(){
+            this.loadReservation(this.reservationId);
+        },
         'reservationInformations':{
             handler: function () {
                 if(this.reservationInformations) this.reservation = this.reservationInformations;
             },
             deep: true
         },
-        
-      
-
     },
     methods: {
         async loadReservation(selectedReservationId) {
@@ -136,7 +136,12 @@ p {
 
 .red {
     color: red;
-    font-size: 2em;
+    font-size: 1.5em;
+    text-align: left
+}
+.red2 {
+    color: red;
+    font-size: 1.5em;
     text-align: center
 }
 .redStatus {

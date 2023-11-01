@@ -34,18 +34,15 @@ export default {
       selectedDate: null,
       selectedShift: null,
       editedFirstName: null,
-      refreshListWithSameFilters: null
+      refreshWithUpdatedReservation: null
     }
   },
   methods: {
     loadReservationInformations(receivedReservationId) {
       this.selectedReservationId = receivedReservationId;
     },
-    resetRefreshListWithSameFilters() {
-      this.refreshListWithSameFilters = null;
-    },
     editedReservationRefreshAndSearch(refreshingInformations) {
-      this.refreshListWithSameFilters = refreshingInformations.changeListFilters;
+      this.refreshWithUpdatedReservation = refreshingInformations.changeListFilters;
 
       if (refreshingInformations.changeListFilters) {
         this.editedFirstName = refreshingInformations.firstName;
@@ -53,19 +50,13 @@ export default {
         this.selectedShift = refreshingInformations.shift;
         this.loadReservations(this.selectedDate, this.selectedDate);
       }
+
+      setTimeout(() => this.refreshWithUpdatedReservation = null);
     },
     loadReservations(startDate, endDate) {
       getReservationList(startDate, endDate)
         .then((reservationList) => {
-          this.reservations = reservationList.sort((a, b) => {
-            const firstNameA = a.clientFirstname.toUpperCase();
-            const firstNameB = b.clientFirstname.toUpperCase();
-
-            if (firstNameA < firstNameB) return -1;
-            if (firstNameA > firstNameB) return 1;
-
-            return 0;
-          });;
+          this.reservations = reservationList;
         })
         .catch((err) => {
           console.error(err);
@@ -83,8 +74,7 @@ export default {
       editedFirstName: computed(() => this.editedFirstName),
       selectedDate: computed(() => this.selectedDate),
       selectedShift: computed(() => this.selectedShift),
-      refreshListWithSameFilters: computed(() => this.refreshListWithSameFilters),
-      resetRefreshListWithSameFilters: this.resetRefreshListWithSameFilters
+      refreshWithUpdatedReservation: computed(() => this.refreshWithUpdatedReservation),
     };
   },
   mounted() {
