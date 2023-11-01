@@ -44,7 +44,6 @@ export async function createLeave(leave)
         return respJson;
     } else
     {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
@@ -204,7 +203,6 @@ export async function updateLeave(leave)
         return respJson;
     } else
     {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }

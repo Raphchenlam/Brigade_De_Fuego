@@ -109,19 +109,9 @@ export default {
             }
             this.refreshPageView();
             this.inColorMode = false;
-            // Reset selectedWaiter to null
+            // NOTE : Reset selectedWaiter to null
             this.selectWaiter(0, 0);
         },
-        // async updatecolor() {
-        //     this.waitersList.forEach((employee) => {
-        //         await updateEmployeeColor(employee.employeeNumber, employee.waiterColor)
-        //     })
-        //     this.refreshPageView();
-        //     this.inColorMode = false;
-        //     //**** RESET selectedWaiter TO NULL ****//
-        //     this.selectWaiter(0,0);
-
-        // },
         openColorPicker(waiter) {
             if (this.inColorMode) {
                 waiter.dialogVisible = !waiter.dialogVisible;

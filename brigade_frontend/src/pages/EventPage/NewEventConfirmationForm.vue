@@ -154,7 +154,6 @@ export default {
         },
         verifyUniqueEvent() {
             fetchEventByName(this.name).then(eventFound => {
-                console.log('eventFound:', eventFound);
                 if (eventFound) {
                     this.uniqueEvent = false;
                     this.eventFoundInDB = eventFound;

@@ -50,8 +50,8 @@ export default {
     data() {
         return {
             employeeColor: null,
-            textColor: "black", //a changer
-            tableColor: "white", // a changer
+            textColor: "black", 
+            tableColor: "white",
             fillDarkColor: "",
             fillLightColor: "",
             tableNumberFormatted: "000",
