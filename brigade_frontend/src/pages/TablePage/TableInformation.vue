@@ -144,7 +144,6 @@ export default {
         },
         async removeReservation() {
             const reservationFound = await getReservationById(this.tableInformation.reservation.id)
-            console.log("reservationFound : " + JSON.stringify(reservationFound));
             if (!reservationFound) {
                 alert("Aucune réservation trouvée")
             } else {
@@ -154,14 +153,13 @@ export default {
                     this.reservation.tableNumber = null;
                     await updateTableOnReservationById(reservationFound.id, 0)
                     this.hasReservation = false;
+                    this.refreshPageView();
                 }
             }
-            this.refreshPageView();
         },
 
         async updateReservationStatus(status) {
             const reservationFound = await getReservationById(this.tableInformation.reservation.id)
-            console.log("reservationFound : " + JSON.stringify(reservationFound));
             if (!reservationFound) {
                 alert("Aucune réservation trouvée")
             } else {
@@ -193,15 +191,8 @@ export default {
             //this.loadReservationInformations(this.tableInformation.reservation.id)
 
         },
-        // tableInformation() {
-        //     if (!!this.tableInformation) {
-        //         if (this.tableInformation.hasReservation) {
-        //             this.loadReservationInformations(this.tableInformation.reservation.id)
-        //         }
-        //     }
-        // }
     },
-    mounted() {
+    created() {
         this.getTableInformation();
     }
 

@@ -21,8 +21,12 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="4">
-                    <v-select class="shrink ma-2" label="Select" :items="reservationStatusList" v-model="editedStatusCode"
-                        item-title="name" item-value="code"></v-select>
+                    <v-select v-if="reservation.statusCode != 8" class="shrink ma-2" label="Select"
+                        :items="reservationStatusList" v-model="editedStatusCode" item-title="name"
+                        item-value="code"></v-select>
+                    <v-select v-if="reservation.statusCode == 8" class="shrink ma-2" label="Select"
+                        :items="reservationStatusList" v-model="editedStatusCode" item-title="name" item-value="code"
+                        disabled></v-select>
                 </v-col>
             </v-row>
             <v-row>
@@ -41,7 +45,8 @@
             </v-row>
             <v-row class="justify-space-between">
                 <cols>
-                    <SmallBlackButton class="mx-5" width="200px" textbutton="No Show" @click="applyNoShowStatus()">
+                    <SmallBlackButton class="mx-5" width="200px" textbutton="No Show"
+                        :disabled="reservation.statusCode == 8" @click="applyNoShowStatus()">
                     </SmallBlackButton>
                 </cols>
                 <cols>
@@ -75,7 +80,7 @@
                                 de
                                 la table #{{ this.table.number }} ({{ this.table.capacity }})</p>
                         </v-row>
-                        <v-row>
+                        <v-row class="justify-center">
                             <SmallBlackButton class="mx-5" width="200px" textbutton="Annulé"
                                 @click="dialogTablePasOk = false">
                             </SmallBlackButton>
@@ -365,7 +370,7 @@ export default {
         saveButtonDisabled() {
             this.peopleCountValid = true;
             if (this.editedPeopleCount < 1 || this.editedPeopleCount > 12) this.peopleCountValid = false;
-            
+
             return !(this.dateValid && this.peopleCountValid);
         }
     },

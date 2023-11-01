@@ -58,7 +58,6 @@ export async function fetchAssignationByDate(date) {
 }
 
 export async function createAssignations(assignations){
-  console.log("Assignations-Service: " + Array.isArray(assignations))
 
   const response = await fetch(`/api/assignation`, {
     method: "POST",
