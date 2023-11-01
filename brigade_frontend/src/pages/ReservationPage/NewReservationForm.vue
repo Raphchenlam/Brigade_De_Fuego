@@ -155,6 +155,7 @@ export default {
                 );
         },
         loadClientInformations(clientInformations) {
+            
             this.selectedClientId = clientInformations[0];
             this.selectedClientIsBlacklisted = clientInformations[1];
             this.clientFirstName = clientInformations[2];
@@ -180,7 +181,6 @@ export default {
                         }else{
                             newReservationShift = "Soir";
                         }
-
 
                         this.refreshWithNewreservation([ result.id, this.reservationFullDate, this.clientFirstName, newReservationShift ]);
                     }
@@ -249,7 +249,6 @@ export default {
             if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 12) {
                 peopleCountValid = false;
             }
-            console.log("this.createButtonDisabled");
 
             return !(this.dateValid
                 && this.clientIdValid

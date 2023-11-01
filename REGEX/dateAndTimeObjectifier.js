@@ -146,10 +146,10 @@ exports.isBeforeToday = isBeforeToday;
 
 // run with < node dateAndTimeObjectifier.js > in terminal, when in REGEX folder
 // const variable = toLocale("2023-10-26")
-// console.log("variable : ", variable)
+// console.info("variable : ", variable)
 
 // const variable2 = toLocale(variable)
-// console.log("variable2 : ", variable2)
+// console.info("variable2 : ", variable2)
 
 // const variable3 = toLocale({ wrong: "Wrong object given to toLocale"})
-// console.log("Never gets here, line above throws an error before : ", variable3)
+// console.info("Never gets here, line above throws an error before : ", variable3)
