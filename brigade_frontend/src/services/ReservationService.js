@@ -135,8 +135,6 @@ export async function updateTableOnReservationById(id, tableNumber) {
     if (response.ok) {
         return convertToReservation(await response.json());
       } else {
-        console.log(response.status)
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
       }
 }
@@ -152,8 +150,6 @@ export async function updateReservationStatusById(id, statusCode) {
     if (response.ok) {
         return convertToReservation(await response.json());
       } else {
-        console.log(response.status)
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
       }
 }
@@ -171,7 +167,6 @@ export async function getHowManyPeopleByDateAndShiftName(date, shiftName) {
     if (response.ok) {
         return await response.json();
     } else {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }

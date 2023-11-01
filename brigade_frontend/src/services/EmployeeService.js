@@ -126,7 +126,6 @@ export async function createEmployee(employee) {
     {
         return convertToEmployee(await response.json());
     } else {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
@@ -163,7 +162,6 @@ export async function updateEmployeeByAdmin(employee) {
     if (response.ok) {
         return convertToEmployee(await response.json());
     } else {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
@@ -181,7 +179,6 @@ export async function updateEmployeeColor(employeeNumber, employeeColor) {
         const respJson = await response.json();
         return respJson;
     } else {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
@@ -196,7 +193,6 @@ export async function resetPassword(employeeNumber) {
         const respJson = await response.json();
         return respJson;
     } else {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
@@ -215,7 +211,6 @@ export async function changeNewEmployeePassword(employeeNumber, newPassword){
         const respJson = await response.json();
         return respJson;
     } else {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
@@ -233,7 +228,6 @@ export async function updateEmployeeByEmployeeProfile(employee, employeeNumber) 
     if (response.ok) {
         return convertToEmployee(await response.json());
     } else {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
