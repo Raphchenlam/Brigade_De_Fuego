@@ -10,8 +10,9 @@ router.get("/",
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
         const user = req.user;
-        if (!user) return next(new HttpError(401, "Authentification nécessaire"));
-        if (!user.isAdmin || !user.isSuperAdmin) return next(new HttpError(403, "Vous n'avez pas les droits requis"));
+  
+        if (!user) return next(new HttpError(401, "Authentification nécessaire"))
+        if (!user.isAdmin && !user.isSuperAdmin) return next(new HttpError(403, "Vous n'avez pas les droits requis"))
 
         clientQueries
             .getClientList()
@@ -32,8 +33,10 @@ router.get("/:id",
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
         const user = req.user;
-        if (!user) return next(new HttpError(401, "Authentification nécessaire"));
-        if (!user.isAdmin || !user.isSuperAdmin) return next(new HttpError(403, "Vous n'avez pas les droits requis"));
+  
+        if (!user) return next(new HttpError(401, "Authentification nécessaire"))
+        if (!user.isAdmin && !user.isSuperAdmin) return next(new HttpError(403, "Vous n'avez pas les droits requis"))
+
 
         const id = req.params.id;
         clientQueries
@@ -55,8 +58,9 @@ router.post("/",
     passport.authenticate("basic", { session: false }),
     (req, res, next) => {
         const user = req.user;
-        if (!user) return next(new HttpError(401, "Authentification nécessaire"));
-        if (!user.isAdmin || !user.isSuperAdmin) return next(new HttpError(403, "Vous n'avez pas les droits requis"));
+
+        if (!user) return next(new HttpError(401, "Authentification nécessaire"))
+        if (!user.isAdmin && !user.isSuperAdmin) return next(new HttpError(403, "Vous n'avez pas les droits requis"))
 
         const firstName = req.body.firstName;
         if (!firstName || firstName === "") return next(new HttpError(400, "Le champ prénom est requis"));

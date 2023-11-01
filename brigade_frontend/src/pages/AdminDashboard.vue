@@ -166,7 +166,6 @@ export default {
                         segmentStop.push(this.meter1.requiredSkillPoints + 5)
                         segmentStop.push(this.meter1.maxValue)
                         this.meter1.segmentStop = segmentStop;
-                        console.log("this.meter1.requiredSkillPoints", this.meter1.requiredSkillPoints)
 
                         this.meter1.currentValueText = this.meter1.actualSkillPoints + " actuel / " + this.meter1.requiredSkillPoints + " requis";
                     }).catch(err =>
@@ -208,7 +207,6 @@ export default {
                         segmentStop.push(this.meter2.requiredSkillPoints + 5)
                         segmentStop.push(this.meter2.maxValue)
                         this.meter2.segmentStop = segmentStop;
-                        console.log("this.meter2.requiredSkillPoints", this.meter2.requiredSkillPoints)
 
                         this.meter2.currentValueText = this.meter2.actualSkillPoints + " actuel / " + this.meter2.requiredSkillPoints + " requis";
                     }).catch(err =>

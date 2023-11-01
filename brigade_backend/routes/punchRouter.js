@@ -67,10 +67,11 @@ router.get('/:barcodeNumber',
 
 //PunchIn/PunchOut Operation
 router.post('/',
-    // passport.authenticate('basic', { session: false }),
+     passport.authenticate('basic', { session: false }),
     async (req, res, next) => {
 
         const punchIn = req.body;
+        console.log("body",punchIn)
 
         let barcodeNumber = punchIn.barcodeNumber;
         if (!barcodeNumber) return next(new HttpError(400, "Le champ barcodeNumber est requis"));

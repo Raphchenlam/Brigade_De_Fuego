@@ -80,10 +80,8 @@ router.get('/filter',
         {
             return res.json([]);
         }
-console.log("checkboxes",checkboxes)
         leaveQueries.selectAllFilteredLeaves(checkboxes).then(leaves =>
         {
-            console.log("leaves",leaves)
             res.json(leaves);
         }).catch(err =>
         {
