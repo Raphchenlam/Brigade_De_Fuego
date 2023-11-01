@@ -4,7 +4,8 @@
       <ReservationList class="pa-2"></ReservationList>
     </v-col>
     <v-col>
-      <ReservationInformation class="pa-2" v-if="selectedReservationId" :reservationId="selectedReservationId">
+      <ReservationInformation class="pa-2" v-if="selectedReservationId" 
+      :reservationId="selectedReservationId">
       </ReservationInformation>
     </v-col>
   </v-row>

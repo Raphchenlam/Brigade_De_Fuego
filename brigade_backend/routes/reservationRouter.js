@@ -327,7 +327,6 @@ router.put("/",
                         hasMinor: req.body.hasMinor
                     }
 
-
                     let reservationNewDateAndTimeAvailableForClient;
                     if (!!req.body.date || !!req.body.startTime) {
                         const date = (!!req.body.date) ? req.body.date : oldReservation.date;
@@ -336,71 +335,60 @@ router.put("/",
                         reservationNewDateAndTimeAvailableForClient = reservationQueries.getReservationByInformations(oldReservation.clientId, date, startTime);
                     }
 
-                    // Idéalement j'aurais attendus toutes le résultat de toutes les requêtes avec le Promise.all mais par manque de temps j'ai décidé de le laisser comme tel, j'ai compris le Promise.all après avoir initialement créé cette méthode et sont ajout à été fait par après
-                    Promise.all([reservationNewDateAndTimeAvailableForClient])
-                        .then((result) => {
-                            const reservation = result[0];
-                            if (reservation) {
-                                return next(new HttpError(409, `Une réservation du client ${reservation.clientFirstname} ${reservation.clientLastname}, le ${reservation.date} a ${reservation.startTime} existe déjà`))
-                            }
-                        })
-                        .catch((err) => {
-                            return next(err);
-                        });
-
-                    if (!!req.body.tableNumber || !!req.body.peopleCount && req.body.tableNumber != null) {
-                        tableQueries.getTableByNumber(req.body.tableNumber)
-                            .then((table) => {
-                                if (table && table.isActive) {
-                                    if (table.capacity < req.body.peopleCount) return next(new HttpError(400, `La table #${req.body.tableNumber} ne peux acceuillir ${req.body.peopleCount} personnes.`));
-
-                                    newReservationInfos = {
-                                        ...newReservationInfos,
-                                        tableNumber: req.body.tableNumber,
-                                        peopleCount: req.body.peopleCount
-                                    }
-
-                                    reservationQueries
-                                        .updateReservation(newReservationInfos)
-                                        .then((updatedReservation) => {
-                                            if (updatedReservation) {
-                                                res.json(updatedReservation);
-                                            } else {
-                                                return next(new HttpError(404, `La mise à jours de la réservation ${newReservationInfos.id} à échoué pour une raison inconnue.`));
-                                            }
-                                        })
-                                        .catch((err) => {
-                                            return next(err);
-                                        });
-                                } else {
-                                    return next(new HttpError(400, `La table ${req.body.tableNumber} est introuvable ou inactive.`));
-                                }
-                            })
-                            .catch((err) => {
-                                return next(err);
-                            });
+                    let tableCapcityVerificationQuery;
+                    if ((!!req.body.tableNumber || !!req.body.peopleCount) && req.body.tableNumber !== null) {
+                        tableCapcityVerificationQuery = tableQueries.getTableByNumber(req.body.tableNumber)
                     } else {
-
                         newReservationInfos = {
                             ...newReservationInfos,
                             tableNumber: null,
                             peopleCount: req.body.peopleCount
                         }
-
-                        reservationQueries
-                            .updateReservation(newReservationInfos)
-                            .then((updatedReservation) => {
-                                if (updatedReservation) {
-                                    res.json(updatedReservation);
-                                } else {
-                                    return next(new HttpError(404, `La mise à jours de la réservation ${newReservationInfos.id} à échoué pour une raison inconnue.`));
-                                }
-                            })
-                            .catch((err) => {
-                                return next(err);
-                            });
                     }
 
+                    // Idéalement j'aurais attendus toutes le résultat de toutes les requêtes avec le Promise.all mais par manque de temps j'ai décidé de le laisser comme tel, j'ai compris le Promise.all après avoir initialement créé cette méthode et sont ajout à été fait par après
+                    Promise.all([reservationNewDateAndTimeAvailableForClient, tableCapcityVerificationQuery])
+                        .then((result) => {
+                            const reservation = result[0];
+
+                            
+                            // TODO : Needs to permit changing the time in the same shift for the same reservation
+                            if (reservation) {
+                                if(oldReservation.id != newReservationInfos.id && newReservationInfos.id != reservation.id && oldReservation.id != reservation.id){
+                                        return next(new HttpError(409, `Une réservation du client ${reservation.clientFirstname} ${reservation.clientLastname}, le ${reservation.date} a ${reservation.startTime} existe déjà`))                                        
+                                    }
+                            }
+
+                            const table = result[1];
+                            if (table && table.isActive) {
+                                if (table.capacity < req.body.peopleCount) return next(new HttpError(400, `La table #${req.body.tableNumber} ne peux acceuillir ${req.body.peopleCount} personnes.`));
+
+                                newReservationInfos = {
+                                    ...newReservationInfos,
+                                    tableNumber: req.body.tableNumber,
+                                    peopleCount: req.body.peopleCount
+                                }
+
+                            } else if(!!table){
+                                return next(new HttpError(400, `La table ${req.body.tableNumber} est introuvable ou inactive.`));
+                            }
+
+                            reservationQueries.updateReservation(newReservationInfos)
+                                .then((updatedReservation) => {
+                                    if (updatedReservation) {
+                                        res.json(updatedReservation);
+                                    } else {
+                                        return next(new HttpError(404, `La mise à jours de la réservation ${newReservationInfos.id} à échoué pour une raison inconnue.`));
+                                    }
+                                })
+                                .catch((err) => {
+                                    return next(err);
+                                });
+
+                        })
+                        .catch((err) => {
+                            return next(err);
+                        });
                 } else {
                     return next(new HttpError(404, `La réservation ${newReservationInfos.id} n'existe pas dans notre base de données.`));
                 }
@@ -412,5 +400,3 @@ router.put("/",
 );
 
 module.exports = router;
-
-

@@ -62,15 +62,21 @@ const getReservationByInformations = async (clientId, date, startTime) => {
     let result;
     if (timeObj.hours >= 16) {
         result = await pool.query(
-            `SELECT * FROM reservation
-                JOIN client ON client.id = reservation.client_id
-                    WHERE client_id = $1 AND date = $2 AND start_time >= '16:00:00'`,
+            `SELECT 
+                r.id AS id, r.table_number, r.client_id, r.status_code, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by,
+                c.id AS client_id, c.first_name AS client_first_name, c.last_name AS client_last_name, c.phone_number AS client_phone_number, c.allergy, c.is_favorite, c.is_blacklisted
+                    FROM reservation AS r
+                    JOIN client AS c ON c.id = r.client_id
+                        WHERE client_id = $1 AND date = $2 AND start_time >= '16:00:00'`,
             [clientId, date]);
     } else {
         result = await pool.query(
-            `SELECT * FROM reservation
-                JOIN client ON client.id = reservation.client_id
-                    WHERE client_id = $1 AND date = $2 AND start_time <= '16:00:00'`,
+            `SELECT 
+                r.id AS id, r.table_number, r.client_id, r.status_code, r. people_count, r.date, r.start_time, r.end_time, r.mention, r.has_minor, r.taken_by,
+                c.id AS client_id, c.first_name AS client_first_name, c.last_name AS client_last_name, c.phone_number AS client_phone_number, c.allergy, c.is_favorite, c.is_blacklisted
+                    FROM reservation AS r
+                    JOIN client AS c ON c.id = r.client_id
+                        WHERE client_id = $1 AND date = $2 AND start_time <= '16:00:00'`,
             [clientId, date]);
     }
 
