@@ -13,7 +13,6 @@ router.get("/",
         if (!user) {
             return next(new HttpError(401, "Authentification nécessaire"))
         }
-        console.log("user",user)
         if (!user.isAdmin && !user.isSuperAdmin) {
             return next(new HttpError(403, "Vous n'avez pas les droits requis"))
         }
