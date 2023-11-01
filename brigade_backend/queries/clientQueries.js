@@ -119,8 +119,6 @@ const updateClient = async (newClientInformations) => {
     if (newClientInformations.isBlacklisted === true
         || newClientInformations.isBlacklisted === false) changedFields.push(`is_blacklisted = $${counter}`), newInformation.push(newClientInformations.isBlacklisted), counter++;
 
-
-
     const client = await pool.connect();
     try {
 
@@ -138,7 +136,6 @@ const updateClient = async (newClientInformations) => {
             UPDATEquery += ` WHERE client.id = $${counter} RETURNING *`;
             newInformation.push(newClientInformations.id);
 
-            console.log("UPDATEquery", UPDATEquery);
             const result = await client.query(UPDATEquery, newInformation);
             const row = result.rows[0];
 
@@ -146,7 +143,6 @@ const updateClient = async (newClientInformations) => {
             
             if (row) return constructClient(row);
         }
-
 
     } catch (error) {
         await client.query("ROLLBACK");

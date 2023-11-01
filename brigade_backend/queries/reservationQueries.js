@@ -227,7 +227,7 @@ const getReservationListByDates = async (startDate, endDate) => {
                 JOIN employee AS e ON r.taken_by = e.barcode_number
                 JOIN reservation_status AS rs ON rs.code = r.status_code 
                 WHERE date >= $1 AND date <= $2
-                ORDER BY date ASC, start_time ASC`,
+                ORDER BY date ASC, start_time ASC, client_first_name ASC`,
         [queryStartDate, queryEndDate]);
 
     return results.rows.map((row) => {

@@ -25,8 +25,6 @@ function isDateBeforeToday(dateString) {
 }
 
 
-
-
 // Routes
 router.get("/statusList",
     passport.authenticate('basic', { session: false }),
@@ -247,23 +245,6 @@ router.put('/:id/status/:statusCode', (req, res, next) => {
 router.put("/",
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
-        // For debugging perpuses
-        // var debuggingReservation = {
-        //     id: req.body.id,
-        //     tableNumber: req.body.tableNumber,
-        //     clientId: req.body.clientId,
-        //     statusCode: req.body.statusCode,
-        //     peopleCount: req.body.peopleCount,
-        //     date: req.body.date,
-        //     startTime: req.body.startTime,
-        //     endTime: req.body.endTime,
-        //     mention: req.body.mention,
-        //     hasMinor: req.body.hasMinor,
-        //     takenBy: req.body.takenBy
-        // }
-        // console.log("****************************************");
-        // console.log("debuggingReservation : ");
-        // console.log(debuggingReservation);
 
         reservationQueries.getReservationById(req.body.id)
             .then((oldReservation) => {
@@ -323,7 +304,7 @@ router.put("/",
                     }
 
                     if ((!!req.body.mention || req.body.mention == '') && req.body.mention != oldReservation.mention && req.body.mention.length > 255) {
-                            return next(new HttpError(400, `Le champ "mention" ne peux contenir plus de 255 caractères. Vous en avez ${req.body.mention.length},  c'est-à-dire *${req.body.mention.length - 255}* de trop.`));
+                        return next(new HttpError(400, `Le champ "mention" ne peux contenir plus de 255 caractères. Vous en avez ${req.body.mention.length},  c'est-à-dire *${req.body.mention.length - 255}* de trop.`));
                     }
 
                     if (req.body.hasMinor !== undefined && req.body.hasMinor !== false && req.body.hasMinor !== true) {
@@ -345,6 +326,27 @@ router.put("/",
                         mention: req.body.mention,
                         hasMinor: req.body.hasMinor
                     }
+
+
+                    let reservationNewDateAndTimeAvailableForClient;
+                    if (!!req.body.date || !!req.body.startTime) {
+                        const date = (!!req.body.date) ? req.body.date : oldReservation.date;
+                        const startTime = (!!req.body.startTime) ? req.body.startTime : oldReservation.startTime;
+
+                        reservationNewDateAndTimeAvailableForClient = reservationQueries.getReservationByInformations(oldReservation.clientId, date, startTime);
+                    }
+
+                    // Idéalement j'aurais attendus toutes le résultat de toutes les requêtes avec le Promise.all mais par manque de temps j'ai décidé de le laisser comme tel, j'ai compris le Promise.all après avoir initialement créé cette méthode et sont ajout à été fait par après
+                    Promise.all([reservationNewDateAndTimeAvailableForClient])
+                        .then((result) => {
+                            const reservation = result[0];
+                            if (reservation) {
+                                return next(new HttpError(409, `Une réservation du client ${reservation.clientFirstname} ${reservation.clientLastname}, le ${reservation.date} a ${reservation.startTime} existe déjà`))
+                            }
+                        })
+                        .catch((err) => {
+                            return next(err);
+                        });
 
                     if (!!req.body.tableNumber || !!req.body.peopleCount && req.body.tableNumber != null) {
                         tableQueries.getTableByNumber(req.body.tableNumber)
@@ -410,3 +412,5 @@ router.put("/",
 );
 
 module.exports = router;
+
+

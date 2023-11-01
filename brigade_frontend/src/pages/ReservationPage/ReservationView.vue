@@ -56,15 +56,7 @@ export default {
     loadReservations(startDate, endDate) {
       getReservationList(startDate, endDate)
         .then((reservationList) => {
-          this.reservations = reservationList.sort((a, b) => {
-            const firstNameA = a.clientFirstname.toUpperCase();
-            const firstNameB = b.clientFirstname.toUpperCase();
-
-            if (firstNameA < firstNameB) return -1;
-            if (firstNameA > firstNameB) return 1;
-
-            return 0;
-          });;
+          this.reservations = reservationList;
         })
         .catch((err) => {
           console.error(err);

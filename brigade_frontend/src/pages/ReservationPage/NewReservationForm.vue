@@ -249,7 +249,6 @@ export default {
             if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 12) {
                 peopleCountValid = false;
             }
-            console.log("this.createButtonDisabled");
 
             return !(this.dateValid
                 && this.clientIdValid

@@ -28,7 +28,6 @@ export default {
     },
     methods: {
         loadClientInformations(clientInformations) {
-            console.log("clientInformations", clientInformations);
             if (clientInformations) {
                 this.selectedClientId = clientInformations[0];
                 this.selectedClientIsBlacklisted = clientInformations[1];

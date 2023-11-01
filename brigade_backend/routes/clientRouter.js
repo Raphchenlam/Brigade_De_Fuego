@@ -227,7 +227,6 @@ router.put("/",
                         if (updatedClient) {
                             res.json(updatedClient);
                         } else {
-                            console.log("else's result : ", updatedClient);
                             return next(new HttpError(404, `Une erreur inconnue est survenue`));
                         }
                     })
