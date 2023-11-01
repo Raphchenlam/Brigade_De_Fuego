@@ -105,54 +105,56 @@ router.post('/',
 router.put('/:punchId',
     passport.authenticate('basic', { session: false }),
     async (req, res, next) => {
-        
+
         const employee = req.user;
-        if(!employee) return next(new HttpError(401), 'Connexion requise');
+        if (!employee) return next(new HttpError(401), 'Connexion requise');
         if (!employee.isAdmin) return next(new HttpError(403, "Vous devez avoir les droits administrateurs pour pouvoir modifier les heures d'un employé"));
-        
+
         const punchToUpdate = req.body;
-    
+
         const punchId = punchToUpdate.id;
-        if(!punchId) return next (new HttpError (400, "Le paramètre id est requis"));
-        if(isNaN(punchId)) return next(new HttpError(400, "Le punchId doit être numérique"));
+        if (!punchId) return next(new HttpError(400, "Le paramètre id est requis"));
+        if (isNaN(punchId)) return next(new HttpError(400, "Le punchId doit être numérique"));
         const dbPunch = await punchQueries.selectPunchByPunchId(punchId);
-        if(!dbPunch) return next (new HttpError(400, "Punch inexistant"));
-        
+        if (!dbPunch) return next(new HttpError(400, "Punch inexistant"));
+
         const employeeNumber = punchToUpdate.employeeNumber;
-        if(!employeeNumber) return next (new HttpError (400, "Le paramètre employeeNumber est requis"));
+        if (!employeeNumber) return next(new HttpError(400, "Le paramètre employeeNumber est requis"));
         const dbEmployee = await employeeQueries.selectEmployeeByEmployeeNumber(punchToUpdate.employeeNumber);
-        if(!dbEmployee) return next(new HttpError(404, `Employé(e) au numéro ${punchToUpdate.employeeNumber} n'existe pas`));
-        if(employeeNumber != dbPunch.employeeNumber) return next (new HttpError(409, 'Le numéro de l\'employé associé au punch ne correspond pas à celui reçu de la base de données'));
-        
+        if (!dbEmployee) return next(new HttpError(404, `Employé(e) au numéro ${punchToUpdate.employeeNumber} n'existe pas`));
+        if (employeeNumber != dbPunch.employeeNumber) return next(new HttpError(409, 'Le numéro de l\'employé associé au punch ne correspond pas à celui reçu de la base de données'));
+
         const employeeFullName = punchToUpdate.employeeFullName;
-        if(!employeeFullName || employeeFullName == '') return next (new HttpError (400, "Le paramètre employeeFullName est requis")); 
-        if(employeeFullName != dbPunch.employeeFullName) return next (new HttpError(409, 'Le nom de l\'employé associé au punch ne correspond pas à celui reçu de la base de données'));
-        
+        if (!employeeFullName || employeeFullName == '') return next(new HttpError(400, "Le paramètre employeeFullName est requis"));
+        if (employeeFullName != dbPunch.employeeFullName) return next(new HttpError(409, 'Le nom de l\'employé associé au punch ne correspond pas à celui reçu de la base de données'));
+
         const dateIn = punchToUpdate.dateIn;
         //VERIF SUPPLEMENTAIRES ? Genre (annee == dbAnnee, 01 >= mois <= 12, 01 >= jour <= 31)
-        if(!dateIn || dateIn == '') return next (new HttpError (400, "Le paramètre dateIn est requis"));
-        if(dateIn != dbPunch.dateIn) return next (new HttpError(409, 'La date de début de ce punch ne correspond pas à celle de la base de données'));
-        
+        if (!dateIn || dateIn == '') return next(new HttpError(400, "Le paramètre dateIn est requis"));
+        if (dateIn != dbPunch.dateIn) return next(new HttpError(409, 'La date de début de ce punch ne correspond pas à celle de la base de données'));
+
         const startTime = punchToUpdate.startTime;
         //VERIF SUPPL ? Genre (00 >= hour <= 23, 00 >= minute <= 59, 00 >= sec <= 59)
-        if(!startTime) return next (new HttpError (400, "Le paramètre startTime est requis"));
+        if (!startTime) return next(new HttpError(400, "Le paramètre startTime est requis"));
 
         let dateOut = punchToUpdate.dateOut;
-        if(dateOut){
+        if (dateOut) {
             const dateInParts = dateIn.split('-');
             const dateOutParts = dateOut.split('-');
-            
-            const dateInObj = new Date(dateInParts[0], dateInParts[1] -1, dateInParts[2]);
-            const dateOutObj = new Date(dateOutParts[0], dateOutParts[1] -1, dateOutParts[2]);
 
-            if(dateOutObj >= dateInObj){
-                if(startTime > punchToUpdate.endTime){
-                    return next(new HttpError(400, "L'heure de fin doit être après l'heure de début"));
+            const dateInObj = new Date(dateInParts[0], dateInParts[1] - 1, dateInParts[2]);
+            const dateOutObj = new Date(dateOutParts[0], dateOutParts[1] - 1, dateOutParts[2]);
+
+            if (dateOutObj >= dateInObj) {
+                if (dateOut == dateIn) {
+                    if (startTime > punchToUpdate.endTime) {
+                        return next(new HttpError(400, "L'heure de fin doit être après l'heure de début"));
+                    }
                 }
             }
 
-            if(dateOutObj < dateInObj){
-                return next (new HttpError (400, "La date de fin ne peut pas être plus vieille que la date de début"));
+            if (dateOutObj < dateInObj) {
+                return next(new HttpError(400, "La date de fin ne peut pas être plus vieille que la date de début"));
             }
         }
 
@@ -170,7 +172,7 @@ router.put('/',
     async (req, res, next) => {
 
         const punchOut = req.body;
-        if(!punchOut) return next(new HttpError(400), "L'objet punchOut est requis");
+        if (!punchOut) return next(new HttpError(400), "L'objet punchOut est requis");
 
         const barcodeNumber = punchOut.barcodeNumber;
         if (!barcodeNumber) return next(new HttpError(400, "Le champ barcodeNumber est requis"));

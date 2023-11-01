@@ -6,8 +6,9 @@
         </v-sheet>
     </v-row>
     <v-sheet class="mx-10">
-        <v-data-table-server no-data-text="Aucun punch à la date sélectionnée" height="300px" fixed-header :headers="headers"
-            :items="punchList" :items-length="punchList.length" class="elevation-1" @update:options="loadPunch">
+        <v-data-table-server no-data-text="Aucun punch à la date sélectionnée" height="300px" fixed-header
+            :headers="headers" :items="punchList" :items-length="punchList.length" class="elevation-1"
+            @update:options="loadPunch">
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title>Liste des punchs</v-toolbar-title>
@@ -181,6 +182,9 @@ export default {
             });
         },
         editItem(item) {
+            this.errorPunchInfo = false;
+            this.dateOutError = false;
+            this.endTimeError = false;
             this.editedIndex = this.punchList.indexOf(item)
             this.editedItem = Object.assign({}, item);
             this.updatePunchDialog = true;
@@ -222,9 +226,11 @@ export default {
             const dateOutObj = new Date(dateOutParts[0], dateOutParts[1] - 1, dateOutParts[2]);
 
             if (dateOutObj >= dateInObj) {
-                if (this.editedItem.startTime > this.editedItem.endTime) {
-                    this.errorPunchInfo = true;
-                    this.endTimeError = true;
+                if (this.editedItem.dateOut == this.editedItem.dateIn) {
+                    if (this.editedItem.startTime > this.editedItem.endTime) {
+                        this.errorPunchInfo = true;
+                        this.endTimeError = true;
+                    }
                 }
             }
 
