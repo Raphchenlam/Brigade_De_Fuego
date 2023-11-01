@@ -4,7 +4,7 @@
             <v-col>
                 <v-row>
                     <TableLayout v-if="selectedTable == null" class="pa-2"></TableLayout>
-                    <TableInformation v-else class="pa-2" :reservation="reservationInformations" ></TableInformation>
+                    <TableInformation v-else class="pa-2" :reservation="reservationInformations"></TableInformation>
                 </v-row>
                 <v-row>
                     <WaiterList class="pa-2" v-if="!selectedReservationId"></WaiterList>
@@ -79,6 +79,8 @@ export default {
             inEditionMode: false,
             tableIsInactiveToday: false,
             //reservationToSelect:null,
+            refreshWithUpdatedReservation: null,
+            editedFirstName: null,
 
         }
     },
@@ -111,9 +113,26 @@ export default {
             changeTableStatus: this.changeTableStatus,
             refreshPageView: this.refreshPageView,
 
+            editedReservationRefreshAndSearch: this.editedReservationRefreshAndSearch,
+            editedFirstName: computed(() => this.editedFirstName),
+            refreshWithUpdatedReservation: computed(() => this.refreshWithUpdatedReservation),
+
         }
     },
     methods: {
+        editedReservationRefreshAndSearch(refreshingInformations) {
+            this.refreshWithUpdatedReservation = refreshingInformations.changeListFilters;
+            this.selectedDate = refreshingInformations.date;
+
+            if (refreshingInformations.changeListFilters) {
+                this.selectedShift = refreshingInformations.shift;
+                this.editedFirstName = refreshingInformations.firstName;
+            }else{
+                this.editedFirstName = "";
+            }
+
+            setTimeout(() => this.refreshWithUpdatedReservation = null);
+        },
         loadReservationInformations(receivedReservationId) {
             this.selectedReservationId = receivedReservationId;
         },
@@ -128,13 +147,13 @@ export default {
                 alert(err.message);
             })
         },
-        filterReservationsStatus(){
-            this.reservations = this.reservations.filter((reservation)=>{
+        filterReservationsStatus() {
+            this.reservations = this.reservations.filter((reservation) => {
                 return (reservation.statusCode < 5)
             })
         },
         loadDate(newReservationDate, newReservationShift) {
-            
+
             const todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
             const shift = parseInt(new Date().toLocaleTimeString("en-GB").split(':').slice(0)[0]) > 15 ? "Soir" : "Midi"
 
@@ -167,7 +186,7 @@ export default {
         },
         updateTableLayout() {
             this.tableWithAssignationList = [];
-            this.tableIsInactiveToday = false; 
+            this.tableIsInactiveToday = false;
 
             this.tableWithAssignationList = this.tableList.map(table => {
                 return {
@@ -210,16 +229,16 @@ export default {
                         if (table) {
                             table.hasReservation = true;
                             table.reservation = reservation;
-                            
+
                             const todayDate = this.toLocale(new Date().toLocaleDateString("en-GB")).date.fullDate;
-                            
+
                             if (!table.isActive && todayDate == this.selectedDate) {
                                 table.hasReservation = false;
-                                this.tableIsInactiveToday = true; 
+                                this.tableIsInactiveToday = true;
                                 updateTableOnReservationById(reservation.id, 0)
                                 console.info(`La réservation au nom de ${reservation.clientFirstname} ${reservation.clientLastname} à ${reservation.startTime} devra être attitrée à une nouvelle table, car la table #${reservation.tableNumber} est inactive aujourd'hui.`)
                                 alert(`La réservation au nom de ${reservation.clientFirstname} ${reservation.clientLastname} à ${reservation.startTime} devra être attitrée à une nouvelle table, car la table #${reservation.tableNumber} est inactive aujourd'hui.`)
-                            } 
+                            }
                         }
                     }
                 })
@@ -285,11 +304,11 @@ export default {
                     }
                 }
             })
-            if(this.reservations.length > 0) {
+            if (this.reservations.length > 0) {
                 this.reservations.forEach(reservation => {
                     let shift = null;
-                    if(parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) shift = "Soir" 
-                    if(parseInt(reservation.startTime.split(':').slice(0)[0]) <= 15) shift = "Midi" 
+                    if (parseInt(reservation.startTime.split(':').slice(0)[0]) > 15) shift = "Soir"
+                    if (parseInt(reservation.startTime.split(':').slice(0)[0]) <= 15) shift = "Midi"
 
                     if (this.selectedShift == shift && reservation.statusCode < 5) {
                         const table = this.localAssignations.find(table => {
@@ -346,7 +365,7 @@ export default {
                     }
                     this.tempAssignationList.push(newAssignation);
                 }
-    
+
                 this.createLocalAssignations();
             }
         },
@@ -402,13 +421,13 @@ export default {
             else {
                 this.reservationInformations = null;
             }
-        }, 
-        selectedTable(){
+        },
+        selectedTable() {
             if (this.selectedTable != null) {
-                if(this.selectedTable.hasReservation)this.selectedReservationId = this.selectedTable.reservation.id;
+                if (this.selectedTable.hasReservation) this.selectedReservationId = this.selectedTable.reservation.id;
             } else {
                 this.selectedReservationId = null
-            }            
+            }
         },
     },
     created() {

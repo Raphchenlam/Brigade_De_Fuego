@@ -80,7 +80,7 @@
                                 de
                                 la table #{{ this.table.number }} ({{ this.table.capacity }})</p>
                         </v-row>
-                        <v-row>
+                        <v-row class="justify-center">
                             <SmallBlackButton class="mx-5" width="200px" textbutton="Annulé"
                                 @click="dialogTablePasOk = false">
                             </SmallBlackButton>
