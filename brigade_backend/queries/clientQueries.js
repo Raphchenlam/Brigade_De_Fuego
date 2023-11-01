@@ -109,27 +109,65 @@ const updateClient = async (newClientInformations) => {
     let changedFields = [];
     let counter = 1;
 
-    if (newClientInformations.firstName)                    changedFields.push(`first_name = $${counter}`),              newInformation.push(newClientInformations.firstName), counter++;
-    if (newClientInformations.lastName)                     changedFields.push(`last_name = $${counter}`),               newInformation.push(newClientInformations.lastName), counter++;
-    if (newClientInformations.phoneNumber)                  changedFields.push(`phone_number = $${counter}`),            newInformation.push(newClientInformations.phoneNumber), counter++;
-    if (newClientInformations.allergy)                      changedFields.push(`allergy = $${counter}`),                 newInformation.push(newClientInformations.allergy), counter++;
-    if (newClientInformations.isFavorite === true 
-        || newClientInformations.isFavorite === false)      changedFields.push(`is_favorite = $${counter}`),             newInformation.push(newClientInformations.isFavorite), counter++;
-    if (newClientInformations.isBlacklisted === true 
-        || newClientInformations.isBlacklisted === false)   changedFields.push(`is_blacklisted = $${counter}`),          newInformation.push(newClientInformations.isBlacklisted), counter++;
+    if (newClientInformations.firstName) changedFields.push(`first_name = $${counter}`), newInformation.push(newClientInformations.firstName), counter++;
+    if (newClientInformations.lastName) changedFields.push(`last_name = $${counter}`), newInformation.push(newClientInformations.lastName), counter++;
+    if (newClientInformations.phoneNumber) changedFields.push(`phone_number = $${counter}`), newInformation.push(newClientInformations.phoneNumber), counter++;
+    if (newClientInformations.allergy) changedFields.push(`allergy = $${counter}`), newInformation.push(newClientInformations.allergy), counter++;
+    if (newClientInformations.isFavorite === true
+        || newClientInformations.isFavorite === false) changedFields.push(`is_favorite = $${counter}`), newInformation.push(newClientInformations.isFavorite), counter++;
 
-    if (changedFields.length > 0) {
-        UPDATEquery += `SET ${changedFields.join(', ')}`;
-        UPDATEquery += ` WHERE client.id = $${counter} RETURNING *`;
-        newInformation.push(newClientInformations.id);
+    if (newClientInformations.isBlacklisted === true
+        || newClientInformations.isBlacklisted === false) changedFields.push(`is_blacklisted = $${counter}`), newInformation.push(newClientInformations.isBlacklisted), counter++;
 
-        console.log("UPDATEquery", UPDATEquery);
-        const result = await pool.query(UPDATEquery, newInformation);
-        const row = result.rows[0];
 
-        if (row) return constructClient(row);
+
+    const client = await pool.connect();
+    try {
+
+        await client.query('BEGIN');
+
+        if (newClientInformations.isBlacklisted === true) {
+            changeStatusOfAllIncomingReservationsById(40, 1, 8, client);
+        } else if (newClientInformations.isBlacklisted === false) {
+            changeStatusOfAllIncomingReservationsById(40, 8, 1, client);
+        }
+
+
+        if (changedFields.length > 0) {
+            UPDATEquery += `SET ${changedFields.join(', ')}`;
+            UPDATEquery += ` WHERE client.id = $${counter} RETURNING *`;
+            newInformation.push(newClientInformations.id);
+
+            console.log("UPDATEquery", UPDATEquery);
+            const result = await client.query(UPDATEquery, newInformation);
+            const row = result.rows[0];
+
+            client.query('COMMIT');
+            
+            if (row) return constructClient(row);
+        }
+
+
+    } catch (error) {
+        await client.query("ROLLBACK");
+        console.error(error);
+        throw error;
+    } finally {
+        client.release();
     }
 
     return undefined;
 };
 exports.updateClient = updateClient;
+
+const changeStatusOfAllIncomingReservationsById = async (clientId, oldStatus, newStatus, client) => {
+    await (client || pool).query(
+        `UPDATE public.reservation
+                SET status_code = $3
+                WHERE client_id = $1 AND status_code = $2 AND date >= CURRENT_DATE
+                RETURNING *`,
+        [clientId, oldStatus, newStatus]
+    )
+
+    return;
+};
