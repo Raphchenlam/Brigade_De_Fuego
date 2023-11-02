@@ -14,7 +14,7 @@
           :disabled="!loginNumber"></DarkRedButton>
       </v-form>
     </v-sheet>
-    <p>P.S Les seuls numéros qui permettent de débloquer présentement est le : 3998765498762980 ou 1999199919991999</p>
+    <p>P.S Le seul numéro qui permettent de débloquer présentement est le : 3998765498762980</p>
   </div>
 </template>
 

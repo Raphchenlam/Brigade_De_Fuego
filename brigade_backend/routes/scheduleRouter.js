@@ -300,7 +300,7 @@ router.put("/",
             {
                 periodIdList.push(element.id)
             });
-            if (periodIdList.length != 14) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Nous en avons obtenus seumlement ${periodIdList.length} `));
+            if (periodIdList.length != 14) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Nous en avons obtenus ${periodIdList.length} `));
             const lowest = Math.min(...periodIdList);
             const highest = Math.max(...periodIdList);
             if (lowest != body.weekInformations[0].id) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Elle ne correspondent pas a la semaine dans la demande`));
@@ -333,24 +333,30 @@ router.put("/",
                                     let sundayDate = new Date(req.body.weekSunday)
                                     let sundayString = sundayDate.getDate() + " " + sundayDate.toLocaleString('fr-FR', { month: 'long' }) + " " + sundayDate.getFullYear();
                                     let dateString = mondayString + " au " + sundayString;
-
-                                    //envoie des emails avant le retour au front end
-                                    const emailPromises = employeeList.map(async (element) =>
+                                    if (isPublished)
                                     {
-                                        const result = await scheduleQueries.selectEmailFromEmployeeNumber(element);
-                                        return result.email;
-                                    });
-                                    Promise.all(emailPromises)
-                                        .then((emailList) =>
+                                        //envoie des emails avant le retour au front end
+                                        const emailPromises = employeeList.map(async (element) =>
                                         {
-                                            emailList = ["m.marchand22@hotmail.com"] // A ENLEVER POUR LENVOYER EN PRODDUCTION!!!!
-                                            let emailDone = sendEmailSchedule(emailList, isModified, dateString);
-                                            if (emailDone) { res.status(200).json("Mise a jour reussi") };
-                                        })
-                                        .catch((error) =>
-                                        {
-                                            console.error("Erreur lors de la récupération des e-mails :", error);
+                                            const result = await scheduleQueries.selectEmailFromEmployeeNumber(element);
+                                            return result.email;
                                         });
+                                        Promise.all(emailPromises)
+                                            .then((emailList) =>
+                                            {
+                                                emailList = ["m.marchand22@hotmail.com"] // A ENLEVER POUR LENVOYER EN PRODDUCTION!!!!
+                                                let emailDone = sendEmailSchedule(emailList, isModified, dateString);
+                                                if (emailDone) { res.status(200).json("Mise a jour reussi") };
+                                            })
+                                            .catch((error) =>
+                                            {
+                                                console.error("Erreur lors de la récupération des e-mails :", error);
+                                            });
+                                    } else
+                                    {
+                                        res.status(200).json("Mise a jour reussi")
+                                    }
+
                                 }).catch(err =>
                                 {
                                     return next(err);
