@@ -1009,6 +1009,7 @@ export default {
         {
             getScheduleWeekInfoByID(this.scheduleWeek).then(result =>
             {
+                console.log("result",result)
                 result.forEach(element =>
                 {
                     if (element.isPublished != null)
