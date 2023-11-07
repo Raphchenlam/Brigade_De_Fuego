@@ -33,7 +33,7 @@
 </template>
 <script>
 import ResetButton from '../../components/Reusable/ResetButton.vue';
-import DarkRedButton from '../../components/Reusable/darkredbutton.vue';
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { fetchAllEventType } from '../../services/EventService';
 import NewEventConfirmationForm from './NewEventConfirmationForm.vue';
 
