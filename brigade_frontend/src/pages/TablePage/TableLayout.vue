@@ -17,7 +17,7 @@
 
 <script>
 
-import tableIcon from "../tablepage/Table.vue";
+import tableIcon from "../TablePage/Table.vue";
 
 export default {
     components: {
