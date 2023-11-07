@@ -134,7 +134,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import {
     validEmployeeNumber, validName, validPhoneNumber, validEmail, validRole, validColorHexCode,
     validHourlyRate, validBarcodeNumber, validSkillPoints, validPassword
-} from '../../../../REGEX/REGEXfrontend';
+} from '../../../REGEX/REGEXfrontend';
 import userSession from "../../sessions/UserSession"
 
 export default {
