@@ -28,7 +28,7 @@
 
 <script>
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import NewClientForm from "../clientpage/NewClientForm.vue"
+import NewClientForm from "../ClientPage/NewClientForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getClientList } from '../../services/ClientService';
