@@ -1029,6 +1029,8 @@ export default {
                         const dateKey = element.date;
                         const shiftName = element.shiftName;
                         const mapping = this.datePropertyMapping[dateKey];
+                        console.log("this.datePropertyMapping",this.datePropertyMapping)
+                        console.log("this.datePropertyMapping[dateKey]",this.datePropertyMapping[dateKey])
                         console.log("mapping",mapping)
                         console.log("mapping[shiftName]",mapping[shiftName])
                         if (mapping && mapping[shiftName])
