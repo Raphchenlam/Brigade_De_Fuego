@@ -1509,7 +1509,6 @@ export default {
                 peopleReservation : 0
             });
         }
-        this.loadScheduleWeekInfo();
     },
     created()
     {
@@ -1529,6 +1528,7 @@ export default {
                 this.roleList.push(role.name)
             });
         })
+        this.loadScheduleWeekInfo();
         this.loadEmployee();
         this.loadEvents();
         this.setDatePropertyMappingateMap();
