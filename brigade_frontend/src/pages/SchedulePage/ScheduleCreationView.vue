@@ -1528,10 +1528,10 @@ export default {
                 this.roleList.push(role.name)
             });
         })
-        this.loadScheduleWeekInfo();
         this.loadEmployee();
         this.loadEvents();
         this.setDatePropertyMappingateMap();
+        this.loadScheduleWeekInfo();
     }
 }
 </script>
