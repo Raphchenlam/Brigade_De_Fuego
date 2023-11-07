@@ -1019,16 +1019,19 @@ export default {
                             this.isPublished = true;
                         } else
                         {
+                            console.log("ICI0")
                             this.isPublished = false;
                         }
                     }
                     else
                     {
+                        console.log("ICI1")
                         const dateKey = element.date;
                         const shiftName = element.shiftName;
                         const mapping = this.datePropertyMapping[dateKey];
                         if (mapping && mapping[shiftName])
                         {
+                            console.log("ICI2")
                             const properties = mapping[shiftName];
                             const shiftIndex = properties.index;
                             this.weekInformations[shiftIndex].id = element.id;
