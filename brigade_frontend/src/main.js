@@ -24,7 +24,7 @@ import ScheduleView from './pages/SchedulePage/ScheduleCreationView.vue'
 import PersonalScheduleView from './pages/SchedulePage/PersonalScheduleView.vue'
 
 //Route pour l espace employee
-import EspaceLoginForm from './pages/EspaceLoginForm.vue'
+import EspaceLoginForm from './pages/ESPACELoginForm.vue'
 import EspaceDashboard from './pages/Dashboard.vue'
 import EmployeeView from './pages/EmployeePage/EmployeeView.vue'
 import EmployeeInformationView from './pages/EmployeePage/EmployeeInformation.vue';
