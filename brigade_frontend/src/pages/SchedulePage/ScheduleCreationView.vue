@@ -990,6 +990,10 @@ export default {
                 friday.setDate(sunday.getDate() - 2)
                 saturday.setDate(sunday.getDate() - 1)
             }
+            console.log("monday", monday)
+            monday.setHours(0);
+            console.log("monday", monday)
+
             this.weekDate[0] = monday;
             this.weekDate[1] = monday;
             this.weekDate[2] = tuesday;
