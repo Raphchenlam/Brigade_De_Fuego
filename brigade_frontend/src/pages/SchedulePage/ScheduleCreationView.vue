@@ -1495,7 +1495,17 @@ export default {
         let weekNumber = Math.ceil(days / 7);
         this.scheduleWeek = currentDate.getFullYear() + "-W" + weekNumber;
         //this.scheduleWeek = "2024-W41";
-        this.setWeekDayDate();
+        
+    },
+    created()
+    {
+
+        if (!userSession.employeeNumber && !userSession.password)
+        {
+            this.$router.push('/espace');
+        } else
+        {
+            this.setWeekDayDate();
         for (let i = 0; i < 14; i++)
         {
             this.weekInformations.push({
@@ -1516,13 +1526,6 @@ export default {
         this.loadEmployee();
         this.loadEvents();
         this.setDatePropertyMappingateMap();
-    },
-    created()
-    {
-
-        if (!userSession.employeeNumber && !userSession.password)
-        {
-            this.$router.push('/espace');
         }
     }
 }
