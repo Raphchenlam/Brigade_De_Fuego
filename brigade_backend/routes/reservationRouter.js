@@ -4,7 +4,7 @@ const passport = require('passport');
 const reservationQueries = require('../queries/reservationQueries');
 const clientQueries = require('../queries/clientQueries');
 const tableQueries = require("../queries/tableQueries");
-const regex = require('../../REGEX/REGEX_backend');
+const regex = require('../../REGEX/REGEXbackend');
 const dATObj = require('../../REGEX/dateAndTimeObjectifier');
 
 const HttpError = require("../HTTPError");

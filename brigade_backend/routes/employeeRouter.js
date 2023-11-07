@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport'); //PLUS TARD POUR CREATION EMPLOYEE
 const crypto = require('crypto');
-const regex = require('../../REGEX/REGEX_backend');
+const regex = require('../../REGEX/REGEXbackend');
 
 const { sendEmail } = require("../emailManagement");
 

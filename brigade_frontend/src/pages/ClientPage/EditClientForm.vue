@@ -45,7 +45,7 @@
 <script>
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getClientById, updateClient } from '../../services/ClientService';
-import { validName, validPhoneNumber } from '../../../../REGEX/REGEX_frontend';
+import { validName, validPhoneNumber } from '../../../../REGEX/REGEXfrontend';
 
 export default {
     inject: ['closeEditClientDialog', 'refreshClientList'],

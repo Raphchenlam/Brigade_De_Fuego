@@ -47,7 +47,7 @@
 import OperationMenu from '../../components/OperationMenu.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import operationSession from "../../sessions/OperationSession";
-import { validBarcodeNumber } from "../../../../REGEX/REGEX_frontend";
+import { validBarcodeNumber } from "../../../../REGEX/REGEXfrontend";
 import { punchInEmployee, punchOutEmployee, getLastPunchFromEmployee } from '../../services/PunchService';
 
 

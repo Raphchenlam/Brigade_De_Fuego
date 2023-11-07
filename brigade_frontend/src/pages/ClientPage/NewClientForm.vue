@@ -48,7 +48,7 @@
 <script>
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { createClient } from '../../services/ClientService';
-import { validName, validPhoneNumber } from '../../../../REGEX/REGEX_frontend.js';
+import { validName, validPhoneNumber } from '../../../../REGEX/REGEXfrontend.js';
 
 export default {
     inject: ['closeNewClientDialog', 'capitalizeWords', 'formatPhoneNumber', 'loadClients'],

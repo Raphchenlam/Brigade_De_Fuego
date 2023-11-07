@@ -85,9 +85,9 @@
 
 import userSession from '../sessions/UserSession';
 import DarkRedButton from '../components/Reusable/DarkRedButton.vue';
-import { validEmail } from '../../../REGEX/REGEX_frontend';
+import { validEmail } from '../../../REGEX/REGEXfrontend';
 import { getEmployeeByEmail, changeNewEmployeePassword, resetPassword } from '../services/EmployeeService';
-import { validPassword } from '../../../REGEX/REGEX_frontend';
+import { validPassword } from '../../../REGEX/REGEXfrontend';
 
 export default {
     components: {

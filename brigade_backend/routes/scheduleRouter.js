@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const reservationQueries = require('../queries/reservationQueries');
 const scheduleQueries = require('../queries/scheduleQueries');
-const regex = require('../../REGEX/REGEX_backend');
+const regex = require('../../REGEX/REGEXbackend');
 
 const HttpError = require("../HTTPError");
 
