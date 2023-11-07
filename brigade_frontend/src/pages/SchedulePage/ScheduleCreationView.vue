@@ -1056,7 +1056,7 @@ export default {
                     }
                     else
                     {
-                        const dateKey = element.date;
+                        const dateKey = element.date.split('T')[0];
                         const shiftName = element.shiftName;
                         const mapping = this.datePropertyMapping[dateKey];
                         
@@ -1437,31 +1437,31 @@ export default {
         setDatePropertyMappingateMap()
         {
             this.datePropertyMapping = {
-                [this.weekDate[0].toISOString()]: {
+                [this.weekDate[0].toISOString().split('T')[0]]: {
                     Midi: { index: 0 },
                     Soir: { index: 1 }
                 },
-                [this.weekDate[2].toISOString()]: {
+                [this.weekDate[2].toISOString().split('T')[0]]: {
                     Midi: { index: 2 },
                     Soir: { index: 3 }
                 },
-                [this.weekDate[4].toISOString()]: {
+                [this.weekDate[4].toISOString().split('T')[0]]: {
                     Midi: { index: 4 },
                     Soir: { index: 5 }
                 },
-                [this.weekDate[6].toISOString()]: {
+                [this.weekDate[6].toISOString().split('T')[0]]: {
                     Midi: { index: 6 },
                     Soir: { index: 7 }
                 },
-                [this.weekDate[8].toISOString()]: {
+                [this.weekDate[8].toISOString().split('T')[0]]: {
                     Midi: { index: 8 },
                     Soir: { index: 9 }
                 },
-                [this.weekDate[10].toISOString()]: {
+                [this.weekDate[10].toISOString().split('T')[0]]: {
                     Midi: { index: 10 },
                     Soir: { index: 11 }
                 },
-                [this.weekDate[12].toISOString()]: {
+                [this.weekDate[12].toISOString().split('T')[0]]: {
                     Midi: { index: 12 },
                     Soir: { index: 13 }
                 }
