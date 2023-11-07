@@ -1487,7 +1487,7 @@ export default {
             deep: true,
         },
     },
-    beforeCreate()
+    beforeMount()
     {
         let currentDate = new Date();
         let startDate = new Date(currentDate.getFullYear(), 0, 1);
@@ -1495,7 +1495,21 @@ export default {
         let weekNumber = Math.ceil(days / 7);
         this.scheduleWeek = currentDate.getFullYear() + "-W" + weekNumber;
         //this.scheduleWeek = "2024-W41";
-        
+        this.setWeekDayDate();
+        for (let i = 0; i < 14; i++)
+        {
+            this.weekInformations.push({
+                id: 0,
+                traffic: 0,
+                averageCostByClient: 0,
+                events: [],
+                eventImpact: 0,
+                requiredSkillPoints: 0,
+                scheduledSkillPoints: 0,
+                peopleReservation : 0
+            });
+        }
+        this.loadScheduleWeekInfo();
     },
     created()
     {
@@ -1503,18 +1517,10 @@ export default {
         if (!userSession.employeeNumber && !userSession.password)
         {
             this.$router.push('/espace');
-        } else
-        {
-            this.setWeekDayDate();
-        for (let i = 0; i < 14; i++)
-        {
-            this.weekInformations.push({
-                id: 0,
-                traffic: 0,
-                averageCostByClient: 0
-            });
         }
-        this.loadScheduleWeekInfo();
+    },
+    mounted()
+    {
         this.roleList.push("Tous");
         getAllRoles().then(allRoles =>
         {
@@ -1526,7 +1532,6 @@ export default {
         this.loadEmployee();
         this.loadEvents();
         this.setDatePropertyMappingateMap();
-        }
     }
 }
 </script>
