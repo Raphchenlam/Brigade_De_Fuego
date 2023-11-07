@@ -303,6 +303,10 @@ router.put("/",
             if (periodIdList.length != 14) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Nous en avons obtenus ${periodIdList.length} `));
             const lowest = Math.min(...periodIdList);
             const highest = Math.max(...periodIdList);
+            console.log("periodIdList", periodIdList)
+            console.log("body.weekInformations[0].id", body.weekInformations[0].id)
+            console.log("body.weekInformations[13].id", body.weekInformations[13].id)
+            
             if (lowest != body.weekInformations[0].id) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Elle ne correspondent pas a la semaine dans la demande`));
             if (highest != body.weekInformations[13].id) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Elle ne correspondent pas a la semaine dans la demande`));
 
