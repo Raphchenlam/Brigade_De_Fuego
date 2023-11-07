@@ -1029,6 +1029,8 @@ export default {
                         const dateKey = element.date;
                         const shiftName = element.shiftName;
                         const mapping = this.datePropertyMapping[dateKey];
+                        console.log("mapping",mapping)
+                        console.log("mapping[shiftName]",mapping[shiftName])
                         if (mapping && mapping[shiftName])
                         {
                             console.log("ICI2")
@@ -1513,6 +1515,7 @@ export default {
                 peopleReservation : 0
             });
         }
+        this.setDatePropertyMappingateMap();
     },
     created()
     {
@@ -1534,7 +1537,6 @@ export default {
         })
         this.loadEmployee();
         this.loadEvents();
-        this.setDatePropertyMappingateMap();
         this.loadScheduleWeekInfo();
     }
 }
