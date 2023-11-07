@@ -6,7 +6,7 @@ const regex = require('../../REGEX/REGEX_backend');
 
 const { sendEmail } = require("../emailManagement");
 
-const HttpError = require("../HttpError");
+const HttpError = require("../HTTPError");
 
 const employeeQueries = require('../queries/employeeQueries');
 

@@ -7,7 +7,7 @@ const tableQueries = require("../queries/tableQueries");
 const regex = require('../../REGEX/REGEX_backend');
 const dATObj = require('../../REGEX/dateAndTimeObjectifier');
 
-const HttpError = require("../HttpError");
+const HttpError = require("../HTTPError");
 
 // Functions
 function isDateBeforeToday(dateString) {

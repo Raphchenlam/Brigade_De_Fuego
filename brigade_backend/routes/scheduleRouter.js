@@ -5,7 +5,7 @@ const reservationQueries = require('../queries/reservationQueries');
 const scheduleQueries = require('../queries/scheduleQueries');
 const regex = require('../../REGEX/REGEX_backend');
 
-const HttpError = require("../HttpError");
+const HttpError = require("../HTTPError");
 
 const { sendEmail } = require("../emailManagement");
 

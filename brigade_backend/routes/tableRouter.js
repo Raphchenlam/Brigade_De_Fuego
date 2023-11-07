@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
-const HttpError = require("../HttpError");
+const HttpError = require("../HTTPError");
 
 const tableQueries = require("../queries/tableQueries");
 

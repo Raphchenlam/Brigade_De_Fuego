@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const regex = require('../../REGEX/REGEX_backend');
 
-const HttpError = require("../HttpError");
+const HttpError = require("../HTTPError");
 
 const employeeQueries = require('../queries/employeeQueries');
 const punchQueries = require('../queries/punchQueries');

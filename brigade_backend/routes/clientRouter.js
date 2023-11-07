@@ -4,7 +4,7 @@ const passport = require('passport');
 const clientQueries = require('../queries/clientQueries');
 const regex = require('../../REGEX/REGEX_backend');
 
-const HttpError = require("../HttpError");
+const HttpError = require("../HTTPError");
 
 router.get("/",
     passport.authenticate('basic', { session: false }),

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport'); //PLUS TARD
 
-const HttpError = require("../HttpError");
+const HttpError = require("../HTTPError");
 
 const leaveQueries = require('../queries/leaveQueries');
 
