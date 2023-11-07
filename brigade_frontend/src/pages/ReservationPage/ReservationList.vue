@@ -47,7 +47,7 @@
 <script>
 import { computed } from "vue";
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import NewReservationForm from "../reservationpage/NewReservationForm.vue"
+import NewReservationForm from "../ReservationPage/NewReservationForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 
