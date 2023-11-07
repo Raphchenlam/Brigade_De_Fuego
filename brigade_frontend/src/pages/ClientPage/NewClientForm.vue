@@ -4,19 +4,19 @@
             <v-row>
                 <v-text-field class="my-5 pa-4 pre-wrap h-25 w-25" label="Prénom" density="default"
                     v-model.trim="client.firstName" @blur="capitalizeFirstName()"
-                    :rules="[rules.required, rules.clientIdUnique, rules.firstNameValidation, rules.fieldLength255]"
+                    :rules="[rules.required, rules.uniqueClientInfoCombo, rules.firstNameValidation, rules.fieldLength255]"
                     clearable>
                 </v-text-field>
                 <v-text-field class="my-5 pa-4 pre-wrap h-25 w-25" label="Nom de famille" density="default"
                     v-model.trim="client.lastName" @blur="capitalizeLastName()"
-                    :rules="[rules.required, rules.clientIdUnique, rules.lastNameValidation, rules.fieldLength255]"
+                    :rules="[rules.required, rules.uniqueClientInfoCombo, rules.lastNameValidation, rules.fieldLength255]"
                     clearable>
                 </v-text-field>
             </v-row>
             <v-row>
                 <v-text-field class="pa-4 pre-wrap  h-25" label="Numéro de téléphone(format: xxx-xxx-xxxx)"
                     density="default" v-model.trim="client.phoneNumber" @input="patternedPhoneNumber()"
-                    :rules="[rules.required, rules.clientIdUnique, rules.phoneNumberValidation]" clearable>
+                    :rules="[rules.required, rules.uniqueClientInfoCombo, rules.phoneNumberValidation]" clearable>
                 </v-text-field>
             </v-row>
             <v-row>
@@ -33,6 +33,16 @@
             </v-row>
         </v-form>
     </div>
+    <v-dialog v-model="newClientAdded" width="25%" height="25%">
+        <v-card class="ma-2 pa-2 text-center">
+            <v-card-title>
+                <h2>Confirmation</h2>
+            </v-card-title>
+            <v-card-text>
+                <p>Le client à bien été ajouté</p>
+            </v-card-text>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
@@ -41,7 +51,7 @@ import { createClient } from '../../services/ClientService';
 import { validName, validPhoneNumber } from '../../../../REGEX/REGEX_frontend.js';
 
 export default {
-    inject: ['closeNewClientDialog', 'capitalizeWords', 'formatPhoneNumber'],
+    inject: ['closeNewClientDialog', 'capitalizeWords', 'formatPhoneNumber', 'loadClients'],
     components: {
         DarkRedButton,
     },
@@ -57,13 +67,13 @@ export default {
             },
             rules: {
                 required: value => !!value || "Le champ est requis",
-                clientIdUnique: () => this.clientIdUnique || "Cette combinaison d'identifiants est déjà utilisé, veuillez modifié le(s) champs ou consulter le client associé",
-                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.", //Not chatGPT, it's all me (Raph), pls do not touch
-                firstNameValidation: value => validName.test(value) || 'Le champ prénom ne respecte pas les critères d\'acceptation :   \n\t - Aucune lettre seule\n\t - La 1ere lettre de chaque mot en majuscule\n\t - Ne pas excéder 255 caractères',
-                lastNameValidation: value => validName.test(value) || 'Le champ nom de famille ne respecte pas les critères d\'acceptation.',
+                uniqueClientInfoCombo: () => this.uniqueClientInfoCombo || "Cette combinaison d'identifiants est déjà utilisé, veuillez modifié le(s) champs ou consulter le client associé",
+                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
+                firstNameValidation: value => validName.test(value) || 'Le champ prénom ne respecte pas les critères d\'acceptation :   \n\t - Aucune lettre seule\n\t - La 1ere lettre de chaque mot en majuscule\n\t - Ne pas excéder 255 caractères\n\t - Aucun accents',
+                lastNameValidation: value => validName.test(value) || 'Le champ nom de famille ne respecte pas les critères d\'acceptation :   \n\t - Aucune lettre seule\n\t - La 1ere lettre de chaque mot en majuscule\n\t - Ne pas excéder 255 caractères\n\t - Aucun accents',
                 phoneNumberValidation: value => validPhoneNumber.test(value) || 'Le champ numéro de téléphone ne respecte pas les critères d\'acceptation.',
             },
-            clientIdUnique: true,
+            uniqueClientInfoCombo: true,
             newClientAdded: false
         }
     },
@@ -71,23 +81,29 @@ export default {
         closeDialog() {
             this.closeNewClientDialog();
         },
+        closeAllDialog() {
+            this.newClientAdded = false;
+            this.closeDialog();
+        },
         async submitNewClient() {
-            this.clientIdUnique = true;
+            this.uniqueClientInfoCombo = true;
             const formValid = await this.$refs.createClientForm.validate();
-            if (!formValid.valid) {
-                return;
-            }
+            if (!formValid.valid) return;
 
             try {
-                await createClient(this.client);
-                this.clientIdUnique = true;
-                this.newClientAdded = true;
-                this.closeDialog();
+                await createClient(this.client).then((client) => {
+                    if (client) {
+                        this.newClientAdded = true;
+                        setTimeout(this.closeAllDialog, 2000);
+                        this.loadClients([client.id, client.firstName]);
+                    }
+                });
+                this.uniqueClientInfoCombo = true;
             } catch (err) {
                 console.error(err);
                 alert(err.message);
                 if (err.status === 409) {
-                    this.clientIdUnique = false;
+                    this.uniqueClientInfoCombo = false;
                     this.newClientAdded = false;
                 }
                 await this.$refs.createClientForm.validate();

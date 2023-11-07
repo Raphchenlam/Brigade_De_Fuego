@@ -7,43 +7,43 @@ class AuthError extends Error {
     }
 }
 
-const session = reactive({
-    user: null,
-    user_email: null,
+const userSession = reactive({
+    employee: null,
+    employeeNumber: null,
     password: null,
 
     initialize() {
-        if (sessionStorage.user_email) {
-            this.user_email = sessionStorage.user_email;
+        if (sessionStorage.employeeNumber) {
+            this.employeeNumber = sessionStorage.employeeNumber;
         }
         if (sessionStorage.password) {
             this.password = sessionStorage.password;
         }
-        if (this.user == null && this.user_email != null) {
-            this.fetchUser().catch(err => console.error("L'authentification initiale a échouée: ", err));
+        if (this.employee == null && this.employeeNumber != null) {
+            this.fetchEmployee().catch(err => console.error("L'authentification initiale a échouée: ", err));
         }
     },
-    login(user_email, password) {
-        this.setCredentials(user_email, password);
-        return this.fetchUser();
+    login(employeeNumber, password) {
+        this.setCredentials(employeeNumber, password);
+        return this.fetchEmployee();
     },
-    setCredentials(user_email, password) {
-        this.user_email = user_email;
-        sessionStorage.user_email = user_email;
+    setCredentials(employeeNumber, password) {
+        this.employeeNumber = employeeNumber;
+        sessionStorage.employeeNumber = employeeNumber;
         this.password = password;
         sessionStorage.password = password;
     },
     clearCredentials() {
-        this.user_email = null;
-        sessionStorage.removeItem('user_email');
+        this.employeeNumber = null;
+        sessionStorage.removeItem('employeeNumber');
         this.password = null;
         sessionStorage.removeItem('password');
     },
     disconnect() {
-        this.user = null;
+        this.employee = null;
         this.clearCredentials();
     },
-    async fetchUser() {
+    async fetchEmployee() {
         const response = await fetch("/api/login", {
             method: "GET",
             headers: {
@@ -52,59 +52,30 @@ const session = reactive({
         });
 
         if (response.ok) {
-            const user = await response.json();
-            this.user = user;
-            return user;
+            const employee = await response.json();
+            this.employee = employee;
+            return employee;
         } else {
-            this.user = null;
+            this.employee = null;
             if (response.status === 401) {
-                throw new AuthError(response.status, "Adresse courriel ou mot de passe incorrect");
+                throw new AuthError(response.status, "Numéro d'employé ou mot de passe incorrect");
             } else {
                 throw new AuthError(response.status, "Erreur lors de l'authentification: " + response.status);
             }
         }
     },
     getAuthHeaders() {
-        if (this.user_email) {
+        if (this.employeeNumber) {
             return {
-                "Authorization": "Basic " + btoa(this.user_email + ":" + this.password),
+                "Authorization": "Basic " + btoa(this.employeeNumber + ":" + this.password),
                 "X-Requested-With": "XMLHttpRequest"
             };
         } else {
             return {};
         }
-    },
-    async createUserAccount(userAccountEmail, userFullName, password) {
-        const response = await fetch("/api/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                courrielUtilisateur: userAccountEmail,
-                nomComplet: userFullName,
-                password: password
-            })
-        });
-
-        if (response.ok) {
-            const user = await response.json();
-            return user;
-        } else {
-            this.user = null;
-            if (response.status === 409) {
-                const respBody = await response.json();
-                if (respBody && respBody.message) {
-                    throw new AuthError(response.status, respBody.message);
-                }
-                throw new AuthError(response.status, "Erreur lors de la création du compte");
-            } else {
-                throw new AuthError(response.status, "Erreur lors de la création du compte: " + response.status);
-            }
-        }
-    },
+    }
 });
 
-export default session;
+export default userSession;
 
-session.initialize();
+userSession.initialize();

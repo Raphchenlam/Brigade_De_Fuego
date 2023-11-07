@@ -1,42 +1,61 @@
 <template>
-  <div class="boxed-center-large">
+  <div class="boxed-center-large mt-16">
     <v-sheet class="ma-2" max-width="80rem">
       <v-form @submit.prevent="unlockOperationSession" validate-on="submit lazy" ref="loginform">
-
-        <div>
-          <p>LESPACE OPERATION NE PEUX ETRE DEBLOQUER QUE PAR UN GESTIONNAIRE</p>
-          <p>(pour le test, pas obliger de rentrer un numero pour debloquer)</p>
-        </div>
-        <v-text-field v-model="adminNumber" :counter="16" label="Scanner votre carte gestionnaire"></v-text-field>
-        <DarkRedButton type="submit" class="ml-5" height="4rem" textbutton="DEBLOQUER LESPACE OPERATION"></DarkRedButton>
+        <p v-if="warningLoginMessage" class="warning-message">Vous devez avoir un accès adminitrateur pour débloquer l'accès à
+          l'espace OPERATION </p>
+        <p v-if="warningLenghtMessage" class="warning-message">Le numéro doit avoir 16 chiffres pour être valide</p>
+        <p v-if="warningNumberMessage" class="warning-message">Le numéro ne peut pas comporter de lettre(s)</p>
+        <v-row class="my-5">
+          <v-text-field autofocus :counter="16" v-model.trim="loginNumber"
+            label="Scanner votre carte gestionnaire"></v-text-field>
+        </v-row>
+        <DarkRedButton type="submit" class="ml-5" height="4rem" textbutton="DÉBLOQUER ESPACE OPÉRATION"
+          :disabled="!loginNumber"></DarkRedButton>
       </v-form>
     </v-sheet>
+    <p>P.S Le seul numéro qui permettent de débloquer présentement est le : 3998765498762980</p>
   </div>
 </template>
 
 <script>
 import DarkRedButton from "../components/Reusable/DarkRedButton.vue";
 import operationSession from "../sessions/OperationSession"
+import { getEmployeeByBarcodeNumber } from "../services/EmployeeService";
 
 export default {
-  data()
-  {
+
+  data() {
     return {
-      adminNumber: ''
+      warningNumberMessage: false,
+      warningLenghtMessage: false,
+      warningLoginMessage: false,
+      loginNumber: '',
     };
   },
   methods: {
-    unlockOperationSession()
-    {
-      operationSession.adminNumber = this.adminNumber;
-      operationSession.isActive = true;
-      this.$router.push('/operation/punch');
+    unlockOperationSession() {
+      this.warningNumberMessage = isNaN(this.loginNumber) ? true : false;
+      this.warningLengthMessage = this.loginNumber.length !== 16 ? true : false;
+      this.warningLoginMessage = false;
+
+      getEmployeeByBarcodeNumber(this.loginNumber).then(employee => {
+        if (employee && (employee.isAdmin || employee.isSuperAdmin)) {
+          operationSession.unlock(employee);
+          this.warningLoginMessage = false;
+          this.$router.push('/operation/punch');
+        } else {
+          this.warningLoginMessage = true;
+          this.loginNumber = "";
+        }
+      }).catch(err => {
+        this.warningLoginMessage = true;
+        this.loginNumber = "";
+      });
     }
   },
-  mounted()
-  {
-    if (operationSession.isActive)
-    {
+  mounted() {
+    if (operationSession.isActive) {
       this.$router.push('/operation/punch');
     }
   },

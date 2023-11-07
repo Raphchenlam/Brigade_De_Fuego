@@ -4,7 +4,7 @@
             <v-row>
                 <v-col cols="6">
                     <v-row class="justify-center">
-                        <p v-if="!clientIdValid" class="error-message">Un client doit etre selectionner
+                        <p v-if="!clientIdValid" class="error-message">Un client (non-Blacklisted) doit etre selectionner
                         </p>
                     </v-row>
                     <ClientList class="mt-5"></ClientList>
@@ -13,11 +13,12 @@
                     <v-text-field v-if="false" v-model="reservation.clientId" class="ma-2" :rules="[rules.required]">
                     </v-text-field>
                     <v-row class="justify-center">
-                        <v-text-field type="datetime-local" v-model="reservationFullDate" class="ma-2"
+                        <v-text-field type="datetime-local" v-model="reservationFullDate" class="ma-2 pre-wrap h-25 w-25"
                             label="Date de la reservation" :rules="[rules.required, rules.dateIsValid]">
                         </v-text-field>
-                        <v-text-field v-model="reservation.peopleCount" width="10px" type="number" class="shrink ma-2"
-                            label="Nombre de personnes" :rules="[rules.required]">
+                        <v-text-field v-model="reservation.peopleCount" width="10px" type="number" :min="1" :max="12"
+                            class="shrink ma-2 h-25 w-25" label="Nombre de personnes"
+                            :rules="[rules.required, rules.reservationMaximum, rules.reservationMinimum]">
                         </v-text-field>
                     </v-row>
                     <v-textarea class="my-5" v-model="reservation.mention" height="200px" no-resize rows="8"
@@ -50,6 +51,7 @@
                                         <v-text-field :counter="16" autofocus type="number" v-model="reservation.takenBy"
                                             label="Numero de la carte employe" :rules="[rules.required]"></v-text-field>
                                     </v-row>
+                                    <p>6547598653454321</p>
                                     <v-dialog v-model="dialogOKReservation" width="50%" persistent>
                                         <template v-slot:activator="{ props }">
                                             <v-sheet class="ma-2 text-center">
@@ -62,13 +64,13 @@
                                                 </v-row>
                                             </v-sheet>
                                         </template>
-                                        <v-card height="200px">
-                                            <v-card-title>
+                                        <v-card class="ma-2 pa-2 text-center">
+                                            <v-card-title class="justify-center">
                                                 Confirmation
                                             </v-card-title>
                                             <v-card-text>
-                                                <v-row class="justify-center">
-                                                    <p>La reservation a bien ete enregistrer.</p>
+                                                <v-row class="ma-2 justify-center">
+                                                    <p>La reservation a bien été enregistré.</p>
                                                 </v-row>
                                             </v-card-text>
                                         </v-card>
@@ -90,7 +92,7 @@ import ClientList from '../ClientPage/ClientList.vue';
 import { createReservation } from '../../services/ReservationService'
 
 export default {
-    inject: ['closeNewReservationDialog', 'spliceDate'],
+    inject: ['closeNewReservationDialog', 'spliceDate', 'refreshWithNewreservation', 'toLocale', 'isBeforeToday'],
     components: {
         DarkRedButton,
         ClientList,
@@ -100,11 +102,13 @@ export default {
         return {
             dateValid: false,
             clientIdValid: false,
+            clientFirstName: null,
             takenByNumberValid: false,
             dialogConfirmReservation: false,
             dialogOKReservation: false,
             reservationFullDate: null,
             selectedClientId: null,
+            selectedClientIsBlacklisted: false,
             reservation: {
                 tableNumber: null,
                 clientId: null,
@@ -119,9 +123,11 @@ export default {
             },
             rules: {
                 required: value => !!value || "Le champ est requis",
-                dateIsValid: () => this.dateValid || "Date non valide(Ne doit pas etre avant presentement, ni avant 11h ou apres 23h)",
-                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.", //Not chatGPT, it's all me (Raph), pls do not touch
-},
+                dateIsValid: () => this.dateValid || "Date non valide\n\t- Ne doit pas etre avant la date d'aujourd'hui\n\t- Ni avant 11h ou apres 23h",
+                reservationMinimum: value => (value >= 1) || "Le nombre de personnes minimum est de 1 pour une seule réservation.",
+                reservationMaximum: value => (value <= 12) || "Le nombre de personnes maximum est de 12 pour une seule réservation.",
+                fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
+            },
             formValid: true
         }
     },
@@ -136,19 +142,23 @@ export default {
         },
         async verifyReservation() {
             this.clientIdValid = true;
-            if (!this.reservation.clientId) {
+            if (!this.reservation.clientId || this.selectedClientIsBlacklisted) {
                 this.clientIdValid = false;
             }
             await this.$refs.createReservationForm
                 .validate().then(formValid => {
                     if (!formValid.valid || !this.clientIdValid) {
+                        this.formValid = false;
                         this.dialogConfirmReservation = false;
                     }
                 }
                 );
         },
-        loadClientId(clientId) {
-            this.selectedClientId = clientId;
+        loadClientInformations(clientInformations) {
+            
+            this.selectedClientId = clientInformations[0];
+            this.selectedClientIsBlacklisted = clientInformations[1];
+            this.clientFirstName = clientInformations[2];
         },
         submitNewReservation() {
             this.dialogOKReservation = false;
@@ -157,82 +167,118 @@ export default {
                 this.takenByNumberValid = false;
                 return;
             }
+            this.takenByNumberValid = true;
+
             createReservation(this.reservation).then(result => {
-                this.dialogOKReservation = true;
-                setTimeout(this.closeAllDialog, 2000);
+                if (result) {
+                    this.dialogOKReservation = true;
+                    if (this.dialogOKReservation) {
+
+                        const startTimeObj = this.toLocale(this.reservation.startTime);
+                        var newReservationShift;
+                        if (startTimeObj.time.hours <= 15){
+                            newReservationShift = "Midi";
+                        }else{
+                            newReservationShift = "Soir";
+                        }
+
+                        this.refreshWithNewreservation([ result.id, this.reservationFullDate, this.clientFirstName, newReservationShift ]);
+                    }
+                    setTimeout(this.closeAllDialog, 2000);
+                }
             }).catch(err => {
                 console.error(err);
+                alert(err.message);
+                this.dialogConfirmReservation = false;
             });
         },
-        isBeforeToday(fullDate) {
-            const date = this.spliceDate(fullDate)
-            var today = new Date();
 
-            if (date.year < today.getFullYear()) {
-                return true;
-            }
-            else if (date.year == today.getFullYear() && date.month < today.getMonth() + 1) {
-                return true;
-            }
-            else if (date.year == today.getFullYear() && date.month == today.getMonth() + 1) {
-                if (date.day < today.getDate()) {
-                    return true;
-                }
-                else if (date.day == today.getDate()) {
-                    if (date.hour < today.getHours()) {
-                        return true;
-                    }
-                    else if (date.hour == today.getHours() && date.minute <= today.getMinutes()) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
     },
     watch: {
         reservationFullDate() {
             this.dateValid = true;
 
-            const reservationDate = this.spliceDate(this.reservationFullDate);
-            this.reservation.date = reservationDate.year + "-" + reservationDate.month + "-" + reservationDate.day;
-            this.reservation.startTime = reservationDate.hour + ":" + reservationDate.minute;
-            let endHour = reservationDate.hour + 3;
-            let endMinute = reservationDate.minute;
-            console.log("endMinute", endMinute); //verifier pour 00 a 09 car pourrait etre problematique ( affiche 5:2 au lieu de 5:02)
+            //Date management
+            const reservationDateObject = this.toLocale(this.reservationFullDate);
+            this.reservation.date = reservationDateObject.date.fullDate;
+
+            // //Start time management
+            this.reservation.startTime = reservationDateObject.time.fullTime;
+
+            // //End time management
+            let endHour = reservationDateObject.time.hours + 3;
+            let endMinute = reservationDateObject.time.minutes;
             if (endHour >= 24) {
                 endHour = 23;
                 endMinute = 59;
             }
-            this.reservation.endTime = endHour.toString() + ":" + endMinute.toString();
+            const endTimeHours = (endHour < 10) ? "0" + endHour : "" + endHour;
+            const endTimeMinutes = (endMinute < 10) ? "0" + endMinute : "" + endMinute;
+            this.reservation.endTime = endTimeHours + ":" + endTimeMinutes;
 
+            //Date validation
             this.dateValid = !this.isBeforeToday(this.reservationFullDate);
-            if (reservationDate.hour < 11 || reservationDate.hour >= 23) {
+            if (reservationDateObject.time.hour < 11 || reservationDateObject.time.hour >= 23) {
                 this.dateValid = false;
             }
 
         },
         selectedClientId() {
-            this.reservation.clientId = this.selectedClientId
-            this.clientIdValid = true;
+            if (this.selectedClientId) {
+                this.reservation.clientId = this.selectedClientId
+
+                if (this.selectedClientIsBlacklisted) {
+                    this.clientIdValid = false;
+                } else {
+                    this.clientIdValid = true;
+                }
+            } else {
+                this.clientIdValid = false;
+                this.selectedClientIsBlacklisted = false;
+            }
         }
     },
     provide() {
         return {
-            loadClientId: this.loadClientId
+            loadClientInformations: this.loadClientInformations
         };
     },
     computed: {
         createButtonDisabled() {
+            var peopleCountValid = true;
+            if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 12) {
+                peopleCountValid = false;
+            }
+
             return !(this.dateValid
-                || this.clientIdValid
-                || !!this.reservationFullDate
-                || !!this.reservation.clientId
-                || !!this.reservation.peopleCount
-                || !!this.reservation.date
-                || !!this.reservation.startTime
-                || !!this.reservation.endTime);
+                && this.clientIdValid
+                && !!this.reservationFullDate
+                && !!this.reservation.clientId
+                && !!this.reservation.peopleCount
+                && peopleCountValid
+                && !!this.reservation.date
+                && !!this.reservation.startTime
+                && !!this.reservation.endTime);
         }
+    },
+    mounted() {
+        const today = this.toLocale(new Date().toLocaleString("en-GB"));
+        today.time.minutes += 5;
+
+        if (today.time.minutes >= 60) today.time.minutes -= 60, today.time.hours += 1;
+
+        // set time to 11:00
+        today.time.minutes = (today.time.hours < 11) ? 0 : today.time.minutes;
+        today.time.hours = (today.time.hours < 11) ? 11 : today.time.hours;
+
+        const secondesStr = (today.time.secondes > 10) ? "" + today.time.secondes : "0" + today.time.secondes;
+        const minutesStr = (today.time.minutes > 10) ? "" + today.time.minutes : "0" + today.time.minutes;
+        const hoursStr = (today.time.hours > 10) ? "" + today.time.hours : "0" + today.time.hours;
+
+        today.time.fullTime = hoursStr + ":" + minutesStr + ":" + secondesStr;
+
+        this.reservationFullDate = today.date.fullDate + "T" + hoursStr + ":" + minutesStr;
+
     }
 }
 </script>
@@ -246,6 +292,10 @@ export default {
     text-align: center;
     width: 80%;
     max-width: 80rem;
+}
+
+.pre-wrap {
+    white-space: pre-wrap;
 }
 
 .error-message {

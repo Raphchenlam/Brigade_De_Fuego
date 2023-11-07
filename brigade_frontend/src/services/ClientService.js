@@ -1,4 +1,4 @@
-// import session from "./session";
+import session from '../sessions/OperationSession'
 
 class ServiceError extends Error {
     constructor(status, message) {
@@ -32,12 +32,46 @@ const convertToClient = jsonClient => {
     };
 };
 
+export async function getClientById(id) {
+    const response = await fetch(`/api/client/${id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        }
+    });
+    if (response.ok) {
+        return await response.json();
+    } else {
+        console.info(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
+
+export async function getClientList() {
+    const response = await fetch(`/api/client`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        }
+    });
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        console.info(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+
+}
+
 export async function createClient(client) {
     const response = await fetch(`/api/client`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            // ...session.getAuthHeaders()
+            ...session.getAuthHeaders()
         },
         body: JSON.stringify(client)
     });
@@ -45,7 +79,25 @@ export async function createClient(client) {
     if (response.ok) {
         return convertToClient(await response.json());
     } else {
-        console.log(JSON.stringify(response));
+        console.info(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
+
+export async function updateClient(client) {
+    const response = await fetch(`/api/client`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+        body: JSON.stringify(client)
+    });
+
+    if (response.ok) {
+        return convertToClient(await response.json());
+    } else {
+        console.info(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }

@@ -1,7 +1,7 @@
 const validEmployeeNumber = /^[1-9]\d{3}$/;
 exports.validEmployeeNumber = validEmployeeNumber;
 
-const validName = /^([A-Z][a-z]{1,}(?:[- ][A-Z][a-z]{1,})?)$/;
+const validName = /^[A-Z][a-z]{1,}(?:(?:[- ][A-Z][a-z]{1,})?)*$/;
 exports.validName = validName;
 
 const validRole = /^[A-Z][a-zA-Z]*$/;
@@ -25,4 +25,14 @@ exports.validPhoneNumber = validPhoneNumber;
 const validSkillPoints = /^(?:[1-9]|10)$/;
 exports.validSkillPoints = validSkillPoints;
 
+const validDate = /^\d{4}-\d{1,2}-\d{2}$/;
+exports.validDate = validDate;
 
+const validTime = /^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/;
+exports.validTime = validTime;
+
+const validWeekId = /^\d{4}-W([1-9]|[0-4]\d|5[0-3])$/;
+exports.validWeekId = validWeekId;
+
+const validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+exports.validPassword = validPassword;

@@ -22,6 +22,7 @@
                     Etat :
                 </span>
                 <span v-if="editedItem.status == 'En Attente'" style="color:red">{{ editedItem.status }}</span>
+                <span v-if="editedItem.status == 'En Attente (modifié)'" style="color:red">{{ editedItem.status }}</span>
                 <span v-if="editedItem.status == 'Accepté'" style="color:green">{{ editedItem.status }}</span>
                 <span v-if="editedItem.status == 'Refusé'" style="color:red">{{ editedItem.status }}</span>
             </v-col>

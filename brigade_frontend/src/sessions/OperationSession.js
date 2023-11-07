@@ -1,95 +1,74 @@
 import { reactive } from "vue";
 
-class AuthError extends Error
-{
-    constructor(status, message)
-    {
+class AuthError extends Error {
+    constructor(status, message) {
         super(message);
         this.status = status;
     }
 }
 
 const operationSession = reactive({
+    isReady: false,
     isActive: true,
-    adminNumber: null,
+    barcodeNumber: null,
+    employee: null,
 
-
-    initialize()
-    {
-        if (sessionStorage.adminNumber)
-        {
-            this.isActive = true;
+    initialize() {
+        this.isReady = false;
+        if (sessionStorage.barcodeNumber) {
+            this.barcodeNumber = sessionStorage.barcodeNumber;
+            this.fetchEmployeeByCodebarNumber(this.barcodeNumber).then((employee) => {
+                if (employee) this.isReady = true;
+            });
         }
-        else
-        {
-            //this.fetchUser().catch(err => console.error("L'authentification initiale a échouée: ", err));
-            this.isActive = true
-            this.adminNumber = 3343
+        else {
+            this.isActive = false;
+            this.barcodeNumber = null;
+            this.employee = null;
         }
     },
-    login(user_email, password)
-    {
-        this.setCredentials(user_email, password);
-        return this.fetchUser();
+    unlock(employee) {
+        this.setCredentials(employee);
+        this.isActive = true;
+        this.barcodeNumber = employee.barcodeNumber;
+        this.employee = employee;
+        return employee;
     },
-    setCredentials(user_email, password)
-    {
-        this.user_email = user_email;
-        sessionStorage.user_email = user_email;
-        this.password = password;
-        sessionStorage.password = password;
+    setCredentials(employee) {
+        sessionStorage.barcodeNumber = employee.barcodeNumber;
     },
-    clearCredentials()
-    {
-        this.adminNumber = null;
-        sessionStorage.removeItem('adminNumber');
+    clearCredentials() {
+        sessionStorage.removeItem('barcodeNumber');
 
     },
-    disconnect()
-    {
+    disconnect() {
         this.isActive = false;
+        this.barcodeNumber = null;
+        this.employee = null;
         this.clearCredentials();
     },
-    async fetchUser()
-    {
-        const response = await fetch("/api/login", {
-            method: "GET",
-            headers: {
-                ... this.getAuthHeaders()
-            }
-        });
-
-        if (response.ok)
-        {
-            const user = await response.json();
-            this.user = user;
-            return user;
-        } else
-        {
-            this.user = null;
-            if (response.status === 401)
-            {
-                throw new AuthError(response.status, "Adresse courriel ou mot de passe incorrect");
-            } else
-            {
-                throw new AuthError(response.status, "Erreur lors de l'authentification: " + response.status);
-            }
+    async fetchEmployeeByCodebarNumber(barcodeNumber) {
+        const response = await fetch(`/api/employee/barcode/${barcodeNumber}`);
+        if (response.ok) {
+            const employee = await response.json();
+            if (!employee.isAdmin) { throw new AuthError(response.status, "Gestionnaire seulement autorisé"); }
+            this.employee = employee;
+            this.isActive = true;
+            return employee;
+        } else {
+            throw await createServiceError(response);
         }
     },
-    getAuthHeaders()
-    {
-        if (this.user_email)
-        {
+    getAuthHeaders() {
+        if (this.barcodeNumber) {
             return {
-                "Authorization": "Basic " + btoa(this.user_email + ":" + this.password),
+                "Authorization": "Basic " + btoa(this.barcodeNumber + ":" + null),
                 "X-Requested-With": "XMLHttpRequest"
             };
-        } else
-        {
+        } else {
             return {};
         }
-    },
-
+    }
 });
 
 export default operationSession;
