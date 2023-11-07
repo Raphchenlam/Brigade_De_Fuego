@@ -439,12 +439,16 @@
                         <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
                             requiredSkillPoints(0) }}</p>
                         <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(1) }}</p>
-                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : 
-                            <span v-if="requiredSkillPoints(0) - weekInformations[0].scheduledSkillPoints >= 5 || requiredSkillPoints(0) - weekInformations[0].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[0].scheduledSkillPoints }}</span>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel :
+                            <span
+                                v-if="requiredSkillPoints(0) - weekInformations[0].scheduledSkillPoints >= 5 || requiredSkillPoints(0) - weekInformations[0].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[0].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[0].scheduledSkillPoints }}</span>
                         </p>
                         <p v-else align="center" class="text-caption">PC actuel :
-                            <span v-if="requiredSkillPoints(1) - weekInformations[1].scheduledSkillPoints >= 5 || requiredSkillPoints(1) - weekInformations[1].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[1].scheduledSkillPoints }}</span>
+                            <span
+                                v-if="requiredSkillPoints(1) - weekInformations[1].scheduledSkillPoints >= 5 || requiredSkillPoints(1) - weekInformations[1].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[1].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[1].scheduledSkillPoints }}</span>
                         </p>
                     </v-col>
@@ -456,12 +460,16 @@
                         <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
                             requiredSkillPoints(2) }}</p>
                         <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(3) }}</p>
-                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : 
-                            <span v-if="requiredSkillPoints(2) - weekInformations[2].scheduledSkillPoints >= 5 || requiredSkillPoints(2) - weekInformations[2].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[2].scheduledSkillPoints }}</span>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel :
+                            <span
+                                v-if="requiredSkillPoints(2) - weekInformations[2].scheduledSkillPoints >= 5 || requiredSkillPoints(2) - weekInformations[2].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[2].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[2].scheduledSkillPoints }}</span>
                         </p>
                         <p v-else align="center" class="text-caption">PC actuel :
-                            <span v-if="requiredSkillPoints(3) - weekInformations[3].scheduledSkillPoints >= 5 || requiredSkillPoints(3) - weekInformations[3].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[3].scheduledSkillPoints }}</span>
+                            <span
+                                v-if="requiredSkillPoints(3) - weekInformations[3].scheduledSkillPoints >= 5 || requiredSkillPoints(3) - weekInformations[3].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[3].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[3].scheduledSkillPoints }}</span>
                         </p>
                     </v-col>
@@ -473,12 +481,16 @@
                         <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
                             requiredSkillPoints(4) }}</p>
                         <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(5) }}</p>
-                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : 
-                            <span v-if="requiredSkillPoints(4) - weekInformations[4].scheduledSkillPoints >= 5 || requiredSkillPoints(4) - weekInformations[4].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[4].scheduledSkillPoints }}</span>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel :
+                            <span
+                                v-if="requiredSkillPoints(4) - weekInformations[4].scheduledSkillPoints >= 5 || requiredSkillPoints(4) - weekInformations[4].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[4].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[4].scheduledSkillPoints }}</span>
                         </p>
                         <p v-else align="center" class="text-caption">PC actuel :
-                            <span v-if="requiredSkillPoints(5) - weekInformations[5].scheduledSkillPoints >= 5 || requiredSkillPoints(5) - weekInformations[5].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[5].scheduledSkillPoints }}</span>
+                            <span
+                                v-if="requiredSkillPoints(5) - weekInformations[5].scheduledSkillPoints >= 5 || requiredSkillPoints(5) - weekInformations[5].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[5].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[5].scheduledSkillPoints }}</span>
                         </p>
                     </v-col>
@@ -490,12 +502,16 @@
                         <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
                             requiredSkillPoints(6) }}</p>
                         <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(7) }}</p>
-                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : 
-                            <span v-if="requiredSkillPoints(6) - weekInformations[6].scheduledSkillPoints >= 5 || requiredSkillPoints(6) - weekInformations[6].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[6].scheduledSkillPoints }}</span>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel :
+                            <span
+                                v-if="requiredSkillPoints(6) - weekInformations[6].scheduledSkillPoints >= 5 || requiredSkillPoints(6) - weekInformations[6].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[6].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[6].scheduledSkillPoints }}</span>
                         </p>
                         <p v-else align="center" class="text-caption">PC actuel :
-                            <span v-if="requiredSkillPoints(7) - weekInformations[7].scheduledSkillPoints >= 5 || requiredSkillPoints(7) - weekInformations[7].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[7].scheduledSkillPoints }}</span>
+                            <span
+                                v-if="requiredSkillPoints(7) - weekInformations[7].scheduledSkillPoints >= 5 || requiredSkillPoints(7) - weekInformations[7].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[7].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[7].scheduledSkillPoints }}</span>
                         </p>
                     </v-col>
@@ -507,12 +523,16 @@
                         <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
                             requiredSkillPoints(8) }}</p>
                         <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(9) }}</p>
-                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : 
-                            <span v-if="requiredSkillPoints(8) - weekInformations[8].scheduledSkillPoints >= 5 || requiredSkillPoints(8) - weekInformations[8].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[8].scheduledSkillPoints }}</span>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel :
+                            <span
+                                v-if="requiredSkillPoints(8) - weekInformations[8].scheduledSkillPoints >= 5 || requiredSkillPoints(8) - weekInformations[8].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[8].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[8].scheduledSkillPoints }}</span>
                         </p>
                         <p v-else align="center" class="text-caption">PC actuel :
-                            <span v-if="requiredSkillPoints(9) - weekInformations[9].scheduledSkillPoints >= 5 || requiredSkillPoints(9) - weekInformations[9].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[9].scheduledSkillPoints }}</span>
+                            <span
+                                v-if="requiredSkillPoints(9) - weekInformations[9].scheduledSkillPoints >= 5 || requiredSkillPoints(9) - weekInformations[9].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[9].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[9].scheduledSkillPoints }}</span>
                         </p>
                     </v-col>
@@ -524,12 +544,16 @@
                         <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
                             requiredSkillPoints(10) }}</p>
                         <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(11) }}</p>
-                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : 
-                            <span v-if="requiredSkillPoints(10) - weekInformations[10].scheduledSkillPoints >= 5 || requiredSkillPoints(10) - weekInformations[10].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[10].scheduledSkillPoints }}</span>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel :
+                            <span
+                                v-if="requiredSkillPoints(10) - weekInformations[10].scheduledSkillPoints >= 5 || requiredSkillPoints(10) - weekInformations[10].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[10].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[10].scheduledSkillPoints }}</span>
                         </p>
                         <p v-else align="center" class="text-caption">PC actuel :
-                            <span v-if="requiredSkillPoints(11) - weekInformations[11].scheduledSkillPoints >= 5 || requiredSkillPoints(11) - weekInformations[11].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[11].scheduledSkillPoints }}</span>
+                            <span
+                                v-if="requiredSkillPoints(11) - weekInformations[11].scheduledSkillPoints >= 5 || requiredSkillPoints(11) - weekInformations[11].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[11].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[11].scheduledSkillPoints }}</span>
                         </p>
                     </v-col>
@@ -541,12 +565,16 @@
                         <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC requis : {{
                             requiredSkillPoints(12) }}</p>
                         <p v-else align="center" class="text-caption">PC requis : {{ requiredSkillPoints(13) }}</p>
-                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel : 
-                            <span v-if="requiredSkillPoints(12) - weekInformations[12].scheduledSkillPoints >= 5 || requiredSkillPoints(12) - weekInformations[12].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[12].scheduledSkillPoints }}</span>
+                        <p v-if="showedShift == 'Lunch'" align="center" class="text-caption">PC actuel :
+                            <span
+                                v-if="requiredSkillPoints(12) - weekInformations[12].scheduledSkillPoints >= 5 || requiredSkillPoints(12) - weekInformations[12].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[12].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[12].scheduledSkillPoints }}</span>
                         </p>
                         <p v-else align="center" class="text-caption">PC actuel :
-                            <span v-if="requiredSkillPoints(13) - weekInformations[13].scheduledSkillPoints >= 5 || requiredSkillPoints(13) - weekInformations[13].scheduledSkillPoints <= -5" style="color:red"> {{ weekInformations[13].scheduledSkillPoints }}</span>
+                            <span
+                                v-if="requiredSkillPoints(13) - weekInformations[13].scheduledSkillPoints >= 5 || requiredSkillPoints(13) - weekInformations[13].scheduledSkillPoints <= -5"
+                                style="color:red"> {{ weekInformations[13].scheduledSkillPoints }}</span>
                             <span v-else> {{ weekInformations[13].scheduledSkillPoints }}</span>
                         </p>
                     </v-col>
@@ -561,7 +589,8 @@
                                     </CloseRedButton>
                                 </v-col>
                                 <v-col cols="11">
-                                    <p align="center"> {{ employee.role.substring(0,1) }} - ({{ employee.employeeNumber }}) {{ employee.name }}</p>
+                                    <p align="center"> {{ employee.role.substring(0, 1) }} - ({{ employee.employeeNumber }})
+                                        {{ employee.name }}</p>
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -660,7 +689,8 @@
                                     </CloseRedButton>
                                 </v-col>
                                 <v-col cols="11">
-                                    <p align="center"> {{ employee.role.substring(0,1) }} - ({{ employee.employeeNumber }}) {{ employee.name }}</p>
+                                    <p align="center"> {{ employee.role.substring(0, 1) }} - ({{ employee.employeeNumber }})
+                                        {{ employee.name }}</p>
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -789,10 +819,11 @@
             <v-card-text v-if="employeeHaveApprovedLeave">
                 <v-row class="justify-center">
                     <div class="my-10" v-if="employeeHaveApprovedLeave">
-                        <p align="center" class="warning-message">Vous ne pouvez pas ajouter {{ employeeNewShift.name }} à ce shift car il a un congé qui a été approuvé pour cette date</p>
+                        <p align="center" class="warning-message">Vous ne pouvez pas ajouter {{ employeeNewShift.name }} à
+                            ce shift car il a un congé qui a été approuvé pour cette date</p>
                     </div>
 
-                    </v-row>
+                </v-row>
             </v-card-text>
             <v-card-text v-else>
                 <v-row class="justify-center">
@@ -813,8 +844,8 @@
             </v-card-text>
             <v-row class="justify-end">
                 <DarkRedButton class="mx-5" textbutton="Annuler" @click="closeNewShiftDialog()"></DarkRedButton>
-                <DarkRedButton v-if="!employeeHaveApprovedLeave" class="mx-5" textbutton="Sauvegarder" @click="confirmShiftToEmployee()"
-                    :disabled="!startTimeNewShift || !endTimeNewShift"></DarkRedButton>
+                <DarkRedButton v-if="!employeeHaveApprovedLeave" class="mx-5" textbutton="Sauvegarder"
+                    @click="confirmShiftToEmployee()" :disabled="!startTimeNewShift || !endTimeNewShift"></DarkRedButton>
             </v-row>
         </v-card>
     </v-dialog>
@@ -990,10 +1021,6 @@ export default {
                 friday.setDate(sunday.getDate() - 2)
                 saturday.setDate(sunday.getDate() - 1)
             }
-            console.log("monday", monday)
-            monday.setHours(0);
-            console.log("monday", monday)
-
             this.weekDate[0] = monday;
             this.weekDate[1] = monday;
             this.weekDate[2] = tuesday;
@@ -1013,7 +1040,7 @@ export default {
         {
             getScheduleWeekInfoByID(this.scheduleWeek).then(result =>
             {
-                console.log("result",result)
+                console.log("result", result)
                 result.forEach(element =>
                 {
                     if (element.isPublished != null)
@@ -1029,14 +1056,17 @@ export default {
                     }
                     else
                     {
-                        console.log("ICI1")
                         const dateKey = element.date;
                         const shiftName = element.shiftName;
                         const mapping = this.datePropertyMapping[dateKey];
-                        console.log("this.datePropertyMapping",this.datePropertyMapping)
-                        console.log("this.datePropertyMapping[dateKey]",this.datePropertyMapping[dateKey])
-                        console.log("mapping",mapping)
-                        console.log("mapping[shiftName]",mapping[shiftName])
+                        /*
+                        console.log("dateKey", dateKey)
+                        console.log("shiftName", shiftName)
+                        console.log("this.datePropertyMapping", this.datePropertyMapping)
+                        console.log("this.datePropertyMapping[dateKey]", this.datePropertyMapping[dateKey])
+                        console.log("mapping", mapping)
+                        console.log("mapping[shiftName]", mapping[shiftName])
+                        */
                         if (mapping && mapping[shiftName])
                         {
                             console.log("ICI2")
@@ -1047,7 +1077,7 @@ export default {
                             this.weekInformations[shiftIndex].averageCostByClient = element.averageCostByClient;
                             this.weekInformations[shiftIndex].scheduledSkillPoints = element.scheduledSkillPoints;
                             this.weekInformations[shiftIndex].events = [];
-                            
+
                             //Aller chercher le nombre de personne en reservation pour chaque date et chaque shift
                             getHowManyPeopleByDateAndShiftName(element.date, element.shiftName).then(result =>
                             {
@@ -1290,7 +1320,8 @@ export default {
             {
                 const index = this.scheduledEmployees.indexOf(found);
 
-                this.scheduledEmployees[index].schedules.forEach((schedule, indexForEach) => {
+                this.scheduledEmployees[index].schedules.forEach((schedule, indexForEach) =>
+                {
                     if (schedule.startTime && schedule.endTime)
                     {
                         this.weekInformations[indexForEach].scheduledSkillPoints -= this.scheduledEmployees[index].skillPoints;
@@ -1518,7 +1549,7 @@ export default {
                 eventImpact: 0,
                 requiredSkillPoints: 0,
                 scheduledSkillPoints: 0,
-                peopleReservation : 0
+                peopleReservation: 0
             });
         }
     },
@@ -1557,5 +1588,4 @@ export default {
 
 .slds-form-element__control .slds-radio {
     display: inline !important;
-}
-</style>
+}</style>
