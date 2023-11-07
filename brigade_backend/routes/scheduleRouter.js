@@ -344,7 +344,6 @@ router.put("/",
                                         Promise.all(emailPromises)
                                             .then((emailList) =>
                                             {
-                                                emailList = ["m.marchand22@hotmail.com"] // A ENLEVER POUR LENVOYER EN PRODDUCTION!!!!
                                                 let emailDone = sendEmailSchedule(emailList, isModified, dateString);
                                                 if (emailDone) { res.status(200).json("Mise a jour reussi") };
                                             })
