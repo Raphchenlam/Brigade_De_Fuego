@@ -1515,7 +1515,6 @@ export default {
                 peopleReservation : 0
             });
         }
-        this.setDatePropertyMappingateMap();
     },
     created()
     {
@@ -1527,6 +1526,7 @@ export default {
     },
     mounted()
     {
+        this.setDatePropertyMappingateMap();
         this.roleList.push("Tous");
         getAllRoles().then(allRoles =>
         {
