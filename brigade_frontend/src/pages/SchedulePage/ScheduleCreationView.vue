@@ -1487,7 +1487,7 @@ export default {
             deep: true,
         },
     },
-    beforeMount()
+    beforeCreate()
     {
         let currentDate = new Date();
         let startDate = new Date(currentDate.getFullYear(), 0, 1);
@@ -1505,17 +1505,6 @@ export default {
             });
         }
         this.loadScheduleWeekInfo();
-    },
-    created()
-    {
-
-        if (!userSession.employeeNumber && !userSession.password)
-        {
-            this.$router.push('/espace');
-        }
-    },
-    mounted()
-    {
         this.roleList.push("Tous");
         getAllRoles().then(allRoles =>
         {
@@ -1527,6 +1516,14 @@ export default {
         this.loadEmployee();
         this.loadEvents();
         this.setDatePropertyMappingateMap();
+    },
+    created()
+    {
+
+        if (!userSession.employeeNumber && !userSession.password)
+        {
+            this.$router.push('/espace');
+        }
     }
 }
 </script>
