@@ -271,8 +271,8 @@ router.put("/",
         const employee = req.user;
         if (!employee) return next(new HttpError(401, "Connexion requise"));
         if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
-
         let body = req.body;
+        console.log("body", body)
         const scheduleWeekId = body.scheduleWeekId;
         if (!scheduleWeekId || scheduleWeekId == "") return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`));
         if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
