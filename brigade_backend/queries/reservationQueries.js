@@ -1,5 +1,5 @@
 const pool = require('./DBPool');
-const dATObj = require('../../REGEX/dateAndTimeObjectifier');
+const dATObj = require('../REGEX/dateAndTimeObjectifier');
 
 // DATES OKAY HERE 
 const constructReservation = function (reservationObject) {
