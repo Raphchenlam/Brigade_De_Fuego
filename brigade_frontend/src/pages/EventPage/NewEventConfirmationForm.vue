@@ -95,7 +95,7 @@
     </v-sheet>
 </template>
 
-<script>D
+<script>
 import { createEvent, fetchEventByName } from '../../services/EventService';
 
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
