@@ -76,7 +76,7 @@ export default {
     data()
     {
         return {
-            currentPendingLeaves : 8,
+            currentPendingLeaves : null,
             todayDate: null,
             meter1: {
                 event: null,

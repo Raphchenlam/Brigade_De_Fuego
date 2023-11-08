@@ -79,8 +79,6 @@ export default {
         {
             if (!itemDate) return false;
             itemDate.setHours(0, 0, 0, 0);
-console.log("this.today.getTime()",this.today.getTime())
-console.log("this.today.getTime()",this.today.getTime())
             return this.today.getTime() == itemDate.getTime();
         }
     },

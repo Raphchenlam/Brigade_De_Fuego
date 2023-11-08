@@ -185,6 +185,8 @@ export default {
         },
         areSameDate(itemDate)
         {
+            if (!itemDate) return false;
+            itemDate.setHours(0, 0, 0, 0);
             return this.today.getTime() == itemDate.getTime();
         }
     },
