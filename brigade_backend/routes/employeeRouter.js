@@ -231,7 +231,6 @@ router.put('/:employeeNumber',
         if (!employeeNumber || employeeNumber == '') return next(new HttpError(400, 'Le champ employeeNumber est requis'));
         if (employee.employeeNumber != employeeNumberParams) return next(new HttpError(403, 'Vous n\'avez pas l\'authorisation de modifier un autre employé'));
         if (!regex.validEmployeeNumber.test(employeeNumber)) return next(new HttpError(400, 'Le numéro d\'employé ne respecte pas les critères d\'acceptation'));
-        // employeeNumber = parseInt(employeeNumber);
 
         const firstName = req.body.firstName;
         if (!firstName || firstName == '') return next(new HttpError(400, 'Le champ firstName est requis'));
@@ -250,6 +249,8 @@ router.put('/:employeeNumber',
         const colorHexCode = req.body.colorHexCode;
         if (!colorHexCode || colorHexCode == '') return next(new HttpError(400, 'Le champ colorHexCode est requis'));
         if (!regex.validColorHexCode.test(colorHexCode)) return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
+        console.log("colorHexCode", colorHexCode);
+        console.log("employee.colorHexCode", employee.colorHexCode);
         if (colorHexCode != employee.colorHexCode) return next(new HttpError(400, 'La couleur ne peut pas être changée lors de la modification de l\'employé(e)'));
 
         const hourlyRate = req.body.hourlyRate;
