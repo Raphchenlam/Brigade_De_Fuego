@@ -121,6 +121,7 @@ export default {
                         await updateTableOnReservationById(this.reservation.id, this.reservation.tableNumber);
                         //this.hasReservation = true;
                         this.refreshPageView();
+                        this.getTableInformation();
                     } else {
                         alert("Il n'y a pas suffisament de place sur la table, veuillez choisir une autre table.")
                         console.info("Il n'y a pas suffisament de place sur la table, veuillez choisir une autre table.")

@@ -174,7 +174,10 @@ export default {
             this.search = this.editedFirstName;
         },
         refreshWithUpdatedReservation(){
-            if(this.refreshWithUpdatedReservation === false) this.loadReservations(this.startDate, this.endDate);
+            if(this.refreshWithUpdatedReservation === false) {
+                (this.selectedDate) ? this.loadReservations(this.selectedDate, this.selectedDate) : this.loadReservations(this.startDate, this.endDate);
+                //this.loadReservations(this.startDate, this.endDate);
+            }
         }
     },
     methods: {
