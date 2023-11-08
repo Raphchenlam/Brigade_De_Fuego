@@ -487,4 +487,47 @@ router.put('/',
         }
     });
 
+    
+router.put('/lostpassword/:employeeNumber',
+(req, res, next) => {
+    const employeeNumber = req.params.employeeNumber;
+
+    employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber).then(employee => {
+        if (employee) {
+            let password = generatePassword();
+
+            const saltBuf = crypto.randomBytes(16);
+            const passwordSalt = saltBuf.toString("base64");
+
+            crypto.pbkdf2(password, passwordSalt, 100000, 64, "sha512", async (err, derivedKey) => {
+                if (err) return next(err);
+
+                const passwordHashBase64 = derivedKey.toString("base64");
+
+                try {
+                    employeeQueries.updateEmployeePassword(employee, passwordSalt, passwordHashBase64).then(employee => {
+
+                        let emailList = [];
+                        emailList.push(employee.email);
+                        let emailDone = sendEmailLostPassword(emailList, employee.firstName, password);
+                        if (emailDone) {
+                            res.json(employee);
+                        }
+                        else {
+                            return next(new HttpError(400, `Erreur dans l'envoie du courriel`));
+                        }
+                    })
+                } catch (err) {
+                    return next(err);
+                }
+            });
+        } else {
+            return next(new HttpError(404, `Employee avec le courriel ${emailToGet} inexistant ou introuvable`));
+        }
+    }).catch(err => {
+        return next(err)
+    })
+});
+
+
 module.exports = router;
