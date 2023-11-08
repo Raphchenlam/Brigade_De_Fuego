@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const crypto = require('crypto');
 const regex = require('../REGEX/REGEXbackend');
-
+const { sendEmail } = require("../emailManagement");
 const HttpError = require("../HTTPError");
 
 const employeeQueries = require('../queries/employeeQueries');
