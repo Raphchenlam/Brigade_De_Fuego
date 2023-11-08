@@ -55,6 +55,20 @@ router.get('/role',
         });
     });
 
+    router.get('/email/:email',
+    (req, res, next) => {
+        const emailToGet = req.params.email;
+        employeeQueries.selectUsedEmail(emailToGet).then(employee => {
+            if (employee) {
+                res.json(employee)
+            } else {
+                return next(new HttpError(404, `Employee avec le courriel ${emailToGet} inexistant ou introuvable`));
+            }
+        }).catch(err => {
+            return next(err);
+        });
+    });
+
 router.get('/:employeeNumber',
     passport.authenticate('basic', { session: false }),
     (req, res, next) => {
@@ -179,7 +193,7 @@ router.post('/',
         if (usedEmail) return next(new HttpError(400, `${usedEmail.firstName} ${usedEmail.lastName} est associé(e) à cette adresse courriel)`));
 
         const usedPhoneNumber = await employeeQueries.selectUsedPhoneNumber(phoneNumber);
-        if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`)); s
+        if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`));
 
         const newEmployee = {
             employeeNumber: employeeNumber,
