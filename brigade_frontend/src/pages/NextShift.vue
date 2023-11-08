@@ -15,6 +15,7 @@
                 {{ nextShift.date.getDate() }} {{
                     nextShift.date.toLocaleString('fr-FR', { month: 'long' }) }} {{ nextShift.date.getFullYear() }}  -->
                     mercredi 8 novembre 2023
+                    
                     </p>
         </v-row>
         <v-row class="justify-center mx-2">
