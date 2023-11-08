@@ -49,7 +49,6 @@ router.get('/role',
         if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
 
         employeeQueries.selectAllRoles().then(roleList => {
-            console.log("roleList:", roleList);
             res.json(roleList);
         }).catch(err => {
             return next(err);
@@ -107,7 +106,6 @@ router.get('/barcode/:barcodenumber',
 router.post('/',
     passport.authenticate('basic', { session: false }),
     async (req, res, next) => {
-        console.log("REQ.EMPLOYEE", req.user);
 
         const employee = req.user;
 
@@ -184,39 +182,7 @@ router.post('/',
         if (usedEmail) return next(new HttpError(400, `${usedEmail.firstName} ${usedEmail.lastName} est associé(e) à cette adresse courriel)`)); 
 
         const usedPhoneNumber = await employeeQueries.selectUsedPhoneNumber(phoneNumber);
-        if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`));
-
-
-
-        // employeeQueries.selectRoleByName(role).then(existingRole => {
-        //     if (!existingRole) throw new HttpError(400, `Le role ${role} n'existe pas`);
-        // }).catch(err => {
-        //     next(err);
-        // });;
-
-        // employeeQueries.selectAssignedColorHexcode(colorHexCode).then(assignedColorHexcode => {
-        //     if (assignedColorHexcode) throw new HttpError(400, `${assignedColorHexcode.firstName} ${assignedColorHexcode.lastName} est associé(e) à cette couleur`);
-        // }).catch(err => {
-        //     next(err);
-        // });
-
-        // employeeQueries.selectEmployeeByBarcodeNumber(barcodeNumber).then(assignedBarcodeNumber => {
-        //     if (assignedBarcodeNumber) throw new HttpError(400, `${assignedBarcodeNumber.firstName} ${assignedBarcodeNumber.lastName} est associé(e) à ce numéro de la carte)`);
-        // }).catch(err => {
-        //     next(err);
-        // });;
-
-        // employeeQueries.selectUsedEmail(email).then(usedEmail => {
-        //     if (usedEmail) throw new HttpError(400, `${usedEmail.firstName} ${usedEmail.lastName} est associé(e) à cette adresse courriel)`);
-        // }).catch(err => {
-        //     next(err);
-        // });
-
-        // employeeQueries.selectUsedPhoneNumber(phoneNumber).then(usedPhoneNumber => {
-        //     if (usedPhoneNumber) throw new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`);
-        // }).catch(err => {
-        //     next(err);
-        // });
+        if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`));s
 
         const newEmployee = {
             employeeNumber: employeeNumber,
@@ -255,7 +221,6 @@ router.post('/',
 router.put('/:employeeNumber',
     passport.authenticate('basic', { session: false }),
     async (req, res, next) => {
-        console.log("REQ.EMPLOYEE", req.user);
 
         const employee = req.user;
 
@@ -285,7 +250,7 @@ router.put('/:employeeNumber',
         const colorHexCode = req.body.colorHexCode;
         if (!colorHexCode || colorHexCode == '') return next(new HttpError(400, 'Le champ colorHexCode est requis'));
         if (!regex.validColorHexCode.test(colorHexCode)) return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
-        if (colorHexCode == employee.colorHexCode) return next(new HttpError(400, 'La couleur ne peut pas être changée lors de la modification de l\'employé(e)'));
+        if (colorHexCode != employee.colorHexCode) return next(new HttpError(400, 'La couleur ne peut pas être changée lors de la modification de l\'employé(e)'));
 
         const hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') return next(new HttpError(400, 'Le champ hourlyRate est requis'));
@@ -407,7 +372,6 @@ router.put('/:employeeNumber',
 router.put('/',
     passport.authenticate('basic', { session: false }),
     async (req, res, next) => {
-        console.log("REQ.EMPLOYEE", req.user);
 
         const employee = req.user;
 
@@ -435,7 +399,7 @@ router.put('/',
         const colorHexCode = req.body.colorHexCode;
         if (!colorHexCode || colorHexCode == '') return next(new HttpError(400, 'Le champ colorHexCode est requis'));
         if (!regex.validColorHexCode.test(colorHexCode)) return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
-        if (colorHexCode == employee.colorHexCode) return next(new HttpError(400, 'La couleur ne peut pas être changée lors de la modification de l\'employé(e)'));
+        if (colorHexCode != employee.colorHexCode) return next(new HttpError(400, 'La couleur ne peut pas être changée lors de la modification de l\'employé(e)'));
 
         const hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') return next(new HttpError(400, 'Le champ hourlyRate est requis'));
