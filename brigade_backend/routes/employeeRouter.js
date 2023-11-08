@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport'); //PLUS TARD POUR CREATION EMPLOYEE
+const passport = require('passport');
 const crypto = require('crypto');
 const regex = require('../REGEX/REGEXbackend');
 
@@ -60,7 +60,7 @@ router.get('/:employeeNumber',
     (req, res, next) => {
         const employee = req.user;
         const employeeNumberToGet = req.params.employeeNumber;
-        
+
         if (!employee) return next(new HttpError(401, "Connexion requise"));
         if (!employee.isAdmin && employee.employeeNumber != employeeNumberToGet) return next(new HttpError(403, "Droit administrateur requis"));
 
@@ -137,7 +137,6 @@ router.post('/',
         const hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') return next(new HttpError(400, 'Le champ hourlyRate est requis'));
         if (!regex.validHourlyRate.test(hourlyRate)) return next(new HttpError(400, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
-        // hourlyRate = parseFloat(hourlyRate);
 
         const barcodeNumber = req.body.barcodeNumber;
         if (!barcodeNumber || barcodeNumber == '') return next(new HttpError(400, 'Le champ barcodeNumber est requis'));
@@ -158,13 +157,11 @@ router.post('/',
         if (role != "Gestionnaire") {
             if (!skillPoints || skillPoints == '') return next(new HttpError(400, 'Le champ skillPoints est requis'));
             if (!regex.validSkillPoints.test(skillPoints)) return next(new HttpError(400, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
-            // skillPoints = parseInt(skillPoints);
         }
 
         employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber).then(employee => {
             if (employee) throw new HttpError(400, `${employee.firstName} ${employee.lastName} est associé(e) à ce numéro d'employé`);
         }
-            // employeeNumber = parseInt(employeeNumber)
         ).catch(err => {
             next(err)
         });
@@ -173,16 +170,16 @@ router.post('/',
         if (!existingRole) return next(new HttpError(400, `Le role ${role} n'existe pas`));
 
         const assignedColorHexcode = await employeeQueries.selectAssignedColorHexcode(colorHexCode);
-        if(assignedColorHexcode) return next(new HttpError(400, `${assignedColorHexcode.firstName} ${assignedColorHexcode.lastName} est associé(e) à cette couleur`));
+        if (assignedColorHexcode) return next(new HttpError(400, `${assignedColorHexcode.firstName} ${assignedColorHexcode.lastName} est associé(e) à cette couleur`));
 
         const assignedBarcodeNumber = await employeeQueries.selectEmployeeByBarcodeNumber(barcodeNumber);
-        if (assignedBarcodeNumber) return next(new HttpError(400, `${assignedBarcodeNumber.firstName} ${assignedBarcodeNumber.lastName} est associé(e) à ce numéro de la carte)`)); 
+        if (assignedBarcodeNumber) return next(new HttpError(400, `${assignedBarcodeNumber.firstName} ${assignedBarcodeNumber.lastName} est associé(e) à ce numéro de la carte)`));
 
         const usedEmail = await employeeQueries.selectUsedEmail(email);
-        if (usedEmail) return next(new HttpError(400, `${usedEmail.firstName} ${usedEmail.lastName} est associé(e) à cette adresse courriel)`)); 
+        if (usedEmail) return next(new HttpError(400, `${usedEmail.firstName} ${usedEmail.lastName} est associé(e) à cette adresse courriel)`));
 
         const usedPhoneNumber = await employeeQueries.selectUsedPhoneNumber(phoneNumber);
-        if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`));s
+        if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`)); s
 
         const newEmployee = {
             employeeNumber: employeeNumber,
@@ -249,14 +246,11 @@ router.put('/:employeeNumber',
         const colorHexCode = req.body.colorHexCode;
         if (!colorHexCode || colorHexCode == '') return next(new HttpError(400, 'Le champ colorHexCode est requis'));
         if (!regex.validColorHexCode.test(colorHexCode)) return next(new HttpError(400, 'Le champ colorHexCode ne respecte pas les critères d\'acceptation'));
-        console.log("colorHexCode", colorHexCode);
-        console.log("employee.colorHexCode", employee.colorHexCode);
         if (colorHexCode != employee.colorHexCode) return next(new HttpError(400, 'La couleur ne peut pas être changée lors de la modification de l\'employé(e)'));
 
         const hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') return next(new HttpError(400, 'Le champ hourlyRate est requis'));
         if (!regex.validHourlyRate.test(hourlyRate)) return next(new HttpError(400, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
-        // hourlyRate = parseFloat(hourlyRate);
 
         const barcodeNumber = req.body.barcodeNumber;
         if (!barcodeNumber || barcodeNumber == '') return next(new HttpError(400, 'Le champ barcodeNumber est requis'));
@@ -279,14 +273,13 @@ router.put('/:employeeNumber',
         if (role != "Gestionnaire") {
             if (!skillPoints || skillPoints == '') return next(new HttpError(400, 'Le champ skillPoints est requis'));
             if (!regex.validSkillPoints.test(skillPoints)) return next(new HttpError(400, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
-            // skillPoints = parseInt(skillPoints);
         }
-        
+
         const password = req.body.password;
-        if(password){
+        if (password) {
             if (!regex.validPassword.test(password)) return next(new HttpError(400, 'Le mot de passe ne respecte pas les critères d\'acceptation'));
         }
-        
+
         try {
             const resultEmployee = await employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber);
 
@@ -319,11 +312,11 @@ router.put('/:employeeNumber',
                 if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`));
             }
 
-            if(!employee.isAdmin && (hourlyRate != resultEmployee.hourlyRate)) return next(new HttpError(403, 'Vous n\'avez pas l\'autorisation de modifier votre salaire. Consultez votre Gestionnaire'));
+            if (!employee.isAdmin && (hourlyRate != resultEmployee.hourlyRate)) return next(new HttpError(403, 'Vous n\'avez pas l\'autorisation de modifier votre salaire. Consultez votre Gestionnaire'));
 
-            if(!employee.isAdmin && (isAdmin != resultEmployee.isAdmin)) return next (new HttpError(403, 'Vous n\'avez pas l\'autorisation de vous donner un accès administrateur. Consultez votre Gestionnaire'));
-            
-            if(!employee.isActive && (isActive != resultEmployee.isActive)) return next (new HttpError(403, 'Vous n\'avez pas l\'autorisation de vous désactiver. Consultez votre Gestionnaire'));
+            if (!employee.isAdmin && (isAdmin != resultEmployee.isAdmin)) return next(new HttpError(403, 'Vous n\'avez pas l\'autorisation de vous donner un accès administrateur. Consultez votre Gestionnaire'));
+
+            if (!employee.isActive && (isActive != resultEmployee.isActive)) return next(new HttpError(403, 'Vous n\'avez pas l\'autorisation de vous désactiver. Consultez votre Gestionnaire'));
 
             const employeeToUpdate = {
                 employeeNumber: employeeNumber,
@@ -340,7 +333,7 @@ router.put('/:employeeNumber',
                 skillPoints: skillPoints,
             };
 
-            if(!password){
+            if (!password) {
                 const passwordSalt = "noChange";
                 const passwordHash = "noChange";
                 const updatedEmployee = await employeeQueries.updateEmployee(employeeToUpdate, passwordSalt, passwordHash);
@@ -362,13 +355,10 @@ router.put('/:employeeNumber',
                     return next(err);
                 }
             });
-        }catch (error) {
+        } catch (error) {
             return next(error);
         }
     });
-
-
-//put pour Admin
 
 router.put('/',
     passport.authenticate('basic', { session: false }),
@@ -381,7 +371,6 @@ router.put('/',
         const employeeNumber = req.body.employeeNumber;
         if (!employeeNumber || employeeNumber == '') return next(new HttpError(400, 'Le champ employeeNumber est requis'));
         if (!regex.validEmployeeNumber.test(employeeNumber)) return next(new HttpError(400, 'Le numéro d\'employé ne respecte pas les critères d\'acceptation'));
-        // employeeNumber = parseInt(employeeNumber);
 
         const firstName = req.body.firstName;
         if (!firstName || firstName == '') return next(new HttpError(400, 'Le champ firstName est requis'));
@@ -405,7 +394,6 @@ router.put('/',
         const hourlyRate = req.body.hourlyRate;
         if (!hourlyRate || hourlyRate == '') return next(new HttpError(400, 'Le champ hourlyRate est requis'));
         if (!regex.validHourlyRate.test(hourlyRate)) return next(new HttpError(400, 'Le champ hourlyRate ne respecte pas les critères d\'acceptation'));
-        // hourlyRate = parseFloat(hourlyRate);
 
         const barcodeNumber = req.body.barcodeNumber;
         if (!barcodeNumber || barcodeNumber == '') return next(new HttpError(400, 'Le champ barcodeNumber est requis'));
@@ -428,17 +416,13 @@ router.put('/',
         if (role != "Gestionnaire") {
             if (!skillPoints || skillPoints == '') return next(new HttpError(400, 'Le champ skillPoints est requis'));
             if (!regex.validSkillPoints.test(skillPoints)) return next(new HttpError(400, 'Le champ skillPoints ne respecte pas les critères d\'acceptation'));
-            // skillPoints = parseInt(skillPoints);
         }
 
         try {
             const resultEmployee = await employeeQueries.selectEmployeeByEmployeeNumber(employeeNumber);
 
-            if (!resultEmployee) {
-                return next(new HttpError(404, 'Employé(e) introuvable'));
-            }
+            if (!resultEmployee) return next(new HttpError(404, 'Employé(e) introuvable'));
 
-            //verif combinaison 
             if (employeeNumber != resultEmployee.employeeNumber || firstName != resultEmployee.firstName || lastName != resultEmployee.lastName) return next(new HttpError(409, `employeeNumber, firstName et/ou lastName ne correspond(ent) pas à l'employé de la BD`));
 
             if (firstName != resultEmployee.firstName) return next(new HttpError(409, 'Le prénom de l\'employé ne peut pas être modifié'));
