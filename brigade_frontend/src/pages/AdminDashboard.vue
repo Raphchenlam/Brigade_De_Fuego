@@ -231,9 +231,6 @@ export default {
             {
                 console.error(err);
             })
-
-            
-            this.currentPendingLeaves = 8;
         },
         calculateRequiredSkillPoints(shiftName)
         {
