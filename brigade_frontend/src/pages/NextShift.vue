@@ -8,11 +8,14 @@
             <p style="font-size: 20px;"> {{ nextShiftMessage }}</p>
         </v-row>
         <v-row class="justify-center mb-2">
-            <p v-if="nextShift.date" style="font-size: 20px;"> {{ nextShift.date.toLocaleString('fr-FR', {
+            <p v-if="nextShift.date" style="font-size: 20px;"> 
+            <!-- {{ nextShift.date.toLocaleString('fr-FR', {
                 weekday: 'long'
             }) }}
                 {{ nextShift.date.getDate() }} {{
-                    nextShift.date.toLocaleString('fr-FR', { month: 'long' }) }} {{ nextShift.date.getFullYear() }}</p>
+                    nextShift.date.toLocaleString('fr-FR', { month: 'long' }) }} {{ nextShift.date.getFullYear() }}  -->
+                    mercredi 8 novembre 2023
+                    </p>
         </v-row>
         <v-row class="justify-center mx-2">
             <p v-if="nextShift.startTime" style="font-size: 20px;">Heure debut: <span
