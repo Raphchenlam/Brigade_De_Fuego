@@ -1,33 +1,26 @@
 import session from '../sessions/OperationSession'
 
-class ServiceError extends Error
-{
-    constructor(status, message)
-    {
+class ServiceError extends Error {
+    constructor(status, message) {
         super(message);
         this.status = status;
     }
 }
 
-async function getResponseMessage(response)
-{
-    try
-    {
+async function getResponseMessage(response) {
+    try {
         const obj = await response.json();
         return obj.message ? obj.message : "Erreur inconnue";
-    } catch (err)
-    {
+    } catch (err) {
         return "" + err;
     }
 }
 
-async function createServiceError(response)
-{
+async function createServiceError(response) {
     return new ServiceError(response.status, await getResponseMessage(response));
 }
 
-const convertToClient = jsonClient =>
-{
+const convertToClient = jsonClient => {
     return {
         id: jsonClient.id,
         firstName: jsonClient.firstName,
@@ -39,8 +32,7 @@ const convertToClient = jsonClient =>
     };
 };
 
-export async function getClientById(id)
-{
+export async function getClientById(id) {
     const response = await fetch(`/api/client/${id}`, {
         method: "GET",
         headers: {
@@ -48,18 +40,15 @@ export async function getClientById(id)
             ...session.getAuthHeaders()
         }
     });
-    if (response.ok)
-    {
+    if (response.ok) {
         return await response.json();
-    } else
-    {
-        console.log(JSON.stringify(response));
+    } else {
+        console.info(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
 
-export async function getClientList()
-{
+export async function getClientList() {
     const response = await fetch(`/api/client`, {
         method: "GET",
         headers: {
@@ -68,34 +57,47 @@ export async function getClientList()
         }
     });
 
-    if (response.ok)
-    {
+    if (response.ok) {
         return await response.json();
-    } else
-    {
-        console.log(JSON.stringify(response));
+    } else {
+        console.info(JSON.stringify(response));
         throw await createServiceError(response);
     }
 
 }
 
-export async function createClient(client)
-{
+export async function createClient(client) {
     const response = await fetch(`/api/client`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-             ...session.getAuthHeaders()
+            ...session.getAuthHeaders()
         },
         body: JSON.stringify(client)
     });
 
-    if (response.ok)
-    {
+    if (response.ok) {
         return convertToClient(await response.json());
-    } else
-    {
-        console.log(JSON.stringify(response));
+    } else {
+        console.info(JSON.stringify(response));
+        throw await createServiceError(response);
+    }
+}
+
+export async function updateClient(client) {
+    const response = await fetch(`/api/client`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+        body: JSON.stringify(client)
+    });
+
+    if (response.ok) {
+        return convertToClient(await response.json());
+    } else {
+        console.info(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }

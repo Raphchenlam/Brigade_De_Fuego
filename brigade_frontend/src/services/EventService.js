@@ -58,6 +58,19 @@ export async function fetchEventByName(eventName) {
   }
 }
 
+export async function fetchEventByDateAndShiftName(date, shiftName) {
+  const response = await fetch(`/api/event/${date}/${shiftName}`);
+
+  if (response.ok) {
+    if (response.status == 206) {
+      return undefined
+    } else {
+      return convertToEvent(await response.json());
+    }
+  } else {
+    throw await createServiceError(response);
+  }
+}
 
 export async function fetchAllEventType() {
 
@@ -76,7 +89,7 @@ export async function fetchAllEventType() {
       throw await createServiceError(response);
     }
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 
 };

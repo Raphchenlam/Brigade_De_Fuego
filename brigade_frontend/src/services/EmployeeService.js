@@ -1,4 +1,5 @@
 import session from '../sessions/UserSession'
+import OpSession from '../sessions/OperationSession'
 
 class ServiceError extends Error {
     constructor(status, message) {
@@ -79,6 +80,21 @@ export async function getEmployeeByBarcodeNumber(barcodeNumber) {
         throw await createServiceError(response);
     }
 }
+export async function getEmployeeByEmail(email) {
+    const response = await fetch(`/api/employee/email/${email}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+    });
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        throw await createServiceError(response);
+    }
+}
 
 export async function getAllRoles() {
     const response = await fetch(`/api/employee/role`, {
@@ -106,13 +122,10 @@ export async function createEmployee(employee) {
         },
         body: JSON.stringify(employee)
     });
-
-    console.log('FETCH RESPONSE', response);
-
-    if (response.ok) {
+    if (response.ok)
+    {
         return convertToEmployee(await response.json());
     } else {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
@@ -136,7 +149,7 @@ const convertToEmployee = jsonEmployee => {
     };
 };
 
-export async function updateEmployeeByAdmin(employee){
+export async function updateEmployeeByAdmin(employee) {
     const response = await fetch(`/api/employee`, {
         method: "PUT",
         headers: {
@@ -149,12 +162,60 @@ export async function updateEmployeeByAdmin(employee){
     if (response.ok) {
         return convertToEmployee(await response.json());
     } else {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
 
-export async function updateEmployeeByEmployeeProfile(employee, employeeNumber){
+export async function updateEmployeeColor(employeeNumber, employeeColor) {
+    const response = await fetch(`/api/employee/employeeColor/${employeeNumber}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            //...session.getAuthHeaders(),
+        },
+        body: JSON.stringify({ employeeColor: employeeColor }),
+    });
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw await createServiceError(response);
+    }
+}
+export async function resetPassword(employeeNumber) {
+    const response = await fetch(`/api/employee/lostpassword/${employeeNumber}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if (response.ok) {
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw await createServiceError(response);
+    }
+}
+
+export async function changeNewEmployeePassword(employeeNumber, newPassword){
+    const response = await fetch(`/api/employee/newPassword/${employeeNumber}`, {
+        method:"PUT",
+        headers: {
+            "Content-Type": "application/json",
+            ...session.getAuthHeaders()
+        },
+        body: JSON.stringify({ password: newPassword})
+    });
+
+    if(response.ok){
+        const respJson = await response.json();
+        return respJson;
+    } else {
+        throw await createServiceError(response);
+    }
+}
+
+export async function updateEmployeeByEmployeeProfile(employee, employeeNumber) {
     const response = await fetch(`/api/employee/${employeeNumber}`, {
         method: "PUT",
         headers: {
@@ -167,7 +228,7 @@ export async function updateEmployeeByEmployeeProfile(employee, employeeNumber){
     if (response.ok) {
         return convertToEmployee(await response.json());
     } else {
-        console.log(JSON.stringify(response));
         throw await createServiceError(response);
     }
 }
+

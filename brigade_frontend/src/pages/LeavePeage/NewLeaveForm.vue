@@ -122,7 +122,7 @@ export default {
                 });
             }).catch(err =>
             {
-                console.log(err);
+                console.error(err);
             });
         },
         createNewLeave()
@@ -137,7 +137,6 @@ export default {
 
             createLeave(newLeave).then(result =>
             {
-                console.log("result", result)
                 this.dialogOKLeave = true;
                 this.loadLeaves();
                 setTimeout(this.closeDialogs, 2000)
@@ -146,20 +145,17 @@ export default {
                 console.error(err);
             });
         },
-        isMinimumTwoWeeks(startDate)
+        isMinimumOneWeek(startDate)
         {
             const dateStr = startDate;
             var dateParts = dateStr.split('-');
             var date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
             var today = new Date();
             var futureDate = new Date(today);
-            futureDate.setDate(today.getDate() + 14);
+            futureDate.setDate(today.getDate() + 7);
             var dayOfWeek = futureDate.getDay();
             var daysToAdd = 1 - dayOfWeek;
             futureDate.setDate(futureDate.getDate() + daysToAdd);
-            console.log("date", date);
-            console.log("today", today);
-            console.log("futureDate", futureDate);
             if (date.getFullYear() < futureDate.getFullYear())
             {
                 return true;
@@ -211,7 +207,7 @@ export default {
     watch: {
         startDate()
         {
-            this.startDateValid = !this.isMinimumTwoWeeks(this.startDate);
+            this.startDateValid = !this.isMinimumOneWeek(this.startDate);
             this.endDateValid = !(this.endDate < this.startDate);
         },
         endDate()

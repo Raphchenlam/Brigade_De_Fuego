@@ -2,8 +2,8 @@
     <v-sheet class="h-15">
         <v-card class="mx-10 h-75">
             <v-row class="mb-0">
-                <v-text-field @input="" v-model="search" hide-details placeholder="Search name..."
-                    class="ma-2" clearable @click:clear="clearSearchInput"></v-text-field>
+                <v-text-field @input="" v-model="search" hide-details placeholder="Rechercher un client..." class="ma-2"
+                    clearable @click:clear="clearSearchInput"></v-text-field>
                 <v-dialog v-model="dialogNewClient" width="100%">
                     <template v-slot:activator="{ props }">
                         <div class="ma-2 text-center">
@@ -12,7 +12,7 @@
                     </template>
                     <v-card>
                         <v-card-title>
-                            Creer un nouveau client
+                            Créer un nouveau client
                         </v-card-title>
                         <NewClientForm></NewClientForm>
                     </v-card>
@@ -26,17 +26,15 @@
     </v-sheet>
 </template>
 
-
-
 <script>
 import { VDataTable } from 'vuetify/labs/VDataTable'
-import NewClientForm from "../clientpage/NewClientForm.vue"
+import NewClientForm from "../ClientPage/NewClientForm.vue"
 import BlackButton from '../../components/Reusable/BlackButton.vue';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { getClientList } from '../../services/ClientService';
 
 export default {
-    inject: ['loadClientInformations'],
+    inject: ['loadClientInformations', 'refresh'],
     components: {
         VDataTable,
         NewClientForm,
@@ -59,7 +57,7 @@ export default {
         };
     },
     methods: {
-        clearSearchInput(){
+        clearSearchInput() {
             this.search = "";
         },
         loadClients(clientAdded) {
@@ -102,14 +100,17 @@ export default {
         },
     },
     watch: {
-        selected() {
-            if (this.selected.length !== 0) {
-                const isBlacklisted = this.clients.find(client => client.id == this.selected[0]).is_blacklisted;
-                this.loadClientInformations([this.selected[0], isBlacklisted]);
-            } else if (this.selected.length === 0) {
-                this.loadClientInformations([]);
+        'selected': {
+            handler: function () {
+                if (this.selected.length !== 0) {
+                    const clientInfos = this.clients.find(client => client.id == this.selected[0]);
+                    this.loadClientInformations([this.selected[0], clientInfos.is_blacklisted, clientInfos.first_name]);
+                } else if (this.selected.length === 0) {
+                    this.loadClientInformations([]);
 
-            }
+                }
+            },
+            deep: true
         },
         clients() {
             this.filterClients();
@@ -117,6 +118,9 @@ export default {
         search() {
             this.filterClients();
         },
+        refresh(){
+            this.loadClients();
+        }
     },
     mounted() {
         this.loadClients();

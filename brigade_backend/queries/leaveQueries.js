@@ -1,35 +1,7 @@
 const pool = require('./DBPool');
-/*
-const selectAllLeaves = async () =>
-{
-    const result = await pool.query(
-        `SELECT leave.*, employee.first_name, employee.last_name
-        FROM leave
-        JOIN employee ON employee.employee_number = leave.employee_number
-        ORDER BY leave.start_date`
-    );
-
-    return result.rows.map(row =>
-    {
-        const leave = {
-            id: row.id,
-            employeeNumber: row.employee_number,
-            employeeName: row.first_name + " " + row.last_name,
-            startDate: row.start_date,
-            endDate: row.end_date,
-            category: row.category,
-            reason: row.reason,
-            status: row.status
-        };
-        return leave;
-    });
-};
-exports.selectAllLeaves = selectAllLeaves;
-*/
 
 const selectAllFilteredLeaves = async (checkboxes) =>
 {
-    console.log("checkboxes recu", checkboxes)
     const today = new Date().toISOString();
 
     let query = `SELECT leave.*, employee.first_name, employee.last_name
@@ -53,10 +25,10 @@ const selectAllFilteredLeaves = async (checkboxes) =>
             // Aucune condition WHERE nécessaire si les deux cases sont cochées
         } else if (checkboxes.coming)
         {
-            query += ` AND leave.start_date >= CURRENT_DATE`;
+            query += ` AND (leave.start_date >= CURRENT_DATE OR leave.end_date >= CURRENT_DATE)`;
         } else if (checkboxes.passed)
         {
-            query += ` AND leave.start_date <= CURRENT_DATE`;
+            query += ` AND (leave.start_date < CURRENT_DATE AND leave.end_date <= CURRENT_DATE)`;
         }
     } else
     {
@@ -65,16 +37,15 @@ const selectAllFilteredLeaves = async (checkboxes) =>
             // Aucune condition WHERE nécessaire si les deux cases sont cochées
         } else if (checkboxes.coming)
         {
-            query += ` WHERE leave.start_date >= CURRENT_DATE`;
+            query += ` WHERE (leave.start_date >= CURRENT_DATE OR leave.end_date >= CURRENT_DATE)`;
         } else if (checkboxes.passed)
         {
-            query += ` WHERE leave.start_date <= CURRENT_DATE`;
+            query += ` WHERE (leave.start_date < CURRENT_DATE AND leave.end_date <= CURRENT_DATE)`;
         }
     }
 
     query += ` ORDER BY leave.start_date`;
 
-    console.log("query", query)
     let result;
 
     result = await pool.query(query);
@@ -102,11 +73,10 @@ const selectAllFilteredLeaves = async (checkboxes) =>
         };
         return leave;
     });
-    resultFinal.push({nbPending: parseInt(nbPending)});
+    resultFinal.push({ nbPending: parseInt(nbPending) });
     return resultFinal;
 };
 exports.selectAllFilteredLeaves = selectAllFilteredLeaves;
-
 
 const selectLeavesByEmployeeNumber = async (employeeNumber) =>
 {
@@ -115,7 +85,8 @@ const selectLeavesByEmployeeNumber = async (employeeNumber) =>
         FROM leave
         JOIN employee ON employee.employee_number = leave.employee_number
         WHERE leave.employee_number = $1
-        AND leave.start_date >= CURRENT_DATE`,
+        AND (leave.start_date >= CURRENT_DATE OR leave.end_date >= CURRENT_DATE)
+        ORDER BY leave.start_date`,
         [employeeNumber]
     );
 
@@ -136,6 +107,97 @@ const selectLeavesByEmployeeNumber = async (employeeNumber) =>
 };
 exports.selectLeavesByEmployeeNumber = selectLeavesByEmployeeNumber;
 
+const selectApprovedLeavesByEmployeeNumberAndDate = async (employeeNumber, date) =>
+{
+    const result = await pool.query(
+        `SELECT *
+        FROM leave
+        WHERE leave.employee_number = $1
+        AND leave.start_date <= $2
+        AND leave.end_date >= $2
+        AND status = 'Approved'`,
+        [employeeNumber, date]
+    );
+
+    const row = result.rows[0];
+
+    if (!row) return [];
+
+    return result.rows.map(row =>
+    {
+        const leave = {
+            id: row.id,
+            employeeNumber: row.employee_number,
+            startDate: row.start_date,
+            endDate: row.end_date,
+            category: row.category,
+            reason: row.reason,
+            status: row.status
+        };
+        return leave;
+    });
+
+};
+exports.selectApprovedLeavesByEmployeeNumberAndDate = selectApprovedLeavesByEmployeeNumberAndDate;
+
+const selectCurrentLeaveByEmployeeNumber = async (employeeNumber) =>
+{
+    const result = await pool.query(
+        `SELECT * FROM leave
+        WHERE employee_number = $1
+        AND start_date <= CURRENT_DATE
+        AND end_date >= CURRENT_DATE
+        AND status = 'Approved'
+        ORDER BY start_date
+        LIMIT 1`,
+        [employeeNumber]
+    );
+    const row = result.rows[0];
+    if (row)
+    {
+        const leave = {
+            id: row.id,
+            employeeNumber: row.employee_number,
+            startDate: row.start_date,
+            endDate: row.end_date,
+            category: row.category,
+            reason: row.reason,
+            status: row.status
+        };
+        return leave;
+    }
+    return undefined
+
+};
+exports.selectCurrentLeaveByEmployeeNumber = selectCurrentLeaveByEmployeeNumber;
+
+const selectLeaveByID = async (leaveID) =>
+{
+    const result = await pool.query(
+        `SELECT *
+        FROM leave
+        WHERE id = $1`,
+        [leaveID]
+    );
+    const row = result.rows[0];
+    if (row)
+    {
+        const leave = {
+            id: row.id,
+            employeeNumber: row.employee_number,
+            startDate: row.start_date,
+            endDate: row.end_date,
+            category: row.category,
+            reason: row.reason,
+            status: row.status
+        };
+        return leave;
+    }
+    return undefined
+
+};
+exports.selectLeaveByID = selectLeaveByID;
+
 const selectAllLeavesCategory = async () =>
 {
     const result = await pool.query(
@@ -154,9 +216,20 @@ const selectAllLeavesCategory = async () =>
 };
 exports.selectAllLeavesCategory = selectAllLeavesCategory;
 
+const selectAllCurrentLeaves = async () =>
+{
+    const resultNbPending = await pool.query(`SELECT COUNT(*) AS nb_pending
+    FROM leave
+    JOIN employee ON employee.employee_number = leave.employee_number
+    WHERE leave.status = 'Pending' OR leave.status = 'PendingModified'`)
 
+    nbPending = resultNbPending.rows[0].nb_pending;
+    return parseInt(nbPending);
+};
+exports.selectAllCurrentLeaves = selectAllCurrentLeaves;
 
-const insertLeave = async (newLeave) => {
+const insertLeave = async (newLeave) =>
+{
     const result = await pool.query(
         `INSERT INTO leave
         (employee_number, "start_date", end_date, category, reason, "status")
@@ -166,7 +239,8 @@ const insertLeave = async (newLeave) => {
 
     const row = result.rows[0];
 
-    if (row) {
+    if (row)
+    {
 
         const reservation = {
             employeeNumber: row.employee_number,
@@ -183,3 +257,21 @@ const insertLeave = async (newLeave) => {
     throw new Error("L'insertion a échoué pour une raison inconnue");
 };
 exports.insertLeave = insertLeave;
+
+const updateLeave = async (leave) =>
+{
+    const result = await pool.query(
+        `UPDATE leave
+	        SET start_date=$2, end_date=$3, category=$4, reason=$5, status=$6 
+	        WHERE id = $1
+            RETURNING *`,
+        [leave.id, leave.startDate, leave.endDate, leave.category, leave.reason, leave.status]
+    );
+
+    if (result.rowCount === 0)
+    {
+        return undefined;
+    }
+    return result.rows[0];
+};
+exports.updateLeave = updateLeave;

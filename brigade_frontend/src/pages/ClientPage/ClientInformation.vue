@@ -8,7 +8,7 @@
                             <h1 class="mt-5 ml-10">{{ shortenedFullName }}</h1>
                         </v-col>
                         <v-col>
-                            <h1 class="mt-5 ml-10"> #: <strong>{{ client.id }}</strong></h1>
+                            <h1 class="mt-5 ml-10"> # <strong>{{ client.id }}</strong></h1>
                         </v-col>
                         <EditBlackButton class="ma-2" v-bind="props"></EditBlackButton>
                     </v-row>
@@ -16,7 +16,7 @@
                 </template>
                 <v-card>
                     <v-card-title>
-                        Editer les informations du client
+                        Éditer les informations du client
                     </v-card-title>
                     <EditClientForm :clientId="client.id"></EditClientForm>
                 </v-card>
@@ -49,6 +49,7 @@ import EditClientForm from './EditClientForm.vue';
 import { getClientById } from '../../services/ClientService';
 
 export default {
+    inject: ['refresh'],
     props: {
         clientId: Number
     },
@@ -80,11 +81,14 @@ export default {
             }
         },
         closeEditClientDialog() {
-            this.dialogEditClient = false;
+            setTimeout(() => this.dialogEditClient = false, 2000);
         }
     },
     watch: {
         clientId() {
+            this.loadClientById(this.clientId);
+        },
+        refresh(){
             this.loadClientById(this.clientId);
         }
     },

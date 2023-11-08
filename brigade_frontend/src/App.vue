@@ -28,11 +28,8 @@ export default {
       formatPhoneNumber: this.formatPhoneNumber,
       spliceDate: this.spliceDate,
       isUserAuthorized: this.isUserAuthorized,
-      loadReservationInformations: this.loadReservationInformations,
-      // selectedReservationId: computed(()=>this.selectedReservationId),
-      test: this.test,
-      toLocale: this.toLocale
-
+      toLocale: this.toLocale,
+      isBeforeToday: this.isBeforeToday
     }
   },
   components: {
@@ -43,13 +40,10 @@ export default {
     return {
       operationSession: operationSession,
       userSession: userSession,
-      // selectedReservationId: null
     }
   },
   methods: {
-    // loadReservationInformations(receivedReservationId) {
-    //   this.selectedReservationId = receivedReservationId;
-    // },
+
     capitalizeWords(inputString) {
       if (inputString) {
         const words = inputString
@@ -109,51 +103,15 @@ export default {
         }
       }
     },
-    test() {
-      var testStr;
-      var result;
-
-      testStr = new Date().toISOString();
-      console.log("toISOString() : " + testStr);
-      result = this.toLocale(testStr);
-      console.log(result);
-      console.log(" ");
-
-      testStr = new Date().toLocaleString();
-      console.log("toLocaleString() : " + testStr);
-      result = this.toLocale(testStr);
-      console.log(result);
-      console.log(" ");
-
-      testStr = new Date().toLocaleDateString();
-      console.log("toLocaleDateString() : " + testStr);
-      result = this.toLocale(testStr);
-      console.log(result);
-      console.log(" ");
-
-      testStr = new Date().toLocaleTimeString();
-      console.log("toLocaleTimeString() : " + testStr);
-      result = this.toLocale(testStr);
-      console.log(result);
-    },
     toLocale(str) {
-      // console.clear();
-
       const dateAndTimeString = this.replaceAndSplitDateFromTime(str);
-      const dateAndTimeObject = this.dateOrTimeObjectifier(dateAndTimeString);
-
-      
-
-
-
-      return {
-        date: dateAndTimeObject.dateObject,
-        time: dateAndTimeObject.timeObject
-      }
-
+      return this.dateOrTimeObjectifier(dateAndTimeString);
     },
     replaceAndSplitDateFromTime(str) {
       if (str) {
+        const indexOfComma = str.indexOf(",");
+        if (indexOfComma != -1) str = str.replace(/,/g, "");
+
         const indexOfSlash = str.indexOf("/");
         if (indexOfSlash != -1) str = str.replace(/\//g, "-");
 
@@ -190,33 +148,41 @@ export default {
         if (!!dateIsPresent) {
           dateParts = strObject.dateString.split("-");
 
-          const year = (dateParts[0] > 31) ? dateParts[0] : dateParts[2];
-          const month = dateParts[1];
-          const day = (dateParts[0] > 31) ? dateParts[2] : dateParts[0];
-          const fullDate = year + "-" + month + "-" + day
-
-          var date = {
-            year: parseInt(year),
-            month: parseInt(month),
-            day: parseInt(day),
-            fullDate: fullDate,
-            weekNumber: this.getWeekNumber(fullDate)
-          }
+          var year = (dateParts[0] > 31) ? dateParts[0] : dateParts[2];
+          var month = dateParts[1];
+          var day = (dateParts[0] > 31) ? dateParts[2] : dateParts[0];
+          var fullDate = year + "-" + month + "-" + day
         }
 
-        if (!!timeIsPresent) {
-          timeParts = strObject.timeString.split(":");
-          var time = {
-            hours: parseInt(timeParts[0]),
-            minutes: parseInt(timeParts[1]),
-            secondes: parseInt(timeParts[2]),
-            fullTime: strObject.timeString
-          }
+        const date = {
+          year: (!!dateIsPresent) ? parseInt(year) : undefined,
+          month: (!!dateIsPresent) ? parseInt(month) : undefined,
+          day: (!!dateIsPresent) ? parseInt(day) : undefined,
+          fullDate: (!!dateIsPresent) ? fullDate : undefined,
+          weekNumber: (!!dateIsPresent) ? this.getWeekNumber(fullDate) : undefined
+        }
+
+        if (!!timeIsPresent) timeParts = strObject.timeString.split(":");
+
+        const time = {
+          hours: (!!timeIsPresent) ? parseInt(timeParts[0]) : undefined,
+          minutes: (!!timeIsPresent) ? parseInt(timeParts[1]) : undefined,
+          secondes: (!!timeIsPresent) ? parseInt(timeParts[2]) : undefined,
+          fullTime: (!!timeIsPresent) ? strObject.timeString : undefined
         }
 
         return {
-          dateObject: date,
-          timeObject: time
+          year: date.year,
+          month: date.month,
+          day: date.day,
+          weekNumber: date.weekNumber,
+          fullDate: date.fullDate,
+          fullTime: time.fullTime,
+          hours: time.hours,
+          minutes: time.minutes,
+          secondes: time.secondes,
+          date: date,
+          time: time,
         }
       }
     },
@@ -230,7 +196,32 @@ export default {
 
       return weekNumber;
     },
+    isBeforeToday(fullDate) {
+      const dateToVerify = this.toLocale(fullDate)
+      var today = this.toLocale(new Date().toLocaleString("en-GB"));
 
+
+      if (dateToVerify.date.year < today.date.year) {
+        return true;
+      }
+      else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month < today.date.month) {
+        return true;
+      }
+      else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month == today.date.month) {
+        if (dateToVerify.date.day < today.date.day) {
+          return true;
+        }
+        else if (dateToVerify.date.day == today.date.day) {
+          if (dateToVerify.time.hours < today.time.hours) {
+            return true;
+          }
+          else if (dateToVerify.time.hours == today.time.hours && dateToVerify.date.minutes <= today.date.minutes) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
     spliceDate(fullDate) {
       const date = fullDate.split('T').slice(0)[0];
       const fulltime = fullDate.split('T').slice(0)[1];
@@ -242,7 +233,6 @@ export default {
         minute: parseInt(fulltime.split(':').slice(0)[1])
       }
     },
-
     isUserAuthorized() {
       return ((this.userSession.employee && this.userSession.employee.isActive) && (this.userSession.employee.isAdmin || this.userSession.employee.isSuperAdmin)
       );

@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const HttpError = require('./HttpError');
+const HttpError = require('./HTTPError');
 
 const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
@@ -39,7 +39,8 @@ app.use('/leave', leaveRouter);
 app.use('/reservation', reservationRouter);
 app.use('/schedule', scheduleRouter);
 app.use('/table', tableRouter);
-app.use('/assignation', assignationRouter)
+app.use('/assignation', assignationRouter);
+app.use('/punch', punchRouter);
 
 class BasicStrategyModified extends BasicStrategy {
   constructor(options, verify) {
@@ -51,10 +52,11 @@ class BasicStrategyModified extends BasicStrategy {
   }
 };
 
-passport.use(new BasicStrategyModified((employeeNumber, password, cb) => {
+passport.use(new BasicStrategyModified((employeeNumber, password, cb) =>
+{
   if (employeeNumber.length == 16) {
     employeeQueries.selectEmployeeByBarcodeNumber(employeeNumber).then(login => {
-      if (!login || !login.isAdmin || !login.isSuperAdmin) {
+      if (!login || !login.isAdmin) {
         return cb(null, false);
       }
       return cb(null, login);

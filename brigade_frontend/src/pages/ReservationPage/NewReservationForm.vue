@@ -16,7 +16,7 @@
                         <v-text-field type="datetime-local" v-model="reservationFullDate" class="ma-2 pre-wrap h-25 w-25"
                             label="Date de la reservation" :rules="[rules.required, rules.dateIsValid]">
                         </v-text-field>
-                        <v-text-field v-model="reservation.peopleCount" width="10px" type="number" :min="1" :max="30"
+                        <v-text-field v-model="reservation.peopleCount" width="10px" type="number" :min="1" :max="12"
                             class="shrink ma-2 h-25 w-25" label="Nombre de personnes"
                             :rules="[rules.required, rules.reservationMaximum, rules.reservationMinimum]">
                         </v-text-field>
@@ -92,7 +92,7 @@ import ClientList from '../ClientPage/ClientList.vue';
 import { createReservation } from '../../services/ReservationService'
 
 export default {
-    inject: ['closeNewReservationDialog', 'spliceDate', 'refreshWithNewreservation', 'toLocale'],
+    inject: ['closeNewReservationDialog', 'spliceDate', 'refreshWithNewreservation', 'toLocale', 'isBeforeToday'],
     components: {
         DarkRedButton,
         ClientList,
@@ -102,6 +102,7 @@ export default {
         return {
             dateValid: false,
             clientIdValid: false,
+            clientFirstName: null,
             takenByNumberValid: false,
             dialogConfirmReservation: false,
             dialogOKReservation: false,
@@ -124,7 +125,7 @@ export default {
                 required: value => !!value || "Le champ est requis",
                 dateIsValid: () => this.dateValid || "Date non valide\n\t- Ne doit pas etre avant la date d'aujourd'hui\n\t- Ni avant 11h ou apres 23h",
                 reservationMinimum: value => (value >= 1) || "Le nombre de personnes minimum est de 1 pour une seule réservation.",
-                reservationMaximum: value => (value <= 30) || "Le nombre de personnes maximum est de 30 pour une seule réservation.",
+                reservationMaximum: value => (value <= 12) || "Le nombre de personnes maximum est de 12 pour une seule réservation.",
                 fieldLength255: value => ((value) ? !(value.length > 254) : true) || "255 caractères maximum.",
             },
             formValid: true
@@ -154,8 +155,10 @@ export default {
                 );
         },
         loadClientInformations(clientInformations) {
+            
             this.selectedClientId = clientInformations[0];
             this.selectedClientIsBlacklisted = clientInformations[1];
+            this.clientFirstName = clientInformations[2];
         },
         submitNewReservation() {
             this.dialogOKReservation = false;
@@ -170,7 +173,16 @@ export default {
                 if (result) {
                     this.dialogOKReservation = true;
                     if (this.dialogOKReservation) {
-                        this.refreshWithNewreservation([result.id]);
+
+                        const startTimeObj = this.toLocale(this.reservation.startTime);
+                        var newReservationShift;
+                        if (startTimeObj.time.hours <= 15){
+                            newReservationShift = "Midi";
+                        }else{
+                            newReservationShift = "Soir";
+                        }
+
+                        this.refreshWithNewreservation([ result.id, this.reservationFullDate, this.clientFirstName, newReservationShift ]);
                     }
                     setTimeout(this.closeAllDialog, 2000);
                 }
@@ -180,31 +192,7 @@ export default {
                 this.dialogConfirmReservation = false;
             });
         },
-        isBeforeToday(fullDate) {
-            const dateToVerify = this.toLocale(fullDate)
-            var today = this.toLocale(new Date().toLocaleString());
 
-            if (dateToVerify.date.year < today.date.year) {
-                return true;
-            }
-            else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month < today.date.month) {
-                return true;
-            }
-            else if (dateToVerify.date.year == today.date.year && dateToVerify.date.month == today.date.month) {
-                if (dateToVerify.date.day < today.date.day) {
-                    return true;
-                }
-                else if (dateToVerify.date.day == today.date.day) {
-                    if (dateToVerify.time.hours < today.time.hours) {
-                        return true;
-                    }
-                    else if (dateToVerify.time.hours == today.time.hours && dateToVerify.date.minutes <= today.date.minutes) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
     },
     watch: {
         reservationFullDate() {
@@ -258,7 +246,7 @@ export default {
     computed: {
         createButtonDisabled() {
             var peopleCountValid = true;
-            if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 30) {
+            if (this.reservation.peopleCount < 1 || this.reservation.peopleCount > 12) {
                 peopleCountValid = false;
             }
 
@@ -274,7 +262,7 @@ export default {
         }
     },
     mounted() {
-        const today = this.toLocale(new Date().toLocaleString());
+        const today = this.toLocale(new Date().toLocaleString("en-GB"));
         today.time.minutes += 5;
 
         if (today.time.minutes >= 60) today.time.minutes -= 60, today.time.hours += 1;
@@ -289,7 +277,7 @@ export default {
 
         today.time.fullTime = hoursStr + ":" + minutesStr + ":" + secondesStr;
 
-        this.reservationFullDate = today.date.fullDate + "T" + today.time.fullTime;
+        this.reservationFullDate = today.date.fullDate + "T" + hoursStr + ":" + minutesStr;
 
     }
 }
@@ -304,6 +292,10 @@ export default {
     text-align: center;
     width: 80%;
     max-width: 80rem;
+}
+
+.pre-wrap {
+    white-space: pre-wrap;
 }
 
 .error-message {

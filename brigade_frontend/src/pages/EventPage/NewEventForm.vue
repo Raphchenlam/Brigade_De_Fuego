@@ -33,7 +33,7 @@
 </template>
 <script>
 import ResetButton from '../../components/Reusable/ResetButton.vue';
-import DarkRedButton from '../../components/Reusable/darkredbutton.vue';
+import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import { fetchAllEventType } from '../../services/EventService';
 import NewEventConfirmationForm from './NewEventConfirmationForm.vue';
 
@@ -77,7 +77,7 @@ export default {
             } else if (this.event.impact >= 150 && this.event.impact < 200) {
                 return "Wow, c'est trés occupé (+++)"
             } else if (this.event.impact > 125 && this.event.impact < 150) {
-                return "Intéresant, c'est occupé (++)"
+                return "Intéressant, c'est occupé (++)"
             } else if (this.event.impact > 101 && this.event.impact < 125) {
                 return "Un peu plus qu'à l'habitude (+)"
             } else if (this.event.impact >= 99 && this.event.impact <= 101) {
@@ -85,7 +85,7 @@ export default {
             } else if (this.event.impact > 75 && this.event.impact < 99) {
                 return "Plus tranquille qu'à l'habitude (-)"
             } else if (this.event.impact >= 50 && this.event.impact < 75) {
-                return "Trés tranquille (--)"
+                return "Très tranquille (--)"
             } else if (this.event.impact > 0 && this.event.impact < 50) {
                 return "Super super tranquille (---)"
             } else if (this.event.impact == 0) {

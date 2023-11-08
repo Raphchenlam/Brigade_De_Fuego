@@ -134,7 +134,7 @@ import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
 import {
     validEmployeeNumber, validName, validPhoneNumber, validEmail, validRole, validColorHexCode,
     validHourlyRate, validBarcodeNumber, validSkillPoints, validPassword
-} from '../../../../REGEX/REGEX_frontend';
+} from '../../../REGEX/REGEXfrontend';
 import userSession from "../../sessions/UserSession"
 
 export default {
@@ -220,7 +220,6 @@ export default {
                 })
             }
             else {
-                console.log("RESET ICI")
                 this.updatingEmployee = {};
             }
         },
@@ -288,7 +287,6 @@ export default {
     },
     watch: {
         selectedRole() {
-            console.log("ROLE", this.updatingEmployee.role);
             this.updatingEmployee.role = this.selectedRole;
             if (this.updatingEmployee.role == "Gestionnaire") {
                 this.updatingEmployee.skillPoints = null;

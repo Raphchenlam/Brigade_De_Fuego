@@ -2,7 +2,7 @@
     <v-sheet class="pl-10 py-5">
         <v-card height="600px">
             <v-row class="mb-0">
-                <v-text-field v-model="search" hide-details placeholder="Nom a rechercher..." class="ma-2"></v-text-field>
+                <v-text-field v-model="search" hide-details placeholder="Rechercher un employé..." class="ma-2"></v-text-field>
                 <v-dialog v-model="dialogNewEmployee" width="50%" persistent>
                     <template v-slot:activator="{ props }">
                         <div v-if="$route.fullPath == '/espace/employee'" class="ma-2 text-center">
@@ -62,7 +62,6 @@ export default {
     methods: {
         filterEmployeeList()
         {
-            console.log("ICI")
             this.filteredEmployeeList = [];
             this.employeeList.forEach(employee =>
             {
@@ -85,10 +84,11 @@ export default {
             this.filteredEmployeeList = [];
             getAllEmployees().then(allEmployees =>
             {
-                console.log("allEmployees",allEmployees)
                 allEmployees.forEach(employee =>
                 {
-                    if ((this.$route.fullPath.split('/').slice(1)[1] == 'schedule' && employee.isActive) || (this.$route.fullPath.split('/').slice(1)[1] == 'employee'))
+                    if ((this.$route.fullPath.split('/').slice(1)[1] == 'schedule' && employee.isActive)
+                    || (this.$route.fullPath.split('/').slice(1)[1] == 'leave' && employee.isActive)
+                        || (this.$route.fullPath.split('/').slice(1)[1] == 'employee'))
                     {
                         const newEmployee = {
                             "listInformation": employee.employeeNumber + " - " + employee.firstName + " " + employee.lastName + " (" + employee.role + ")",
@@ -135,7 +135,6 @@ export default {
         this.loadEmployees();
         getAllRoles().then(allRoles =>
         {
-            console.log("ALLROLES", allRoles)
             allRoles.forEach(role =>
             {
                 this.roleList.push(role.name);

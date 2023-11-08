@@ -114,7 +114,7 @@
 
 //import session from '../../sessions/UserSession';
 import DarkRedButton from '../../components/Reusable/DarkRedButton.vue';
-import { validEmployeeNumber, validName, validPhoneNumber, validEmail, validRole, validColorHexCode, validHourlyRate, validBarcodeNumber, validSkillPoints } from '../../../../REGEX/REGEX_frontend';
+import { validEmployeeNumber, validName, validPhoneNumber, validEmail, validRole, validColorHexCode, validHourlyRate, validBarcodeNumber, validSkillPoints } from '../../../REGEX/REGEXfrontend';
 import { createEmployee, getAllRoles } from '../../services/EmployeeService';
 
 export default {
