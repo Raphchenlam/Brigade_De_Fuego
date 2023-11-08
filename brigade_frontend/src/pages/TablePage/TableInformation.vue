@@ -155,6 +155,7 @@ export default {
                     await updateTableOnReservationById(reservationFound.id, 0)
                     this.hasReservation = false;
                     this.refreshPageView();
+                    this.getTableInformation();
                 }
             }
         },
