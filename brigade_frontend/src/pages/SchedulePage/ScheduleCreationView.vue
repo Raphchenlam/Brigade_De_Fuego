@@ -1059,14 +1059,14 @@ export default {
                         const dateKey = element.date.split('T')[0];
                         const shiftName = element.shiftName;
                         const mapping = this.datePropertyMapping[dateKey];
-                        
+                        /*
                         console.log("dateKey", dateKey)
                         console.log("shiftName", shiftName)
                         console.log("this.datePropertyMapping", this.datePropertyMapping)
                         console.log("this.datePropertyMapping[dateKey]", this.datePropertyMapping[dateKey])
                         console.log("mapping", mapping)
                         console.log("mapping[shiftName]", mapping[shiftName])
-                        
+                        */
                         if (mapping && mapping[shiftName])
                         {
                             console.log("ICI2")
@@ -1121,7 +1121,7 @@ export default {
                     }
                     employee.schedules.forEach(element =>
                     {
-                        const dateKey = element.date;
+                        const dateKey = element.date.split('T')[0];
                         const shiftName = element.shiftName;
                         const mapping = this.datePropertyMapping[dateKey];
 
@@ -1173,7 +1173,7 @@ export default {
                 {
                     if (element.isActive)
                     {
-                        const dateKey = element.date;
+                        const dateKey = element.date.split('T')[0];
                         const shiftName = element.shiftName;
                         const mapping = this.datePropertyMapping[dateKey];
 
