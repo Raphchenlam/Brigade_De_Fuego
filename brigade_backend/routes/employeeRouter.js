@@ -106,7 +106,7 @@ router.get('/barcode/:barcodenumber',
 
 router.post('/',
     passport.authenticate('basic', { session: false }),
-    (req, res, next) => {
+    async (req, res, next) => {
         console.log("REQ.EMPLOYEE", req.user);
 
         const employee = req.user;
@@ -171,30 +171,21 @@ router.post('/',
             next(err)
         });
 
-        const dbRoleVerif = employeeQueries.selectRoleByName(role);
-        const dbColorVerif = employeeQueries.selectAssignedColorHexcode(colorHexCode);
-        const dbBarcodeVerif = employeeQueries.selectEmployeeByBarcodeNumber(barcodeNumber);
-        const dbEmailVerif = employeeQueries.selectUsedEmail(email);
-        const dbPhoneNumberVerif = employeeQueries.selectUsedPhoneNumber(phoneNumber);
+        const existingRole = await employeeQueries.selectRoleByName(role);
+        if (!existingRole) return next(new HttpError(400, `Le role ${role} n'existe pas`));
 
-        Promise.all([dbRoleVerif, dbColorVerif, dbBarcodeVerif, dbEmailVerif, dbPhoneNumberVerif]).then((result) => {
-            const existingRole = result[0];
-            if (!existingRole) return next(new HttpError(400, `Le role ${role} n'existe pas`));
+        const assignedColorHexcode = await employeeQueries.selectAssignedColorHexcode(colorHexCode);
+        if(assignedColorHexcode) return next(new HttpError(400, `${assignedColorHexcode.firstName} ${assignedColorHexcode.lastName} est associé(e) à cette couleur`));
 
-            const assignedColorHexcode = result[1];
-            if(assignedColorHexcode) return next(new HttpError(400, `${assignedColorHexcode.firstName} ${assignedColorHexcode.lastName} est associé(e) à cette couleur`));
+        const assignedBarcodeNumber = await employeeQueries.selectEmployeeByBarcodeNumber(barcodeNumber);
+        if (assignedBarcodeNumber) return next(new HttpError(400, `${assignedBarcodeNumber.firstName} ${assignedBarcodeNumber.lastName} est associé(e) à ce numéro de la carte)`)); 
 
-            const assignedBarcodeNumber = result[2];
-            if (assignedBarcodeNumber) return next(new HttpError(400, `${assignedBarcodeNumber.firstName} ${assignedBarcodeNumber.lastName} est associé(e) à ce numéro de la carte)`)); 
-            
-            const usedEmail = result[3];
-            if (usedEmail) return next(new HttpError(400, `${usedEmail.firstName} ${usedEmail.lastName} est associé(e) à cette adresse courriel)`)); 
+        const usedEmail = await employeeQueries.selectUsedEmail(email);
+        if (usedEmail) return next(new HttpError(400, `${usedEmail.firstName} ${usedEmail.lastName} est associé(e) à cette adresse courriel)`)); 
 
-            const usedPhoneNumber = result[4];
-            if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`));
-        }).catch((err) => {
-            return next(err);
-        });
+        const usedPhoneNumber = await employeeQueries.selectUsedPhoneNumber(phoneNumber);
+        if (usedPhoneNumber) return next(new HttpError(400, `${usedPhoneNumber.firstName} ${usedPhoneNumber.lastName} est associé(e) à ce numéro de téléphone)`));
+
 
 
         // employeeQueries.selectRoleByName(role).then(existingRole => {
