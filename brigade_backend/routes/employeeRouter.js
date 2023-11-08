@@ -530,4 +530,34 @@ router.put('/lostpassword/:employeeNumber',
 });
 
 
+function sendEmailLostPassword(emailList, employeeFirstName, password) {
+    const recipients = emailList;
+    let subject = "Réinitialisation du mot de passe";
+    const text = "";
+    const html = `
+            <h1>Réinitialisation du mot de passe</h1>
+            <p>Bonjour ` + employeeFirstName + `,</p>
+            <p>Voici votre mot de passe temporaire : `+ password + `</p>
+            <p>Veuillez vous connecter à l'application et changer votre mot de passe dans votre profil.</p>`
+    sendEmail(recipients, subject, text, html);
+    return true
+};
+
+function generatePassword() {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$!%*?&';
+    let password = '';
+
+    while (!password.match(regex)) {
+        password = '';
+        for (let i = 0; i < 8; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            password += characters[randomIndex];
+        }
+    }
+
+    return password;
+}
+
+
 module.exports = router;
