@@ -272,7 +272,6 @@ router.put("/",
         if (!employee) return next(new HttpError(401, "Connexion requise"));
         if (!employee.isAdmin) return next(new HttpError(403, "Droit administrateur requis"));
         let body = req.body;
-        console.log("body", body)
         const scheduleWeekId = body.scheduleWeekId;
         if (!scheduleWeekId || scheduleWeekId == "") return next(new HttpError(400, `Un scheduleWeekId doit etre fournis`));
         if (!regex.validWeekId.test(scheduleWeekId)) return next(new HttpError(400, "Le champ scheduleWeekId ne respect pas les critères d'acceptation ex: '2023-W39'"));
@@ -303,9 +302,6 @@ router.put("/",
             if (periodIdList.length != 14) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Nous en avons obtenus ${periodIdList.length} `));
             const lowest = Math.min(...periodIdList);
             const highest = Math.max(...periodIdList);
-            console.log("periodIdList", periodIdList)
-            console.log("body.weekInformations[0].id", body.weekInformations[0].id)
-            console.log("body.weekInformations[13].id", body.weekInformations[13].id)
             
             if (lowest != body.weekInformations[0].id) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Elle ne correspondent pas a la semaine dans la demande`));
             if (highest != body.weekInformations[13].id) return next(new HttpError(400, `Erreur dans les Schedule Periods obtenues. Elle ne correspondent pas a la semaine dans la demande`));

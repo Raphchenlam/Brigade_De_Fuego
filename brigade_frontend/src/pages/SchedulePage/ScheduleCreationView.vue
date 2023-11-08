@@ -1050,7 +1050,6 @@ export default {
                             this.isPublished = true;
                         } else
                         {
-                            console.log("ICI0")
                             this.isPublished = false;
                         }
                     }
@@ -1069,7 +1068,6 @@ export default {
                         */
                         if (mapping && mapping[shiftName])
                         {
-                            console.log("ICI2")
                             const properties = mapping[shiftName];
                             const shiftIndex = properties.index;
                             this.weekInformations[shiftIndex].id = element.id;
